@@ -1,0 +1,21 @@
+.hex1 {
+  position: relative;
+  width: 45px; /* Adjust the width and height as needed */
+  height: 51px;
+  background-color: #081424;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.hex2 {
+  position: relative;
+  width: 25px; /* Adjust the width and height as needed */
+  height: 31px;
+  background-color: #00FFAA;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}

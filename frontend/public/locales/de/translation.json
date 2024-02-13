@@ -1,0 +1,228 @@
+{
+    "signup": {
+      "tagline": {
+        "part1": "Erstelle deine ",
+        "part2": "Wallet"
+      },
+      "username": "Benutzername (Optional)",
+      "password": "Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "CTAButton": "Besitze es.",
+      "terms": {
+        "part1": "Mit der Anmeldung stimmst du Avails",
+        "part2": "Nutzungsbedingungen",
+        "part3": "und",
+        "part4": "Datenschutzrichtlinie zu"
+      },
+      "access": "Kannst du nicht auf dein Konto zugreifen?",
+      "recover": "Wiederherstellen",
+      "messages":{
+        "errors": {
+          "password1": "Passwörter stimmen nicht überein.",
+          "password2": "Das Passwort muss mindestens 12 Zeichen lang sein.",
+          "username": "Benutzername ist bereits vergeben.",
+          "signup": "Kontoerstellung fehlgeschlagen, bitte versuchen Sie es erneut."
+        },
+        "success": "Wallet erfolgreich erstellt!"
+      }
+    },
+    "seedphrase": {
+      "title": "Deine geheime Wiederherstellungsphrase",
+      "subtitle": "Schreibe diese 12 Wörter in der richtigen Reihenfolge auf und bewahre sie sicher auf. Wenn du den Zugriff auf deine Wallet verlierst, benötigst du diese Wörter, um deine Gelder und Daten wiederherzustellen.",
+      "continue": "Fortfahren",
+      "copied": "Geheime Phrase erfolgreich kopiert!",
+      "warning": {
+        "label": "Warnung",
+        "message": "Teilen Sie diese Phrase nicht — mit niemandem."
+      }
+    },
+    "verify": {
+      "title": "Überprüfe deine geheime Wiederherstellungsphrase",
+      "verify": "Verifizieren",
+      "success": "Seed-Phrase erfolgreich verifiziert!",
+      "error": "Verifizierung der Seed-Phrase fehlgeschlagen, bitte versuchen Sie es erneut."
+    },
+    "backup": {
+      "title": {
+        "part1": "Möchtest du, dass wir deine",
+        "part2": "Datenzeiger sichern?"
+      },
+      "subtitle": {
+        "part1": "Datenzeiger",
+        "part2": "- Hilft, deine Aufzeichnungen und Transaktionen auf der Blockchain schneller zu finden als durch Scannen."
+      },
+      "description": "Wenn du dich für ein Backup entscheidest, werden die Zeiger mit deinem Betrachtungsschlüssel verschlüsselt und in unserem Datenbanksystem gespeichert. Wenn du deine Avail-Wallet so wiederherstellst, erhältst du sofortigen Zugriff auf alle deine Aufzeichnungen und vergangenen Transaktionshistorien.",
+      "backup": "Sichern",
+      "nobackup": "Nicht sichern",
+      "messages": {
+        "enabled": "Backup erfolgreich aktiviert!",
+        "disabled": "Backup erfolgreich deaktiviert!",
+        "error": "Aktualisierung des Backup-Status fehlgeschlagen, bitte versuchen Sie es erneut."
+      }
+    },
+    "login": {
+      "tagline": {
+        "part1": "Willkommen ",
+        "part2": "zurück"
+      },
+      "password": "Passwort",
+      "CTAButton": "Einloggen",
+      "access": "Kannst du nicht auf dein Konto zugreifen?",
+      "recover": "Wiederherstellen",
+      "messages": {
+        "success": "Erfolgreich eingeloggt!",
+        "error": "Authentifizierung fehlgeschlagen, bitte versuchen Sie es erneut."
+      }
+    },
+    "recover": {
+      "title": "Gib deine geheime Wiederherstellungsphrase ein, um deine Wallet wiederherzustellen.",
+      "recover": "Wiederherstellen"
+    },
+    "home": {
+      "balance": "Gesamtbilanz",
+      "send": "Senden",
+      "receive": "Empfangen",
+      "tokens": {
+        "title": "Token",
+        "empty": {
+          "part1": "Keine Token",
+          "part2": "Token erscheinen hier, sobald Sie welche erhalten."
+        }
+      },
+      "activity": {
+        "title": "Aktivität",
+        "empty": {
+          "part1": "Keine Aktivitäten",
+          "part2": "Transaktionen erscheinen hier, sobald Sie welche ausführen, senden oder empfangen."
+        }
+      },
+      "scan": {
+        "progress": "Scan läuft ",
+        "complete": " abgeschlossen"
+      },
+      "messages": {
+        "errors": {
+          "balance": "Fehler beim Abrufen des Saldos.",
+          "blocks-scan": "Fehler beim Scannen der Blöcke, bitte versuchen Sie es erneut.",
+          "network": "Verbindung zum Netzwerk fehlgeschlagen, bitte überprüfen Sie Ihre Internetverbindung."
+        },
+        "success": {
+          "scan": "Scan abgeschlossen!"
+        }
+      }
+    },
+    "send": {
+      "messages": {
+        "error": {
+          "positive-amount": "Bitte geben Sie einen positiven Betrag ein",
+          "insufficient-private-amount": "Unzureichendes privates Guthaben",
+          "insufficient-public-amount": "Unzureichendes öffentliches Guthaben",
+          "fields": "Bitte füllen Sie alle Felder aus",
+          "zero-amount": "Bitte geben Sie einen Betrag größer als 0 ein"
+        }
+      },
+      "success": "Transaktion erfolgreich gesendet!",
+      "info": "Übertragung läuft...",
+      "private-balance": "Privates Guthaben",
+      "public-balance": "Öffentliches Guthaben",
+      "fee": "Gebühr",
+      "send": "Senden",
+      "privacy-toggles": {
+        "from-private": "Privat senden",
+        "from-public": "Öffentlich senden",
+        "to-private": "Privat empfangen",
+        "to-public": "Öffentlich empfangen",
+        "private-fee": "Private Gebühr",
+        "public-fee": "Öffentliche Gebühr"
+      }
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "subtitle": "Verwalten Sie Ihre Wallet.",
+      "keys": {
+        "title": "Schlüssel",
+        "private-key": "Privatschlüssel",
+        "viewing-key": "Betrachtungsschlüssel",
+        "secret-phrase": "Geheime Phrase"
+      },
+      "General": "Allgemein",
+      "security": {
+        "title": "Sicherheit und Datenschutz",
+        "description": "Bei Avail legen wir großen Wert auf die Privatsphäre unserer Nutzer und haben deshalb die Sicherheitsmaßnahmen ergriffen, die wir beim sicheren Speichern von Daten durch Verschlüsselung haben, und nutzen die besten Praktiken beim Aufbau unserer Systeme, um Ihre Privatsphäre und Sicherheit zu priorisieren.",
+        "terms": "Geschäftsbedingungen",
+        "privacy": "Datenschutzrichtlinie"
+      },
+      "about": {
+        "title": "Über Avail",
+        "description": "Unsere Mission bei Avail ist es, jedem eine reibungslose Kontrolle über sein Geld, seine Daten und Vereinbarungen zu ermöglichen, während wir seine Privatsphäre schützen."
+      },
+      "advanced": {
+        "title": "Erweiterte Einstellungen",
+        "block-height": "Zuletzt synchronisierte Blockhöhe:",
+        "scan-progress": "Scan in Bearbeitung",
+        "full-resync": "Vollständige Re-Synchronisierung",
+        "enable-backup": "Backup aktivieren",
+        "disable-backup": "Backup deaktivieren"
+      },
+      "delete": {
+        "title": "Konto entfernen",
+        "STButton": "Konto löschen"
+      }
+    },
+    "activity": {
+      "time-labels": {
+        "today": "Heute",
+        "this-week": "Diese Woche",
+        "this-month": "Dieser Monat"
+      },
+      "no-activities": " Noch keine Aktivitäten, gehen Sie raus und erkunden Sie!",
+      "loading": "Lädt...",
+      "load-more": "Mehr laden",
+      "messages": {
+        "error": "Fehler beim Laden der Aktivitäten, bitte versuchen Sie es erneut."
+      }
+    },
+    "browser": {
+      "title": "Erkunden Sie Web3 mit Privatsphäre",
+      "subtitle": "Verbinden Sie sich mit einer dApp, um das dezentralisierte Web zu erkunden.",
+      "connect": "Verbinden",
+      "connected": "Verbunden",
+      "enter": "Eintreten",
+      "message": {
+        "success": {
+          "disconnect": "Verbindung trennen"
+        }
+      }
+    },
+    "dialogs": {
+      "options": {
+        "cancel": "Abbrechen",
+        "confirm": "Bestätigen"
+      },
+      "delete": {
+        "title": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten?",
+        "description": "Ihr Schlüssel wird immer existieren und Ihnen gehören, aber Ihr Konto, lokaler Schlüssel und Daten werden mit dieser Aktion gelöscht. Um Ihr Konto wiederherzustellen, müssen Sie Ihre geheime Wiederherstellungsphrase oder Ihren Privatschlüssel verwenden."
+      },
+      "disable-backup": {
+        "title": "Sind Sie sicher, dass Sie das Backup deaktivieren möchten?",
+        "description": "Dadurch werden Ihr gesichertes verschlüsseltes Daten und keine weiteren Ihrer verschlüsselten Datenpunkte mehr gesichert. Dies bedeutet, dass Sie, wenn Sie Ihr Konto wiederherstellen müssen, keinen Zugang zu Ihren Aleo-Datensätzen haben werden, bis die gesamte Blockchain gescannt wurde."
+      },
+      "reauth": {
+        "title": "Konto authentifizieren",
+        "description": "Dies wird durchgeführt, um Ihr Konto zu sichern. Bitte geben Sie Ihr Passwort ein, um fortzufahren."
+      },
+      "receive": {
+        "title": "Fonds oder Daten empfangen",
+        "subtitle": "Wenn der Gegenpartei ein Avail-Konto hat, können Sie Ihren Benutzernamen verwenden, um zu empfangen. Andernfalls können Sie Ihre Adresse verwenden.",
+        "username": "Benutzername:",
+        "address": "Adresse:",
+        "qr-description": "Scannen Sie den QR-Code für die Adresse.",
+        "okay": "Okay"
+      },
+      "transfer": {
+        "title": "Diese Transaktion bestätigen",
+        "subtitle": "Durch die Bestätigung der Transaktion werden Sie X Vermögenswert an Y senden"
+      }
+    }
+  }
+  

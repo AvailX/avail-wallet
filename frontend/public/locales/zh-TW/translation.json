@@ -1,0 +1,229 @@
+{
+    "signup": {
+      "tagline": {
+        "part1": "創建您的",
+        "part2": " 錢包"
+      },
+      "username": "用戶名（可選）",
+      "password": "密碼",
+      "confirmPassword": "確認密碼",
+      "CTAButton": "擁有它。",
+      "terms": {
+        "part1": "註冊即表示您同意Avail的",
+        "part2": " 服務條款",
+        "part3": " 和",
+        "part4":  "隱私政策"
+      },
+      "access": "無法訪問您的賬戶？",
+      "recover": "恢復",
+      "messages":{
+        "errors": {
+          "password1": "密碼不匹配。",
+          "password2": "密碼必須至少為12個字符長。",
+          "username": "用戶名已經被取。",
+          "signup": "創建賬戶失敗，請重試。"
+        },
+        "success": "錢包成功創建！"
+      }
+      
+    },
+    "seedphrase": {
+      "title": "您的秘密恢復短語",
+      "subtitle": "按正確順序記下這12個詞並安全保存。如果您丟失了對錢包的訪問權限，您將需要這些詞來恢復您的資金和數據。",
+      "continue": "繼續",
+      "copied": "秘密短語復制成功！",
+      "warning": {
+        "label": "警告",
+        "message": "不要與任何人分享這個短語 — 任何人。"
+      }
+    },
+    "verify": {
+      "title": "驗證您的秘密恢復短語",
+      "verify": "驗證",
+      "success": "種子短語驗證成功！",
+      "error": "種子短語驗證失敗，請重試。"
+    },
+    "backup": {
+      "title": {
+        "part1": "您希望我們備份您的",
+        "part2": " 數據指針嗎？"
+      },
+      "subtitle": {
+        "part1": "數據指針",
+        "part2": " - 幫助您比掃描更快地找到您在區塊鏈上的記錄和交易。"
+      },
+      "description": "如果您選擇備份，這些指針將用您的查看密鑰加密並存儲在我們的數據庫系統中。這樣恢復您的Avail錢包時，您可以立即獲取到所有記錄和過去的交易歷史。",
+      "backup": "備份",
+      "nobackup": "不備份",
+      "messages": {
+        "enabled": "備份成功啟用！",
+        "disabled": "備份成功禁用！",
+        "error": "備份狀態更新失敗，請重試。"
+      }
+    },
+    "login": {
+      "tagline": {
+        "part1": "歡迎",
+        "part2": " 回來"
+      },
+      "password": "密碼",
+      "CTAButton": "登錄",
+      "access": "無法訪問您的賬戶？",
+      "recover": "恢復",
+      "messages": {
+        "success": "成功登錄！",
+        "error": "認證失敗，請重試。"
+      }
+    },
+    "recover": {
+      "title": "輸入您的秘密恢復短語以恢復您的錢包。",
+      "recover": "恢復"
+    },
+    "home": {
+      "balance": "總餘額",
+      "send": "發送",
+      "receive": "接收",
+      "tokens": {
+        "title": "代幣",
+        "empty": {
+          "part1": "沒有代幣",
+          "part2": " 一旦您收到代幣，它們將出現在這裡。"
+        }
+      },
+      "activity": {
+        "title": "活動",
+        "empty": {
+          "part1": "沒有活動",
+          "part2": " 一旦您執行、發送或接收交易，它們將出現在這裡。"
+        }
+      },
+      "scan": {
+        "progress": "掃描進行中",
+        "complete": " 完成"
+      },
+      "messages": {
+        "errors": {
+          "balance": "獲取餘額錯誤。",
+          "blocks-scan": "掃描區塊失敗，請重試。",
+          "network": "連接網絡失敗，請檢查您的互聯網連接。"
+        },
+        "success": {
+          "scan": "掃描完成！"
+        }
+      }
+    },
+    "send": {
+      "messages": {
+        "error": {
+          "positive-amount": "請輸入一個正數金額",
+          "insufficient-private-amount": "私有餘額不足",
+          "insufficient-public-amount": "公共餘額不足",
+          "fields": "請填寫所有欄位",
+          "zero-amount": "請輸入大於0的金額"
+        }
+      },
+      "success": "交易成功發送！",
+        "info": "轉賬進行中...",
+        "private-balance": "私有餘額",
+        "public-balance": "公共餘額",
+        "fee": "費用",
+        "send": "發送",
+        "privacy-toggles": {
+          "from-private": "從私有轉賬",
+          "from-public": "從公共轉賬",
+          "to-private": "轉入私有",
+          "to-public": "轉入公共",
+          "private-fee": "私有費用",
+          "public-fee": "公共費用"
+        }
+    },
+    "settings": {
+      "title": "設置",
+      "subtitle": "管理您的錢包。",
+      "keys": {
+        "title": "鑰匙",
+        "private-key": "私鑰",
+        "viewing-key": "查看鑰匙",
+        "secret-phrase": "秘密短語"
+      },
+      "General": "一般",
+      "security": {
+        "title": "安全與隱私",
+        "description": "在Avail，我們重視用戶的隱私，這就是為什麼我們採取了我們所採取的安全措施，包括通過加密保護數據存儲以及在構建我們的系統時採用最佳實踐，以優先考慮您的隱私和安全。",
+        "terms": "條款和條件",
+        "privacy": "隱私政策"
+      },
+      "about": {
+        "title": "關於Avail",
+        "description": "在Avail，我們的使命是讓任何人都能無障礙地控制他們的金錢、數據和協議，同時保護他們的隱私。"
+      },
+      "advanced": {
+        "title": "高級設置",
+        "block-height": "最後同步區塊高度：",
+        "scan-progress": "掃描進行中",
+        "full-resync": "完全重新同步",
+        "enable-backup": "啟用備份",
+        "disable-backup": "禁用備份"
+      },
+      "delete": {
+        "title": "刪除賬戶",
+        "STButton": "刪除賬戶"
+      }
+    },
+    "activity": {
+      "time-labels": {
+        "today": "今天",
+        "this-week": "本週",
+        "this-month": "本月"
+      },
+      "no-activities": " 還沒有活動，去探索吧！",
+      "loading": "加載中...",
+      "load-more": "加載更多",
+      "messages": {
+        "error": "加載活動失敗，請重試。"
+      }
+    },
+    "browser": {
+      "title": "隱私地探索Web3",
+      "subtitle": "連接到dApp開始探索去中心化的網絡。",
+      "connect": "連接",
+      "connected": "已連接",
+      "enter": "進入",
+      "message": {
+        "success": {
+          "disconnect": "斷開連接"
+        }
+      }
+    },
+    "dialogs": {
+      "options": {
+        "cancel": "取消",
+        "confirm": "確認"
+      },
+      "delete": {
+        "title": "您確定要刪除您的賬戶嗎？",
+        "description": "您的密鑰將永遠存在並且屬於您，但是您的賬戶、本地密鑰和數據將通過此操作被刪除。要恢復您的賬戶，您必須使用您的秘密恢復短語或私鑰。"
+      },
+      "disable-backup": {
+        "title": "您確定要禁用備份嗎？",
+        "description": "這將刪除您的加密數據備份，並且不再備份您的加密數據指針。這意味著如果或當您需要恢復您的賬戶時，您將無法訪問您的Aleo數據記錄，直到掃描整個區塊鏈。"
+      },
+      "reauth": {
+        "title": "賬戶認證",
+        "description": "這樣做是為了保護您的賬戶。請輸入您的密碼以繼續。"
+      },
+      "receive": {
+        "title": "接收資金或數據",
+        "subtitle": "如果交易對手有Avail賬戶，則可以使用您的用戶名接收。否則，您可以使用您的地址。",
+        "username": "用戶名：",
+        "address": "地址：",
+        "qr-description": "掃描地址的二維碼。",
+        "okay": "好的"
+      },
+      "transfer": {
+        "title": "確認此交易",
+        "subtitle": "確認交易後，您將向Y發送X資產"
+      }
+    }
+  }
+  

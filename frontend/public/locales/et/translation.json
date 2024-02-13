@@ -1,0 +1,228 @@
+{
+    "signup": {
+      "tagline": {
+        "part1": "Loo oma ",
+        "part2": "rahakott"
+      },
+      "username": "Kasutajanimi (Valikuline)",
+      "password": "Parool",
+      "confirmPassword": "Kinnita parool",
+      "CTAButton": "Omanda see.",
+      "terms": {
+        "part1": "Registreerudes nõustute Availi",
+        "part2": "Kasutustingimustega",
+        "part3": "ja",
+        "part4": "Privaatsuspoliitikaga"
+      },
+      "access": "Ei pääse oma kontole ligi?",
+      "recover": "Taasta",
+      "messages":{
+        "errors": {
+          "password1": "Paroolid ei ühti.",
+          "password2": "Parool peab olema vähemalt 12 tähemärki pikk.",
+          "username": "Kasutajanimi on juba võetud.",
+          "signup": "Konto loomine ebaõnnestus, palun proovi uuesti."
+        },
+        "success": "Rahakott edukalt loodud!"
+      }      
+    },
+    "seedphrase": {
+      "title": "Sinu salajane taastefraas",
+      "subtitle": "Pane need 12 sõna õiges järjekorras kirja ja hoia neid turvaliselt. Kui kaotad juurdepääsu oma rahakotile, on sul neid sõnu vaja oma vahendite ja andmete taastamiseks.",
+      "continue": "Jätka",
+      "copied": "Salafraas edukalt kopeeritud!",
+      "warning": {
+        "label": "Hoiatus",
+        "message": "Ära jaga seda fraasi — kellegagi."
+      }
+    },
+    "verify": {
+      "title": "Kinnita oma salajane taastefraas",
+      "verify": "Kinnita",
+      "success": "Seemnefraasi kinnitamine õnnestus!",
+      "error": "Seemnefraasi kinnitamine ebaõnnestus, palun proovi uuesti."
+    },
+    "backup": {
+      "title": {
+        "part1": "Kas soovid, et me varundaksime sinu",
+        "part2": "andmeviitajad?"
+      },
+      "subtitle": {
+        "part1": "Andmeviitaja",
+        "part2": "- Aitab leida sinu kirjeid ja tehinguid plokiahelas kiiremini kui skaneerides."
+      },
+      "description": "Kui valite varundamise, krüpteeritakse viitajad teie vaatamisvõtmega ja salvestatakse meie andmebaasisüsteemi. Nii oma Avail rahakoti taastamisel saad kohe ligipääsu kõikidele oma kirjetele ja varasemale tehingute ajaloole.",
+      "backup": "Varunda",
+      "nobackup": "Ära varunda",
+      "messages": {
+        "enabled": "Varundamine edukalt lubatud!",
+        "disabled": "Varundamine edukalt keelatud!",
+        "error": "Varundamise oleku uuendamine ebaõnnestus, palun proovi uuesti."
+      }
+    },
+    "login": {
+      "tagline": {
+        "part1": "Tere tulemast ",
+        "part2": "tagasi"
+      },
+      "password": "Parool",
+      "CTAButton": "Logi sisse",
+      "access": "Ei pääse oma kontole ligi?",
+      "recover": "Taasta",
+      "messages": {
+        "success": "Edukalt sisse logitud!",
+        "error": "Autentimine ebaõnnestus, palun proovi uuesti."
+      }
+    },
+    "recover": {
+      "title": "Sisesta oma salajane taastefraas, et taastada oma rahakott.",
+      "recover": "Taasta"
+    },
+    "home": {
+      "balance": "Kogusaldo",
+      "send": "Saada",
+      "receive": "Võta vastu",
+      "tokens": {
+        "title": "Tokenid",
+        "empty": {
+          "part1": "Tokeneid pole",
+          "part2": "Tokenid ilmuvad siia, kui olete neid vastu võtnud."
+        }
+      },
+      "activity": {
+        "title": "Tegevus",
+        "empty": {
+          "part1": "Tegevusi pole",
+          "part2": "Tehingud ilmuvad siia, kui olete neid teostanud, saatnud või vastu võtnud."
+        }
+      },
+      "scan": {
+        "progress": "Skaneerimine käib",
+        "complete": " lõpetatud"
+      },
+      "messages": {
+        "errors": {
+          "balance": "Saldo hankimisel ilmnes viga.",
+          "blocks-scan": "Plokkide skaneerimine ebaõnnestus, palun proovige uuesti.",
+          "network": "Võrku ühendamine ebaõnnestus, palun kontrollige oma internetiühendust."
+        },
+        "success": {
+          "scan": "Skaneerimine lõpetatud!"
+        }
+      }
+    },
+    "send": {
+      "messages": {
+        "error": {
+          "positive-amount": "Palun sisesta positiivne summa",
+          "insufficient-private-amount": "Privaatne saldo ei ole piisav",
+          "insufficient-public-amount": "Avalik saldo ei ole piisav",
+          "fields": "Palun täida kõik väljad",
+          "zero-amount": "Palun sisesta summa, mis on suurem kui 0"
+        }
+      },
+      "success": "Tehing edukalt saadetud!",
+        "info": "Ülekanne käimas...",
+        "private-balance": "Privaatne Saldo",
+        "public-balance": "Avalik Saldo",
+        "fee": "Tasu",
+        "send": "Saada",
+        "privacy-toggles": {
+          "from-private": "Saada privaatselt",
+          "from-public": "Saada avalikult",
+          "to-private": "Saada privaatsele",
+          "to-public": "Saada avalikule",
+          "private-fee": "Privaatne Tasu",
+          "public-fee": "Avalik Tasu"
+        }
+    },
+    "settings": {
+      "title": "Seaded",
+      "subtitle": "Halda oma rahakotti.",
+      "keys": {
+        "title": "Võtmed",
+        "private-key": "Privaatvõti",
+        "viewing-key": "Vaatevõti",
+        "secret-phrase": "Salajane fraas"
+      },
+      "General": "Üldine",
+      "security": {
+        "title": "Turvalisus ja Privaatsus",
+        "description": "Availis väärtustame meie kasutajate privaatsust, mistõttu oleme võtnud kasutusele turvameetmed, mis käsitlevad andmete turvalist hoidmist krüpteerimise kaudu ja kasutame parimaid praktikaid meie süsteemide ülesehitamisel, et prioriseerida teie privaatsust ja turvalisust.",
+        "terms": "Tingimused ja tingimused",
+        "privacy": "Privaatsuspoliitika"
+      },
+      "about": {
+        "title": "Availist",
+        "description": "Availi missiooniks on pakkuda kõigile hõõrdumatu kontrolli oma raha, andmete ja kokkulepete üle, säilitades nende privaatsuse."
+      },
+      "advanced": {
+        "title": "Täpsemad Seaded",
+        "block-height": "Viimane Sünkroniseeritud Ploki Kõrgus:",
+        "scan-progress": "Skaneerimine käib",
+        "full-resync": "Täielik Ümbersünkroniseerimine",
+        "enable-backup": "Luba Varundamine",
+        "disable-backup": "Keela Varundamine"
+      },
+      "delete": {
+        "title": "Kustuta Konto",
+        "STButton": "Kustuta Konto"
+      }
+    },
+    "activity": {
+      "time-labels": {
+        "today": "Täna",
+        "this-week": "Sel Nädalal",
+        "this-month": "Sel Kuul"
+      },
+      "no-activities": " Tegevusi pole veel, mine avasta!",
+      "loading": "Laadimine...",
+      "load-more": "Lae Rohkem",
+      "messages": {
+        "error": "Tegevuste laadimisel ilmnes viga, palun proovi uuesti."
+      }
+    },
+    "browser": {
+      "title": "Uuri Web3 privaatselt",
+      "subtitle": "Ühendu dApp'iga, et alustada detsentraliseeritud veebi uurimist.",
+      "connect": "Ühenda",
+      "connected": "Ühendatud",
+      "enter": "Sisesta",
+      "message": {
+        "success": {
+          "disconnect": "Ühenda lahti"
+        }
+      }
+    },
+    "dialogs": {
+      "options": {
+        "cancel": "Tühista",
+        "confirm": "Kinnita"
+      },
+      "delete": {
+        "title": "Oled sa kindel, et soovid oma konto kustutada?",
+        "description": "Sinu võti jääb alati eksisteerima ja kuulub sulle, kuid sinu konto, kohalik võti ja andmed kustutatakse selle tegevusega. Oma konto taastamiseks pead kasutama oma salajast taastefraasi või privaatvõtit."
+      },
+      "disable-backup": {
+        "title": "Oled sa kindel, et soovid varundamise keelata?",
+        "description": "See kustutab sinu krüpteeritud andmete varukoopia ja enam ei varunda sinu krüpteeritud andmete viiteid. See tähendab, et kui või kui sa pead oma konto taastama, ei ole sul juurdepääsu oma Aleo andmekirjetele, kuni kogu plokkahel on skaneeritud."
+      },
+      "reauth": {
+        "title": "Konto Autentimine",
+        "description": "See tehakse sinu konto kaitsmiseks. Palun sisesta oma parool jätkamiseks."
+      },
+      "receive": {
+        "title": "Võta Vastu Vahendid või Andmed",
+        "subtitle": "Kui vastaspoolel on Availi konto, võid kasutada oma kasutajanime vastuvõtmiseks. Vastasel juhul võid kasutada oma aadressi.",
+        "username": "Kasutajanimi:",
+        "address": "Aadress:",
+        "qr-description": "Skaneeri aadressi QR-kood.",
+        "okay": "Olgu"
+      },
+      "transfer": {
+        "title": "Kinnita see tehing",
+        "subtitle": "Tehingu kinnitamisega saadad sa X vara Y-le"
+      }
+    }
+  }
+  

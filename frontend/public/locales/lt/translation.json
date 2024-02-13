@@ -1,0 +1,229 @@
+{
+    "signup": {
+      "tagline": {
+        "part1": "Sukurk savo ",
+        "part2": "piniginę"
+      },
+      "username": "Vartotojo vardas (neprivaloma)",
+      "password": "Slaptažodis",
+      "confirmPassword": "Patvirtinti slaptažodį",
+      "CTAButton": "Priimk tai.",
+      "terms": {
+        "part1": "Užsiregistravę sutinkate su Avail",
+        "part2": "Paslaugų sąlygomis",
+        "part3": "ir",
+        "part4": "Privatumo politika"
+      },
+      "access": "Negalite prieiti prie savo paskyros?",
+      "recover": "Atkurti",
+      "messages":{
+        "errors": {
+          "password1": "Slaptažodžiai nesutampa.",
+          "password2": "Slaptažodis turi būti bent 12 simbolių ilgio.",
+          "username": "Vartotojo vardas jau užimtas.",
+          "signup": "Paskyros sukūrimas nepavyko, bandykite dar kartą."
+        },
+        "success": "Piniginė sėkmingai sukurta!"
+      }
+      
+    },
+    "seedphrase": {
+      "title": "Jūsų slaptas atkūrimo frazė",
+      "subtitle": "Užrašykite šiuos 12 žodžių teisinga tvarka ir saugokite juos saugiai. Jei prarandate prieigą prie savo piniginės, šie žodžiai reikalingi lėšų ir duomenų atkūrimui.",
+      "continue": "Tęsti",
+      "copied": "Slapta frazė sėkmingai nukopijuota!",
+      "warning": {
+        "label": "Įspėjimas",
+        "message": "Niekada nesidalinkite šia fraze — su niekuo."
+      }
+    },
+    "verify": {
+      "title": "Patikrinkite savo slaptą atkūrimo frazę",
+      "verify": "Patikrinti",
+      "success": "Sėkla frazė sėkmingai patikrinta!",
+      "error": "Sėkla frazės tikrinimas nepavyko, bandykite dar kartą."
+    },
+    "backup": {
+      "title": {
+        "part1": "Ar norite, kad mes atliktume jūsų",
+        "part2": "duomenų rodyklių atsarginę kopiją?"
+      },
+      "subtitle": {
+        "part1": "Duomenų rodyklė",
+        "part2": "- Padeda greičiau rasti jūsų įrašus ir sandorius blokų grandinėje nei skenuojant."
+      },
+      "description": "Jei pasirinksite atsarginę kopiją, rodyklės bus užšifruotos naudojant jūsų peržiūros raktą ir išsaugotos mūsų duomenų bazės sistemoje. Atkuriant jūsų Avail piniginę taip, jūs iškart gausite prieigą prie visų savo įrašų ir ankstesnės sandorių istorijos.",
+      "backup": "Daryti atsarginę kopiją",
+      "nobackup": "Nedaryti atsarginės kopijos",
+      "messages": {
+        "enabled": "Atsarginė kopija sėkmingai įjungta!",
+        "disabled": "Atsarginė kopija sėkmingai išjungta!",
+        "error": "Nepavyko atnaujinti atsarginės kopijos būsenos, bandykite dar kartą."
+      }
+    },
+    "login": {
+      "tagline": {
+        "part1": "Sveiki ",
+        "part2": "sugrįžę"
+      },
+      "password": "Slaptažodis",
+      "CTAButton": "Prisijungti",
+      "access": "Negalite prieiti prie savo paskyros?",
+      "recover": "Atkurti",
+      "messages": {
+        "success": "Sėkmingai prisijungėte!",
+        "error": "Autentifikacija nepavyko, bandykite dar kartą."
+      }
+    },
+    "recover": {
+      "title": "Įveskite savo slaptą atkūrimo frazę, kad atkurtumėte savo piniginę.",
+      "recover": "Atkurti"
+    },
+    "home": {
+      "balance": "Bendras Likutis",
+      "send": "Siųsti",
+      "receive": "Gauti",
+      "tokens": {
+        "title": "Žetonai",
+        "empty": {
+          "part1": "Žetonų nėra",
+          "part2": "Žetonai atsiras čia, kai juos gausite."
+        }
+      },
+      "activity": {
+        "title": "Veikla",
+        "empty": {
+          "part1": "Veiklos nėra",
+          "part2": "Operacijos čia atsiras, kai atliksite, siųsite ar gausite."
+        }
+      },
+      "scan": {
+        "progress": "Skenavimas vyksta",
+        "complete": " užbaigtas"
+      },
+      "messages": {
+        "errors": {
+          "balance": "Klaida gaunant likutį.",
+          "blocks-scan": "Nepavyko nuskaityti blokų, bandykite dar kartą.",
+          "network": "Nepavyko prisijungti prie tinklo, patikrinkite savo interneto ryšį."
+        },
+        "success": {
+          "scan": "Skenavimas užbaigtas!"
+        }
+      }
+    },
+    "send": {
+      "messages": {
+        "error": {
+          "positive-amount": "Įveskite teigiamą sumą",
+          "insufficient-private-amount": "Nepakankamas privatus likutis",
+          "insufficient-public-amount": "Nepakankamas viešas likutis",
+          "fields": "Užpildykite visus laukus",
+          "zero-amount": "Įveskite didesnę nei 0 sumą"
+        }
+      },
+      "success": "Pervedimas sėkmingai išsiųstas!",
+        "info": "Pervedimas vykdomas...",
+        "private-balance": "Privatus Likutis",
+        "public-balance": "Viešas Likutis",
+        "fee": "Mokestis",
+        "send": "Siųsti",
+        "privacy-toggles": {
+          "from-private": "Siųsti iš privačios",
+          "from-public": "Siųsti iš viešos",
+          "to-private": "Siųsti į privatų",
+          "to-public": "Siųsti į viešą",
+          "private-fee": "Privatus Mokestis",
+          "public-fee": "Viešas Mokestis"
+        }
+    },
+    "settings": {
+      "title": "Nustatymai",
+      "subtitle": "Valdykite savo piniginę.",
+      "keys": {
+        "title": "Raktai",
+        "private-key": "Privatus Raktas",
+        "viewing-key": "Peržiūros Raktas",
+        "secret-phrase": "Slaptas Fraze"
+      },
+      "General": "Bendri",
+      "security": {
+        "title": "Saugumas ir Privatumas",
+        "description": "„Avail“ vertiname mūsų vartotojų privatumą, todėl esame įdiegę saugumo priemones, susijusias su duomenų saugiu saugojimu naudojant šifravimą ir užtikriname, kad naudojame geriausias praktikas mūsų sistemų kūrimui, kad prioritizuotume jūsų privatumą ir saugumą.",
+        "terms": "Sąlygos ir Nuostatos",
+        "privacy": "Privatumo Politika"
+      },
+      "about": {
+        "title": "Apie „Avail“",
+        "description": "„Avail“ misija yra suteikti kiekvienam asmeniui trinties nesukeliantį valdymą savo pinigams, duomenims ir sutartims, išlaikant jų privatumą."
+      },
+      "advanced": {
+        "title": "Išplėstiniai Nustatymai",
+        "block-height": "Paskutinio Sinchronizuoto Bloko Aukštis:",
+        "scan-progress": "Skenavimas vyksta",
+        "full-resync": "Visiškas Per-sinchronizavimas",
+        "enable-backup": "Įgalinti Atsarginę Kopiją",
+        "disable-backup": "Išjungti Atsarginę Kopiją"
+      },
+      "delete": {
+        "title": "Ištrinti Paskyrą",
+        "STButton": "Ištrinti Paskyrą"
+      }
+    },
+    "activity": {
+      "time-labels": {
+        "today": "Šiandien",
+        "this-week": "Šią Savaitę",
+        "this-month": "Šį Mėnesį"
+      },
+      "no-activities": " Veiklos dar nėra, eikite tyrinėti!",
+      "loading": "Kraunama...",
+      "load-more": "Įkelti Daugiau",
+      "messages": {
+        "error": "Klaida įkeliant veiklą, bandykite dar kartą."
+      }
+    },
+    "browser": {
+      "title": "Naršykite „Web3“ su Privatumu",
+      "subtitle": "Prisijunkite prie „dApp“, kad pradėtumėte tyrinėti decentralizuotąjį internetą.",
+      "connect": "Prisijungti",
+      "connected": "Prisijungta",
+      "enter": "Įeiti",
+      "message": {
+        "success": {
+          "disconnect": "Atsijungti"
+        }
+      }
+    },
+    "dialogs": {
+      "options": {
+        "cancel": "Atšaukti",
+        "confirm": "Patvirtinti"
+      },
+      "delete": {
+        "title": "Ar tikrai norite ištrinti savo paskyrą?",
+        "description": "Jūsų raktas visada išliks ir bus jūsų, bet šiuo veiksmu bus ištrinta jūsų paskyra, lokalus raktas ir duomenys. Norėdami atkurti savo paskyrą, turėsite naudoti savo slaptą atkūrimo frazę arba privatų raktą."
+      },
+      "disable-backup": {
+        "title": "Ar tikrai norite išjungti atsarginę kopiją?",
+        "description": "Tai ištrins jūsų šifruotų duomenų atsargines kopijas ir nebebus daroma jūsų šifruotų duomenų nuorodų atsarginių kopijų. Tai reiškia, kad jei ar kada reikės atkurti jūsų paskyrą, neturėsite prieigos prie jūsų „Aleo“ duomenų įrašų, kol nebus nuskaityta visa blokų grandinė."
+      },
+      "reauth": {
+        "title": "Paskyros Autentifikavimas",
+        "description": "Tai daroma siekiant apsaugoti jūsų paskyrą. Prašome įvesti savo slaptažodį, kad tęstumėte."
+      },
+      "receive": {
+        "title": "Gauti Lėšas ar Duomenis",
+        "subtitle": "Jei kitas asmuo turi „Avail“ paskyrą, galite naudoti savo vartotojo vardą, kad gautumėte. Priešingu atveju, galite naudoti savo adresą.",
+        "username": "Vartotojo Vardas:",
+        "address": "Adresas:",
+        "qr-description": "Nuskaitykite QR kodą, kad gautumėte adresą.",
+        "okay": "Gerai"
+      },
+      "transfer": {
+        "title": "Patvirtinti šią operaciją",
+        "subtitle": "Patvirtindami operaciją, siųsite X turtą į Y"
+      }
+    }
+  }
+  

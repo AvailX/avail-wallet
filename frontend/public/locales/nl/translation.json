@@ -1,0 +1,229 @@
+{
+    "signup": {
+      "tagline": {
+        "part1": "Maak je eigen ",
+        "part2": "portemonnee"
+      },
+      "username": "Gebruikersnaam (Optioneel)",
+      "password": "Wachtwoord",
+      "confirmPassword": "Bevestig Wachtwoord",
+      "CTAButton": "Bezit het.",
+      "terms": {
+        "part1": "Door je aan te melden ga je akkoord met Avail's",
+        "part2": "Servicevoorwaarden",
+        "part3": "en",
+        "part4": "Privacybeleid"
+      },
+      "access": "Kun je niet bij je account?",
+      "recover": "Herstellen",
+      "messages": {
+        "errors": {
+          "password1": "Wachtwoorden komen niet overeen.",
+          "password2": "Wachtwoord moet ten minste 12 karakters lang zijn.",
+          "username": "Gebruikersnaam is al in gebruik.",
+          "signup": "Account aanmaken mislukt, probeer het opnieuw."
+        },
+        "success": "Portemonnee succesvol aangemaakt!"
+      }
+      
+    },
+    "seedphrase": {
+      "title": "Je geheime herstelzin",
+      "subtitle": "Schrijf deze 12 woorden in de juiste volgorde op en bewaar ze veilig. Als je de toegang tot je portemonnee verliest, heb je deze woorden nodig om je fondsen en gegevens te herstellen.",
+      "continue": "Doorgaan",
+      "copied": "Geheime zin succesvol gekopieerd!",
+      "warning": {
+        "label": "Waarschuwing",
+        "message": "Deel deze zin niet — met niemand."
+      }
+    },
+    "verify": {
+      "title": "Verifieer je geheime herstelzin",
+      "verify": "Verifiëren",
+      "success": "Herstelzin succesvol geverifieerd!",
+      "error": "Verificatie van herstelzin mislukt, probeer opnieuw."
+    },
+    "backup": {
+      "title": {
+        "part1": "Wil je dat wij een back-up maken van je",
+        "part2": "dataverwijzers?"
+      },
+      "subtitle": {
+        "part1": "Dataverwijzer",
+        "part2": "- Helpt je records en transacties op de blockchain sneller te vinden dan met scannen."
+      },
+      "description": "Als je kiest voor een back-up, worden de verwijzers versleuteld met je kijkersleutel en opgeslagen in ons databasesysteem. Wanneer je je Avail portemonnee op deze manier herstelt, krijg je onmiddellijk toegang tot al je records en vorige transactiegeschiedenis.",
+      "backup": "Back-up",
+      "nobackup": "Geen back-up",
+      "messages": {
+        "enabled": "Backup succesvol ingeschakeld!",
+        "disabled": "Backup succesvol uitgeschakeld!",
+        "error": "Updaten van backup status mislukt, probeer opnieuw."
+      }
+    },
+    "login": {
+      "tagline": {
+        "part1": "Welkom ",
+        "part2": "terug"
+      },
+      "password": "Wachtwoord",
+      "CTAButton": "Inloggen",
+      "access": "Kun je niet bij je account?",
+      "recover": "Herstellen",
+      "messages": {
+        "success": "Succesvol ingelogd!",
+        "error": "Authenticatie mislukt, probeer opnieuw."
+      }
+    },
+    "recover": {
+      "title": "Voer je geheime herstelzin in om je portemonnee te herstellen.",
+      "recover": "Herstellen"
+    },
+    "home": {
+      "balance": "Totaal Saldo",
+      "send": "Verzenden",
+      "receive": "Ontvangen",
+      "tokens": {
+        "title": "Tokens",
+        "empty": {
+          "part1": "Geen Tokens",
+          "part2": "Tokens zullen hier verschijnen zodra je ze ontvangt."
+        }
+      },
+      "activity": {
+        "title": "Activiteit",
+        "empty": {
+          "part1": "Geen Activiteit",
+          "part2": "Transacties zullen hier verschijnen zodra je ze uitvoert, verzendt of ontvangt."
+        }
+      },
+      "scan": {
+        "progress": "Scannen in Uitvoering",
+        "complete": " voltooid"
+      },
+      "messages": {
+        "errors": {
+          "balance": "Fout bij het ophalen van het saldo.",
+          "blocks-scan": "Scannen van blokken mislukt, probeer opnieuw.",
+          "network": "Verbinding met het netwerk mislukt, controleer je internetverbinding."
+        },
+        "success": {
+          "scan": "Scannen voltooid!"
+        }
+      }
+    },
+    "send": {
+      "messages": {
+        "error": {
+          "positive-amount": "Voer een positief bedrag in",
+          "insufficient-private-amount": "Onvoldoende privésaldo",
+          "insufficient-public-amount": "Onvoldoende openbaar saldo",
+          "fields": "Vul alle velden in",
+          "zero-amount": "Voer een bedrag in dat groter is dan 0"
+        }
+      },
+      "success": "Transactie succesvol verzonden!",
+        "info": "Overdracht bezig...",
+        "private-balance": "Privésaldo",
+        "public-balance": "Openbaar Saldo",
+        "fee": "Vergoeding",
+        "send": "Verzenden",
+        "privacy-toggles": {
+          "from-private": "Privé Verzenden",
+          "from-public": "Openbaar Verzenden",
+          "to-private": "Naar Privé Verzenden",
+          "to-public": "Naar Openbaar Verzenden",
+          "private-fee": "Privévergoeding",
+          "public-fee": "Openbare Vergoeding"
+        }
+    },
+    "settings": {
+      "title": "Instellingen",
+      "subtitle": "Beheer je portemonnee.",
+      "keys": {
+        "title": "Sleutels",
+        "private-key": "Privésleutel",
+        "viewing-key": "Bekijksleutel",
+        "secret-phrase": "Geheime Zin"
+      },
+      "General": "Algemeen",
+      "security": {
+        "title": "Veiligheid en Privacy",
+        "description": "Bij Avail waarderen we de privacy van onze gebruikers en daarom hebben we beveiligingsmaatregelen getroffen die betrekking hebben op het veilig opslaan van gegevens via encryptie en zorgen we ervoor dat we de beste praktijken gebruiken bij het bouwen van onze systemen om uw privacy en veiligheid te prioriteren.",
+        "terms": "Voorwaarden en Condities",
+        "privacy": "Privacybeleid"
+      },
+      "about": {
+        "title": "Over Avail",
+        "description": "Bij Avail is onze missie om iedereen moeiteloze controle te geven over hun geld, gegevens en overeenkomsten terwijl we hun privacy bewaren."
+      },
+      "advanced": {
+        "title": "Geavanceerde Instellingen",
+        "block-height": "Laatst Gesynchroniseerde Blokhoogte:",
+        "scan-progress": "Scannen Bezig",
+        "full-resync": "Volledige Her-synchronisatie",
+        "enable-backup": "Backup Inschakelen",
+        "disable-backup": "Backup Uitschakelen"
+      },
+      "delete": {
+        "title": "Account Verwijderen",
+        "STButton": "Account Verwijderen"
+      }
+    },
+    "activity": {
+      "time-labels": {
+        "today": "Vandaag",
+        "this-week": "Deze Week",
+        "this-month": "Deze Maand"
+      },
+      "no-activities": " Nog geen activiteiten, ga erop uit en ontdek!",
+      "loading": "Laden...",
+      "load-more": "Meer Laden",
+      "messages": {
+        "error": "Fout bij het laden van activiteiten, probeer het opnieuw."
+      }
+    },
+    "browser": {
+      "title": "Verken Web3 met Privacy",
+      "subtitle": "Verbind met een dApp om het gedecentraliseerde web te verkennen.",
+      "connect": "Verbinden",
+      "connected": "Verbonden",
+      "enter": "Binnengaan",
+      "message": {
+        "success": {
+          "disconnect": "Verbinding Verbeken"
+        }
+      }
+    },
+    "dialogs": {
+      "options": {
+        "cancel": "Annuleren",
+        "confirm": "Bevestigen"
+      },
+      "delete": {
+        "title": "Weet je zeker dat je je account wilt verwijderen?",
+        "description": "Je sleutel zal altijd bestaan en van jou zijn, maar je account, lokale sleutel en gegevens worden verwijderd met deze actie. Om je account te herstellen, moet je je geheime herstelzin of privésleutel gebruiken."
+      },
+      "disable-backup": {
+        "title": "Weet je zeker dat je de backup wilt uitschakelen?",
+        "description": "Dit zal je gecodeerde data backups verwijderen en geen backups meer maken van je gecodeerde dataverwijzingen. Dit betekent dat als of wanneer je je account moet herstellen, je geen toegang zult hebben tot je Aleo data records totdat de hele blockchain is gescand."
+      },
+      "reauth": {
+        "title": "Account Authenticeren",
+        "description": "Dit wordt gedaan om je account te beveiligen. Voer je wachtwoord in om verder te gaan."
+      },
+      "receive": {
+        "title": "Ontvang Fondsen of Data",
+        "subtitle": "Als de tegenpartij een Avail account heeft, kun je je gebruikersnaam gebruiken om te ontvangen. Anders kun je je adres gebruiken.",
+        "username": "Gebruikersnaam:",
+        "address": "Adres:",
+        "qr-description": "Scan de QR-code voor het adres.",
+        "okay": "Oké"
+      },
+      "transfer": {
+        "title": "Bevestig deze transactie",
+        "subtitle": "Door de transactie te bevestigen, zul je X activa naar Y verzenden"
+      }
+    }
+  }
+  

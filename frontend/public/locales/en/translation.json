@@ -1,0 +1,240 @@
+{
+   "signup":{
+      "tagline":{
+        "part1":"Create your ",
+        "part2":"wallet."
+        },
+      "username":"Username (Optional)",
+      "password":"Password",
+      "confirmPassword":"Confirm Password",
+      "CTAButton": "Own it.",
+      "terms":{
+        "part1":"By signing up you agree to Avail’s",
+        "part2":" Terms of Service",
+        "part3":" and",
+        "part4":" Privacy Policy."
+      },
+      "access": "Can't access your account?",
+      "recover": "Recover",
+      "messages": {
+        "errors":{
+            "password1": "Passwords do not match.",
+            "password2": "Password must be at least 12 characters long.",
+            "username": "Username is already taken.",
+            "signup": "Failed to create account, please try again."
+            },
+        "success": "Wallet created successfully!"
+        }
+      },
+
+   "seedphrase":{
+       "title": "Your secret recovery phrase",
+       "subtitle": "Write down these 12 words in the correct order and keep them safe. If you lose access to your wallet, you will need these words to recover your funds and data.",
+       "continue": "Continue",
+       "copied": "Secret phrase copied successfully!",
+       "warning": {"label":"Warning","message":"Do not share this phrase — with anyone."}
+   },
+
+   "verify":{
+        "title": "Verify your secret recovery phrase",
+        "verify": "Verify",
+        "success": "Seed phrase verified successfully!",
+        "error": "Seed phrase verification failed, please try again."
+     },
+
+    "backup":{
+        "title":{
+             "part1":"Do you want us to backup your",
+             "part2":" data pointers "
+            },
+        "subtitle": {
+            "part1":"Data Pointer ",
+            "part2":"- Helps find your records and transactions on the blockchain faster than scanning."
+        },
+        "description": "If you choose to backup, the pointers will be encrypted with your viewing key and stored on our database system.  When you recover your Avail wallet like this you instantly get access to all your records and past transaction history.",
+        "backup": "Backup",
+        "nobackup": "No Backup",
+        "messages": {
+            "enabled": "Backup enabled successfully!",
+            "disabled": "Backup disabled successfully!",
+            "error": "Backup status update failed, please try again."
+        }
+    },
+
+    "login":{
+        "tagline":{
+            "part1":"Welcome ",
+            "part2":"back."
+        },
+        "password":"Password",
+        "CTAButton": "Login",
+        "access": "Can't access your account?",
+        "recover": "Recover",
+        "messages": {
+            "success": "Successfully logged in!",
+            "error": "Failed to authenticate, please try again."
+        }
+    },
+
+    "recover":{
+        "title":"Input your secret recovery phrase to recover your wallet.",
+        "recover":"Recover"
+    },
+
+    "home":{
+        "balance":"Total Balance",
+        "send":"Send",
+        "receive":"Receive",
+        "tokens": {
+            "title":"Tokens",
+            "empty": {
+                "part1": "No Tokens",
+                "part2": "Tokens will appear here once you receive them."
+            }
+        },
+        "activity": {
+            "title":"Activity",
+            "empty": {
+                "part1": "No Activity",
+                "part2": "Transactions will appear here once you execute, send or receive them."
+            }
+        },
+        "scan":{
+            "progress":"Scan in Progress ",
+            "complete":" complete"
+        },
+        "messages":{
+            "errors": {
+                "balance":"Error getting balance.",
+                "blocks-scan": "Failed to scan blocks, please try again.",
+                "network": "Failed to connect to the network, please check your internet connection."
+            },
+            "success":{
+                "scan":"Scan complete!"
+            }
+        }
+    },
+
+    "send":{
+        "messages":{
+            "error":{
+                "positive-amount":"Please enter a positive amount",
+                "insufficient-private-amount":"Insufficient private balance",
+                "insufficient-public-amount":"Insufficient public balance",
+                "fields": "Please fill in all fields",
+                "zero-amount": "Please enter an amount greater than 0"
+            }
+        },
+        "success": "Transaction sent successfully!",
+            "info": "Transfer in progress...",
+            "private-balance": "Private Balance",
+            "public-balance": "Public Balance",
+            "fee": "Fee",
+            "send": "Send",
+            "privacy-toggles":{
+                "from-private":"Transfer from Privately",
+                "from-public":"Transfer from Publicly",
+                "to-private":"Transfer to Privately",
+                "to-public":"Transfer to Publicly",
+                "private-fee":"Private Fee",
+                "public-fee":"Public Fee"
+            }
+    },
+
+    "settings":{
+        "title": "Settings",
+        "subtitle": "Manage your wallet.",
+        "keys":{
+            "title": "Keys",
+            "private-key" : "Private Key",
+            "viewing-key" : "Viewing Key",
+            "secret-phrase" : "Secret Phrase"
+        },
+        "General": "General",
+        "security": {
+            "title": "Security and Privacy",
+            "description": " At Avail we value our users' privacy and that's why we've taken the measures of security we have when it comes to secure data storage through encryption and seeing that we utilise the best practices in building out our systems to prioritise your privacy and security.",
+            "terms": "Terms and Conditions",
+            "privacy": "Privacy Policy"
+        },
+        "about":{
+            "title": "About Avail",
+            "description": " At Avail our mission is to give anyone frictionless control of their money, data and agreements whilst preserving their privacy."
+        },
+        "advanced":{
+            "title": "Advanced Settings",
+            "block-height": "Last Synced Block Height:",
+            "scan-progress": "Scan in Progress",
+            "full-resync": "Full ReSync",
+            "enable-backup": "Enable Backup",
+            "disable-backup": "Disable Backup"
+        },
+        "delete":{
+            "title": "Remove Account",
+            "STButton": "Delete Account"
+        }
+    },
+
+    "activity":{
+        "time-labels":{
+            "today": "Today",
+            "this-week": "This Week",
+            "this-month": "This Month"
+        },
+        "no-acitvities": " No Acitivity yet, get out there and explore!",
+        "loading": "Loading...",
+        "load-more": "Load More",
+        "messages": {
+            "error": "Failed to load activities, please try again."
+        }
+    },
+
+    "browser":{
+        "title": "Explore Web3 with Privacy",
+        "subtitle":"Connect to a dApp to start exploring the decentralized web.",
+        "connect":"Connect",
+        "connected": "Connected",
+        "enter": "Enter",
+        "message":{
+            "success":{
+                "disconnect":"Disconnect"
+            }
+        }
+    },
+
+    "dialogs":{
+        "options":{
+            "cancel":"Cancel",
+            "confirm":"Confirm"
+        },
+        "delete":{
+            "title":"Are you sure you want to delete your account ?",
+            "description":"Your key will always exist and be yours, but your account, local key and data will be deleted with this action. To recover your account you must then utilise your secret recovery phrase or private key."
+        },
+        "disable-backup":{
+            "title":"Are you sure you want to disable backup ?",
+            "description":"This will delete your backed up encrypted data and not backup any more of your encrypted data pointers. This means if or when you need to recover your acccount you will not have access to your Aleo data records until the whole blockchain is scanned."
+        },
+        "reauth":{
+            "title":"Authenticate Account",
+            "description":"This is done to secure your account. Please enter your password to continue."
+        },
+        "receive":{
+            "title":"Receive Funds or Data",
+            "subtitle":"If the counterparty has an Avail account then you can use your username to receive. Otherwise, you can use your address.",
+            "username":"Username:",
+            "address":"Address:",
+            "qr-description":"Scan the QR code for the address.",
+            "okay":"Okay"
+        },
+        "transfer":{
+            "title":"Confirm this transaction",
+            "subtitle": "By confirming the transaction, you will be sending X asset to Y"
+        }
+    },
+
+    "dapps":{
+
+    }
+
+}

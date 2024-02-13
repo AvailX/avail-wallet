@@ -1,0 +1,229 @@
+{
+    "signup": {
+      "tagline": {
+        "part1": "Cüzdanını ",
+        "part2": " oluştur"
+      },
+      "username": "Kullanıcı Adı (İsteğe Bağlı)",
+      "password": "Şifre",
+      "confirmPassword": "Şifreyi Onayla",
+      "CTAButton": "Sahip Ol.",
+      "terms": {
+        "part1": "Kaydolarak Avail’in",
+        "part2": " Hizmet Şartları",
+        "part3": " ve",
+        "part4": " Gizlilik Politikası'nı kabul etmiş olursunuz"
+      },
+      "access": "Hesabınıza erişemiyor musunuz?",
+      "recover": "Kurtar",
+      "messages":{
+        "errors": {
+          "password1": "Şifreler eşleşmiyor.",
+          "password2": "Şifre en az 12 karakter uzunluğunda olmalıdır.",
+          "username": "Kullanıcı adı zaten alınmış.",
+          "signup": "Hesap oluşturma başarısız oldu, lütfen tekrar deneyin."
+        },
+        "success": "Cüzdan başarıyla oluşturuldu!"
+      }
+      
+    },
+    "seedphrase": {
+      "title": "Gizli kurtarma cümleniz",
+      "subtitle": "Bu 12 kelimeyi doğru sırayla yazın ve güvende tutun. Cüzdanınıza erişimi kaybederseniz, fonlarınızı ve verilerinizi kurtarmak için bu kelimelere ihtiyacınız olacak.",
+      "continue": "Devam Et",
+      "copied": "Gizli ifade başarıyla kopyalandı!",
+      "warning": {
+        "label": "Uyarı",
+        "message": "Bu ifadeyi — kimseyle paylaşmayın."
+      }
+    },
+    "verify": {
+      "title": "Gizli kurtarma cümlenizi doğrulayın",
+      "verify": "Doğrula",
+      "success": "Tohum ifadesi başarıyla doğrulandı!",
+      "error": "Tohum ifadesi doğrulaması başarısız oldu, lütfen tekrar deneyin."
+    },
+    "backup": {
+      "title": {
+        "part1": "Veri işaretçilerinizi yedeklememizi ister misiniz?",
+        "part2": " veri işaretçileri?"
+      },
+      "subtitle": {
+        "part1": "Veri İşaretçisi",
+        "part2": " - Kayıtlarınızı ve blockchain üzerindeki işlemlerinizi taramadan daha hızlı bulmanıza yardımcı olur."
+      },
+      "description": "Yedeklemeyi seçerseniz, işaretçiler görüntüleme anahtarınızla şifrelenir ve veritabanı sistemimizde saklanır. Avail cüzdanınızı bu şekilde kurtardığınızda, tüm kayıtlarınıza ve geçmiş işlem geçmişinize anında erişirsiniz.",
+      "backup": "Yedekle",
+      "nobackup": "Yedekleme",
+      "messages": {
+        "enabled": "Yedekleme başarıyla etkinleştirildi!",
+        "disabled": "Yedekleme başarıyla devre dışı bırakıldı!",
+        "error": "Yedekleme durumu güncellemesi başarısız oldu, lütfen tekrar deneyin."
+      }
+    },
+    "login": {
+      "tagline": {
+        "part1": "Tekrar ",
+        "part2": " hoş geldiniz"
+      },
+      "password": "Şifre",
+      "CTAButton": "Giriş Yap",
+      "access": "Hesabınıza erişemiyor musunuz?",
+      "recover": "Kurtar",
+      "messages": {
+        "success": "Başarıyla giriş yapıldı!",
+        "error": "Kimlik doğrulama başarısız oldu, lütfen tekrar deneyin."
+      }
+    },
+    "recover": {
+      "title": "Cüzdanınızı kurtarmak için gizli kurtarma cümlenizi girin.",
+      "recover": "Kurtar"
+    },
+    "home": {
+      "balance": "Toplam Bakiye",
+      "send": "Gönder",
+      "receive": "Al",
+      "tokens": {
+        "title": "Tokenlar",
+        "empty": {
+          "part1": "Token Yok",
+          "part2": " Tokenlar, onları aldığınızda burada görünecek."
+        }
+      },
+      "activity": {
+        "title": "Aktivite",
+        "empty": {
+          "part1": "Aktivite Yok",
+          "part2": " İşlemler, gerçekleştirdiğinizde, gönderdiğinizde veya aldığınızda burada görünecek."
+        }
+      },
+      "scan": {
+        "progress": "Tarama Devam Ediyor",
+        "complete": " tamamlandı"
+      },
+      "messages": {
+        "errors": {
+          "balance": "Bakiye alınırken hata oluştu.",
+          "blocks-scan": "Blok taraması başarısız oldu, lütfen tekrar deneyin.",
+          "network": "Ağa bağlanılamadı, lütfen internet bağlantınızı kontrol edin."
+        },
+        "success": {
+          "scan": "Tarama tamamlandı!"
+        }
+      }
+    },
+    "send": {
+      "messages": {
+        "error": {
+          "positive-amount": "Lütfen pozitif bir miktar girin",
+          "insufficient-private-amount": "Yetersiz özel bakiye",
+          "insufficient-public-amount": "Yetersiz kamu bakiyesi",
+          "fields": "Lütfen tüm alanları doldurun",
+          "zero-amount": "Lütfen 0'dan büyük bir miktar girin"
+        }
+      },
+      "success": "İşlem başarıyla gönderildi!",
+        "info": "Transfer devam ediyor...",
+        "private-balance": "Özel Bakiye",
+        "public-balance": "Kamu Bakiyesi",
+        "fee": "Ücret",
+        "send": "Gönder",
+        "privacy-toggles": {
+          "from-private": "Özelden Transfer",
+          "from-public": "Kamudan Transfer",
+          "to-private": "Özele Transfer",
+          "to-public": "Kamuya Transfer",
+          "private-fee": "Özel Ücret",
+          "public-fee": "Kamu Ücreti"
+        }
+    },
+    "settings": {
+      "title": "Ayarlar",
+      "subtitle": "Cüzdanınızı yönetin.",
+      "keys": {
+        "title": "Anahtarlar",
+        "private-key": "Özel Anahtar",
+        "viewing-key": "Görüntüleme Anahtarı",
+        "secret-phrase": "Gizli İfade"
+      },
+      "General": "Genel",
+      "security": {
+        "title": "Güvenlik ve Gizlilik",
+        "description": "Avail'de kullanıcıların gizliliğini önemsiyoruz ve bu yüzden veri depolamayı şifreleme yoluyla güvence altına alıyor ve sistemlerimizi oluştururken gizliliğinizi ve güvenliğinizi önceliklendirmek için en iyi uygulamaları kullanıyoruz.",
+        "terms": "Şartlar ve Koşullar",
+        "privacy": "Gizlilik Politikası"
+      },
+      "about": {
+        "title": "Avail Hakkında",
+        "description": "Avail'de misyonumuz, herkesin parasını, verilerini ve anlaşmalarını gizliliklerini koruyarak sorunsuz bir şekilde kontrol etmesini sağlamaktır."
+      },
+      "advanced": {
+        "title": "Gelişmiş Ayarlar",
+        "block-height": "Son Senkronize Blok Yüksekliği:",
+        "scan-progress": "Tarama Devam Ediyor",
+        "full-resync": "Tam ReSenkronizasyon",
+        "enable-backup": "Yedeklemeyi Etkinleştir",
+        "disable-backup": "Yedeklemeyi Devre Dışı Bırak"
+      },
+      "delete": {
+        "title": "Hesabı Kaldır",
+        "STButton": "Hesabı Sil"
+      }
+    },
+    "activity": {
+      "time-labels": {
+        "today": "Bugün",
+        "this-week": "Bu Hafta",
+        "this-month": "Bu Ay"
+      },
+      "no-activities": " Henüz bir aktivite yok, dışarı çıkıp keşfedin!",
+      "loading": "Yükleniyor...",
+      "load-more": "Daha Fazla Yükle",
+      "messages": {
+        "error": "Aktiviteler yüklenirken hata oluştu, lütfen tekrar deneyin."
+      }
+    },
+    "browser": {
+      "title": "Gizlilikle Web3'ü Keşfedin",
+      "subtitle": "Merkezi olmayan webi keşfetmeye başlamak için bir dApp'a bağlanın.",
+      "connect": "Bağlan",
+      "connected": "Bağlandı",
+      "enter": "Gir",
+      "message": {
+        "success": {
+          "disconnect": "Bağlantıyı Kes"
+        }
+      }
+    },
+    "dialogs": {
+      "options": {
+        "cancel": "İptal",
+        "confirm": "Onayla"
+      },
+      "delete": {
+        "title": "Hesabınızı silmek istediğinizden emin misiniz?",
+        "description": "Anahtarınız her zaman var olacak ve sizin olacak, ancak bu işlemle hesabınız, yerel anahtarınız ve verileriniz silinecek. Hesabınızı kurtarmak için gizli kurtarma ifadenizi veya özel anahtarınızı kullanmanız gerekecek."
+      },
+      "disable-backup": {
+        "title": "Yedeklemeyi devre dışı bırakmak istediğinizden emin misiniz?",
+        "description": "Bu, şifrelenmiş veri yedeklerinizi silecek ve şifrelenmiş veri işaretçilerinizin daha fazla yedeğini almayacak. Bu, hesabınızı kurtarmanız gerektiğinde veya ne zaman Aleo veri kayıtlarınıza erişiminiz olmayacak anlamına gelir, tüm blok zinciri taranana kadar."
+      },
+      "reauth": {
+        "title": "Hesap Doğrulama",
+        "description": "Bu, hesabınızı güvende tutmak için yapılır. Devam etmek için lütfen şifrenizi girin."
+      },
+      "receive": {
+        "title": "Fon veya Veri Al",
+        "subtitle": "Karşı tarafın bir Avail hesabı varsa, almak için kullanıcı adınızı kullanabilirsiniz. Aksi takdirde, adresinizi kullanabilirsiniz.",
+        "username": "Kullanıcı Adı:",
+        "address": "Adres:",
+        "qr-description": "Adres için QR kodunu tarayın.",
+        "okay": "Tamam"
+      },
+      "transfer": {
+        "title": "Bu işlemi onaylayın",
+        "subtitle": "Bu işlemi onaylayarak, X varlığını Y'ye göndereceksiniz"
+      }
+    }
+  }
+  

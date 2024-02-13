@@ -1,0 +1,52 @@
+
+@font-face {
+    font-family: 'DM Sans';
+    src: local('DM Sans'), local('DMSans-Regular'),
+         url('./assets/fonts/DMsans/DMSans-Regular.ttf') format('truetype'); /* Adjust the path to where your font files are located */
+      
+     font-weight: 400; 
+     font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'DM Sans';
+    src: local('DM Sans Bold'), local('DMSans-Bold'),
+         url('./assets/fonts/DMsans/DMSans-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+  }
+
+    @font-face {
+        font-family: 'DM Sans';
+        src: local('DM Sans Italic'), local('DMSans-Italic'),
+             url('./assets/fonts/DMsans/DMSans-Italic.ttf') format('truetype');
+        font-weight: 400;
+        font-style: italic;
+    }
+
+    @font-face {
+        font-family: 'DM Sans';
+        src: local('DM Sans Medium'), local('DMSans-Medium'),
+             url('./assets/fonts/DMsans/DMSans-Medium.ttf') format('truetype');
+        font-weight: 500;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'DM Sans';
+        src: local('DM Sans Light'), local('DMSans-Light'),
+             url('./assets/fonts/DMsans/DMSans-Light.ttf') format('truetype');
+        font-weight: 300;
+        font-style: normal;
+    }
+    
+    @font-face {
+        font-family: 'DM Sans';
+        src: local('DM Sans Thin'), local('DMSans-Thin'),
+             url('./assets/fonts/DMsans/DMSans-Thin.ttf') format('truetype');
+        font-weight: 100;
+        font-style: normal;
+    }
+  
+  /* Include other font weights and styles if available */
+  

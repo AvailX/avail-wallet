@@ -1,0 +1,219 @@
+{
+    "signup": {
+      "tagline": {
+        "part1": "Crea il tuo ",
+        "part2": "portafoglio"
+      },
+      "username": "Nome utente (Opzionale)",
+      "password": "Password",
+      "confirmPassword": "Conferma Password",
+      "CTAButton": "Prendilo.",
+      "terms": {
+        "part1": "Iscrivendoti accetti i",
+        "part2": "Termini di Servizio",
+        "part3": "e la",
+        "part4": "Politica sulla Privacy di Avail"
+      },
+      "access": "Non riesci ad accedere al tuo account?",
+      "recover": "Recupera"
+    },
+    "seedphrase": {
+      "title": "La tua frase segreta di recupero",
+      "subtitle": "Scrivi queste 12 parole nell'ordine corretto e tienile al sicuro. Se perdi l'accesso al tuo portafoglio, avrai bisogno di queste parole per recuperare i tuoi fondi e i dati.",
+      "continue": "Continua",
+      "copied": "Frase segreta copiata con successo!",
+      "warning": {
+        "label": "Attenzione",
+        "message": "Non condividere questa frase — con nessuno."
+      }
+    },
+    "verify": {
+      "title": "Verifica la tua frase segreta di recupero",
+      "verify": "Verifica",
+      "success": "Frase di recupero verificata con successo!",
+      "error": "Verifica della frase di recupero fallita, riprova."
+    },
+    "backup": {
+      "title": {
+        "part1": "Vuoi che facciamo il backup dei tuoi",
+        "part2": "puntatori dati?"
+      },
+      "subtitle": {
+        "part1": "Puntatore Dati",
+        "part2": "- Aiuta a trovare i tuoi record e transazioni sulla blockchain più velocemente della scansione."
+      },
+      "description": "Se scegli di fare il backup, i puntatori verranno criptati con la tua chiave di visualizzazione e memorizzati nel nostro sistema di database. Quando recuperi il tuo portafoglio Avail in questo modo, ottieni immediatamente accesso a tutti i tuoi record e alla cronologia delle transazioni passate.",
+      "backup": "Backup",
+      "nobackup": "Nessun Backup",
+      "messages": {
+        "enabled": "Backup abilitato con successo!",
+        "disabled": "Backup disabilitato con successo!",
+        "error": "Aggiornamento dello stato del backup fallito, riprova."
+      }
+    },
+    "login": {
+      "tagline": {
+        "part1": "",
+        "part2": "Bentornato"
+      },
+      "password": "Password",
+      "CTAButton": "Accedi",
+      "access": "Non riesci ad accedere al tuo account?",
+      "recover": "Recupera",
+      "messages": {
+        "success": "Accesso effettuato con successo!",
+        "error": "Autenticazione fallita, riprova."
+      }
+    },
+    "recover": {
+      "title": "Inserisci la tua frase segreta di recupero per recuperare il tuo portafoglio.",
+      "recover": "Recupera"
+    },
+    "home": {
+      "balance": "Saldo Totale",
+      "send": "Invia",
+      "receive": "Ricevi",
+      "tokens": {
+        "title": "Token",
+        "empty": {
+          "part1": "Nessun Token",
+          "part2": "I token appariranno qui una volta ricevuti."
+        }
+      },
+      "activity": {
+        "title": "Attività",
+        "empty": {
+          "part1": "Nessuna Attività",
+          "part2": "Le transazioni appariranno qui una volta eseguite, inviate o ricevute."
+        }
+      },
+      "scan": {
+        "progress": "Scansione in Corso",
+        "complete": " completata"
+      },
+      "messages": {
+        "errors": {
+          "balance": "Errore nel recupero del saldo.",
+          "blocks-scan": "Impossibile scansionare i blocchi, riprova.",
+          "network": "Connessione alla rete fallita, controlla la tua connessione internet."
+        },
+        "success": {
+          "scan": "Scansione completata!"
+        }
+      }
+    },
+    "send": {
+      "messages": {
+        "error": {
+          "positive-amount": "Inserisci un importo positivo",
+          "insufficient-private-amount": "Saldo privato insufficiente",
+          "insufficient-public-amount": "Saldo pubblico insufficiente",
+          "fields": "Compila tutti i campi",
+          "zero-amount": "Inserisci un importo maggiore di 0"
+        }
+      },
+      "success": "Transazione inviata con successo!",
+        "info": "Trasferimento in corso...",
+        "private-balance": "Saldo Privato",
+        "public-balance": "Saldo Pubblico",
+        "fee": "Commissione",
+        "send": "Invia",
+        "privacy-toggles": {
+          "from-private": "Trasferisci da Privato",
+          "from-public": "Trasferisci da Pubblico",
+          "to-private": "Trasferisci a Privato",
+          "to-public": "Trasferisci a Pubblico",
+          "private-fee": "Commissione Privata",
+          "public-fee": "Commissione Pubblica"
+        }
+    },
+    "settings": {
+      "title": "Impostazioni",
+      "subtitle": "Gestisci il tuo portafoglio.",
+      "keys": {
+        "title": "Chiavi",
+        "private-key": "Chiave Privata",
+        "viewing-key": "Chiave di Visualizzazione",
+        "secret-phrase": "Frase Segreta"
+      },
+      "General": "Generale",
+      "security": {
+        "title": "Sicurezza e Privacy",
+        "description": "Su Avail valorizziamo la privacy dei nostri utenti ed è per questo che abbiamo adottato le misure di sicurezza che abbiamo riguardo alla conservazione sicura dei dati attraverso la crittografia e assicurando che utilizziamo le migliori pratiche nella costruzione dei nostri sistemi per dare priorità alla tua privacy e sicurezza.",
+        "terms": "Termini e Condizioni",
+        "privacy": "Politica sulla Privacy"
+      },
+      "about": {
+        "title": "Riguardo Avail",
+        "description": "La nostra missione in Avail è di dare a chiunque un controllo senza frizioni sui propri soldi, dati e accordi mantenendo la loro privacy."
+      },
+      "advanced": {
+        "title": "Impostazioni Avanzate",
+        "block-height": "Ultima Altezza del Blocco Sincronizzata:",
+        "scan-progress": "Scansione in Corso",
+        "full-resync": "Risincronizzazione Completa",
+        "enable-backup": "Abilita Backup",
+        "disable-backup": "Disabilita Backup"
+      },
+      "delete": {
+        "title": "Rimuovi Account",
+        "STButton": "Cancella Account"
+      }
+    },
+    "activity": {
+      "time-labels": {
+        "today": "Oggi",
+        "this-week": "Questa Settimana",
+        "this-month": "Questo Mese"
+      },
+      "no-activities": " Nessuna Attività ancora, esplora!",
+      "loading": "Caricamento...",
+      "load-more": "Carica Altro",
+      "messages": {
+        "error": "Errore nel caricamento delle attività, riprova."
+      }
+    },
+    "browser": {
+      "title": "Esplora Web3 con Privacy",
+      "subtitle": "Connettiti a una dApp per iniziare a esplorare il web decentralizzato.",
+      "connect": "Connetti",
+      "connected": "Connesso",
+      "enter": "Entra",
+      "message": {
+        "success": {
+          "disconnect": "Disconnetti"
+        }
+      }
+    },
+    "dialogs": {
+      "options": {
+        "cancel": "Annulla",
+        "confirm": "Conferma"
+      },
+      "delete": {
+        "title": "Sei sicuro di voler cancellare il tuo account?",
+        "description": "La tua chiave esisterà sempre e sarà tua, ma il tuo account, la chiave locale e i dati verranno cancellati con questa azione. Per recuperare il tuo account dovrai utilizzare la tua frase segreta di recupero o la chiave privata."
+      },
+      "disable-backup": {
+        "title": "Sei sicuro di voler disabilitare il backup?",
+        "description": "Questo eliminerà il tuo backup di dati crittografati e non effettuerà più il backup dei tuoi puntatori di dati crittografati. Ciò significa che se o quando dovrai recuperare il tuo account, non avrai accesso ai tuoi record di dati Aleo fino a quando non verrà scansionata l'intera blockchain."
+      },
+      "reauth": {
+        "title": "Autentica Account",
+        "description": "Questo viene fatto per proteggere il tuo account. Inserisci la tua password per continuare."
+      },
+      "receive": {
+        "title": "Ricevi Fondi o Dati",
+        "subtitle": "Se la controparte ha un account Avail, puoi usare il tuo nome utente per ricevere. Altrimenti, puoi usare il tuo indirizzo.",
+        "username": "Nome Utente:",
+        "address": "Indirizzo:",
+        "qr-description": "Scansiona il codice QR per l'indirizzo.",
+        "okay": "Ok"
+      },
+      "transfer": {
+        "title": "Conferma questa transazione",
+        "subtitle": "Confermando la transazione, stai inviando X asset a Y"
+      }
+    }
+  }
+  

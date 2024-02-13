@@ -1,0 +1,229 @@
+{
+    "signup": {
+      "tagline": {
+        "part1": "Izveido savu ",
+        "part2": "maku"
+      },
+      "username": "Lietotājvārds (Neobligāts)",
+      "password": "Parole",
+      "confirmPassword": "Apstiprini paroli",
+      "CTAButton": "Pārvaldi to.",
+      "terms": {
+        "part1": "Reģistrējoties, jūs piekrītat Avail",
+        "part2": "Pakalpojumu noteikumiem",
+        "part3": "un",
+        "part4": "Privātuma politikai"
+      },
+      "access": "Nevari piekļūt savam kontam?",
+      "recover": "Atgūt",
+      "messages":{
+        "errors": {
+          "password1": "Paroles nesakrīt.",
+          "password2": "Parolei jābūt vismaz 12 rakstzīmes garai.",
+          "username": "Lietotājvārds jau ir aizņemts.",
+          "signup": "Neizdevās izveidot kontu, lūdzu, mēģiniet vēlreiz."
+        },
+        "success": "Maks sekmīgi izveidots!"
+      }
+      
+    },
+    "seedphrase": {
+      "title": "Tava slepenā atkopšanas frāze",
+      "subtitle": "Uzraksti šīs 12 vārdus pareizā secībā un uzglabā tos drošībā. Ja tu zaudēsi piekļuvi savam makam, tev būs nepieciešami šie vārdi, lai atgūtu savus līdzekļus un datus.",
+      "continue": "Turpināt",
+      "copied": "Slepenā frāze veiksmīgi nokopēta!",
+      "warning": {
+        "label": "Brīdinājums",
+        "message": "Nekad nekopīgojiet šo frāzi —ar nevienu."
+      }
+    },
+    "verify": {
+      "title": "Pārbaudi savu slepeno atkopšanas frāzi",
+      "verify": "Pārbaudīt",
+      "success": "Sēklas frāze veiksmīgi pārbaudīta!",
+      "error": "Sēklas frāzes pārbaude neizdevās, lūdzu, mēģiniet vēlreiz."
+    },
+    "backup": {
+      "title": {
+        "part1": "Vai vēlaties, lai mēs veiktu jūsu",
+        "part2": "datu norāžu dublējumu?"
+      },
+      "subtitle": {
+        "part1": "Datu norāde",
+        "part2": "- Palīdz atrast jūsu ierakstus un darījumus blokķēdē ātrāk nekā skenējot."
+      },
+      "description": "Ja izvēlēsieties dublēšanu, norādes tiks šifrētas ar jūsu skatīšanas atslēgu un glabātas mūsu datu bāzes sistēmā. Atjaunojot savu Avail maku šādā veidā, jūs nekavējoties iegūsit piekļuvi visiem saviem ierakstiem un iepriekšējai darījumu vēsturei.",
+      "backup": "Dublēt",
+      "nobackup": "Nedublēt",
+      "messages": {
+        "enabled": "Dublēšana veiksmīgi iespējota!",
+        "disabled": "Dublēšana veiksmīgi atspējota!",
+        "error": "Dublēšanas statusa atjaunināšana neizdevās, lūdzu, mēģiniet vēlreiz."
+      }
+    },
+    "login": {
+      "tagline": {
+        "part1": "Laipni lūdzam ",
+        "part2": "atpakaļ"
+      },
+      "password": "Parole",
+      "CTAButton": "Pieslēgties",
+      "access": "Nevari piekļūt savam kontam?",
+      "recover": "Atgūt",
+      "messages": {
+        "success": "Veiksmīgi ielogojāties!",
+        "error": "Autentifikācija neizdevās, lūdzu, mēģiniet vēlreiz."
+      }
+    },
+    "recover": {
+      "title": "Ievadi savu slepeno atkopšanas frāzi, lai atgūtu savu maku.",
+      "recover": "Atgūt"
+    },
+    "home": {
+      "balance": "Kopējais Atlikums",
+      "send": "Sūtīt",
+      "receive": "Saņemt",
+      "tokens": {
+        "title": "Tokeni",
+        "empty": {
+          "part1": "Nav Tokenu",
+          "part2": "Tokeni parādīsies šeit, kad tos saņemsiet."
+        }
+      },
+      "activity": {
+        "title": "Aktivitāte",
+        "empty": {
+          "part1": "Nav Aktivitātes",
+          "part2": "Darījumi parādīsies šeit, kad veiksiet, sūtīsiet vai saņemsiet tos."
+        }
+      },
+      "scan": {
+        "progress": "Skenēšana Notiek",
+        "complete": " pabeigta"
+      },
+      "messages": {
+        "errors": {
+          "balance": "Kļūda, iegūstot atlikumu.",
+          "blocks-scan": "Neizdevās skenēt blokus, lūdzu, mēģiniet vēlreiz.",
+          "network": "Neizdevās pieslēgties tīklam, lūdzu, pārbaudiet savu interneta savienojumu."
+        },
+        "success": {
+          "scan": "Skenēšana pabeigta!"
+        }
+      }
+    },
+    "send": {
+      "messages": {
+        "error": {
+          "positive-amount": "Lūdzu, ievadiet pozitīvu summu",
+          "insufficient-private-amount": "Nepietiekams privātais atlikums",
+          "insufficient-public-amount": "Nepietiekams publiskais atlikums",
+          "fields": "Lūdzu, aizpildiet visus laukus",
+          "zero-amount": "Lūdzu, ievadiet summu, kas ir lielāka par 0"
+        }
+      },
+      "success": "Transakcija veiksmīgi nosūtīta!",
+        "info": "Pārskaitījums notiek...",
+        "private-balance": "Privātais Atlikums",
+        "public-balance": "Publiskais Atlikums",
+        "fee": "Maksa",
+        "send": "Sūtīt",
+        "privacy-toggles": {
+          "from-private": "Pārskaitīt no Privātā",
+          "from-public": "Pārskaitīt no Publiskā",
+          "to-private": "Pārskaitīt uz Privāto",
+          "to-public": "Pārskaitīt uz Publisko",
+          "private-fee": "Privātā Maksa",
+          "public-fee": "Publiskā Maksa"
+        }
+    },
+    "settings": {
+      "title": "Iestatījumi",
+      "subtitle": "Pārvaldiet savu maku.",
+      "keys": {
+        "title": "Atslēgas",
+        "private-key": "Privātā Atslēga",
+        "viewing-key": "Skatīšanas Atslēga",
+        "secret-phrase": "Slepenā Frāze"
+      },
+      "General": "Vispārīgi",
+      "security": {
+        "title": "Drošība un Privātums",
+        "description": "Avail vērtē mūsu lietotāju privātumu, tāpēc mēs esam ieviesuši drošības pasākumus, kas attiecas uz datu drošu glabāšanu, izmantojot šifrēšanu, un nodrošinām, ka mūsu sistēmu izveidē izmantojam labākās prakses, lai prioritizētu jūsu privātumu un drošību.",
+        "terms": "Noteikumi un Nosacījumi",
+        "privacy": "Privātuma Politika"
+      },
+      "about": {
+        "title": "Par Avail",
+        "description": "Mūsu misija Avail ir sniegt ikvienam bezšuvju kontroli pār viņu naudu, datiem un vienošanām, vienlaikus saglabājot viņu privātumu."
+      },
+      "advanced": {
+        "title": "Papildu Iestatījumi",
+        "block-height": "Pēdējais Sinhronizētais Bloka Augstums:",
+        "scan-progress": "Skenēšana Notiek",
+        "full-resync": "Pilnīga Atkārtota Sinhronizācija",
+        "enable-backup": "Iespējot Dublēšanu",
+        "disable-backup": "Atspējot Dublēšanu"
+      },
+      "delete": {
+        "title": "Dzēst Kontu",
+        "STButton": "Dzēst Kontu"
+      }
+    },
+    "activity": {
+      "time-labels": {
+        "today": "Šodien",
+        "this-week": "Šonedēļ",
+        "this-month": "Šomēnes"
+      },
+      "no-activities": " Vēl nav aktivitāšu, izpētiet!",
+      "loading": "Ielādē...",
+      "load-more": "Ielādēt vairāk",
+      "messages": {
+        "error": "Aktivitāšu ielādēšanas kļūda, lūdzu, mēģiniet vēlreiz."
+      }
+    },
+    "browser": {
+      "title": "Izpētiet Web3 ar Privātumu",
+      "subtitle": "Savienojieties ar dApp, lai sāktu izpētīt decentralizēto tīmekli.",
+      "connect": "Savienot",
+      "connected": "Savienots",
+      "enter": "Ievadīt",
+      "message": {
+        "success": {
+          "disconnect": "Atvienot"
+        }
+      }
+    },
+    "dialogs": {
+      "options": {
+        "cancel": "Atcelt",
+        "confirm": "Apstiprināt"
+      },
+      "delete": {
+        "title": "Vai esat pārliecināts, ka vēlaties dzēst savu kontu?",
+        "description": "Jūsu atslēga vienmēr pastāvēs un būs jūsu īpašumā, bet šī darbība izdzēsīs jūsu kontu, lokālo atslēgu un datus. Lai atjaunotu savu kontu, jums būs jāizmanto jūsu slepenā atgūšanas frāze vai privātā atslēga."
+      },
+      "disable-backup": {
+        "title": "Vai esat pārliecināts, ka vēlaties atspējot dublēšanu?",
+        "description": "Tas izdzēsīs jūsu šifrēto datu dublējumus un vairs nedublēs jūsu šifrētos datu norādījumus. Tas nozīmē, ka, ja vai kad jums būs nepieciešams atjaunot savu kontu, jums nebūs piekļuves jūsu Aleo datu ierakstiem, līdz tiks skenēta visa blokķēde."
+      },
+      "reauth": {
+        "title": "Konta Autentifikācija",
+        "description": "Tas tiek darīts, lai aizsargātu jūsu kontu. Lūdzu, ievadiet savu paroli, lai turpinātu."
+      },
+      "receive": {
+        "title": "Saņemt Līdzekļus vai Datus",
+        "subtitle": "Ja pretējā pusei ir Avail konts, varat izmantot savu lietotājvārdu, lai saņemtu. Pretējā gadījumā varat izmantot savu adresi.",
+        "username": "Lietotājvārds:",
+        "address": "Adrese:",
+        "qr-description": "Skenējiet QR kodu adreses iegūšanai.",
+        "okay": "Labi"
+      },
+      "transfer": {
+        "title": "Apstiprināt šo darījumu",
+        "subtitle": "Apstiprinot darījumu, jūs nosūtīsit X aktīvu uz Y"
+      }
+    }
+  }
+  

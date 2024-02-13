@@ -1,0 +1,228 @@
+{
+    "signup": {
+      "tagline": {
+        "part1": "Crea tu ",
+        "part2": "cartera"
+      },
+      "username": "Nombre de usuario (Opcional)",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar Contraseña",
+      "CTAButton": "Hazlo tuyo.",
+      "terms": {
+        "part1": "Al registrarte, aceptas los",
+        "part2": "Términos de Servicio",
+        "part3": "y",
+        "part4": "Política de Privacidad"
+      },
+      "access": "¿No puedes acceder a tu cuenta?",
+      "recover": "Recuperar",
+      "messages": {
+        "errors": {
+          "password1": "Las contraseñas no coinciden.",
+          "password2": "La contraseña debe tener al menos 12 caracteres.",
+          "username": "El nombre de usuario ya está en uso.",
+          "signup": "Error al crear la cuenta, por favor intenta de nuevo."
+        },
+        "success": "¡Cartera creada con éxito!"
+      }  
+    },
+    "seedphrase": {
+      "title": "Tu frase de recuperación secreta",
+      "subtitle": "Escribe estas 12 palabras en el orden correcto y guárdalas en un lugar seguro. Si pierdes acceso a tu cartera, necesitarás estas palabras para recuperar tus fondos y datos.",
+      "continue": "Continuar",
+      "copied": "Frase secreta copiada con éxito!",
+      "warning": {
+        "label": "Advertencia",
+        "message": "No compartas esta frase — con nadie."
+      }
+    },
+    "verify": {
+      "title": "Verifica tu frase de recuperación secreta",
+      "verify": "Verificar",
+      "success": "¡Frase de semilla verificada con éxito!",
+      "error": "La verificación de la frase de semilla falló, por favor intenta de nuevo."
+    },
+    "backup": {
+      "title": {
+        "part1": "¿Quieres que hagamos una copia de seguridad de tus",
+        "part2": "punteros de datos?"
+      },
+      "subtitle": {
+        "part1": "Puntero de Datos",
+        "part2": "- Ayuda a encontrar tus registros y transacciones en la blockchain más rápido que escaneando."
+      },
+      "description": "Si eliges hacer una copia de seguridad, los punteros serán encriptados con tu clave de visualización y almacenados en nuestro sistema de base de datos. Cuando recuperes tu cartera Avail de esta manera, obtendrás acceso instantáneo a todos tus registros e historial de transacciones pasadas.",
+      "backup": "Hacer Copia de Seguridad",
+      "nobackup": "No Hacer Copia de Seguridad",
+      "messages": {
+        "enabled": "¡Respaldo habilitado con éxito!",
+        "disabled": "¡Respaldo deshabilitado con éxito!",
+        "error": "La actualización del estado de respaldo falló, por favor intenta de nuevo."
+      }
+    },
+    "login": {
+      "tagline": {
+        "part1": "Bienvenido ",
+        "part2": "de nuevo"
+      },
+      "password": "Contraseña",
+      "CTAButton": "Iniciar Sesión",
+      "access": "¿No puedes acceder a tu cuenta?",
+      "recover": "Recuperar",
+      "messages": {
+        "success": "¡Inicio de sesión exitoso!",
+        "error": "Fallo en la autenticación, por favor intenta de nuevo."
+      }
+    },
+    "recover": {
+      "title": "Introduce tu frase de recuperación secreta para recuperar tu cartera.",
+      "recover": "Recuperar"
+    },
+    "home": {
+      "balance": "Saldo Total",
+      "send": "Enviar",
+      "receive": "Recibir",
+      "tokens": {
+        "title": "Tokens",
+        "empty": {
+          "part1": "No hay Tokens",
+          "part2": "Los tokens aparecerán aquí una vez que los recibas."
+        }
+      },
+      "activity": {
+        "title": "Actividad",
+        "empty": {
+          "part1": "Sin Actividad",
+          "part2": "Las transacciones aparecerán aquí una vez que ejecutes, envíes o recibas."
+        }
+      },
+      "scan": {
+        "progress": "Escaneo en Progreso",
+        "complete": " completo"
+      },
+      "messages": {
+        "errors": {
+          "balance": "Error al obtener el saldo.",
+          "blocks-scan": "Fallo al escanear bloques, por favor intenta de nuevo.",
+          "network": "Fallo al conectar a la red, por favor verifica tu conexión a internet."
+        },
+        "success": {
+          "scan": "¡Escaneo completo!"
+        }
+      }
+    },
+    "send": {
+      "messages": {
+        "error": {
+          "positive-amount": "Por favor ingresa una cantidad positiva",
+          "insufficient-private-amount": "Saldo privado insuficiente",
+          "insufficient-public-amount": "Saldo público insuficiente",
+          "fields": "Por favor completa todos los campos",
+          "zero-amount": "Por favor ingresa una cantidad mayor a 0"
+        }
+      },
+      "success": "¡Transacción enviada con éxito!",
+        "info": "Transferencia en progreso...",
+        "private-balance": "Saldo Privado",
+        "public-balance": "Saldo Público",
+        "fee": "Tarifa",
+        "send": "Enviar",
+        "privacy-toggles": {
+          "from-private": "Transferir desde Privado",
+          "from-public": "Transferir desde Público",
+          "to-private": "Transferir a Privado",
+          "to-public": "Transferir a Público",
+          "private-fee": "Tarifa Privada",
+          "public-fee": "Tarifa Pública"
+        }
+    },
+    "settings": {
+      "title": "Ajustes",
+      "subtitle": "Gestiona tu cartera.",
+      "keys": {
+        "title": "Claves",
+        "private-key": "Clave Privada",
+        "viewing-key": "Clave de Visualización",
+        "secret-phrase": "Frase Secreta"
+      },
+      "General": "General",
+      "security": {
+        "title": "Seguridad y Privacidad",
+        "description": "En Avail valoramos la privacidad de nuestros usuarios y es por eso que hemos tomado las medidas de seguridad que tenemos cuando se trata de almacenamiento seguro de datos a través de la encriptación y viendo que utilizamos las mejores prácticas en la construcción de nuestros sistemas para priorizar tu privacidad y seguridad.",
+        "terms": "Términos y Condiciones",
+        "privacy": "Política de Privacidad"
+      },
+      "about": {
+        "title": "Acerca de Avail",
+        "description": "En Avail, nuestra misión es dar a cualquier persona control sin fricciones de su dinero, datos y acuerdos mientras preservamos su privacidad."
+      },
+      "advanced": {
+        "title": "Ajustes Avanzados",
+        "block-height": "Altura de Bloque Sincronizada por Última Vez:",
+        "scan-progress": "Escaneo en Progreso",
+        "full-resync": "ReSincronización Completa",
+        "enable-backup": "Habilitar Respaldo",
+        "disable-backup": "Deshabilitar Respaldo"
+      },
+      "delete": {
+        "title": "Eliminar Cuenta",
+        "STButton": "Eliminar Cuenta"
+      }
+    },
+    "activity": {
+      "time-labels": {
+        "today": "Hoy",
+        "this-week": "Esta Semana",
+        "this-month": "Este Mes"
+      },
+      "no-activities": " Sin Actividad aún, ¡sal y explora!",
+      "loading": "Cargando...",
+      "load-more": "Cargar Más",
+      "messages": {
+        "error": "Fallo al cargar actividades, por favor intenta de nuevo."
+      }
+    },
+    "browser": {
+      "title": "Explora Web3 con Privacidad",
+      "subtitle": "Conéctate a una dApp para comenzar a explorar la web descentralizada.",
+      "connect": "Conectar",
+      "connected": "Conectado",
+      "enter": "Entrar",
+      "message": {
+        "success": {
+          "disconnect": "Desconectar"
+        }
+      }
+    },
+    "dialogs": {
+      "options": {
+        "cancel": "Cancelar",
+        "confirm": "Confirmar"
+      },
+      "delete": {
+        "title": "¿Estás seguro de que quieres eliminar tu cuenta?",
+        "description": "Tu clave siempre existirá y será tuya, pero tu cuenta, clave local y datos serán eliminados con esta acción. Para recuperar tu cuenta deberás utilizar tu frase de recuperación secreta o clave privada."
+      },
+      "disable-backup": {
+        "title": "¿Estás seguro de que quieres deshabilitar el respaldo?",
+        "description": "Esto eliminará tu respaldo de datos encriptados y no respaldará más tus punteros de datos encriptados. Esto significa que si o cuando necesites recuperar tu cuenta no tendrás acceso a tus registros de datos de Aleo hasta que se escanee toda la cadena de bloques."
+      },
+      "reauth": {
+        "title": "Autenticar Cuenta",
+        "description": "Esto se hace para asegurar tu cuenta. Por favor, ingresa tu contraseña para continuar."
+      },
+      "receive": {
+        "title": "Recibir Fondos o Datos",
+        "subtitle": "Si la contraparte tiene una cuenta de Avail, entonces puedes usar tu nombre de usuario para recibir. De lo contrario, puedes usar tu dirección.",
+        "username": "Nombre de Usuario:",
+        "address": "Dirección:",
+        "qr-description": "Escanear el código QR para la dirección.",
+        "okay": "De acuerdo"
+      },
+      "transfer": {
+        "title": "Confirmar esta transacción",
+        "subtitle": "Al confirmar la transacción, estarás enviando X activo a Y"
+      }
+    }
+  }
+  

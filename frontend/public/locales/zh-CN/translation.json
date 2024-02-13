@@ -1,0 +1,229 @@
+{
+    "signup": {
+      "tagline": {
+        "part1": "创建您的",
+        "part2": " 钱包"
+      },
+      "username": "用户名（可选）",
+      "password": "密码",
+      "confirmPassword": "确认密码",
+      "CTAButton": "拥有它。",
+      "terms": {
+        "part1": "注册即表示您同意Avail的",
+        "part2": " 服务条款",
+        "part3": " 和",
+        "part4": " 隐私政策"
+      },
+      "access": "无法访问您的账户？",
+      "recover": "恢复",
+      "messages":{
+        "errors": {
+          "password1": "密码不匹配。",
+          "password2": "密码长度至少为12个字符。",
+          "username": "用户名已被占用。",
+          "signup": "创建账户失败，请再试一次。"
+        },
+        "success": "钱包成功创建！"
+      }
+      
+    },
+    "seedphrase": {
+      "title": "您的秘密恢复短语",
+      "subtitle": "按正确顺序记下这12个词并安全保存。如果您丢失了对钱包的访问权限，您将需要这些词来恢复您的资金和数据。",
+      "continue": "继续",
+      "copied": "秘密短语复制成功！",
+      "warning": {
+        "label": "警告",
+        "message": "不要与任何人分享这个短语 — 任何人。"
+      }
+    },
+    "verify": {
+      "title": "验证您的秘密恢复短语",
+      "verify": "验证",
+      "success": "种子短语验证成功！",
+      "error": "种子短语验证失败，请重试。"
+    },
+    "backup": {
+      "title": {
+        "part1": "您希望我们备份您的",
+        "part2": " 数据指针吗？"
+      },
+      "subtitle": {
+        "part1": "数据指针",
+        "part2": " - 帮助您比扫描更快地找到您在区块链上的记录和交易。"
+      },
+      "description": "如果您选择备份，这些指针将用您的查看密钥加密并存储在我们的数据库系统中。这样恢复您的Avail钱包时，您可以立即获取到所有记录和过去的交易历史。",
+      "backup": "备份",
+      "nobackup": "不备份",
+      "messages": {
+        "enabled": "备份成功启用！",
+        "disabled": "备份成功禁用！",
+        "error": "备份状态更新失败，请重试。"
+      }
+    },
+    "login": {
+      "tagline": {
+        "part1": "欢迎",
+        "part2": " 回来",
+        "messages": {
+          "success": "成功登录！",
+          "error": "认证失败，请重试。"
+        }
+      },
+      "password": "密码",
+      "CTAButton": "登录",
+      "access": "无法访问您的账户？",
+      "recover": "恢复"
+    },
+    "recover": {
+      "title": "输入您的秘密恢复短语以恢复您的钱包。",
+      "recover": "恢复"
+    },
+    "home": {
+      "balance": "总余额",
+      "send": "发送",
+      "receive": "接收",
+      "tokens": {
+        "title": "代币",
+        "empty": {
+          "part1": "无代币",
+          "part2": " 一旦您收到代币，它们将出现在这里。"
+        }
+      },
+      "activity": {
+        "title": "活动",
+        "empty": {
+          "part1": "无活动",
+          "part2": " 一旦您执行、发送或接收交易，它们将出现在这里。"
+        }
+      },
+      "scan": {
+        "progress": "扫描进行中",
+        "complete": " 完成"
+      },
+      "messages": {
+        "errors": {
+          "balance": "获取余额错误。",
+          "blocks-scan": "扫描区块失败，请重试。",
+          "network": "连接网络失败，请检查您的互联网连接。"
+        },
+        "success": {
+          "scan": "扫描完成！"
+        }
+      }
+    },
+    "send": {
+      "messages": {
+        "error": {
+          "positive-amount": "请输入一个正数金额",
+          "insufficient-private-amount": "私有余额不足",
+          "insufficient-public-amount": "公共余额不足",
+          "fields": "请填写所有字段",
+          "zero-amount": "请输入大于0的金额"
+        }
+      },
+      "success": "交易成功发送！",
+        "info": "转账进行中...",
+        "private-balance": "私有余额",
+        "public-balance": "公共余额",
+        "fee": "费用",
+        "send": "发送",
+        "privacy-toggles": {
+          "from-private": "从私有转账",
+          "from-public": "从公共转账",
+          "to-private": "转入私有",
+          "to-public": "转入公共",
+          "private-fee": "私有费用",
+          "public-fee": "公共费用"
+        }
+    },
+    "settings": {
+      "title": "设置",
+      "subtitle": "管理您的钱包。",
+      "keys": {
+        "title": "密钥",
+        "private-key": "私钥",
+        "viewing-key": "查看密钥",
+        "secret-phrase": "秘密短语"
+      },
+      "General": "通用",
+      "security": {
+        "title": "安全与隐私",
+        "description": "在Avail，我们重视用户的隐私，这就是为什么我们采取了我们所采取的安全措施，包括通过加密保护数据存储以及在构建我们的系统时采用最佳实践，以优先考虑您的隐私和安全。",
+        "terms": "条款和条件",
+        "privacy": "隐私政策"
+      },
+      "about": {
+        "title": "关于Avail",
+        "description": "在Avail，我们的使命是让任何人都能无障碍地控制他们的金钱、数据和协议，同时保护他们的隐私。"
+      },
+      "advanced": {
+        "title": "高级设置",
+        "block-height": "最后同步区块高度：",
+        "scan-progress": "扫描进行中",
+        "full-resync": "完全重新同步",
+        "enable-backup": "启用备份",
+        "disable-backup": "禁用备份"
+      },
+      "delete": {
+        "title": "删除账户",
+        "STButton": "删除账户"
+      }
+    },
+    "activity": {
+      "time-labels": {
+        "today": "今天",
+        "this-week": "本周",
+        "this-month": "本月"
+      },
+      "no-activities": " 还没有活动，去探索吧！",
+      "loading": "加载中...",
+      "load-more": "加载更多",
+      "messages": {
+        "error": "加载活动失败，请重试。"
+      }
+    },
+    "browser": {
+      "title": "隐身探索Web3",
+      "subtitle": "连接到dApp开始探索去中心化的网络。",
+      "connect": "连接",
+      "connected": "已连接",
+      "enter": "进入",
+      "message": {
+        "success": {
+          "disconnect": "断开连接"
+        }
+      }
+    },
+    "dialogs": {
+      "options": {
+        "cancel": "取消",
+        "confirm": "确认"
+      },
+      "delete": {
+        "title": "您确定要删除您的账户吗？",
+        "description": "您的密钥将永远存在并且属于您，但是您的账户、本地密钥和数据将通过此操作被删除。要恢复您的账户，您必须使用您的秘密恢复短语或私钥。"
+      },
+      "disable-backup": {
+        "title": "您确定要禁用备份吗？",
+        "description": "这将删除您的加密数据备份，并且不再备份您的加密数据指针。这意味着如果或当您需要恢复您的账户时，您将无法访问您的Aleo数据记录，直到扫描整个区块链。"
+      },
+      "reauth": {
+        "title": "账户认证",
+        "description": "这样做是为了保护您的账户。请输入您的密码以继续。"
+      },
+      "receive": {
+        "title": "接收资金或数据",
+        "subtitle": "如果双方都有Avail账户，则可以使用你们的用户名接收。否则，请使用您的钱包地址。",
+        "username": "用户名：",
+        "address": "地址：",
+        "qr-description": "扫描地址的二维码。",
+        "okay": "好的"
+      },
+      "transfer": {
+        "title": "确认此交易",
+        "subtitle": "确认交易后，您将向Y发送X资产"
+      }
+    }
+  }
+  
