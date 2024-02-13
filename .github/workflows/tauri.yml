@@ -2,7 +2,7 @@ name: "test"
 
 on:
     push:
-        branches: [ develop ]
+        branches: [ develop, release ]
 
 # This workflow will build your tauri app without uploading it anywhere.
 
@@ -17,13 +17,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './backend -> target'
+
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
@@ -41,7 +46,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_TEAM_IDENTIFIER: ${{ secrets.APPLE_TEAM_IDENTIFIER }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -49,3 +53,8 @@ jobs:
         with:
             projectPath: backend
             distPath: frontend/dist
+            tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
+            releaseName: 'App v__VERSION__'
+            releaseBody: 'See the assets to download this version and install.'
+            releaseDraft: true
+            prerelease: false
