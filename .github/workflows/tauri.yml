@@ -1,13 +1,49 @@
-name: "test"
+name: Release
 
 on:
     push:
-        branches: [ develop, release ]
+        branches: [ develop, staging, release ]
 
 # This workflow will build your tauri app without uploading it anywhere.
 
 jobs:
-  test-tauri:
+  # test:
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform: [macos-latest, ubuntu-latest, windows-latest]
+
+  #   runs-on: ${{ matrix.platform}}
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Install the Rust toolchain
+  #       uses: dtolnay/rust-toolchain@stable
+
+  #     - name: Initialize Rust cache
+  #       uses: swatinem/rust-cache@v2
+  #       with:
+  #         workspaces: './backend -> target'
+
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #         cache: 'npm'
+
+  #     - name: Install dependencies (ubuntu only)
+  #       if: matrix.platform == 'ubuntu-latest'
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install -y libsoup-3.0-dev libwebkit2gtk-4.1-dev javascriptcoregtk-4.1 build-essential curl wget file libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+
+  #     - name: Run unit tests
+  #       run: |
+  #         cd backend
+  #         cargo test
+
+  build-and-release:
+    # needs: test
     permissions:
         contents: write
     strategy:
