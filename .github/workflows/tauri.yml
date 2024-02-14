@@ -36,6 +36,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libsoup-3.0-dev libwebkit2gtk-4.1-dev patchelf javascriptcoregtk-4.1 build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+          o
+
+      - if: matrix.platform == 'windows-latest'
+        # Install PostgreSQL and libpq
+        uses: ikalnytskyi/action-setup-postgres@v5
 
 
       - name: install frontend dependencies
