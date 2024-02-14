@@ -7,8 +7,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "Avail",
-    "version": "0.0.1"
+    "productName": "Avail Wallet"
   },
   "tauri": {
     "bundle": {
@@ -20,6 +19,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
+      "category": "Finance",
       "identifier": "com.avail.wallet",
       "targets": "all"
     },
