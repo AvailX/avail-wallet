@@ -1,6 +1,6 @@
 [package]
 name = "avail_wallet"
-version = "0.0.1"
+version = "0.0.2"
 description = "A Tauri App"
 authors = ["Avail"]
 license = ""
@@ -19,7 +19,9 @@ tauri-build = { version = "2.0.0-alpha.11", features = [] }
 
 [dependencies]
 app_dirs = { package = "app_dirs2", version = "2.5" }
-avail-common = { git = "https://github.com/availx/avail-lib", tag = "v0.1.0" }
+avail-common = { git = "https://github.com/availx/avail-lib", tag = "v0.3.0", features = [
+    "tauri",
+] }
 bs58 = "0.5.0"
 chrono = "0.4.26"
 dirs = "5.0.1"
