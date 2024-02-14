@@ -21,12 +21,7 @@
         "icons/icon.ico"
       ],
       "identifier": "com.avail.wallet",
-      "targets": "all",
-      "macOS": {
-        "signingIdentity": "WTK34UZPZK",
-        "entitlements": "/Users/zk/Avail/Apple/plists/entitlements.plist",
-        "exceptionDomain": ""
-      }
+      "targets": "all"
     },
     "security": {
       "csp": null

@@ -1,0 +1,9 @@
+{
+  "tauri": {
+    "bundle": {
+      "macOS": {
+        "signingIdentity": "WTK34UZPZK"
+      }
+    }
+  }
+}
