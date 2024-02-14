@@ -21,6 +21,10 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
+      - if: matrix.platform == 'macos'
+        name: Install arm target
+        run: rustup target add aarch64-apple-darwin
+
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
@@ -56,6 +60,7 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
+            args: ${{ matrix.platform == 'macos-latest' && ' --target universal-apple-darwin' || '' }}
             projectPath: backend
             distPath: frontend/dist
             tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
