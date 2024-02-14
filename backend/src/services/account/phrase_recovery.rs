@@ -12,13 +12,22 @@ use avail_common::errors::AvailResult;
 
 use crate::api::user::{create_user, get_user};
 use crate::models::wallet::AvailSeedWallet;
-use crate::services::account::key_management::key_controller::{macKeyController, KeyController};
+use crate::services::account::key_management::key_controller::KeyController;
 use crate::services::authentication::session::get_session_after_creation;
 use crate::services::local_storage::{
     encrypted_data::get_and_store_all_data, tokens::init_tokens_table,
 };
 use avail_common::models::user::User;
 /*  reconstruct wallet from seed phrase and store in local storage */
+
+#[cfg(target_os = "macos")]
+use crate::services::account::key_management::key_controller::macKeyController;
+
+#[cfg(target_os = "windows")]
+use crate::services::account::key_management::key_controller::windowsKeyController;
+
+#[cfg(target_os = "linux")]
+use crate::services::account::key_management::key_controller::linuxKeyController;
 
 #[tauri::command(rename_all = "snake_case")]
 pub async fn recover_wallet_from_seed_phrase(

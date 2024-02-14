@@ -15,7 +15,7 @@ use crate::services::local_storage::{
     session::view::VIEWSESSION,
 };
 
-use crate::services::account::key_management::key_controller::{macKeyController, KeyController};
+use crate::services::account::key_management::key_controller::KeyController;
 
 use avail_common::{
     aleo_tools::encryptor::Encryptor,
@@ -23,6 +23,15 @@ use avail_common::{
     errors::{AvailError, AvailErrorType, AvailResult},
     models::{constants::PRIVATE_KEY, network::SupportedNetworks},
 };
+
+#[cfg(target_os = "macos")]
+use crate::services::account::key_management::key_controller::macKeyController;
+
+#[cfg(target_os = "windows")]
+use crate::services::account::key_management::key_controller::windowsKeyController;
+
+#[cfg(target_os = "linux")]
+use crate::services::account::key_management::key_controller::linuxKeyController;
 
 #[tauri::command(rename_all = "snake_case")]
 pub fn get_private_key_tauri(password: Option<String>) -> AvailResult<String> {
