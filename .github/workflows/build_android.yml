@@ -2,7 +2,7 @@ name: "Build Tauri Android App"
 
 on:
   workflow_dispatch:
-  pull_request:
+  # pull_request:
 
 jobs:
   build-android:
@@ -68,7 +68,7 @@ jobs:
         env:
           NDK_HOME: ${{ env.NDK_HOME }}
           RANLIB: ${{ env.NDK_HOME }}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib
-         
+
         run: |
           ./tauri_app/scripts/gen-config.sh
            cargo tauri android init
