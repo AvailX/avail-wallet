@@ -1,6 +1,6 @@
 # Avail Wallet
 
-![Image](https://socialify.git.ci/availx/avail-wallet/image?description=1&font=Raleway&issues=1&logo=https%3A%2F%2Favail.global%2F_next%2Fstatic%2Fmedia%2FAvail-Logo-OnDark.3bbffcbf.svg&name=1&pattern=Signal&pulls=1&stargazers=1&theme=Dark)
+![Image](https://socialify.git.ci/availx/avail-wallet/image?description=1&descriptionEditable=An%20open%20source%2C%20private%2C%20self-custodial%20wallet.%0ABuilt%20on%20the%20Aleo%20network.&font=Raleway&forks=1&logo=https%3A%2F%2Favail.global%2F_next%2Fstatic%2Fmedia%2FAvail-Logo-OnDark.3bbffcbf.svg&name=1&pulls=1&stargazers=1&theme=Auto)
 
 An open source, private, self-custodial wallet. Built on the [Aleo](https://aleo.org) network.
 
