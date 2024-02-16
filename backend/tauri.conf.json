@@ -10,6 +10,14 @@
     "productName": "Avail Wallet"
   },
   "tauri": {
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://api.avail.global/release/{target}/{arch}/{current_version}"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFBM0E5NTJEMTAyMzg5NApSV1NVT0FMUlVxbWpBUWt1aXREWmJBR0g2UU9ZZEk3T0FINy9TVERLS1dtM2RITm5LVkNySXByYwo=="
+    },
     "bundle": {
       "active": true,
       "icon": [
