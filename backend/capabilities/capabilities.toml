@@ -7,6 +7,7 @@ permissions = [
   "event:default",
   "event:allow-listen",
   "window:default",
+  "window:allow-create",
   "app:default",
   "resources:default",
   "menu:default",
