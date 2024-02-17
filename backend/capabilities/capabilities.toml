@@ -1,0 +1,15 @@
+"$schema" = "./schemas/desktop-schema.toml"
+identifier = "main-capability"
+description = "Capability for the main window"
+windows = ["main", "Avail Wallet Connect"]
+permissions = [
+  "path:default",
+  "event:default",
+  "event:allow-listen",
+  "window:default",
+  "app:default",
+  "resources:default",
+  "menu:default",
+  "tray:default",
+  "window:allow-set-title",
+]
