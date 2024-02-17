@@ -8,7 +8,10 @@ use super::{
                 get_avail_event_raw, get_avail_events_raw, get_event_raw, get_events_raw,
                 get_succinct_avail_event_raw, get_succinct_avail_events_raw,
             },
-            records::{get_page_count_for_filter, get_record_pointers, update_record_spent_local},
+            records::{
+                get_page_count_for_filter, get_record_pointers, update_record_spent_local,
+                update_record_spent_local_via_nonce,
+            },
         },
         utils::{get_private_key, sign_message},
     },
@@ -24,7 +27,7 @@ use super::{
 use chrono::Local;
 use std::str::FromStr;
 
-use crate::api::aleo_client::setup_local_client;
+use crate::api::aleo_client::setup_client;
 use crate::models::event::{AvailEvent, SuccinctAvailEvent};
 use crate::models::pointers::{deployment::DeploymentPointer, transaction::TransactionPointer};
 use crate::models::wallet_connect::{
@@ -39,7 +42,7 @@ use crate::models::wallet_connect::{
 use snarkvm::circuit::Aleo;
 use snarkvm::{
     circuit::{AleoV0, Environment},
-    prelude::{Ciphertext, Network, Program, Record, Testnet3},
+    prelude::{Ciphertext, Network, Program, Record, Testnet3,Signature,Address,Field},
 };
 
 use tauri::{Manager, Window};
@@ -51,18 +54,19 @@ use avail_common::{
         encrypted_data::{EventTypeCommon, TransactionState},
         network::SupportedNetworks,
     },
+    converters::messages::{utf8_string_to_bits,field_to_fields}
 };
 
 #[tauri::command(rename_all = "snake_case")]
 pub fn get_balance(request: BalanceRequest) -> AvailResult<BalanceResponse> {
     let network = get_network()?;
-
+    println!("===> Asset ID in Request Backend {:?}", Some(request.asset_id()));
     //TODO - Read ARC20 to deduce assets id something like {program_id/record_name} seems reasonable.
     let asset_id = match request.asset_id() {
         Some(asset_id) => asset_id,
         None => "credits".to_string(),
     };
-
+    println!("===> Asset ID in Backend {:?}", asset_id);
     //TODO - V2 HD wallet support
     let _address = match request.address() {
         Some(address) => address.to_string(),
@@ -97,7 +101,7 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
     fee_private: bool,
     window: Option<Window>,
 ) -> AvailResult<CreateEventResponse> {
-    let api_client = setup_local_client::<N>();
+    let api_client = setup_client::<N>()?;
     let private_key = match get_private_key::<N>(None) {
         Ok(private_key) => {
             PASS.extend_session()?;
@@ -106,7 +110,16 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
         Err(e) => match e.error_type {
             AvailErrorType::Unauthorized => {
                 if let Some(window) = window {
-                    window.emit("reauthenticate", "create-event")?;
+                    match window.emit("reauthenticate", "create-event"){
+                        Ok(_) => {},
+                        Err(e) => {
+                            return Err(AvailError::new(
+                                AvailErrorType::Internal,
+                                "Error emitting reauthentication event".to_string(),
+                                "Error emitting reauthentication state".to_string(),
+                            ));
+                        }
+                    };
                 }
 
                 return Ok(CreateEventResponse::new(
@@ -129,24 +142,9 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
     let mut program_manager =
         ProgramManager::<N>::new(Some(private_key), None, Some(api_client), None)?;
 
+    let mut fee_record_nonce: Option<String> = None;
+
     if request.event_type() == &EventTypeCommon::Deploy {
-        let mut pending_deployment_tx = DeploymentPointer::<N>::new(
-            None,
-            request.program_id().clone(),
-            request.fee(),
-            TransactionState::Processing,
-            None,
-            Local::now(),
-            None,
-            None,
-        );
-
-        let pending_event_id = pending_deployment_tx.encrypt_and_store(address)?;
-
-        if let Some(window) = window.clone() {
-            window.emit("tx_state_change", &pending_event_id)?;
-        }
-
         let program = match request.inputs().get(0) {
             Some(program) => program,
             None => {
@@ -182,10 +180,45 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
             true => {
                 let (fee_record, fee_commitment, fee_id) =
                     find_aleo_credits_record_to_spend::<N>(&fee, vec![])?;
+
+                let fee_nonce = fee_record.nonce().to_string();
+                fee_record_nonce = Some(fee_nonce);
+
                 (Some(fee_record), Some(fee_commitment), Some(fee_id))
             }
             false => (None, None, None),
         };
+
+        let mut pending_deployment_tx = DeploymentPointer::<N>::new(
+            None,
+            request.program_id().clone(),
+            request.fee(),
+            TransactionState::Processing,
+            None,
+            fee_record_nonce,
+            Local::now(),
+            None,
+            None,
+        );
+
+        let pending_event_id = pending_deployment_tx.encrypt_and_store(address)?;
+
+        if let Some(window) = window.clone() {
+            match window.emit("tx_state_change", &pending_event_id){
+                Ok(_) => {},
+                Err(e) => {
+                    return Err(AvailError::new(
+                        AvailErrorType::Internal,
+                        "Error emitting tx_state_change event".to_string(),
+                        "Error emitting transaction state".to_string(),
+                    ));
+                }
+            };
+        }
+
+        if let Some(fee_id) = fee_id.clone() {
+            update_record_spent_local::<N>(&fee_id, true)?;
+        }
 
         let transaction_id = match program_manager.deploy_program(program.id(), 0, fee_record, None)
         {
@@ -210,14 +243,23 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
                 )?;
 
                 if let Some(window) = window.clone() {
-                    window.emit("tx_state_change", &pending_event_id)?;
+                    match window.emit("tx_state_change", &pending_event_id){
+                        Ok(_) => {},
+                        Err(e) => {
+                            return Err(AvailError::new(
+                                AvailErrorType::Internal,
+                                "Error emitting tx_state_change event".to_string(),
+                                "Error emitting transaction state".to_string(),
+                            ));
+                        }
+                    };
                 }
 
                 return Ok(CreateEventResponse::new(
                     Some(pending_event_id),
                     Some(format!(
                         "Error deploying program: '{}'",
-                        program.id().to_string()
+                        program.id()
                     )),
                 ));
             }
@@ -233,17 +275,25 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
 
         Ok(CreateEventResponse::new(Some(pending_event_id), None))
     } else {
+        let mut record_nonces: Vec<String> = vec![];
+
         let (input_values, input_nonces, recipient_address, amount) =
-            parse_inputs::<N>(request.inputs().clone())?;
+            parse_inputs::<N>(request.inputs().clone(),&request.function_id().clone())?;
 
         let (fee_record, _fee_commitment, fee_id) = match fee_private {
             true => {
                 let (fee_record, fee_commitment, fee_id) =
-                    find_aleo_credits_record_to_spend::<N>(&fee, input_nonces)?;
+                    find_aleo_credits_record_to_spend::<N>(&fee, input_nonces.clone())?;
+
+                let fee_nonce = fee_record.nonce().to_string();
+                record_nonces.push(fee_nonce);
+
                 (Some(fee_record), Some(fee_commitment), Some(fee_id))
             }
             false => (None, None, None),
         };
+
+        record_nonces.extend(input_nonces.clone());
 
         let mut pending_transaction = TransactionPointer::<N>::new(
             None,
@@ -253,6 +303,7 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
             Some(request.program_id().clone()),
             Some(request.function_id().clone()),
             vec![],
+            record_nonces,
             Local::now(),
             None,
             None,
@@ -265,9 +316,27 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
         let pending_event_id = pending_transaction.encrypt_and_store(address)?;
 
         if let Some(window) = window.clone() {
-            window.emit("tx_state_change", &pending_event_id)?;
+           match window.emit("tx_state_change", &pending_event_id){
+            Ok(_) => {},
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    "Error emitting tx_state_change event".to_string(),
+                    "Error emitting transaction state".to_string(),
+                ));
+            }
+        };
         }
 
+        // TODO - Update fee to spent and input_nonces to spent
+        for nonce in input_nonces.clone() {
+            update_record_spent_local_via_nonce::<N>(&nonce, true)?;
+        }
+
+        if let Some(fee_id) = fee_id.clone() {
+            update_record_spent_local::<N>(&fee_id, false)?;
+        }
+        println!("=====> INPUTS {:?}", input_values);
         let transaction_id = match program_manager.execute_program(
             request.program_id().clone(),
             request.function_id().clone(),
@@ -280,6 +349,10 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
             Err(_) => {
                 if let Some(fee_id) = fee_id {
                     update_record_spent_local::<N>(&fee_id, false)?;
+                }
+
+                for nonce in input_nonces {
+                    update_record_spent_local_via_nonce::<N>(&nonce, false)?;
                 }
 
                 pending_transaction.update_failed_transaction(
@@ -297,7 +370,16 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
                 )?;
 
                 if let Some(window) = window.clone() {
-                    window.emit("tx_state_change", &pending_event_id)?;
+                    match window.emit("tx_state_change", &pending_event_id){
+                        Ok(_) => {},
+                        Err(e) => {
+                            return Err(AvailError::new(
+                                AvailErrorType::Internal,
+                                "Error emitting tx_state_change event".to_string(),
+                                "Error emitting transaction state".to_string(),
+                            ));
+                        }
+                    };
                 }
 
                 return Ok(CreateEventResponse::new(
@@ -399,7 +481,16 @@ pub fn sign(request: SignatureRequest, window: Window) -> AvailResult<SignatureR
                 )),
                 Err(e) => {
                     if e.error_type == AvailErrorType::Unauthorized {
-                        window.emit("reauthenticate", "sign")?;
+                        match window.emit("reauthenticate", "sign"){
+                            Ok(_) => {},
+                            Err(e) => {
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    "Error emitting reauthentication event".to_string(),
+                                    "Error emitting reauthentication state".to_string(),
+                                ));
+                            }
+                        };
                     }
                     Ok(SignatureResponse::new(
                         None,
@@ -417,7 +508,16 @@ pub fn sign(request: SignatureRequest, window: Window) -> AvailResult<SignatureR
             )),
             Err(e) => {
                 if e.error_type == AvailErrorType::Unauthorized {
-                    window.emit("reauthenticate", "sign")?;
+                    match window.emit("reauthenticate", "sign"){
+                        Ok(_) => {},
+                        Err(e) => {
+                            return Err(AvailError::new(
+                                AvailErrorType::Internal,
+                                "Error emitting reauthentication event".to_string(),
+                                "Error emitting reauthentication state".to_string(),
+                            ));
+                        }
+                    };
                 }
                 Ok(SignatureResponse::new(
                     None,
@@ -428,6 +528,29 @@ pub fn sign(request: SignatureRequest, window: Window) -> AvailResult<SignatureR
         },
         //SupportedNetworks::Mainnet => decrypt_record_raw::<Mainnet>(ciphertext),
     }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn verify(message: &str, address:&str, signature: &str) -> AvailResult<bool>{
+    let network = get_network()?;
+
+    match SupportedNetworks::from_str(&network)? {
+        SupportedNetworks::Testnet3 => verify_signature::<Testnet3>(message, address, signature),
+        _ => verify_signature::<Testnet3>(message, address, signature),
+    }
+}
+
+fn verify_signature<N:Network>(message: &str, address:&str, signature: &str) -> AvailResult<bool>{
+    let signature = Signature::<N>::from_str(signature)?;
+    let address = Address::<N>::from_str(address)?;
+
+    let msg_bits = utf8_string_to_bits(message);
+    let msg_field = N::hash_bhp512(&msg_bits)?;
+    let msg = field_to_fields(&msg_field)?;
+
+    let result = signature.verify(&address, &msg);
+
+    Ok(result)
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -573,6 +696,7 @@ mod test {
         get_encrypted_data_by_flavour, initialize_encrypted_data_table,
     };
     use crate::services::local_storage::persistent_storage::initial_user_preferences;
+    use crate::services::local_storage::utils::sign_message_w_key;
     use crate::services::local_storage::{
         encrypted_data::drop_encrypted_data_table, persistent_storage::delete_user_preferences,
     };
@@ -1046,6 +1170,22 @@ mod test {
         let res = get_event(request).unwrap();
 
         println!("Result: {:?}", res);
+    }
+
+    #[test]
+    fn test_verify_signature() {
+        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+    
+        let message = "Hello World";
+
+        let (signature,_) = sign_message_w_key::<Testnet3>(message, &pk).unwrap();
+
+        let address = Address::<Testnet3>::try_from(&pk).unwrap();
+        
+
+        let res = verify(message, &address.to_string(), &signature.to_string()).unwrap();
+        
+        assert_eq!(res, true);
     }
 
     #[test]

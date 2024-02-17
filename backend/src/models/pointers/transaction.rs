@@ -10,7 +10,7 @@ use crate::models::event::{
 };
 
 use crate::{
-    api::aleo_client::setup_local_client,
+    api::aleo_client::setup_client,
     services::local_storage::{
         encrypted_data::store_encrypted_data,
         persistent_storage::{get_address, get_address_string, get_network},
@@ -41,6 +41,7 @@ pub struct TransactionPointer<N: Network> {
     executed_program_id: Option<String>,
     executed_function_id: Option<String>,
     transitions: Vec<ExecutedTransition<N>>,
+    spent_record_pointers_nonces: Vec<String>,
     created: DateTime<Local>,
     finalized: Option<DateTime<Local>>,
     message: Option<String>,
@@ -67,6 +68,7 @@ impl<N: Network> TransactionPointer<N> {
         executed_program_id: Option<String>,
         executed_function_id: Option<String>,
         transitions: Vec<ExecutedTransition<N>>,
+        spent_record_pointers_nonces: Vec<String>,
         created: DateTime<Local>,
         finalized: Option<DateTime<Local>>,
         message: Option<String>,
@@ -83,6 +85,7 @@ impl<N: Network> TransactionPointer<N> {
             executed_program_id,
             executed_function_id,
             transitions,
+            spent_record_pointers_nonces,
             created,
             finalized,
             message,
@@ -125,6 +128,11 @@ impl<N: Network> TransactionPointer<N> {
     #[allow(dead_code)]
     pub fn transitions(&self) -> Vec<ExecutedTransition<N>> {
         self.transitions.clone()
+    }
+
+    #[allow(dead_code)]
+    pub fn spent_record_pointers_nonces(&self) -> Vec<String> {
+        self.spent_record_pointers_nonces.clone()
     }
 
     pub fn created(&self) -> DateTime<Local> {
@@ -305,7 +313,7 @@ impl<N: Network> TransactionPointer<N> {
 
         let v_key = VIEWSESSION.get_instance::<N>()?;
 
-        let api_client = setup_local_client::<N>();
+        let api_client = setup_client::<N>()?;
 
         let event_transaction = match self.transaction_id {
             Some(id) => match api_client.get_transaction(id) {
@@ -409,7 +417,7 @@ impl<N: Network> TransactionPointer<N> {
 
         let v_key = VIEWSESSION.get_instance::<N>()?;
 
-        let api_client = setup_local_client::<N>();
+        let api_client = setup_client::<N>()?;
 
         let event_transaction = match self.transaction_id {
             Some(id) => match api_client.get_transaction(id) {

@@ -1,6 +1,6 @@
 [package]
 name = "avail_wallet"
-version = "0.0.2"
+version = "0.0.1"
 description = "A Tauri App"
 authors = ["Avail"]
 license = ""
@@ -19,8 +19,8 @@ tauri-build = { version = "2.0.0-alpha.11", features = [] }
 
 [dependencies]
 app_dirs = { package = "app_dirs2", version = "2.5" }
-avail-common = { git = "https://github.com/availx/avail-lib", tag = "v0.3.0", features = [
-    "tauri",
+avail-common = { git = "https://github.com/availx/avail-lib", tag = "v0.5.0", features = [
+    "snarkvm",
 ] }
 bs58 = "0.5.0"
 chrono = "0.4.26"
@@ -50,6 +50,11 @@ tokio = { version = "1.29.1", features = ["full"] }
 ureq = { version = "2.7.1", features = ["json"] }
 uuid = { version = "1.4.1", features = ["v4", "serde"] }
 whoami = "1.4.1"
+zeroize = { version = "1.7.0", features = [
+    "aarch64",
+    "zeroize_derive",
+    "alloc",
+] }
 
 [target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
 keyring = "2.0.5"
@@ -60,7 +65,6 @@ tid-rs = { git = "https://github.com/Zack-Xb/tid-rs" }
 
 
 [profile.release]
-strip = true
 opt-level = 3
 lto = "thin"
 incremental = true
@@ -79,11 +83,6 @@ lto = "thin"
 incremental = true
 
 [profile.test]
-opt-level = 2
-lto = "thin"
-incremental = true
-debug = true
-debug-assertions = true
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

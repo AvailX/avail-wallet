@@ -322,7 +322,7 @@ dependencies = [
  "log",
  "parking",
  "polling",
- "rustix 0.37.27",
+ "rustix 0.37.24",
  "slab",
  "socket2 0.4.9",
  "waker-fn",
@@ -350,7 +350,7 @@ dependencies = [
  "cfg-if",
  "event-listener",
  "futures-lite",
- "rustix 0.37.27",
+ "rustix 0.37.24",
  "signal-hook",
  "windows-sys 0.48.0",
 ]
@@ -420,8 +420,8 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "avail-common"
-version = "0.2.0"
-source = "git+https://github.com/availx/avail-lib?tag=v0.3.0#48e27c4f9d8ab69cfb2bdf65bf27b1ddc9b28fd4"
+version = "0.5.0"
+source = "git+https://github.com/availx/avail-lib?tag=v0.5.0#9db153348a031d5a94c674fa1187182b5d65ca4e"
 dependencies = [
  "aes-gcm",
  "app_dirs2",
@@ -442,7 +442,6 @@ dependencies = [
  "serde",
  "serde_json",
  "snarkvm",
- "tauri",
  "tokio",
  "tracing",
  "ureq",
@@ -452,7 +451,7 @@ dependencies = [
 
 [[package]]
 name = "avail_wallet"
-version = "0.0.2"
+version = "0.0.1"
 dependencies = [
  "app_dirs2",
  "avail-common",
@@ -490,6 +489,7 @@ dependencies = [
  "ureq",
  "uuid",
  "whoami",
+ "zeroize",
 ]
 
 [[package]]
@@ -2024,9 +2024,9 @@ dependencies = [
 
 [[package]]
 name = "h2"
-version = "0.3.24"
+version = "0.3.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bb2c4422095b67ee78da96fbb51a4cc413b3b25883c7717ff7ca1ab31022c9c9"
+checksum = "91fc23aa11be92976ef4729127f1a74adf36d8436f7816b185d18df956790833"
 dependencies = [
  "bytes",
  "fnv",
@@ -2034,7 +2034,7 @@ dependencies = [
  "futures-sink",
  "futures-util",
  "http",
- "indexmap 2.0.0",
+ "indexmap 1.9.3",
  "slab",
  "tokio",
  "tokio-util",
@@ -3889,9 +3889,9 @@ dependencies = [
 
 [[package]]
 name = "rustix"
-version = "0.37.27"
+version = "0.37.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fea8ca367a3a01fe35e6943c400addf443c0f57670e6ec51196f71a4b8762dd2"
+checksum = "4279d76516df406a8bd37e7dff53fd37d1a093f997a3c34a5c21658c126db06d"
 dependencies = [
  "bitflags 1.3.2",
  "errno",
@@ -7009,9 +7009,9 @@ dependencies = [
 
 [[package]]
 name = "zeroize"
-version = "1.6.0"
+version = "1.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a0956f1ba7c7909bfb66c2e9e4124ab6f6482560f6628b5aaeba39207c9aad9"
+checksum = "525b4ec142c6b68a2d10f01f7bbf6755599ca3f81ea53b8431b7dd348f5fdb2d"
 dependencies = [
  "zeroize_derive",
 ]

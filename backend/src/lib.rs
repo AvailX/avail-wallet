@@ -1,13 +1,14 @@
-mod api;
-mod helpers;
-mod models;
-mod services;
+pub mod api;
+pub mod helpers;
+pub mod models;
+pub mod services;
 
 use tauri::Manager;
 
 use services::account::generation::create_seed_phrase_wallet;
 use services::account::generation::import_wallet;
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
+use services::account::utils::open_url;
 use services::authentication::session::get_session;
 use services::local_storage::persistent_storage::{
     get_address_string, get_auth_type, get_backup_flag, get_language, get_last_sync, get_network,
@@ -20,19 +21,21 @@ use services::account::key_management::ios::prepare_context;
 use api::user::{update_backup_flag, update_username};
 use services::local_storage::{
     encrypted_data::get_and_store_all_data,
-    utils::{delete_util, get_private_key_tauri, get_seed_phrase, get_view_key_tauri},
+    tokens::get_stored_tokens,
+    utils::{delete_util, get_private_key_tauri, get_seed_phrase, get_view_key_tauri,delete_local_for_recovery},
 };
 
 // record handliong services
+// use crate::services::record_handling::utils::get_all_nft_data;
 use services::record_handling::{
     sync::{blocks_sync, sync_backup, txs_sync},
     transfer::{pre_install_inclusion_prover, transfer},
 };
-
 // wallet connect services
 use crate::services::wallet_connect_api::{
     decrypt_records, get_avail_event, get_avail_events, get_balance, get_event, get_events,
     get_records, get_succinct_avail_event, get_succinct_avail_events, request_create_event, sign,
+    verify,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -59,6 +62,7 @@ pub fn run() {
             import_wallet,
             get_username,
             delete_util,
+            delete_local_for_recovery,
             get_private_key_tauri,
             get_view_key_tauri,
             get_seed_phrase,
@@ -70,6 +74,8 @@ pub fn run() {
             get_network,
             get_language,
             update_language,
+            get_stored_tokens,
+            open_url,
             /* Authentication */
             get_session,
             get_auth_type,
@@ -81,6 +87,7 @@ pub fn run() {
             /* Avail Services */
             get_avail_event,
             get_avail_events,
+            // get_all_nft_data,
             transfer,
             /* --Wallet Connect Api */
             get_event,
@@ -92,6 +99,7 @@ pub fn run() {
             get_balance,
             get_succinct_avail_event,
             get_succinct_avail_events,
+            verify,
             /* Aleo Helpers */
             pre_install_inclusion_prover
         ])
@@ -121,6 +129,7 @@ pub fn run() {
             update_username,
             get_username,
             delete_util,
+            delete_local_for_recovery,
             get_private_key_tauri,
             get_view_key_tauri,
             get_seed_phrase,
@@ -133,6 +142,8 @@ pub fn run() {
             get_network,
             get_language,
             update_language,
+            get_stored_tokens,
+            open_url,
             /* Authentication */
             get_session,
             get_auth_type,
@@ -154,6 +165,7 @@ pub fn run() {
             get_balance,
             get_succinct_avail_event,
             get_succinct_avail_events,
+            verify,
             /* Aleo Helpers */
             pre_install_inclusion_prover
         ])
@@ -183,6 +195,7 @@ pub fn run() {
             update_username,
             get_username,
             delete_util,
+            delete_local_for_recovery,
             get_private_key_tauri,
             get_view_key_tauri,
             get_seed_phrase,
@@ -195,6 +208,8 @@ pub fn run() {
             get_network,
             get_language,
             update_language,
+            get_stored_tokens,
+            open_url,
             /* Authentication */
             get_session,
             get_auth_type,
@@ -216,6 +231,7 @@ pub fn run() {
             get_balance,
             get_succinct_avail_event,
             get_succinct_avail_events,
+            verify,
             /* Aleo Helpers */
             pre_install_inclusion_prover
         ])

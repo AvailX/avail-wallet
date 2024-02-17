@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use snarkvm::prelude::{Address, Network};
 use uuid::Uuid;
 
-use crate::api::aleo_client::setup_local_client;
+use crate::api::aleo_client::setup_client;
 use crate::models::event::{
     AvailEvent, Event, EventTransition, Network as EventNetwork, SuccinctAvailEvent, Visibility,
 };
@@ -129,7 +129,7 @@ impl<N: Network> TransitionPointer<N> {
             }
         };
 
-        let api_client = setup_local_client::<N>();
+        let api_client = setup_client::<N>()?;
         let transaction = api_client.get_transaction(self.transaction_id)?;
 
         let transition = match transaction.find_transition(&self.id) {
@@ -195,7 +195,7 @@ impl<N: Network> TransitionPointer<N> {
             }
         };
 
-        let api_client = setup_local_client::<N>();
+        let api_client = setup_client::<N>()?;
 
         let transaction = api_client.get_transaction(self.transaction_id)?;
 

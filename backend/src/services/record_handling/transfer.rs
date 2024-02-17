@@ -9,7 +9,7 @@ use std::fs;
 use std::{ops::Add, str::FromStr};
 use tokio::time::{Duration, Instant};
 
-use crate::api::aleo_client::setup_local_client;
+use crate::api::aleo_client::setup_client;
 use crate::services::local_storage::encrypted_data::update_encrypted_transaction_state_by_id;
 use crate::{
     helpers::utils::get_timestamp_from_i64,
@@ -130,7 +130,7 @@ async fn transfer_private_util<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_local_client::<N>();
+    let api_client = setup_client::<N>()?;
 
     let sender_address = get_address::<N>()?;
 
@@ -140,6 +140,7 @@ async fn transfer_private_util<N: Network>(
     let _session_task = get_session_after_creation::<N>(&private_key).await?;
 
     let recipient = get_address_from_recipient::<N>(to).await?;
+    let mut record_nonces: Vec<String> = vec![];
 
     let program_manager =
         ProgramManager::<N>::new(Some(private_key), None, Some(api_client.clone()), None).unwrap();
@@ -147,11 +148,15 @@ async fn transfer_private_util<N: Network>(
     // get required records if private tx
     let (token_record, _token_commitment, token_id) =
         find_tokens_to_spend::<N>(asset_id, amount, vec![])?;
+    let token_nonce = token_record.nonce().to_string();
+    record_nonces.push(token_nonce);
 
     let (fee_record, _fee_commitment, fee_id) = match fee_private {
         true => {
             let (fee_record, _fee_commitment, fee_id) =
                 find_aleo_credits_record_to_spend::<N>(fee, vec![])?;
+            let fee_nonce = fee_record.nonce().to_string();
+            record_nonces.push(fee_nonce);
             (Some(fee_record), Some(_fee_commitment), Some(fee_id))
         }
         false => (None, None, None),
@@ -167,6 +172,7 @@ async fn transfer_private_util<N: Network>(
         Some(program_id.clone()),
         Some("transfer_private".to_string()),
         vec![],
+        record_nonces,
         Local::now(),
         None,
         message,
@@ -179,7 +185,16 @@ async fn transfer_private_util<N: Network>(
     let pending_tx_id = pending_transaction.encrypt_and_store(sender_address)?;
 
     if let Some(window) = window.clone() {
-        window.emit("tx_state_change", &pending_tx_id)?;
+        match window.emit("tx_state_change", &pending_tx_id){
+            Ok(_) => {},
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    "Error emitting tx_state_change event".to_string(),
+                    "Error emitting transaction state".to_string(),
+                ));
+            }
+        };
     };
 
     let amount = amount.to_owned();
@@ -225,7 +240,16 @@ async fn transfer_private_util<N: Network>(
             )?;
 
             if let Some(window) = window.clone() {
-                window.emit("tx_state_change", &pending_tx_id)?;
+                match window.emit("tx_state_change", &pending_tx_id){
+                    Ok(_) => {},
+                    Err(e) => {
+                        return Err(AvailError::new(
+                            AvailErrorType::Internal,
+                            "Error emitting tx_state_change event".to_string(),
+                            "Error emitting transaction state".to_string(),
+                        ));
+                    }
+                };
             };
 
             return Err(AvailError::new(
@@ -268,13 +292,14 @@ async fn transfer_public_to_private_util<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_local_client::<N>();
+    let api_client = setup_client::<N>()?;
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
 
     //extend session auth
     let _session_task = get_session_after_creation::<N>(&private_key).await?;
     let recipient = get_address_from_recipient::<N>(to).await?;
+    let mut record_nonces: Vec<String> = vec![];
 
     let program_manager =
         ProgramManager::<N>::new(Some(private_key), None, Some(api_client.clone()), None)?;
@@ -286,6 +311,10 @@ async fn transfer_public_to_private_util<N: Network>(
         true => {
             let (fee_record, _fee_commitment, fee_id) =
                 find_aleo_credits_record_to_spend::<N>(fee, vec![])?;
+
+            let fee_nonce = fee_record.nonce().to_string();
+            record_nonces.push(fee_nonce);
+
             update_record_spent_local::<N>(&fee_id, true)?;
             (Some(fee_record), Some(_fee_commitment), Some(fee_id))
         }
@@ -300,6 +329,7 @@ async fn transfer_public_to_private_util<N: Network>(
         Some(program_id.clone()),
         Some("transfer_public_to_private".to_string()),
         vec![],
+        record_nonces,
         Local::now(),
         None,
         message,
@@ -312,7 +342,16 @@ async fn transfer_public_to_private_util<N: Network>(
     let pending_tx_id = pending_transaction.encrypt_and_store(sender_address)?;
 
     if let Some(window) = window.clone() {
-        window.emit("tx_state_change", &pending_tx_id)?;
+        match window.emit("tx_state_change", &pending_tx_id){
+            Ok(_) => {},
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    "Error emitting tx_state_change event".to_string(),
+                    "Error emitting transaction state".to_string(),
+                ));
+            }
+        }
     };
 
     // update spent states
@@ -351,7 +390,16 @@ async fn transfer_public_to_private_util<N: Network>(
             )?;
 
             if let Some(window) = window.clone() {
-                window.emit("tx_state_change", &pending_tx_id)?;
+                match window.emit("tx_state_change", &pending_tx_id){
+                    Ok(_) => {},
+                    Err(e) => {
+                        return Err(AvailError::new(
+                            AvailErrorType::Internal,
+                            "Error emitting tx_state_change event".to_string(),
+                            "Error emitting transaction state".to_string(),
+                        ));
+                    }
+                };
             };
 
             return Err(AvailError::new(
@@ -387,13 +435,14 @@ async fn transfer_private_to_public_util<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_local_client::<N>();
+    let api_client = setup_client::<N>()?;
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
 
     //extend session auth
     let _session_task = get_session_after_creation::<N>(&private_key).await?;
     let recipient = get_address_from_recipient::<N>(to).await?;
+    let mut record_nonces: Vec<String> = vec![];
 
     let program_manager =
         ProgramManager::<N>::new(Some(private_key), None, Some(api_client.clone()), None).unwrap();
@@ -401,11 +450,17 @@ async fn transfer_private_to_public_util<N: Network>(
     // get required records if private tx
     let (token_record, _token_commitment, token_id) =
         find_tokens_to_spend::<N>(asset_id, amount, vec![])?;
+    let token_nonce = token_record.nonce().to_string();
+    record_nonces.push(token_nonce);
 
     let (fee_record, _fee_commitment, fee_id) = match fee_private {
         true => {
             let (fee_record, _fee_commitment, fee_id) =
                 find_aleo_credits_record_to_spend::<N>(fee, vec![])?;
+
+            let fee_nonce = fee_record.nonce().to_string();
+            record_nonces.push(fee_nonce);
+
             update_record_spent_local::<N>(&fee_id, true)?;
             (Some(fee_record), Some(_fee_commitment), Some(fee_id))
         }
@@ -422,6 +477,7 @@ async fn transfer_private_to_public_util<N: Network>(
         Some(program_id.clone()),
         Some("transfer_private_to_public".to_string()),
         vec![],
+        record_nonces,
         Local::now(),
         None,
         message,
@@ -434,7 +490,16 @@ async fn transfer_private_to_public_util<N: Network>(
     let pending_tx_id = pending_transaction.encrypt_and_store(sender_address)?;
 
     if let Some(window) = window.clone() {
-        window.emit("tx_state_change", &pending_tx_id)?;
+        match window.emit("tx_state_change", &pending_tx_id){
+            Ok(_) => {},
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    "Error emitting tx_state_change event".to_string(),
+                    "Error emitting transaction state".to_string(),
+                ));
+            }
+        };
     };
 
     // update spent states
@@ -476,7 +541,16 @@ async fn transfer_private_to_public_util<N: Network>(
             )?;
 
             if let Some(window) = window.clone() {
-                window.emit("tx_state_change", &pending_tx_id)?;
+                match window.emit("tx_state_change", &pending_tx_id){
+                    Ok(_) => {},
+                    Err(e) => {
+                        return Err(AvailError::new(
+                            AvailErrorType::Internal,
+                            "Error emitting tx_state_change event".to_string(),
+                            "Error emitting transaction state".to_string(),
+                        ));
+                    }
+                };
             };
 
             return Err(AvailError::new(
@@ -512,7 +586,7 @@ async fn transfer_public<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_local_client::<N>();
+    let api_client = setup_client::<N>()?;
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
 
@@ -523,11 +597,17 @@ async fn transfer_public<N: Network>(
     let program_manager =
         ProgramManager::<N>::new(Some(private_key), None, Some(api_client.clone()), None)?;
 
+    let mut record_nonces: Vec<String> = vec![];
+
     // get required records if private fee
     let (fee_record, _fee_commitment, fee_id) = match fee_private {
         true => {
             let (fee_record, _fee_commitment, fee_id) =
                 find_aleo_credits_record_to_spend::<N>(fee, vec![])?;
+
+            let fee_nonce = fee_record.nonce().to_string();
+            record_nonces.push(fee_nonce);
+
             update_record_spent_local::<N>(&fee_id, true)?;
             (Some(fee_record), Some(_fee_commitment), Some(fee_id))
         }
@@ -544,6 +624,7 @@ async fn transfer_public<N: Network>(
         Some(program_id.clone()),
         Some("transfer_public".to_string()),
         vec![],
+        record_nonces,
         Local::now(),
         None,
         message,
@@ -556,7 +637,16 @@ async fn transfer_public<N: Network>(
     let pending_tx_id = pending_transaction.encrypt_and_store(sender_address)?;
 
     if let Some(window) = window.clone() {
-        window.emit("tx_state_change", &pending_tx_id)?;
+        match window.emit("tx_state_change", &pending_tx_id){
+            Ok(_) => {},
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    "Error emitting tx_state_change event".to_string(),
+                    "Error emitting transaction state".to_string(),
+                ));
+            }
+        };
     };
 
     // update spent states
@@ -595,7 +685,16 @@ async fn transfer_public<N: Network>(
             )?;
 
             if let Some(window) = window.clone() {
-                window.emit("tx_state_change", &pending_tx_id)?;
+                match window.emit("tx_state_change", &pending_tx_id){
+                    Ok(_) => {},
+                    Err(e) => {
+                        return Err(AvailError::new(
+                            AvailErrorType::Internal,
+                            "Error emitting tx_state_change event".to_string(),
+                            "Error emitting transaction state".to_string(),
+                        ));
+                    }
+                };
             };
 
             return Err(AvailError::new(
@@ -630,9 +729,10 @@ pub fn find_confirmed_block_height<N: Network>(
     DateTime<Local>,
     TransactionState,
     Option<N::TransactionID>,
+    Option<Execution<N>>,
     Option<f64>,
 )> {
-    let api_client = setup_local_client::<N>();
+    let api_client = setup_client::<N>()?;
 
     let latest_block_height = api_client.latest_height()?;
 
@@ -640,7 +740,7 @@ pub fn find_confirmed_block_height<N: Network>(
     let mut iter = latest_block_height;
 
     let start_time = Instant::now();
-    let search_duration = Duration::from_secs(120);
+    let search_duration = Duration::from_secs(180);
 
     println!("Waiting for transaction to confirm in block on chain");
     while !flag && start_time.elapsed() < search_duration {
@@ -680,6 +780,7 @@ pub fn find_confirmed_block_height<N: Network>(
                 TransactionState::Aborted,
                 None,
                 None,
+                None,
             ));
         }
 
@@ -695,26 +796,38 @@ pub fn find_confirmed_block_height<N: Network>(
                 flag = true;
                 let timestamp = get_timestamp_from_i64(block.timestamp())?;
                 let fee = tx.transaction().fee_amount()?;
-                let transitions = tx.transitions().cloned().collect::<Vec<_>>();
+                let mut transitions: Vec<Transition<N>> = vec![];
+
+                if let Some(fee_transition) = tx.transaction().fee_transition() {
+                    let transition = fee_transition.transition();
+                    transitions.push(transition.clone());
+                }
+
                 return Ok((
                     iter,
-                    vec![],
+                    transitions,
                     timestamp,
                     TransactionState::Aborted,
+                    None,
                     None,
                     Some(*fee as f64 / 1000000.0),
                 ));
             } else if let ConfirmedTransaction::<N>::AcceptedExecute(_, _, _) = tx {
                 flag = true;
+                println!("C1");
                 let timestamp = get_timestamp_from_i64(block.timestamp())?;
+                println!("C2");
                 let fee = tx.transaction().fee_amount()?;
+                println!("C3");
 
                 let transitions = tx.transitions().cloned().collect::<Vec<_>>();
+                println!("C4");
                 return Ok((
                     iter,
                     transitions,
                     timestamp,
                     TransactionState::Confirmed,
+                    None,
                     None,
                     Some(*fee as f64 / 1000000.0),
                 ));
@@ -726,37 +839,64 @@ pub fn find_confirmed_block_height<N: Network>(
                         flag = true;
                         let timestamp = get_timestamp_from_i64(block.timestamp())?;
                         let fee = tx.transaction().fee_amount()?;
-                        let transitions = tx.transitions().cloned().collect::<Vec<_>>();
+
+                        let mut transitions: Vec<Transition<N>> = vec![];
+
+                        if let Some(fee_transition) = tx.transaction().fee_transition() {
+                            let transition = fee_transition.transition();
+                            transitions.push(transition.clone());
+                        }
+
                         return Ok((
                             iter,
                             transitions,
                             timestamp,
                             TransactionState::Rejected,
                             Some(fee_tx.id()),
+                            None,
                             Some(*fee as f64 / 1000000.0),
                         ));
                     }
-                } else if let ConfirmedTransaction::<N>::RejectedExecute(_, fee_tx, _, _) = tx {
+                } else if let ConfirmedTransaction::<N>::RejectedExecute(
+                    _,
+                    fee_tx,
+                    rejected_execution,
+                    _,
+                ) = tx
+                {
                     if tx.to_unconfirmed_transaction_id()? == tx_id {
                         flag = true;
                         let timestamp = get_timestamp_from_i64(block.timestamp())?;
                         let fee = tx.transaction().fee_amount()?;
                         let transitions = tx.transitions().cloned().collect::<Vec<_>>();
+                        if let Some(rejected_execution) = rejected_execution.execution() {
+                            return Ok((
+                                iter,
+                                transitions,
+                                timestamp,
+                                TransactionState::Rejected,
+                                Some(fee_tx.id()),
+                                Some(rejected_execution.to_owned()),
+                                Some(*fee as f64 / 1000000.0),
+                            ));
+                        }
+
                         return Ok((
                             iter,
                             transitions,
                             timestamp,
                             TransactionState::Rejected,
                             Some(fee_tx.id()),
+                            None,
                             Some(*fee as f64 / 1000000.0),
                         ));
                     }
                 }
-
-                iter = iter.add(1);
-                std::thread::sleep(std::time::Duration::from_secs(7));
             }
         }
+
+        iter = iter.add(1);
+        std::thread::sleep(std::time::Duration::from_secs(7));
     }
 
     Err(AvailError::new(
@@ -832,7 +972,6 @@ mod transfer_tests {
     };
 
     use crate::services::account::generation::import_wallet;
-    #[cfg(target_os = "macos")]
     use crate::services::account::key_management::key_controller::KeyController;
     use crate::services::local_storage::session::view::VIEWSESSION;
     use crate::services::local_storage::{
@@ -1031,6 +1170,7 @@ mod transfer_tests {
 
         #[cfg(target_os = "macos")]
         let mac_key_controller = macKeyController {};
+        #[cfg(target_os = "macos")]
         mac_key_controller
             .delete_key(Some(STRONG_PASSWORD), ext)
             .unwrap();
@@ -1172,7 +1312,7 @@ mod transfer_tests {
 
         /* -- Has to be called here cause has to await-- */
 
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let pk = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
         let ext = Identifier::<Testnet3>::from_str("test").unwrap();
 
         #[cfg(target_os = "macos")]
@@ -1214,7 +1354,7 @@ mod transfer_tests {
 
         let fee = 4000000u64;
         let amount = 100000u64;
-        let recipient_address = Address::<Testnet3>::from_str(TESTNET3_ADDRESS).unwrap();
+        let recipient_address = Address::<Testnet3>::from_str("").unwrap();
         let asset_id = "credits".to_string();
 
         let request = TransferRequest::new(
@@ -1234,7 +1374,7 @@ mod transfer_tests {
     // Transfer funds to test wallet on local dev network
     #[tokio::test]
     async fn test_transfer_public_to_private_util() {
-        let api_client = setup_local_client::<Testnet3>();
+        let api_client = setup_client::<Testnet3>().unwrap();
         let private_key = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
 
         let program_manager = ProgramManager::<Testnet3>::new(

@@ -138,20 +138,7 @@ impl DecryptTransition {
 
         //check inputs
         for (index, input) in transition.inputs().iter().enumerate() {
-            if let Input::Private(id, ciphertext_option) = input {
-                if let Some(ciphertext) = ciphertext_option {
-                    let index_field = Field::from_u16(u16::try_from(index)?);
-                    let input_view_key = N::hash_psd4(&[function_id, tvk, index_field])?;
-                    let plaintext = match ciphertext.decrypt_symmetric(input_view_key) {
-                        Ok(plaintext) => plaintext,
-                        Err(_) => {
-                            continue;
-                        }
-                    };
-                    let input = Input::Public(*id, Some(plaintext));
-                    decrypted_inputs.push(input.clone());
-                } //record inputs are handled later or should be handled directly here to store pointer with it if record was inputted but not executed by user
-            } else if let Input::Record(_id, _checksum) = input {
+           if let Input::Record(_id, _checksum) = input {
                 // spent records should be handled here
                 let input_tag = match input.tag() {
                     Some(tag) => tag,
@@ -162,6 +149,7 @@ impl DecryptTransition {
                     if &record_pointer.tag()? == input_tag {
                         update_record_spent_local::<N>(id, true)?;
                         spent_input_ids.push(id.to_string());
+                        println!("================> INSIDE Input::Record");
 
                         let mock_input =
                             Input::<N>::Public(Uniform::rand(&mut rand::thread_rng()), None);
@@ -201,6 +189,10 @@ impl DecryptTransition {
                             continue;
                         }
                     };
+                    println!(
+                        "================> INSIDE Output::Private ----> PlainText -- {:?}",
+                        plaintext
+                    );
                     let output = Output::Public(*id, Some(plaintext));
                     decrypted_outputs.push(output.clone());
                 }
@@ -216,6 +208,7 @@ impl DecryptTransition {
                     index,
                 )?;
 
+                // println!("================> INSIDE Output::Record");
                 match record_pointer {
                     Some(record_pointer) => {
                         record_pointers.push(record_pointer.clone());
@@ -224,6 +217,7 @@ impl DecryptTransition {
                         store_encrypted_data(encrypted_record_pointer)?;
 
                         decrypted_outputs.push(output.clone());
+                        println!("================> INSIDE record_pointer");
                     }
                     None => continue,
                 }
@@ -252,6 +246,7 @@ impl DecryptTransition {
                 amount,
                 block_height,
             );
+            println!("================> INSIDE !decrypted_inputs.is_empty()");
 
             let encrypted_transition_pointer = transition_pointer.to_encrypted_data(address)?;
             store_encrypted_data(encrypted_transition_pointer.clone())?;
@@ -272,7 +267,7 @@ impl DecryptTransition {
                 amount,
                 block_height,
             );
-
+            println!("================> INSIDE !decrypted_outputs.is_empty()");
             let encrypted_transition_pointer = transition_pointer.to_encrypted_data(address)?;
             store_encrypted_data(encrypted_transition_pointer.clone())?;
 

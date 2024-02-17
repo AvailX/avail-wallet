@@ -289,10 +289,29 @@ pub fn get_encrypted_data_by_id(id: &str) -> AvailResult<EncryptedData> {
     } else {
         Err(AvailError::new(
             AvailErrorType::Internal,
-            "No encrypted data found".to_string(),
-            "".to_string(),
+            "Data Not Found".to_string(),
+            "Data Not Found".to_string(),
         ))
     }
+}
+
+/// get encrypted record pointer by nonce
+pub fn get_encrypted_data_by_nonce(nonce: &str) -> AvailResult<Option<EncryptedData>> {
+    let address = get_address_string()?;
+    let network = get_network()?;
+
+    let query = format!(
+        "SELECT * FROM encrypted_data WHERE record_nonce='{}' AND owner='{}' AND network='{}'",
+        nonce, address, network
+    );
+
+    let encrypted_data = handle_encrypted_data_query(&query)?;
+
+    if !encrypted_data.is_empty() {
+        Ok(Some(encrypted_data[0].clone()))
+    }else{
+        Ok(None)
+    } 
 }
 
 /* Main Encrypted Data funcions */
@@ -364,12 +383,12 @@ pub fn update_encrypted_transaction_confirmed_by_id(
     let storage = PersistentStorage::new()?;
 
     let query = format!(
-        "UPDATE encrypted_data SET ciphertext=?1, nonce=?2, program_ids=?3, function_ids=?4 WHERE id='{}'",
+        "UPDATE encrypted_data SET ciphertext=?1, nonce=?2, program_ids=?3, function_ids=?4, state=?5 WHERE id='{}'",
         id
     );
 
     storage.save_mixed(
-        vec![&ciphertext, &nonce, &program_ids, &function_ids],
+        vec![&ciphertext, &nonce, &program_ids, &function_ids, &TransactionState::Confirmed.to_str()],
         query,
     )?;
 
@@ -448,7 +467,7 @@ pub fn drop_encrypted_data_table() -> AvailResult<()> {
                 return Err(AvailError::new(
                     AvailErrorType::Internal,
                     "Error dropping encrypted data table ".to_string(),
-                    "".to_string(),
+                    "Error deleting encrypted data table".to_string(),
                 ))
             }
         },
@@ -659,7 +678,7 @@ mod encrypted_data_tests {
         //test_store_encrypted_data();
 
         VIEWSESSION
-            .set_view_session("AViewKey1rWpxoch574dTmVu9zRovZ5UKyhZeBv9ftP2MkEy6TJRF")
+            .set_view_session("AViewKey1myvhAr2nes8MF1y8gPV19azp4evwsBR4CqyzAi62nufW")
             .unwrap();
 
         let res = get_encrypted_data_by_flavour(EncryptedDataTypeCommon::Record).unwrap();
@@ -677,7 +696,7 @@ mod encrypted_data_tests {
             .collect::<Vec<AvailRecord<Testnet3>>>();
 
         for record in records {
-            println!("{:?}\n", record.to_record().unwrap());
+            println!("{:?}\n", record);
         }
     }
 

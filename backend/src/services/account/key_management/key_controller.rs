@@ -1,4 +1,4 @@
-use crate::models::storage::encryption::Keys;
+use crate::models::{storage::encryption::Keys, wallet::BetterAvailWallet};
 use crate::services::local_storage::session::password::PASS;
 
 #[cfg(target_os = "android")]
@@ -9,7 +9,7 @@ use super::ios::{delete_ios, search, store_keys_local};
 
 use snarkvm::prelude::{Identifier, Network, PrivateKey, ViewKey};
 
-use super::desktop::{delete_key, read_key, store};
+use super::desktop::{delete_key, read_key, store,read_seed_phrase};
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 
 /// This trait is used as a standard interface for the key management service.
@@ -18,19 +18,12 @@ pub trait KeyController<N: Network> {
     fn store_key(
         &self,
         password: &str,
-        access_type: bool,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
+        wallet: &BetterAvailWallet<N>
     ) -> AvailResult<String>;
-    fn import_key(
-        &self,
-        password: &str,
-        access_type: bool,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
-    ) -> AvailResult<String>;
+
     fn delete_key(&self, password: Option<&str>, ext: Identifier<N>) -> AvailResult<String>;
     fn read_key(&self, password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>>;
+    fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String>;
 }
 
 pub struct AndroidKeyController;
@@ -40,9 +33,7 @@ impl<N: Network> KeyController<N> for AndroidKeyController {
     fn store_key(
         &self,
         password: &str,
-        access_type: bool,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
+        wallet: BetterAvailWallet<N>
     ) -> AvailResult<String> {
         keystore_init(password, access_type, p_key, v_key)
     }
@@ -50,7 +41,6 @@ impl<N: Network> KeyController<N> for AndroidKeyController {
     fn import_key(
         &self,
         password: &str,
-        access_type: bool,
         p_key: &PrivateKey<N>,
         v_key: &ViewKey<N>,
     ) -> AvailResult<String> {
@@ -65,6 +55,10 @@ impl<N: Network> KeyController<N> for AndroidKeyController {
     fn read_key(&self, password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>> {
         keystore_load(password, key_type)
     }
+
+    fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String> {
+        read_seed_phrase::<N>(password)
+    }
 }
 
 pub struct iOSKeyController;
@@ -74,9 +68,7 @@ impl<N: Network> KeyController<N> for iOSKeyController {
     fn store_key(
         &self,
         password: &str,
-        access_type: bool,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
+        wallet: BetterAvailWallet<N>
     ) -> AvailResult<String> {
         store_keys_local(password, access_type, p_key, v_key)
     }
@@ -99,6 +91,10 @@ impl<N: Network> KeyController<N> for iOSKeyController {
     fn read_key(&self, password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>> {
         search(password, key_type)
     }
+
+    fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String> {
+        read_seed_phrase(password, ext)
+    }
 }
 
 pub struct macKeyController;
@@ -108,21 +104,9 @@ impl<N: Network> KeyController<N> for macKeyController {
     fn store_key(
         &self,
         password: &str,
-        access_type: bool,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
+        wallet: &BetterAvailWallet<N>
     ) -> AvailResult<String> {
-        store(password, access_type, p_key, v_key)
-    }
-
-    fn import_key(
-        &self,
-        password: &str,
-        access_type: bool,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
-    ) -> AvailResult<String> {
-        store(password, access_type, p_key, v_key)
+        store(wallet,password)
     }
 
     fn delete_key(&self, password: Option<&str>, _ext: Identifier<N>) -> AvailResult<String> {
@@ -151,6 +135,10 @@ impl<N: Network> KeyController<N> for macKeyController {
             }
         }
     }
+
+    fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String> {
+        read_seed_phrase::<N>(password)
+    }
 }
 
 pub struct linuxKeyController;
@@ -159,21 +147,9 @@ impl<N: Network> KeyController<N> for linuxKeyController {
     fn store_key(
         &self,
         password: &str,
-        access_type: bool,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
+        wallet: &BetterAvailWallet<N>
     ) -> AvailResult<String> {
-        store(password, access_type, p_key, v_key)
-    }
-
-    fn import_key(
-        &self,
-        password: &str,
-        access_type: bool,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
-    ) -> AvailResult<String> {
-        store(password, access_type, p_key, v_key)
+        store(wallet,password)
     }
 
     //TODO authenticate using read_key
@@ -203,6 +179,10 @@ impl<N: Network> KeyController<N> for linuxKeyController {
             }
         }
     }
+
+    fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String> {
+        read_seed_phrase::<N>(password)
+    }
 }
 
 pub struct windowsKeyController;
@@ -212,21 +192,9 @@ impl<N: Network> KeyController<N> for windowsKeyController {
     fn store_key(
         &self,
         password: &str,
-        access_type: bool,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
+        wallet: &BetterAvailWallet<N>
     ) -> AvailResult<String> {
-        store(password, access_type, p_key, v_key)
-    }
-
-    fn import_key(
-        &self,
-        password: &str,
-        access_type: bool,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
-    ) -> AvailResult<String> {
-        store(password, access_type, p_key, v_key)
+        store(wallet,password)
     }
 
     //TODO authenticate using read_key
@@ -255,5 +223,9 @@ impl<N: Network> KeyController<N> for windowsKeyController {
                 read_key(&password, key_type)
             }
         }
+    }
+
+    fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String> {
+        read_seed_phrase::<N>(password)
     }
 }

@@ -17,9 +17,10 @@ use avail_common::{
     models::{
         encrypted_data::{
             Data, DataRequest, EncryptedData, EncryptedDataRecord, EncryptedDataSyncRequest,
-            EncryptedDataUpdateRequest,
+            EncryptedDataUpdateRequest,PageRequest
         },
         traits::encryptable::EncryptedStruct,
+        
     },
 };
 
@@ -27,44 +28,51 @@ use avail_common::{
 
 /// update encrypted data by id
 pub async fn update_data(data: Vec<EncryptedData>, idx: Vec<String>) -> AvailResult<String> {
-    let request = data
-        .into_iter()
-        .enumerate()
-        .map(|(i, data)| {
-            let id = Uuid::from_str(&idx[i])?;
+    
+    const MAX_BATCH_SIZE: usize = 300; 
 
-            Ok(EncryptedDataUpdateRequest {
-                id,
-                ciphertext: data.ciphertext,
-                nonce: data.nonce,
+    // Assuming data and idx have the same length
+    let batches = data.chunks(MAX_BATCH_SIZE);
+    let idx_batches = idx.chunks(MAX_BATCH_SIZE);
+
+    for (batch, idx_batch) in batches.zip(idx_batches) {
+        let request = batch
+            .iter()
+            .enumerate()
+            .map(|(i, data)| {
+                let id = Uuid::from_str(&idx_batch[i])?;
+                Ok(EncryptedDataUpdateRequest {
+                    id,
+                    ciphertext: data.ciphertext.clone(),
+                    nonce: data.nonce.clone(),
+                })
             })
-        })
-        .collect::<Result<Vec<EncryptedDataUpdateRequest>, AvError>>()?
-        .into_iter()
-        .collect_vec();
+            .collect::<Result<Vec<EncryptedDataUpdateRequest>, AvailError>>()?;
 
-    let res = get_rm_client_with_session(reqwest::Method::PUT, "data")?
-        .json(&request)
-        .send()
-        .await?;
+        let res = get_rm_client_with_session(reqwest::Method::PUT, "data")?
+            .json(&request)
+            .send()
+            .await?;
 
-    if res.status() == 200 {
-        let result = res.text().await?;
-
-        Ok(result)
-    } else if res.status() == 401 {
-        Err(AvailError::new(
-            AvailErrorType::Unauthorized,
-            "User session has expired.".to_string(),
-            "Your session has expired, please authenticate again.".to_string(),
-        ))
-    } else {
-        Err(AvailError::new(
-            AvailErrorType::External,
-            "Error updating encrypted data record ".to_string(),
-            "Error updating backup data.".to_string(),
-        ))
+        if res.status() == 200 {
+                let _result = res.text().await?;
+            }else if res.status() == 401 {
+                return Err(AvailError::new(
+                    AvailErrorType::Unauthorized,
+                    "User session has expired.".to_string(),
+                    "Your session has expired, please authenticate again.".to_string(),
+                ));
+            }else{
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    "Error updating encrypted data record ".to_string(),
+                    "Error updating backup data.".to_string(),
+                ));
+            }
+        
     }
+
+    Ok("Updated Succesfully".to_string())
 }
 
 /// update transactions received to synced
@@ -108,6 +116,7 @@ pub async fn get_new_transaction_messages<N: Network>(
 
         let result: Vec<EncryptedDataRecord> = res.json().await?;
 
+        println!("Enc Data {:?}",result);
         let encrypted_txs = result
             .clone()
             .into_iter()
@@ -151,35 +160,43 @@ pub async fn get_new_transaction_messages<N: Network>(
 }
 
 pub async fn post_encrypted_data(request: Vec<EncryptedData>) -> AvailResult<Vec<String>> {
-    let request = request
-        .into_iter()
-        .map(|data| EncryptedDataRecord::from(data.to_owned()))
-        .collect::<Vec<EncryptedDataRecord>>();
+    const MAX_BATCH_SIZE: usize = 300;
+    let mut ids: Vec<String> = Vec::new();
 
-    let res = get_rm_client_with_session(reqwest::Method::POST, "data")?
-        .json(&request)
-        .send()
-        .await?;
+    // Split the request into batches of MAX_BATCH_SIZE
+    let batches = request.chunks(MAX_BATCH_SIZE);
 
-    if res.status() == 200 {
-        let result = res.text().await?;
+    for batch in batches {
+        let request = batch
+            .into_iter()
+            .map(|data| EncryptedDataRecord::from(data.to_owned()))
+            .collect::<Vec<EncryptedDataRecord>>();
 
-        let ids: Vec<String> = serde_json::from_str(&result).unwrap();
+        let res = get_rm_client_with_session(reqwest::Method::POST, "data")?
+            .json(&request)
+            .send()
+            .await?;
 
-        Ok(ids)
-    } else if res.status() == 401 {
-        Err(AvailError::new(
-            AvailErrorType::Unauthorized,
-            "User session has expired.".to_string(),
-            "Your session has expired, please authenticate again.".to_string(),
-        ))
-    } else {
-        Err(AvailError::new(
-            AvailErrorType::External,
-            "Error posting encrypted data ".to_string(),
-            "".to_string(),
-        ))
+        if res.status() == 200 {
+            let result = res.text().await?;
+            let batch_ids: Vec<String> = serde_json::from_str(&result)?;
+            ids.extend(batch_ids);
+        } else if res.status() == 401 {
+            return Err(AvailError::new(
+                AvailErrorType::Unauthorized,
+                "User session has expired.".to_string(),
+                "Your session has expired, please authenticate again.".to_string(),
+            ));
+        } else {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                "Error posting encrypted data ".to_string(),
+                "".to_string(),
+            ));
+        }
     }
+
+    Ok(ids)
 }
 
 pub async fn send_transaction_in(request: EncryptedData) -> AvailResult<String> {
@@ -220,21 +237,21 @@ pub async fn delete_invalid_transactions_in(ids: Vec<Uuid>) -> AvailResult<Strin
     } else {
         Err(AvailError::new(
             AvailErrorType::External,
-            "Error deleting encrypted data ".to_string(),
-            "".to_string(),
+            "Error deleting invalid transaction messages".to_string(),
+            "Error deleting invalid transaction messages".to_string(),
         ))
     }
 }
 
-pub async fn recover_data(_address: &str) -> AvailResult<Data> {
-    let res = get_rm_client_with_session(reqwest::Method::GET, "recover_data")?
+pub async fn get_data_count() -> AvailResult<i64>{
+    let res = get_rm_client_with_session(reqwest::Method::GET, "data_count")?
         .send()
         .await?;
 
     if res.status() == 200 {
-        let result: Data = res.json().await?;
-
-        Ok(result)
+        let result = res.text().await?;
+        let count = result.parse::<i64>()?;
+        Ok(count)
     } else if res.status() == 401 {
         Err(AvailError::new(
             AvailErrorType::Unauthorized,
@@ -242,13 +259,69 @@ pub async fn recover_data(_address: &str) -> AvailResult<Data> {
             "Your session has expired, please authenticate again.".to_string(),
         ))
     } else {
-        println!("{:?}", res);
         Err(AvailError::new(
             AvailErrorType::External,
-            "Error recovering encrypted data ".to_string(),
-            "".to_string(),
+            "Error getting encrypted data count".to_string(),
+            "Error getting encrypted data count".to_string(),
         ))
     }
+
+}
+
+pub async fn recover_data(_address: &str) -> AvailResult<Data> {
+    let data_count = get_data_count().await?;
+    let pages = (data_count as f64 / 300.0).ceil() as i64;
+
+    let mut encrypted_data: Vec<Data> = vec![];
+
+    for page in 0..pages {
+
+        let page_request = PageRequest {
+            page
+        };
+
+        let res = get_rm_client_with_session(reqwest::Method::GET, "recover_data")?
+            .json(&page_request)
+            .send()
+            .await?;
+
+        if res.status() == 200 {
+            let result: Data = res.json().await?;
+            encrypted_data.push(result);
+        } else if res.status() == 401 {
+            return Err(AvailError::new(
+                AvailErrorType::Unauthorized,
+                "User session has expired.".to_string(),
+                "Your session has expired, please authenticate again.".to_string(),
+            ));
+        } else {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                "Error recovering encrypted data ".to_string(),
+                "Error recovering encrypted data".to_string(),
+            ));
+        }
+    }
+
+    let mut record_pointers: Vec<EncryptedDataRecord> = vec![];
+    let mut transactions: Vec<EncryptedDataRecord> = vec![];
+    let mut transitions: Vec<EncryptedDataRecord> = vec![];
+    let mut deployments: Vec<EncryptedDataRecord> = vec![];
+
+    for data in encrypted_data {
+        record_pointers.extend(data.record_pointers);
+        transactions.extend(data.transactions);
+        transitions.extend(data.transitions);
+        deployments.extend(data.deployments);
+    }
+
+    Ok(Data {
+        record_pointers,
+        transactions,
+        transitions,
+        deployments,
+    })
+
 }
 
 pub async fn delete_all_server_storage() -> AvailResult<String> {
@@ -276,27 +349,105 @@ pub async fn delete_all_server_storage() -> AvailResult<String> {
 }
 
 pub async fn import_encrypted_data(request: DataRequest) -> AvailResult<String> {
-    let res = get_rm_client_with_session(reqwest::Method::POST, "import_data")?
-        .json(&request)
-        .send()
-        .await?;
 
-    if res.status() == 200 {
-        let result = res.text().await?;
-        Ok(result)
-    } else if res.status() == 401 {
-        Err(AvailError::new(
-            AvailErrorType::Unauthorized,
-            "User session has expired.".to_string(),
-            "Your session has expired, please authenticate again.".to_string(),
-        ))
+    // check that every vector in data request does not exceed 75
+
+    let record_pointers = request.data.record_pointers.len();
+    let transactions = request.data.transactions.len();
+    let transitions = request.data.transitions.len();
+    let deployments = request.data.deployments.len();
+
+    // if they exceed 300 in sum, then split into several DataRequest where the sum of the data vectors inside is less than 300
+    if record_pointers + transactions + transitions + deployments > 300 {
+
+        let mut data_requests: Vec<DataRequest> = vec![];
+
+        let mut record_pointers = request.data.record_pointers.clone();
+        let mut transactions = request.data.transactions.clone();
+        let mut transitions = request.data.transitions.clone();
+        let mut deployments = request.data.deployments.clone();
+
+        while record_pointers.len() + transactions.len() + transitions.len() + deployments.len() > 300 {
+            let mut record_pointers_batch = record_pointers.split_off(75);
+            let mut transactions_batch = transactions.split_off(75);
+            let mut transitions_batch = transitions.split_off(75);
+            let mut deployments_batch = deployments.split_off(75);
+
+            let data: Data = Data {
+                record_pointers: record_pointers.clone(),
+                transactions: transactions.clone(),
+                transitions: transitions.clone(),
+                deployments: deployments.clone(),
+            };
+
+            let data_request = DataRequest {
+                address: request.address.clone(),
+                data,
+            };
+
+            data_requests.push(data_request);
+
+            record_pointers = record_pointers_batch;
+            transactions = transactions_batch;
+            transitions = transitions_batch;
+            deployments = deployments_batch;
+        }
+
+        let data = Data {
+            record_pointers,
+            transactions,
+            transitions,
+            deployments,
+        };
+
+        let data_request = DataRequest {
+            address: request.address.clone(),
+            data,
+        };
+
+        data_requests.push(data_request);
+
+        for data_request in data_requests {
+            let res = get_rm_client_with_session(reqwest::Method::POST, "import_data")?
+                .json(&data_request)
+                .send()
+                .await?;
+
+            if res.status() != 200 {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    "Error importing encrypted data.".to_string(),
+                    "Error backing up encrypted data.".to_string(),
+                ));
+            }
+        }
+
+        Ok("Imported Succesfully".to_string())
     } else {
-        Err(AvailError::new(
-            AvailErrorType::External,
-            "Error importing encrypted data.".to_string(),
-            "Error backing up encrypted data.".to_string(),
-        ))
+        let res = get_rm_client_with_session(reqwest::Method::POST, "import_data")?
+            .json(&request)
+            .send()
+            .await?;
+
+        if res.status() == 200 {
+            let result = res.text().await?;
+            Ok(result)
+        } else if res.status() == 401 {
+            Err(AvailError::new(
+                AvailErrorType::Unauthorized,
+                "User session has expired.".to_string(),
+                "Your session has expired, please authenticate again.".to_string(),
+            ))
+        } else {
+            Err(AvailError::new(
+                AvailErrorType::External,
+                "Error importing encrypted data.".to_string(),
+                "Error backing up encrypted data.".to_string(),
+            ))
+        }
+
     }
+
 }
 
 #[cfg(test)]

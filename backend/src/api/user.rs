@@ -23,10 +23,14 @@ use avail_common::{
 
 // create user online account
 pub async fn create_user(request: User) -> AvailResult<String> {
+    dotenv::dotenv().ok();
+
+    let api = env!("API");
+
     let client = reqwest::Client::new();
 
     let res = client
-        .post(format!("http://{}:8000/user", HOST))
+        .post(format!("{}/user",api))
         .json(&request)
         .send()
         .await?;

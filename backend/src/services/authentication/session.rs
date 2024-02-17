@@ -20,9 +20,8 @@ use avail_common::{
 /// Authenticates user both locally and on server.
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_session(password: Option<String>) -> AvailResult<String> {
-    let session_request = request_hash().await?;
-
-    println!("Request Hash Response: {:?}", session_request);
+    let address = get_address_string()?;
+    let session_request = request_hash(&address).await?;
 
     let network = get_network()?;
 
@@ -38,12 +37,14 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
         session_id: session_request.session_id,
     };
 
-    println!("Verify Request: {:?}", verify_request);
+    dotenv::dotenv().ok();
+
+    let api = env!("API");
 
     let client = reqwest::Client::new();
 
     let res = client
-        .post(format!("http://{}:8000/auth/login/", HOST))
+        .post(format!("{}/auth/login/",api))
         .json(&verify_request)
         .send()
         .await?;
@@ -82,9 +83,8 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
 pub async fn get_session_after_creation<N: Network>(
     private_key: &PrivateKey<N>,
 ) -> AvailResult<String> {
-    let session_request = request_hash().await?;
-
-    println!("Request Hash Response: {:?}", session_request);
+    let address = Address::<N>::try_from(private_key)?;
+    let session_request = request_hash(&address.to_string()).await?;
 
     let (sig, _) = sign_message_w_key::<N>(&session_request.hash, private_key)?;
 
@@ -93,10 +93,12 @@ pub async fn get_session_after_creation<N: Network>(
         session_id: session_request.session_id,
     };
 
-    println!("Verify Request: {:?}", verify_request);
+    dotenv::dotenv().ok();
+
+    let api = env!("API");
 
     let res = reqwest::Client::new()
-        .post(format!("http://{}:8000/auth/login/", HOST))
+        .post(format!("{}/auth/login/",api))
         .json(&verify_request)
         .send()
         .await?;
@@ -119,6 +121,14 @@ pub async fn get_session_after_creation<N: Network>(
 
         Ok(session_request.session_id.to_string())
     } else {
+        if res.status() == 0 {
+            return Err(AvailError::new(
+                AvailErrorType::Network,
+                "No internet connection".to_string(),
+                "No internet connection".to_string(),
+            ));
+        }
+
         Err(AvailError::new(
             AvailErrorType::External,
             "Invalid Signature".to_string(),
@@ -129,18 +139,20 @@ pub async fn get_session_after_creation<N: Network>(
 
 /// requests the initial hash to sign from server
 /// Function 1
-pub async fn request_hash() -> AvailResult<server_auth::CreateSessionResponse> {
-    // This function will sing a message sent by our server to verify the user and give the access to server functionality for a session.
-    let address = get_address_string()?;
-    println!("{}", address);
+pub async fn request_hash(address:&str) -> AvailResult<server_auth::CreateSessionResponse> {
+
     let client = reqwest::Client::new();
 
     let request = server_auth::CreateSessionRequest {
-        public_key: address,
+        public_key: address.to_owned(),
     };
 
+    dotenv::dotenv().ok();
+
+    let api = env!("API");
+
     let res = client
-        .post(format!("http://{}:8000/auth/request/", HOST))
+        .post(format!("{}/auth/request/",api))
         .header("Content-Type", "application/json")
         .json(&request)
         .send()
@@ -149,10 +161,18 @@ pub async fn request_hash() -> AvailResult<server_auth::CreateSessionResponse> {
     if res.status() == 201 {
         Ok(res.json::<server_auth::CreateSessionResponse>().await?)
     } else {
+        if res.status() == 0 {
+            return Err(AvailError::new(
+                AvailErrorType::Network,
+                "No internet connection".to_string(),
+                "No internet connection".to_string(),
+            ));
+        }
+
         Err(AvailError::new(
             AvailErrorType::External,
             "Error requesting auth token.".to_string(),
-            "".to_string(),
+            "Error requesting auth token.".to_string(),
         ))
     }
 }
@@ -183,10 +203,8 @@ pub fn sign_hash(
 pub async fn get_session_only(request: VerifySessionResponse) -> AvailResult<String> {
     let client = reqwest::Client::new();
 
-    println!("Request for Verification: {:?}", request);
-
     let res = client
-        .post(format!("http://{}:8000/auth/login/", HOST))
+        .post("https://test-api.avail.global/auth/login/")
         .json(&request.to_request())
         .send()
         .await?;
@@ -212,6 +230,7 @@ mod tests {
     use crate::api::encrypted_data::get_new_transaction_messages;
     use crate::api::user::create_user;
     use crate::models::storage::languages::Languages;
+    use crate::models::wallet::BetterAvailWallet;
     use crate::services::account::key_management::desktop::{delete_key, store};
     use crate::services::account::utils::generate_discriminant;
     use crate::services::local_storage::encrypted_data::delete_user_encrypted_data;
@@ -237,7 +256,8 @@ mod tests {
         delete_user_preferences().unwrap();
 
         let p_key = PrivateKey::<Testnet3>::new(&mut rand::thread_rng()).unwrap();
-        let p_key = PrivateKey::<Testnet3>::new(&mut rand::thread_rng()).unwrap();
+        let wallet = BetterAvailWallet::<Testnet3>::try_from(p_key.to_string()).unwrap();
+
         let v_key = ViewKey::<Testnet3>::try_from(&p_key).unwrap();
 
         let tag = generate_discriminant();
@@ -264,9 +284,7 @@ mod tests {
 
         create_user(user_request).await.unwrap();
 
-        let access_type = true;
-
-        store::<Testnet3>(STRONG_PASSWORD, access_type, &p_key, &v_key).unwrap();
+        store::<Testnet3>(&wallet,STRONG_PASSWORD).unwrap();
     }
 
     #[tokio::test]
@@ -288,7 +306,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_request_hash() {
-        let hash = request_hash().await;
+        let address = get_address_string().unwrap();
+
+        let hash = request_hash(&address).await;
         print!("{}", hash.unwrap().hash);
         // assert!(hash.is_ok());
     }

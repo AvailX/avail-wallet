@@ -23,12 +23,15 @@ pub fn setup_local_client<N: Network>() -> AleoAPIClient<N> {
 }
 
 pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
-    //let network = get_network()?;
+    dotenv::dotenv().ok();
 
     let node_api_obscura = match std::env::var("TESTNET_API_OBSCURA") {
         Ok(val) => val,
         Err(_e) => "".to_string(),
     };
+
+    println!("Node API Obscura: {:?}", node_api_obscura);
+
     let base_url = format!(
         "https://aleo-testnet3.obscura.build/v1/{}",
         node_api_obscura
@@ -134,7 +137,7 @@ pub static ALEO_CLIENT: Lazy<RwLock<AleoClient<Testnet3>>> =
 
 #[test]
 fn test_new_client() {
-    let api_client = setup_local_client::<Testnet3>();
+    let api_client = setup_client::<Testnet3>().unwrap();
     let height = api_client.latest_height().unwrap();
 
     println!("Height: {:?}", height);

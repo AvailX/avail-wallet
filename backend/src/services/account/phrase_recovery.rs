@@ -11,33 +11,28 @@ use crate::{
 use avail_common::errors::AvailResult;
 
 use crate::api::user::{create_user, get_user};
-use crate::models::wallet::AvailSeedWallet;
-use crate::services::account::key_management::key_controller::KeyController;
+use crate::models::wallet::BetterAvailWallet;
+use crate::services::account::key_management::key_controller::{
+    linuxKeyController, macKeyController, windowsKeyController, KeyController,
+};
 use crate::services::authentication::session::get_session_after_creation;
 use crate::services::local_storage::{
     encrypted_data::get_and_store_all_data, tokens::init_tokens_table,
 };
 use avail_common::models::user::User;
-/*  reconstruct wallet from seed phrase and store in local storage */
-
-#[cfg(target_os = "macos")]
-use crate::services::account::key_management::key_controller::macKeyController;
-
-#[cfg(target_os = "windows")]
-use crate::services::account::key_management::key_controller::windowsKeyController;
-
-#[cfg(target_os = "linux")]
-use crate::services::account::key_management::key_controller::linuxKeyController;
 
 #[tauri::command(rename_all = "snake_case")]
+/// This function provides the tauri bindings to recover an avail wallet from a seed phrase.
 pub async fn recover_wallet_from_seed_phrase(
     seed_phrase: &str,
     password: &str,
     access_type: bool,
     language: Languages,
-) -> AvailResult<()> {
-    let avail_wallet = AvailSeedWallet::<Testnet3>::from_seed_phrase(seed_phrase.to_string())?;
-    let address = avail_wallet.address.to_string();
+) -> AvailResult<()> { 
+    let avail_wallet = BetterAvailWallet::<Testnet3>::from_seed_phrase(
+        seed_phrase,
+        Languages::to_bip39_language(&language),
+    )?;
 
     let key_manager = {
         #[cfg(target_os = "macos")]
@@ -56,9 +51,7 @@ pub async fn recover_wallet_from_seed_phrase(
 
     key_manager.store_key(
         password,
-        access_type,
-        &avail_wallet.private_key,
-        &avail_wallet.view_key,
+        &avail_wallet
     )?;
 
     get_session_after_creation::<Testnet3>(&avail_wallet.private_key).await?;
@@ -68,7 +61,7 @@ pub async fn recover_wallet_from_seed_phrase(
         Err(_) => {
             let request = User {
                 username: None,
-                address: address.clone(),
+                address: avail_wallet.get_address(),
                 tag: None,
                 backup: false,
             };
@@ -79,14 +72,23 @@ pub async fn recover_wallet_from_seed_phrase(
 
     let _v_key = avail_wallet.view_key.to_bytes_le()?;
 
-    //TODO: Change to mainnet on launch
-    initial_user_preferences(access_type, username, tag, true, backup, address, language)?;
+    initial_user_preferences(
+        access_type,
+        username,
+        tag,
+        true,
+        backup,
+        avail_wallet.get_address(),
+        language,
+    )?;
 
     init_tokens_table()?;
 
+    // some function
+
     initialize_encrypted_data_table()?;
     VIEWSESSION
-        .set_view_session(&avail_wallet.view_key.to_string())
+        .set_view_session(&avail_wallet.get_view_key())
         .unwrap();
 
     if backup {
@@ -95,107 +97,3 @@ pub async fn recover_wallet_from_seed_phrase(
 
     Ok(())
 }
-
-// #[cfg(any(target_os = "android"))]
-// #[tauri::command(rename_all = "snake_case")]
-// pub fn recover_wallet_from_seed_phrase_android(
-//     seed_phrase: &str,
-//     password: &str,
-//     access_type: bool,
-//     language: Languages,
-// ) -> AvailResult<()> {
-//     let avail_wallet = AvailSeedWallet::<Testnet3>::from_seed_phrase(seed_phrase.to_string())?;
-//     let address = avail_wallet.address.to_string();
-
-//     let key_manager = AndroidKeyController;
-
-//     key_manager.store_key(
-//         password,
-//         access_type,
-//         &avail_wallet.private_key,
-//         &avail_wallet.view_key,
-//     )?;
-
-//     get_session_after_creation::<Testnet3>(&avail_wallet.private_key).await?;
-
-//     let (username, tag, backup) = match get_user().await {
-//         Ok(user) => (user.username, user.tag, user.backup),
-//         Err(_) => {
-//             let request = User {
-//                 username: None,
-//                 address: address.clone(),
-//                 tag: None,
-//                 backup: false,
-//             };
-//             create_user(request).await?;
-//             (None, None, false)
-//         }
-//     };
-
-//     let v_key = avail_wallet.view_key.to_bytes_le()?;
-
-//     //TODO: Change to mainnet on launch
-//     initial_user_preferences(access_type, username, tag, true, backup, address, language)?;
-//     initialize_encrypted_data_table()?;
-//     VIEWSESSION
-//         .set_view_session(&avail_wallet.view_key.to_string())
-//         .unwrap();
-
-//     if backup {
-//         get_and_store_all_data().await?;
-//     }
-
-//     Ok(())
-// }
-
-// #[cfg(any(target_os = "ios"))]
-// #[tauri::command(rename_all = "snake_case")]
-// pub fn recover_wallet_from_seed_phrase_ios(
-//     seed_phrase: &str,
-//     password: &str,
-//     access_type: bool,
-//     language: Languages,
-// ) -> AvailResult<()> {
-//     let avail_wallet = AvailSeedWallet::<Testnet3>::from_seed_phrase(seed_phrase.to_string())?;
-//     let address = avail_wallet.address.to_string();
-
-//     let key_manager = iOSKeyController;
-
-//     key_manager.store_key(
-//         password,
-//         access_type,
-//         &avail_wallet.private_key,
-//         &avail_wallet.view_key,
-//     )?;
-
-//     get_session_after_creation::<Testnet3>(&avail_wallet.private_key).await?;
-
-//     let (username, tag, backup) = match get_user().await {
-//         Ok(user) => (user.username, user.tag, user.backup),
-//         Err(_) => {
-//             let request = User {
-//                 username: None,
-//                 address: address.clone(),
-//                 tag: None,
-//                 backup: false,
-//             };
-//             create_user(request).await?;
-//             (None, None, false)
-//         }
-//     };
-
-//     let v_key = avail_wallet.view_key.to_bytes_le()?;
-
-//     //TODO: Change to mainnet on launch
-//     initial_user_preferences(access_type, username, tag, true, backup, address, language)?;
-//     initialize_encrypted_data_table()?;
-//     VIEWSESSION
-//         .set_view_session(&avail_wallet.view_key.to_string())
-//         .unwrap();
-
-//     if backup {
-//         get_and_store_all_data().await?;
-//     }
-
-//     Ok(())
-// }

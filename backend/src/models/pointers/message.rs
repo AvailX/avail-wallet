@@ -16,6 +16,8 @@ use avail_common::{
     },
 };
 
+use crate::api::aleo_client::setup_client;
+
 /// Encrypted and sent to the address the wallet owner interacted with in the transaction to avoid scanning times
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct TransactionMessage<N: Network> {
@@ -89,21 +91,7 @@ impl<N: Network> TransactionMessage<N> {
 
     /// Checks if the transaction has been stored before and checks if the transaction is found at the confirmed block height
     pub fn verify(&self) -> AvailResult<(Option<ConfirmedTransaction<N>>, DateTime<Local>)> {
-        /*
-        let node_api_obscura = match std::env::var("TESTNET_API_OBSCURA") {
-            Ok(val) => val,
-            Err(_e) => "".to_string(),
-        };
-         let base_url = format!("https://aleo-testnet3.obscura.build/v1/{}", node_api_obscura);
-         let api_client = AleoAPIClient::<N>::new(&base_url, network_str)?;
-        */
-
-        let dev_node_ip = match std::env::var("DEV_NODE_IP") {
-            Ok(val) => val,
-            Err(_e) => "".to_string(),
-        };
-
-        let api_client = AleoAPIClient::<N>::local_testnet3("3030", &dev_node_ip);
+        let api_client = setup_client::<N>()?;
 
         let block = api_client.get_block(self.confirmed_height)?;
         let timestamp = get_timestamp_from_i64(block.timestamp())?;

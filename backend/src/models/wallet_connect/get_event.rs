@@ -48,8 +48,8 @@ pub struct GetEventsRequest {
 impl GetEventsRequest {
     pub fn default() -> Self {
         Self {
-            filter: None,
-            page: None,
+            filter: Some(EventsFilter::default()),
+            page: Some(0),
         }
     }
 }
@@ -62,6 +62,28 @@ pub struct EventsFilter {
     pub program_id: Option<String>,
     #[serde(rename = "functionId")]
     pub function_id: Option<String>,
+}
+
+impl EventsFilter {
+    pub fn new(
+        event_type: Option<EventTypeCommon>,
+        program_id: Option<String>,
+        function_id: Option<String>,
+    ) -> Self {
+        Self {
+            event_type,
+            program_id,
+            function_id,
+        }
+    }
+
+    pub fn default() -> Self {
+        Self {
+            event_type: None,
+            program_id: None,
+            function_id: None,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

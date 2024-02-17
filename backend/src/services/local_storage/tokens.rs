@@ -7,6 +7,7 @@ pub fn init_tokens_table() -> AvailResult<()> {
     storage.execute_query(
         "CREATE TABLE IF NOT EXISTS ARC20_tokens (
             token_name TEXT PRIMARY KEY,
+            program_id TEXT NOT NULL,
             balance_ciphertext TEXT NOT NULL,
             nonce TEXT NOT NULL
         )",
@@ -14,8 +15,28 @@ pub fn init_tokens_table() -> AvailResult<()> {
     Ok(())
 }
 
+pub fn drop_tokens_table() -> AvailResult<()> {
+    let storage = PersistentStorage::new()?;
+    match storage.execute_query("DROP TABLE IF EXISTS ARC20_tokens"){
+        Ok(r) => r,
+        Err(e) => match e.error_type {
+            AvailErrorType::NotFound => {}
+            _ => {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    e.internal_msg,
+                    "Error deleting tokens table".to_string(),
+                ))
+            }
+        },
+    };
+
+    Ok(())
+}
+
 pub fn init_token<N: Network>(
     token_name: &str,
+    program_id: &str,
     encryption_address: &str,
     balance: &str,
 ) -> AvailResult<()> {
@@ -24,6 +45,7 @@ pub fn init_token<N: Network>(
     storage.execute_query(
         "CREATE TABLE IF NOT EXISTS ARC20_tokens (
             token_name TEXT PRIMARY KEY,
+            program_id TEXT NOT NULL,
             balance_ciphertext TEXT NOT NULL,
             nonce TEXT NOT NULL
         )",
@@ -36,14 +58,15 @@ pub fn init_token<N: Network>(
     let plaintext = Plaintext::<N>::from_str(balance)?;
     let address = Address::<N>::from_str(encryption_address)?;
     let encrypted_balance = plaintext.encrypt(&address, scalar)?;
-
+    
     storage.save(
         vec![
             token_name.to_string(),
+            program_id.to_string(),
             encrypted_balance.to_string(),
             nonce.to_string(),
         ],
-        "INSERT INTO ARC20_tokens (token_name, balance_ciphertext, nonce) VALUES (?1, ?2, ?3)"
+        "INSERT INTO ARC20_tokens (token_name, program_id, balance_ciphertext, nonce) VALUES (?1, ?2, ?3, ?4)"
             .to_string(),
     )?;
 
@@ -60,11 +83,11 @@ pub fn add_balance<N: Network>(
         "SELECT balance_ciphertext, nonce FROM ARC20_tokens WHERE token_name='{}' ",
         token_name
     );
-    let res = storage.get::<String>(query, 2)?;
+    let res = storage.get_all::<String>(&query, 2)?;
     match res.get(0) {
         Some(old_encrypted_balance) => {
-            let nonce = Group::<N>::from_str(res.get(1).unwrap())?;
-            let ciphertext = Ciphertext::<N>::from_str(old_encrypted_balance)?;
+            let nonce = Group::<N>::from_str(res[0].get(1).unwrap())?;
+            let ciphertext = Ciphertext::<N>::from_str(&old_encrypted_balance[0])?;
             let old_balance_string = ciphertext.decrypt(vk, nonce)?.to_string();
             let old_balance = old_balance_string.trim_end_matches("u64").parse::<u64>()?;
 
@@ -109,12 +132,12 @@ pub fn subtract_balance<N: Network>(
         "SELECT balance_ciphertext, nonce FROM ARC20_tokens WHERE token_name='{}' ",
         token_name
     );
-    let res = storage.get::<String>(query, 2)?;
+    let res = storage.get_all::<String>(&query, 2)?;
     match res.get(0) {
         Some(old_encrypted_balance) => {
-            let nonce = res.get(1).unwrap();
+            let nonce = res[0].get(1).unwrap();
             let old_balance_string = Ciphertext::<N>::decrypt(
-                &Ciphertext::<N>::from_str(old_encrypted_balance)?,
+                &Ciphertext::<N>::from_str(&old_encrypted_balance[0])?,
                 vk,
                 Group::<N>::from_str(nonce)?,
             )?
@@ -158,31 +181,26 @@ pub fn get_balance<N: Network>(token_name: &str, vk: ViewKey<N>) -> AvailResult<
         "SELECT balance_ciphertext, nonce FROM ARC20_tokens WHERE token_name='{}' ",
         token_name
     );
-    let res = storage.get::<String>(query, 2)?;
+    let res = storage.get_all::<String>(&query, 2)?;
     match res.get(0) {
-        Some(balance) => {
-            let nonce = res.get(1).unwrap();
-            let balance_string = Ciphertext::<N>::decrypt(
-                &Ciphertext::<N>::from_str(balance)?,
+        Some(old_encrypted_balance) => {
+            let nonce = res[0].get(1).unwrap();
+            let old_balance_string = Ciphertext::<N>::decrypt(
+                &Ciphertext::<N>::from_str(&old_encrypted_balance[0])?,
                 vk,
                 Group::<N>::from_str(nonce)?,
             )?
             .to_string();
-            Ok(balance_string)
+            Ok(old_balance_string)
         }
-        None => Err(AvailError::new(
-            AvailErrorType::LocalStorage,
-            "None_found".to_string(),
-            "Nonefound".to_string(),
-        )),
+        None => Ok("0u64".to_string()),
     }
 } // wrap this func and with only token id as param and vk is
 
-// if_exists fn
 pub fn if_token_exists(token_name: &str) -> AvailResult<bool> {
     let storage = PersistentStorage::new()?;
     let query = format!(
-        "SELECT balance_ciphertext FROM ARC20_tokens WHERE token_name='{}' ",
+        "SELECT balance_ciphertext FROM ARC20_tokens WHERE token_name='{}'",
         token_name
     );
     // let res = ?;
@@ -199,6 +217,55 @@ pub fn if_token_exists(token_name: &str) -> AvailResult<bool> {
     }
 }
 
+#[tauri::command(rename_all = "snake_case")]
+pub fn get_program_id_for_token (token_name: &str) -> AvailResult<String>{
+    let storage = PersistentStorage::new()?;
+    let query = format!(
+        "SELECT program_id FROM ARC20_tokens WHERE token_name='{}'",
+        token_name
+    );
+    // let res = ?;
+    let res = storage.get_all::<String>(&query, 1)?;
+    match res.get(0) {
+        Some(p_id) => {
+            Ok(p_id[0].clone())
+        }
+        None => Ok("".to_string()),
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn get_stored_tokens() -> AvailResult<Vec<String>> {
+    let storage = PersistentStorage::new()?;
+    let query = "SELECT token_name FROM ARC20_tokens";
+    let res = storage.get_all::<String>(query, 1)?;
+
+    println!("Token ids ====> {:?}", res);
+
+    Ok(res.iter().map(|x| x[0].clone()).collect())
+}
+
+pub fn delete_tokens_table() -> AvailResult<()> {
+    let storage = PersistentStorage::new()?;
+    let query = "DROP TABLE ARC20_tokens";
+
+    match storage.execute_query(query) {
+        Ok(r) => r,
+        Err(e) => match e.error_type {
+            AvailErrorType::NotFound => {}
+            _ => {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    e.internal_msg,
+                    "Error deleting tokens table".to_string(),
+                ))
+            }
+        },
+    };
+
+    Ok(())
+}
+
 mod test_tokens {
     use super::*;
 
@@ -208,14 +275,21 @@ mod test_tokens {
 
     #[test]
     fn test_init() {
-        let api_client: AleoAPIClient<Testnet3> = setup_local_client::<Testnet3>();
+        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
         let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
-        let res = init_token::<Testnet3>("token_avl_4.record", TESTNET_ADDRESS, "100u64").unwrap();
+        let res = init_token::<Testnet3>("testnew111.record", "diff.aleo",TESTNET_ADDRESS, "100u64").unwrap();
+    }
+    #[test]
+    fn test_pid() {
+        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
+        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
+        let res = get_program_id_for_token("testnew111.record").unwrap();
+        println!("{:?}", res);
     }
     #[test]
     fn test_add_balance() {
-        let api_client: AleoAPIClient<Testnet3> = setup_local_client::<Testnet3>();
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
         let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
         let res = add_balance("test_token", "100u64", vk).unwrap();
@@ -224,7 +298,7 @@ mod test_tokens {
 
     #[test]
     fn test_subtract_balance() {
-        let api_client: AleoAPIClient<Testnet3> = setup_local_client::<Testnet3>();
+        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
         let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
         let res = subtract_balance("token1", "100u64", vk).unwrap();
@@ -233,7 +307,7 @@ mod test_tokens {
 
     #[test]
     fn test_get_balance() {
-        let api_client: AleoAPIClient<Testnet3> = setup_local_client::<Testnet3>();
+        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
         //let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
 
@@ -247,7 +321,7 @@ mod test_tokens {
 
     #[test]
     fn test_record_exists() {
-        let api_client: AleoAPIClient<Testnet3> = setup_local_client::<Testnet3>();
+        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
         let res = if_token_exists("token_not_existing").unwrap();
         println!("{:?}", res);
     }

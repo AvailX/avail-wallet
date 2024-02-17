@@ -21,7 +21,7 @@ pub fn initial_user_preferences(
 ) -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
 
-    let api_client = setup_local_client::<Testnet3>();
+    let api_client = setup_client::<Testnet3>().unwrap();
 
     let latest_height = match import {
         true => 0,
@@ -103,9 +103,9 @@ pub fn change_auth_type() -> AvailResult<()> {
 
     let query = "SELECT auth_type FROM user_preferences".to_string();
 
-    let res = storage.get::<bool>(query, 1)?;
+    let res = storage.get_all::<bool>(&query, 1)?;
 
-    let auth_type = res[0];
+    let auth_type = res[0][0];
 
     let new_auth_type = !auth_type;
 
@@ -124,9 +124,9 @@ pub fn get_auth_type() -> AvailResult<bool> {
 
     let query = "SELECT auth_type FROM user_preferences".to_string();
 
-    let res = storage.get::<bool>(query, 1)?;
+    let res = storage.get_all::<bool>(&query, 1)?;
 
-    let auth_type = res[0].clone();
+    let auth_type = res[0][0].clone();
 
     Ok(auth_type)
 }
@@ -138,14 +138,14 @@ pub fn get_username() -> AvailResult<String> {
 
     let query = "SELECT username || '#' || tag AS username_tag FROM user_preferences;".to_string();
 
-    let res = storage.get::<String>(query, 1)?;
+    let res = storage.get_all::<String>(&query, 1)?;
 
     match res.get(0) {
         Some(username) => {
-            if username == "#0" {
+            if username[0] == "#0" {
                 return get_address_string();
             } else {
-                return Ok(username.clone());
+                return Ok(username[0].clone());
             }
         }
         None => Err(AvailError::new(
@@ -173,10 +173,10 @@ pub fn get_network() -> AvailResult<String> {
     let storage = PersistentStorage::new()?;
     let query = "SELECT network FROM user_preferences".to_string();
 
-    let res = storage.get::<String>(query, 1)?;
+    let res = storage.get_all::<String>(&query, 1)?;
 
     match res.get(0) {
-        Some(network) => Ok(network.clone()),
+        Some(network) => Ok(network[0].clone()),
         None => Err(AvailError::new(
             AvailErrorType::LocalStorage,
             "No network found".to_string(),
@@ -205,10 +205,10 @@ pub fn get_last_sync() -> AvailResult<u32> {
 
     let query = "SELECT last_sync FROM user_preferences".to_string();
 
-    let res = storage.get::<u32>(query, 1)?;
+    let res = storage.get_all::<u32>(&query, 1)?;
 
     match res.get(0) {
-        Some(last_sync) => Ok(last_sync.to_owned()),
+        Some(last_sync) => Ok(last_sync[0].to_owned()),
         None => Err(AvailError::new(
             AvailErrorType::LocalStorage,
             "No last sync height found".to_string(),
@@ -252,10 +252,10 @@ pub fn get_last_backup_sync() -> AvailResult<DateTime<Utc>> {
 
     let query = "SELECT last_backup_sync FROM user_preferences".to_string();
 
-    let res = storage.get::<Option<DateTime<Utc>>>(query, 1)?;
+    let res = storage.get_all::<Option<DateTime<Utc>>>(&query, 1)?;
 
     match res.get(0) {
-        Some(last_backup) => match last_backup {
+        Some(last_backup) => match last_backup[0] {
             Some(last_backup) => Ok(last_backup.to_owned()),
             None => handle_no_backup_found(),
         },
@@ -281,9 +281,9 @@ pub fn get_last_tx_sync() -> AvailResult<i64> {
 
     let query = "SELECT last_tx_sync FROM user_preferences".to_string();
 
-    let res = storage.get::<DateTime<Utc>>(query, 1)?;
+    let res = storage.get_all::<DateTime<Utc>>(&query, 1)?;
 
-    let last_tx_sync = res[0].clone().timestamp();
+    let last_tx_sync = res[0][0].clone().timestamp();
 
     Ok(last_tx_sync)
 }
@@ -305,10 +305,10 @@ pub fn get_address<N: Network>() -> AvailResult<Address<N>> {
     let storage = PersistentStorage::new()?;
     let query = "SELECT address FROM user_preferences".to_string();
 
-    let res = storage.get::<String>(query, 1)?;
+    let res = storage.get_all::<String>(&query, 1)?;
 
     match res.get(0) {
-        Some(address) => Ok(Address::<N>::from_str(address)?),
+        Some(address) => Ok(Address::<N>::from_str(&address[0])?),
         None => Err(AvailError::new(
             AvailErrorType::LocalStorage,
             "No address found".to_string(),
@@ -322,10 +322,10 @@ pub fn get_address_string() -> AvailResult<String> {
     let storage = PersistentStorage::new()?;
     let query = "SELECT address FROM user_preferences".to_string();
 
-    let res = storage.get::<String>(query, 1)?;
+    let res = storage.get_all::<String>(&query, 1)?;
 
     match res.get(0) {
-        Some(address) => Ok(address.clone()),
+        Some(address) => Ok(address[0].clone()),
         None => Err(AvailError::new(
             AvailErrorType::LocalStorage,
             "No address found".to_string(),
@@ -351,11 +351,11 @@ pub fn get_backup_flag() -> AvailResult<bool> {
 
     let query = "SELECT backup FROM user_preferences".to_string();
 
-    let res = storage.get::<bool>(query, 1)?;
+    let res = storage.get_all::<bool>(&query, 1)?;
 
     let backup = res[0].clone();
 
-    Ok(backup)
+    Ok(backup[0])
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -376,9 +376,9 @@ pub fn get_language() -> AvailResult<Languages> {
 
     let query = "SELECT language FROM user_preferences".to_string();
 
-    let res = storage.get::<String>(query, 1)?;
+    let res = storage.get_all::<String>(&query, 1)?;
 
-    let language = match Languages::from_string_short(&res[0]) {
+    let language = match Languages::from_string_short(&res[0][0]) {
         Some(language) => language,
         None => Languages::English,
     };
@@ -415,10 +415,10 @@ fn test_initial_user_preferences() {
 
     let query = "SELECT auth_type FROM user_preferences".to_string();
 
-    let res = storage.get::<String>(query, 1).unwrap();
+    let res = storage.get_all::<String>(&query, 1).unwrap();
 
-    print!("{:?}", res[0]);
-    assert_eq!(res[0], "true".to_string());
+    print!("{:?}", res[0][0]);
+    assert_eq!(res[0][0], "true".to_string());
 }
 
 #[test]

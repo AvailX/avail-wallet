@@ -54,6 +54,7 @@ pub fn find_encrypt_store_deployments<N: Network>(
                             fee,
                             TransactionState::Confirmed,
                             Some(height),
+                            None,
                             timestamp,
                             Some(timestamp),
                             None,

@@ -10,6 +10,10 @@ pub fn get_rm_client_with_session(
     method: reqwest::Method,
     path: &str,
 ) -> AvailResult<reqwest::RequestBuilder> {
+    dotenv::dotenv().ok();
+
+    let api = env!("API");
+
     let client = reqwest::Client::new();
     let cookie_name = "id";
 
@@ -25,7 +29,8 @@ pub fn get_rm_client_with_session(
     };
 
     let cookie_value = format!("{}={}", cookie_name, session);
-    let url = format!("http://{}:8001/{}", HOST, path);
+    let url = format!("{}/encrypted_data/{}", api, path);
+
     let request = client
         .request(method, url)
         .header(reqwest::header::COOKIE, cookie_value);
@@ -36,6 +41,10 @@ pub fn get_um_client_with_session(
     method: reqwest::Method,
     path: &str,
 ) -> AvailResult<reqwest::RequestBuilder> {
+    dotenv::dotenv().ok();
+
+    let api = env!("API");
+
     let client = reqwest::Client::new();
     let cookie_name = "id";
 
@@ -52,8 +61,7 @@ pub fn get_um_client_with_session(
 
     let cookie_value = format!("{}={}", cookie_name, session);
 
-    let url = format!("http://{}:8000/{}", HOST, path);
-    println!("URL: {}", url);
+    let url = format!("{}/{}", api, path);
     let request = client
         .request(method, url)
         .header(reqwest::header::COOKIE, cookie_value);

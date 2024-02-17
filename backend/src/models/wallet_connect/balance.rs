@@ -52,6 +52,7 @@ impl BalanceResponse {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct BalanceRequest {
+    #[serde(rename = "assetId")]
     asset_id: Option<String>,
     address: Option<String>,
 }

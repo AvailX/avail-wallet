@@ -46,7 +46,7 @@ fn process_transaction<N: Network>(
 
     if let Some(transaction) = transaction {
         println!("Transaction verified");
-        let (_, record_pointers, encrypted_transitions) = sync_transaction(
+        let (_, record_pointers, encrypted_transitions, _) = sync_transaction(
             &transaction,
             transaction_message.confirmed_height(),
             timestamp,
@@ -77,7 +77,7 @@ pub async fn txs_sync() -> AvailResult<TxScanResponse> {
 
 /// syncs transactions sent to user by another avail user
 pub async fn txs_sync_raw<N: Network>() -> AvailResult<TxScanResponse> {
-    let api_client = setup_local_client::<N>();
+    let api_client = setup_client::<N>()?;
 
     let backup = get_backup_flag()?;
 
@@ -85,6 +85,8 @@ pub async fn txs_sync_raw<N: Network>() -> AvailResult<TxScanResponse> {
     let latest_height = api_client.latest_height()?;
 
     let (txs_in, ids) = get_new_transaction_messages::<N>().await?;
+
+    println!("Transactions In: {:?}",txs_in);
 
     if txs_in == vec![] {
         let res = TxScanResponse {
@@ -239,11 +241,11 @@ pub async fn sync_backup() -> AvailResult<()> {
 
         // get timestamp from block
         let api_client = match SupportedNetworks::from_str(&network)? {
-            SupportedNetworks::Testnet3 => setup_local_client::<Testnet3>(),
-            _ => setup_local_client::<Testnet3>(),
+            SupportedNetworks::Testnet3 => setup_client::<Testnet3>(),
+            _ => setup_client::<Testnet3>(),
         };
 
-        let block = api_client.get_block(last_sync)?;
+        let block = api_client?.get_block(last_sync)?;
         let timestamp = get_timestamp_from_i64_utc(block.timestamp())?;
 
         update_last_backup_sync(timestamp)
@@ -337,7 +339,6 @@ mod test {
     use crate::services::account::key_management::key_controller::windowsKeyController;
 
     use snarkvm::prelude::{AleoID, Field, FromStr, PrivateKey, Testnet3, ToBytes, ViewKey};
-    use tauri::command::CommandArg;
 
     fn test_setup_prerequisites() {
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
@@ -361,7 +362,7 @@ mod test {
 
         VIEWSESSION.set_view_session(&view_key.to_string()).unwrap();
     }
-
+    #[tokio::test]
     async fn test_blocks_scan() {
         //NOTE - Don't forget to change OS depending on what you testing on -default should be linux
 
@@ -452,7 +453,7 @@ mod test {
 
         tokio::time::sleep(tokio::time::Duration::from_secs(45)).await;
 
-        let api_client = setup_local_client::<Testnet3>();
+        let api_client = setup_client::<Testnet3>().unwrap();
 
         let latest_height = api_client.latest_height().unwrap();
 
@@ -465,7 +466,7 @@ mod test {
     async fn test_scan() {
         test_setup_prerequisites();
 
-        let api_client = setup_local_client::<Testnet3>();
+        let api_client = setup_client::<Testnet3>().unwrap();
 
         let latest_height = api_client.latest_height().unwrap();
         blocks_sync_test(latest_height).await.unwrap();
@@ -569,7 +570,7 @@ output r1 as u32.public;",
 
         let pk2 = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
 
-        let api_client = setup_local_client::<Testnet3>();
+        let api_client = setup_client::<Testnet3>().unwrap();
 
         let mut program_manager =
             ProgramManager::<Testnet3>::new(Some(pk2), None, Some(api_client.clone()), None)
@@ -716,7 +717,7 @@ output r1 as u32.public;",
 
     #[test]
     fn test_get_latest_height() {
-        let api_client = setup_local_client::<Testnet3>();
+        let api_client = setup_client::<Testnet3>().unwrap();
 
         let latest_height = api_client.latest_height().unwrap();
         println!("latest_height: {:?}", latest_height);
@@ -797,7 +798,7 @@ output r1 as u32.public;",
 
         tokio::time::sleep(tokio::time::Duration::from_secs(30)).await;
 
-        let api_client = setup_local_client::<Testnet3>();
+        let api_client = setup_client::<Testnet3>().unwrap();
         let latest_height2 = api_client.latest_height().unwrap();
         blocks_sync_test(latest_height2).await.unwrap();
     }
