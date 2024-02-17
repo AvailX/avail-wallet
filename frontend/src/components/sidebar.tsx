@@ -23,9 +23,12 @@ import HistoryIcon from '@mui/icons-material/History';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import LanguageIcon from '@mui/icons-material/Language';
+import DropIcon from '@mui/icons-material/WaterDrop';
 
+import LogoutDialog from './dialogs/logout';
 import { useNavigate } from "react-router-dom";
-import { Box } from '@mui/material';
+
+import { open_url } from '../services/util/open';
 
 
 
@@ -41,14 +44,19 @@ const renderIcon = (index: number) => {
     case 2:
       return <HistoryIcon />;
       break;
+    /*
+  case 3:
+    return <InsertPhotoIcon />;
+    break;
+    */
     case 3:
-      return <InsertPhotoIcon />;
+      return <DropIcon />
       break;
     case 4:
-      return <SupportAgentRoundedIcon />;
+      return <LanguageIcon />;
       break;
     case 5:
-      return <LanguageIcon />;
+      return <SupportAgentRoundedIcon />;
       break;
     case 6:
       return <SettingsRoundedIcon />;
@@ -134,20 +142,20 @@ export default function SideMenu() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [height, setHeight] = React.useState(window.innerHeight);
+  const [logoutDialog, setLogoutDialog] = React.useState(false);
+
   const navigate = useNavigate();
 
   const md = useMediaQuery('(min-height:700px)');
   const lg = useMediaQuery('(min-height:1000px)');
 
- 
+
 
   React.useEffect(() => {
     window.addEventListener("resize", () => setHeight(window.innerHeight));
   }, []);
 
   const handleOnClick = (index: Number) => {
-    // const navigate = useNavigate();
-
     switch (index) {
       case 0:
         navigate("/home");
@@ -158,20 +166,29 @@ export default function SideMenu() {
       case 2:
         navigate("/activity")
         break;
+      /*
+    case 3:
+      navigate("/nfts")
+      break;
+      */
       case 3:
-        navigate("/nfts")
+        navigate("/browser", { state: "https://faucet.puzzle.online" })
         break;
       case 4:
-        navigate("/browser",{state: "https://discord.gg/9Gk3t6D9"})
+        navigate("/browser")
         break;
       case 5:
-        navigate("/browser")
+        open_url("https://discord.gg/A6N5X2yX").then((res) => {
+          console.log(res);
+        }).catch((e) => {
+          console.log(e);
+        })
         break;
       case 6:
         navigate("/settings")
         break;
       case 7:
-        navigate("/login")
+        setLogoutDialog(true);
         break;
       default:
         break;
@@ -182,9 +199,9 @@ export default function SideMenu() {
 
 
     <Drawer variant="permanent" open={open} >
-
+      <LogoutDialog isOpen={logoutDialog} onRequestClose={() => setLogoutDialog(false)} />
       <List >
-        {['Home', 'Swap', 'Activity', 'Nfts', 'Support','Browser'].map((text, index) => (
+        {['Home', 'Swap', 'Activity', 'Faucet', 'Browser', 'Support'].map((text, index) => (
           <ListItem key={text} disablePadding sx={{
             display: 'block', color: "#fff", marginTop: (text == 'Home') ? '' : "20%", transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
             '&:hover': {
@@ -220,7 +237,7 @@ export default function SideMenu() {
             </ListItemButton>
           </ListItem>
         ))}
-       {/*  <Box sx={{ mt: lg ? `${height / 2.5}px` : md ? `${height / 4}px` : `${height / 4}px` }} />*/}
+        {/*  <Box sx={{ mt: lg ? `${height / 2.5}px` : md ? `${height / 4}px` : `${height / 4}px` }} />*/}
         {['Settings', 'Logout'].map((text, index) => (
           <ListItem key={text} disablePadding sx={{
             display: 'block', color: "#111111", marginTop: "20%", transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
@@ -264,9 +281,3 @@ export default function SideMenu() {
     </Drawer>
   );
 }
-
-
-
-
-
-

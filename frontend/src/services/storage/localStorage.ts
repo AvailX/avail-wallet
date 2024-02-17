@@ -1,13 +1,3 @@
-export const set_backup_updated = ()=>{
-    localStorage.setItem('backup_updated', 'true')
-}
-
-export const get_backup_updated = ()=>{
-    let backup= localStorage.getItem('backup_updated');
-    let backup_bool = backup === 'true' ? true : false;
-
-    return backup_bool;
-}
 
 // To be on home page, and allow actions to happen on the first time the user visits the app (create guide)
 export const set_first_visit = ()=>{
@@ -20,3 +10,15 @@ export const get_first_visit = ()=>{
 
     return first_visit_bool;
 }
+
+export const set_visit_session_flag = ()=>{
+    sessionStorage.setItem('visit_session', 'true')
+}
+
+export const get_visit_session_flag = ()=>{
+    let visit_session= sessionStorage.getItem('visit_session');
+    let visit_session_bool = visit_session === 'true' ? true : false;
+
+    return visit_session_bool;
+}
+

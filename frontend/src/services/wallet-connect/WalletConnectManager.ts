@@ -277,7 +277,8 @@ export class WalletConnectManager {
         catch (err) {
             console.log("Failed", (err as Error).message)
             const topic = requestEvent.topic;
-            await this.theWallet?.respondSessionRequest({ topic, response: formatJsonRpcError(requestEvent.id, "User Rejected") })
+            console.log("============>>>> Request event ", requestEvent);
+            await this.theWallet?.respondSessionRequest({ topic, response: formatJsonRpcError(requestEvent.id, (err as Error).message) })
         }
         finally {
             console.log()
@@ -289,7 +290,9 @@ export class WalletConnectManager {
 
     private async onSessionDelete(data: Web3WalletTypes.SessionDelete) {
         console.log('Event: session_delete received')
-        console.log(data)
+        console.log(data);
+        window.localStorage.clear();
+        this.close();
         emit('disconnected', 'disconnected')
     }
 
@@ -312,10 +315,16 @@ export class WalletConnectManager {
     async close() {
         if (this.pairingTopic) {
             console.log("Closing pairing...")
-            await this.theWallet?.core.pairing.disconnect({ topic: this.pairingTopic });
+            await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
+            await this.theWallet?.core.history.delete(this.pairingTopic);
         }
-
-      
+        if (this.sessionTopic) {
+            console.log("Closing pairing...")
+            await this.theWallet?.disconnectSession({ topic: this.sessionTopic , reason: getSdkError('USER_DISCONNECTED')});
+            await this.theWallet?.core.history.delete(this.sessionTopic);
+        }
+        emit('disconnected', 'disconnected')
+        window.localStorage.clear();
 
         console.log("Closing event handling...")
         this.theWallet?.off('session_proposal', this.onSessionProposal)

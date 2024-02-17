@@ -34,6 +34,13 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({sx}) => {
 
     const handleChange = (event: SelectChangeEvent<string>) => {
         const selectedLanguage = event.target.value;
+
+        let lang = languages.find((lang) => lang.symbol === selectedLanguage);
+
+        if (lang){
+        setLanguage(lang);
+        }
+
         i18n.changeLanguage(selectedLanguage);
         localStorage.setItem('language', selectedLanguage);
     };

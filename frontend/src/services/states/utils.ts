@@ -50,9 +50,11 @@ export const getAuth = async (setBiometric:  React.Dispatch<React.SetStateAction
 
 {/* --Get Wallet Balance-- */}
 export const getTokenBalance = async (asset_id:string) => {
+    console.log("ASSSSSE ID ", asset_id);
     const request: GetBalancesRequest = {
         assetId: asset_id
     }
+    console.log("Params passsed in FE", request);
     const bal = await get_balance(request);
     return bal;
 }

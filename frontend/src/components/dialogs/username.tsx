@@ -1,30 +1,37 @@
 import * as React from "react";
 import * as mui from "@mui/material";
 
-import { delete_util } from "../../services/authentication/auth";
+
 import { ErrorAlert, SuccessAlert } from "../snackbars/alerts";
 import { useNavigate } from "react-router-dom";
+import { updateUsername } from "../../services/storage/persistent";
 
 import { useTranslation } from "react-i18next";
 
-interface DeleteDialogProps {
+interface UsernameDialogProps {
     isOpen: boolean;
     onRequestClose: () => void;
+    username: string;
+    originalUsername: string;
 }
 
-const DeleteDialog: React.FC<DeleteDialogProps> = ({ isOpen, onRequestClose }) => {
-    const [password, setPassword] = React.useState("");
+const UsernameDialog: React.FC<UsernameDialogProps> = ({ isOpen, onRequestClose,username,originalUsername }) => {
    
     // alert states
     const [success, setSuccess] = React.useState<boolean>(false);
     const [errorAlert, setErrorAlert] = React.useState(false);
     const [message, setMessage] = React.useState("");
 
-    const navigate = useNavigate();
     const { t } = useTranslation();
 
     const handleConfirmClick = () => {
-        delete_util(setSuccess, setErrorAlert, setMessage, navigate, password);
+        updateUsername(username).then(() => {
+            setMessage('Username updated');
+            setSuccess(true);
+          }).catch((e) => {
+            setMessage('Error updating username');
+            setErrorAlert(true);
+          });
     }
 
     const dialogStyle = {
@@ -56,21 +63,11 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({ isOpen, onRequestClose }) =
         <ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={message}/>
         <SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message}/>
         <mui.Dialog open={isOpen} onClose={onRequestClose} PaperProps={{ sx: dialogStyle }}>
-            <mui.DialogTitle>{t("dialogs.delete.title")}</mui.DialogTitle>
+            <mui.DialogTitle>Would you like to update your username?</mui.DialogTitle>
             <mui.DialogContent>
                 <mui.DialogContentText sx={{color:'#a3a3a3'}}>
-                {t("dialogs.delete.description")}
+                By clicking confirm, your username will be updated from {originalUsername} to {username}.
                 </mui.DialogContentText>
-                <mui.TextField
-                    autoFocus
-                    margin="dense"
-                    type="password"
-                    label="Password"
-                    fullWidth
-                    value={password}
-                    onChange={(e)=> setPassword(e.target.value)}
-                    sx={{mt:'8%', ...textFieldStyle}}
-                />
             </mui.DialogContent>
             <mui.DialogActions>
                 <mui.Button onClick={onRequestClose} sx={buttonStyle}> {t("dialogs.options.cancel")}</mui.Button>
@@ -81,4 +78,4 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({ isOpen, onRequestClose }) =
     );
 }
 
-export default DeleteDialog;
+export default UsernameDialog;

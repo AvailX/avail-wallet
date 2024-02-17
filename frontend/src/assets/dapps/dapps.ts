@@ -15,10 +15,10 @@ export interface Dapp {
 export const dapps: Dapp[] = [
     {
         name: "Arcane Finance",
-        description: "Arcane Finance is a decentralized finance platform that allows you to earn interest on your assets.",
-        url: "https://dev.arcane.finance",
+        description: "Arcane Finance is a fully private non-custodial decentralized exchange enabling fully confidential DeFi on Aleo.",
+        url: "https://arcane.finance",
         img: arcane,
-        tags: ["finance", "interest"]
+        tags: ["finance"]
     },
     {
         name: 'Staking.xyz',
@@ -30,16 +30,16 @@ export const dapps: Dapp[] = [
     {
         name: 'ANS',
         description: 'An Aleo domain for your account - ANS is where domain naming meets privacy.',
-        url: 'https://testnet3.aleonames.id/',
+        url: 'https://testnet3.aleonames.id/account',
         img: ans,
         tags: ['domains']
     },
     {
         name: 'ShadowFi',
-        description: 'ShadowFi is a decentralized And private liquidity marketplace',
-        url: 'https://www.shadowfi.com',
+        description: 'Shadow Finance is a Decentralized and Private Liquidity Marketplace',
+        url: 'https://app.shadowfi.xyz/',
         img: shadowfi,
-        tags: ['liquidity', 'marketplace']
+        tags: ['finance']
     }
 ];
 

@@ -43,16 +43,16 @@ const BackupDialog: React.FC<BackupDrawerProps> = ({ open, onClose}) => {
     
     updateBackupFlag(response).then(()=>{
       if (response) {
-        setMessage(t("messages.enabled"));
+        setMessage(t("backup.messages.enabled"));
       }else{
-        setMessage(t("messages.disabled"));
+        setMessage(t("backup.messages.disabled"));
       }
       setSuccess(true);
       onClose();
     
     }).catch((error)=>{
       console.log(error);
-      setMessage(t("messages.error"));
+      setMessage(t("backup.messages.error"));
       setError(true);
     });
     
@@ -91,7 +91,7 @@ const BackupDialog: React.FC<BackupDrawerProps> = ({ open, onClose}) => {
 
       <Box sx={{width:'100%',display:'flex',flexDirection:'row',mt:'3%',justifyContent:'center'}}>
       <BodyText500 sx={{color:'#FFF'}}>{t("backup.subtitle.part1")}</BodyText500>
-      <BodyText500  sx={{color:'#a2a2a2',ml:'1%'}}>{t("backup.subtitle.part1")} </BodyText500>
+      <BodyText500  sx={{color:'#a2a2a2',ml:'1%'}}>{t("backup.subtitle.part2")} </BodyText500>
       </Box>
 
       <img src={backup} style={{ width: "60%",height:'auto',marginTop:'5%',alignSelf:'center'}}/>
@@ -101,8 +101,8 @@ const BackupDialog: React.FC<BackupDrawerProps> = ({ open, onClose}) => {
       </BodyText>
   
       <Box sx={{display:'flex',flexDirection:'row',alignSelf:'center',width:'55%',justifyContent:'space-between',mt:'5%'}}>
-      <CTAButton onClick={() => handleBackupChoise(false)} text={t("backup.disabled")} width='35%'/>
-      <CTAButton onClick={() => handleBackupChoise(true)} text={t("backup.enabled")} width='35%'/>
+      <CTAButton onClick={() => handleBackupChoise(false)} text={t("backup.nobackup")} width='35%'/>
+      <CTAButton onClick={() => handleBackupChoise(true)} text={t("backup.backup")} width='35%'/>
       </Box>
     </Drawer>
   );

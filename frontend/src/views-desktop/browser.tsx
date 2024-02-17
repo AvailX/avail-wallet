@@ -18,63 +18,64 @@ import { useWalletConnectManager } from "../context/WalletConnect";
 import { useLocation } from 'react-router-dom'
 import { Title2Text } from '../components/typography/typography'
 
-const BrowserView:React.FC = () => {
+const BrowserView: React.FC = () => {
   const location = useLocation();
 
   const [url, setUrl] = React.useState("");
   const [reauthDialogOpen, setReauthDialogOpen] = React.useState(false);
 
   //TODO - Handle the activeUrl state
-  const {activeUrl,setActiveUrl} = useWalletConnectManager();
+  const { activeUrl, setActiveUrl } = useWalletConnectManager();
 
-  function handleUrl(){
-    console.log(location.state)
-    if (location.state !== undefined){
+  function handleUrl() {
+    console.log("Location State " + location.state)
+    if (location.state !== undefined) {
       const state = location.state as string
-      setUrl(state) 
+      setUrl(state)
       setActiveUrl(state)
-    }else if(activeUrl !== ''){
+    } else if (activeUrl !== '') {
       setUrl(activeUrl)
     }
-}
+  }
 
-function handleDappSelection(url:string){
-  console.log('handleDappSelection',url)
-  setUrl(url)
-  setActiveUrl(url)
-}
+  function handleDappSelection(url: string) {
+    console.log('handleDappSelection', url)
+    setUrl(url)
+    setActiveUrl(url)
+  }
 
   React.useEffect(() => {
     handleUrl()
   }, [])
 
-     /* --Event Listners */
-     React.useEffect(() => {
-      
-      listen('reauthenticate',(event) => {
-          setReauthDialogOpen(true);
-      })
-      
+  /* --Event Listners */
+  React.useEffect(() => {
+
+    listen('reauthenticate', (event) => {
+      setReauthDialogOpen(true);
+    })
+
   }, [])
 
-if (location.state !== undefined){
-  return(
-  <Layout>
-  <ReAuthDialog isOpen={reauthDialogOpen} onRequestClose={()=>setReauthDialogOpen(false)} />
-  <MiniDrawer/>      
-  <Browser initialUrl={location.state} handleDappSelection={handleDappSelection} />
-</Layout>
-  )
-}else{
-  return (
-    <Layout>
-      <ReAuthDialog isOpen={reauthDialogOpen} onRequestClose={()=>setReauthDialogOpen(false)} />
-      <MiniDrawer/>      
-      <Browser initialUrl={url} handleDappSelection={handleDappSelection} />
-      
-     
-    </Layout>
-  )}
+  if (location.state !== undefined && location.state !== null && location.state !== "") {
+    return (
+      <Layout>
+        <ReAuthDialog isOpen={reauthDialogOpen} onRequestClose={() => setReauthDialogOpen(false)} />
+        <MiniDrawer />
+        <Browser initialUrl={location.state} handleDappSelection={handleDappSelection} />
+      </Layout>
+    )
+  } else {
+    return (
+      <Layout>
+        <ReAuthDialog isOpen={reauthDialogOpen} onRequestClose={() => setReauthDialogOpen(false)} />
+        <MiniDrawer />
+        <Browser initialUrl={url} handleDappSelection={handleDappSelection} />
+
+
+      </Layout>
+    )
+  }
 }
 
 export default BrowserView

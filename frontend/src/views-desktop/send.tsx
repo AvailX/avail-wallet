@@ -28,6 +28,10 @@ import { TransferRequest, TransferType } from "../types/transfer_props/tokens";
 import { AvailError, AvailErrorType } from "../types/errors";
 
 import { useTranslation } from "react-i18next";
+import { emit } from "@tauri-apps/api/event";
+
+//context
+import { useScan } from "../context/ScanContext";
 
 // TODO - Get tokens
 const tokens = [
@@ -81,6 +85,9 @@ function Send() {
     const [warningAlert, setWarningAlert] = React.useState(false);
     const [infoAlert, setInfoAlert] = React.useState(false);
     const [message, setMessage] = React.useState("");
+
+    //Scan states
+    const { scanInProgress, startScan, endScan } = useScan();
 
     const { t } = useTranslation();
 
@@ -148,17 +155,27 @@ function Send() {
         fee: 297000
        }
 
-       setMessage(t("send.messages.info"));
-       setInfoAlert(true);
+       setMessage(t("send.info"));
+       setSuccessAlert(true);
 
+       startScan();
+       sessionStorage.setItem('transferState', 'true');
        transfer(request, setErrorAlert,setMessage).then((res) => {
-        setMessage(t("send.messages.info"));
+        setMessage(t("send.info"));
         setSuccessAlert(true);
+        endScan();
+        sessionStorage.setItem('transferState', 'false');
+        
        }).catch((e) => {
         console.log("Error" + e);
         const error = JSON.parse(e) as AvailError;
-        
+        endScan();
+        sessionStorage.setItem('transferState', 'false');
         if (error.error_type.toString() === "Unauthorized"){
+          
+          sessionStorage.setItem('transferState', 'false');
+          emit('transfer_off');
+          
           setRequest(request);
           setTransferDialogOpen(true);
           return;

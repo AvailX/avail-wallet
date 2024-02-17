@@ -1,19 +1,17 @@
 import * as React from "react";
 import * as mui from "@mui/material";
 
-import { delete_util } from "../../services/authentication/auth";
 import { ErrorAlert, SuccessAlert } from "../snackbars/alerts";
 import { useNavigate } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
 
-interface DeleteDialogProps {
+interface LogoutDialogProps {
     isOpen: boolean;
     onRequestClose: () => void;
 }
 
-const DeleteDialog: React.FC<DeleteDialogProps> = ({ isOpen, onRequestClose }) => {
-    const [password, setPassword] = React.useState("");
+const LogoutDialog: React.FC<LogoutDialogProps> = ({ isOpen, onRequestClose }) => {
    
     // alert states
     const [success, setSuccess] = React.useState<boolean>(false);
@@ -24,7 +22,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({ isOpen, onRequestClose }) =
     const { t } = useTranslation();
 
     const handleConfirmClick = () => {
-        delete_util(setSuccess, setErrorAlert, setMessage, navigate, password);
+       navigate("/login");
     }
 
     const dialogStyle = {
@@ -56,21 +54,11 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({ isOpen, onRequestClose }) =
         <ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={message}/>
         <SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message}/>
         <mui.Dialog open={isOpen} onClose={onRequestClose} PaperProps={{ sx: dialogStyle }}>
-            <mui.DialogTitle>{t("dialogs.delete.title")}</mui.DialogTitle>
+            <mui.DialogTitle>{t("dialogs.logout.title")}</mui.DialogTitle>
             <mui.DialogContent>
                 <mui.DialogContentText sx={{color:'#a3a3a3'}}>
-                {t("dialogs.delete.description")}
+                {t("dialogs.logout.description")}
                 </mui.DialogContentText>
-                <mui.TextField
-                    autoFocus
-                    margin="dense"
-                    type="password"
-                    label="Password"
-                    fullWidth
-                    value={password}
-                    onChange={(e)=> setPassword(e.target.value)}
-                    sx={{mt:'8%', ...textFieldStyle}}
-                />
             </mui.DialogContent>
             <mui.DialogActions>
                 <mui.Button onClick={onRequestClose} sx={buttonStyle}> {t("dialogs.options.cancel")}</mui.Button>
@@ -81,4 +69,4 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({ isOpen, onRequestClose }) =
     );
 }
 
-export default DeleteDialog;
+export default LogoutDialog;

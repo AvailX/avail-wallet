@@ -20,6 +20,10 @@ import BrowserView from "./views-desktop/browser";
 import Send from "./views-desktop/send";
 import Recovery from "./views-desktop/recovery";
 import SeedPhrase from "./views-desktop/seedphrase";
+import Nfts from "./views-desktop/nft";
+import PrivacyPolicy from "./views-desktop/privacy-policy";
+import TermsAndConditions from "./views-desktop/terms-and-conditions";
+import Oops from "./views-desktop/oops";
 
 // global font styles
 import "./index.css";
@@ -52,10 +56,13 @@ const router = createBrowserRouter([
   { path: "/seed", element: <SeedPhrase /> }, // MVP 
   { path: "/verify", element: <Verify /> }, // MVP
   { path: "/settings", element: <Settings /> }, // MVP
-  { path: "*", element: <HomeDesktop /> },
+  { path: "*", element: <Oops /> },
   { path: "/activity", element: <Activity /> },
   { path: "/browser", element: <BrowserView /> },
-  {path: "/support", element: <a href="discord://EeuhRNwx"/>}
+  {path: "/support", element: <a href="discord://EeuhRNwx"/>},
+  { path: "/nfts", element: <Nfts /> },
+  { path: "/privacy-policy", element: <PrivacyPolicy /> },
+  { path: "/terms-of-service", element: <TermsAndConditions /> },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

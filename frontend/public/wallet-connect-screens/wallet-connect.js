@@ -21,7 +21,7 @@ document.getElementById('fee-switch').addEventListener('change', (event) => {
 document.querySelector('.btn.approve').addEventListener('click', async () => {
     const eventName = request.method + '-approved';
     console.log(eventName);
-    if (request.method === 'createRequestEvent') {
+    if (request.method === 'create-request-event') {
         await emit(eventName, { message: request.approveResponse, feeOption: feeOption });
     }else{
     await emit(eventName, { message: request.approveResponse });

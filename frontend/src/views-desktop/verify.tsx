@@ -161,7 +161,7 @@ function handleVerify() {
         })
     }
         </mui.Grid>
-        <CTAButton text={t("verify.title")} onClick={()=>handleVerify()} width='25%'/>
+        <CTAButton text={t("verify.verify")} onClick={()=>handleVerify()} width='25%'/>
     </Layout>
   );
 

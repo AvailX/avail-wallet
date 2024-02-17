@@ -37,15 +37,15 @@ const Receive: React.FC<ReceiveProps>= ({open,handleClose,address,username}) => 
     
     return(
         <mui.Dialog open={open} onClose={handleClose} PaperProps={{ sx: dialogStyle }}>
-              <mui.DialogTitle>{t("receive.title")}</mui.DialogTitle>
+              <mui.DialogTitle>{t("dialogs.receive.title")}</mui.DialogTitle>
               <mui.DialogContent sx={{display:'flex',flexDirection:'column'}}>
                 <mui.DialogContentText sx={{color:'#b2b2b2'}}>
-                {t("receive.subtitle")}
+                {t("dialogs.receive.subtitle")}
                 </mui.DialogContentText>
                 { username !== address &&
                 <>
                 <mui.DialogContentText sx={{color:'#b2b2b2',mt:'5%'}}>
-                {t("receive.username")}
+                {t("dialogs.receive.username")}
                 </mui.DialogContentText>
                 <mui.DialogContentText sx={{color:'#FFF',mt:'1%'}}>
                     {username}
@@ -53,7 +53,7 @@ const Receive: React.FC<ReceiveProps>= ({open,handleClose,address,username}) => 
                 </>
                 }
                 <mui.DialogContentText sx={{color:'#b2b2b2',mt:'3%'}}>
-                {t("receive.address")} 
+                {t("dialogs.receive.address")} 
                 </mui.DialogContentText>
                 <mui.DialogContentText sx={{color:'#FFF',mt:'1%'}}>
                     {address}
@@ -62,11 +62,11 @@ const Receive: React.FC<ReceiveProps>= ({open,handleClose,address,username}) => 
                 <QRCode value={address} />
                 </mui.Box>
                 <mui.DialogContentText sx={{color:'#00FFAA',alignSelf:'center'}}>
-                {t("receive.qr-description")}
+                {t("dialogs.receive.qr-description")}
                 </mui.DialogContentText>
                 </mui.DialogContent>
                 <mui.DialogActions>
-                <mui.Button onClick={handleClose} sx={buttonStyle}> {t("receive.okay")}</mui.Button>
+                <mui.Button onClick={handleClose} sx={buttonStyle}> {t("dialogs.receive.okay")}</mui.Button>
             </mui.DialogActions>
         </mui.Dialog>
     )

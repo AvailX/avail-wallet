@@ -19,6 +19,7 @@ import { Title2Text } from '../components/typography/typography';
 import { useWalletConnectManager } from "../context/WalletConnect";
 
 import { useTranslation } from 'react-i18next';
+import { useScan } from '../context/ScanContext';
 
 //alerts
 import { ErrorAlert,SuccessAlert,WarningAlert,InfoAlert } from '../components/snackbars/alerts';
@@ -43,6 +44,7 @@ const Browser: React.FC<BrowserProps> = ({ initialUrl, theme = 'light',handleDap
   const [previousUrls, setPreviousUrls] = useState<string[]>([]);
   const [wcURL, setWcURL] = useState<string>('');
   const [connected, setConnected] = useState<boolean>(false);
+  const [showMenu, setShowMenu] = useState<boolean>(false);
 
   //alert states
   const [errorAlert, setErrorAlert] = useState(false);
@@ -50,9 +52,27 @@ const Browser: React.FC<BrowserProps> = ({ initialUrl, theme = 'light',handleDap
   const [warningAlert, setWarningAlert] = useState(false);
   const [infoAlert, setInfoAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const { startScan, endScan } = useScan();
 
   const {walletConnectManager} = useWalletConnectManager();
+
   const { t } = useTranslation();
+
+  const handleConnected = () => {
+    walletConnectManager.pair(wcURL).catch(()=>{
+      setAlertMessage('Error connecting');
+      setErrorAlert(true);
+    });
+    sessionStorage.setItem('connected', 'true');
+  }
+
+  const getConnectState = () => {
+    const connected = sessionStorage.getItem('connected');
+    if (connected === 'true') {
+      return true;
+    }
+    return false;
+  }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputUrl(event.target.value);
@@ -62,11 +82,14 @@ const Browser: React.FC<BrowserProps> = ({ initialUrl, theme = 'light',handleDap
     setWcURL(event.target.value);
   };
 
-  const handleInputSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+ const handleInputSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (inputUrl) {
+    if (inputUrl && inputUrl !== url && inputUrl !== '') {
       setPreviousUrls([...previousUrls, url]);
       setUrl(inputUrl);
+      setShowMenu(false);
+
+      sessionStorage.setItem('activeUrl', inputUrl);
     }
   };
 
@@ -81,10 +104,18 @@ const Browser: React.FC<BrowserProps> = ({ initialUrl, theme = 'light',handleDap
   }
 
   const handleBack = () => {
-    // Logic for back action
+
     setUrl(previousUrls[previousUrls.length - 1]);
     setInputUrl(previousUrls[previousUrls.length - 1]);
     setPreviousUrls(previousUrls.slice(0, previousUrls.length - 1));
+
+    if (previousUrls.length === 0) {
+      setInputUrl('');
+      setUrl('');
+      sessionStorage.removeItem('activeUrl');
+      setShowMenu(true);
+      console.log('showMenu', showMenu);
+    }
 
   };
 
@@ -95,27 +126,56 @@ const Browser: React.FC<BrowserProps> = ({ initialUrl, theme = 'light',handleDap
     if (iframe) {
      iframe.src = inputUrl;
     }
+
   };
   
   const handleDappSelect = (url: string) => {
     setInputUrl(url);
     setUrl(url);
+    setShowMenu(false);
+
 
     const iframe = document.querySelector('iframe');
     if (iframe) {
-     iframe.src = inputUrl;
+     iframe.src = url;
+     sessionStorage.setItem('activeUrl', url);
     }
   }
 
   React.useEffect(() => {
-    listen('connected', (event) => {
+
+    //check for active url in session storage
+    const activeUrl = sessionStorage.getItem('activeUrl');
+    console.log('activeUrl', activeUrl);
+    if (activeUrl) {
+      setUrl(activeUrl);
+      setInputUrl(activeUrl);
+    }
+
+    const connected = getConnectState();
+    setConnected(connected);
+
+    const unlisten_connected =listen('connected', (event) => {
       setConnected(true);
     });
 
-    listen('disconnected', (event) => {
+    const unlisten_disconnected = listen('disconnected', (event) => {
       setConnected(false);
     });
+
+    const unlisten_wc_transaction_start = listen('wc_transaction_start', (event) => {
+      startScan();
+    })
+
+    const unlisten_wc_transaction_end = listen('wc_transaction_end', (event) => {
+      endScan();
+    })
   
+    return () => {
+       unlisten_connected.catch(() => {});
+      unlisten_disconnected.catch(() => {});
+    };
+
   }, []);
 
 
@@ -175,9 +235,8 @@ const Browser: React.FC<BrowserProps> = ({ initialUrl, theme = 'light',handleDap
               boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.8)',
             },
           }}
-            onClick={() => { connected? handleDisconnect():walletConnectManager.pair(wcURL) }}
-            disabled= {connected}
-          > {connected? t("browser.connected"):t("browser.connect")}</Button>
+          onClick={() => { connected? handleDisconnect():handleConnected()}}
+          > {connected? t("browser.message.success.disconnect"):t("browser.connect")}</Button>
         </Toolbar>
       </AppBar>
       {url !== '' &&

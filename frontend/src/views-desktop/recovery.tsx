@@ -18,7 +18,7 @@ import { checkBiometrics } from '../services/authentication/register';
 import { recover } from '../services/recovery/phrase';
 
 //typography
-import { Title2Text,SubtitleText, BodyText } from '../components/typography/typography';
+import { Title2Text,SubtitleText, BodyText,SubMainTitleText } from '../components/typography/typography';
 
 //icons
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -42,10 +42,6 @@ const Recovery =()=> {
     const md = mui.useMediaQuery('(min-width:1000px)');
     const lg = mui.useMediaQuery('(min-width:1200px)');
   
-
-    const [seedEven,setSeedEven] = React.useState<string[]>([' ',' ',' ',' ',' ',' ']);
-    const [seedOdd,setSeedOdd] = React.useState<string[]>([' ',' ',' ',' ',' ',' ']);
-
     const [password,setPassword] = React.useState<string>('');
     const [passwordHidden,setPasswordHidden] = React.useState<boolean>(true);
     const [confirmPassword,setConfirmPassword] = React.useState<string>('');
@@ -66,20 +62,12 @@ const Recovery =()=> {
     const [seed,setSeed] = React.useState<string>('');
     const [language,setLanguage] = React.useState<Languages>(Languages.English);
 
-    // initialize a 12 element array of objects
-    const [mockSeed, setMockSeed] = React.useState<String[]>([' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ']);
+   
 
     const navigate = useNavigate();
 
     const handleOrdering =()=>{
        
-      console.log(mockSeed)
-       const seed_phrase = mockSeed.join(' ');
-       //recover
-       console.log(seed_phrase);
-       setSeed(seed_phrase);
-
-
        // Simulate loading with a timeout
        setTimeout(() => {
            setIsLoading(false); // Hide loading indicator
@@ -93,36 +81,22 @@ const Recovery =()=> {
             <>
            <img src={a_logo} alt="aleo logo" style={{width:"60px", height:"60px", marginTop:"20px", marginLeft:"20px",cursor:'pointer'}} onClick={()=>  window.history.back()}/>
         <mui.Box sx={{width:'85%',alignSelf:'center'}}>
-        <Title2Text sx={{color:'#FFF'}}>{t("recover.title")}</Title2Text>
+       
         </mui.Box>
-        <mui.Grid container spacing={1} sx={{ marginTop:"25px",alignSelf:'center',bgcolor:'#1E1D1D',borderRadius:'10px',width:'85%',padding:'5%',justifyContent:'center',mb:'2%',alignItems:'center',position:'relative'}}>
-    
+      
+            
 
-      {/* Secret words grid items */}
-            {mockSeed?.map((word, index) => 
-               (
-                    <mui.Grid 
-                    key={index}
-                    sx={{color:"#fff",m:'2%',borderRadius:'10px',padding:'1%',textAlign:'center'}}
-                    item
-                    xs={3} // Adjust the grid size as needed
-                    >  
                 <WhiteHueTextField
-                key={index}
-                label={`${index + 1}`}
-                value={word}
+                placeholder='Input your secret recovery phrase..'
+                value={seed}
                 onChange={(e) => {
-                    const updatedWords = [...mockSeed];
-                    updatedWords[index] = e.target.value;
-                    setMockSeed(updatedWords);
+                  setSeed(e.target.value);
                   }}
+                sx={{width:"70%",alignSelf:'center',padding:'5%',mt:'10%',mb:'10%'}}
+                InputProps={{sx:{height:"100px",fontSize:'1.3rem',wordWrap:'break-word'}}}
                 />
-                </mui.Grid>
-            )
-            )
-             }
-        </mui.Grid>
-        <CTAButton text={t("recover.recover")} onClick={()=>handleOrdering()} width='25%'/>
+              
+        <CTAButton text={t("recover.recover")} onClick={()=>handleOrdering()} width='25%' />
             </>
            )}
 
@@ -135,7 +109,7 @@ const Recovery =()=> {
                         left: 0,
                         right: 0,
                         height: '90%',
-                        backgroundColor: mui.alpha('#3a3a3a',0.6),
+                        backgroundColor:'transparent',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -143,8 +117,11 @@ const Recovery =()=> {
                         borderRadius: '40px 40px 0 0',
                     }}
                 >
-                    <mui.Typography sx={{color:'#fff',mt:'10%',fontSize:'2rem'}}>Secure your Account</mui.Typography >
+                  <mui.Box sx={{display:'flex',flexDirection:'row',justifyContent:'space-between',width:'80%',alignSelf:'center'}}>
+                    <mui.Box sx={{width:'15%'}}/>
+                    <Title2Text sx={{color:'#00FFAA',mt:'10%'}}>Secure your Account</Title2Text >
                     <LanguageSelector language={language} setLanguage={setLanguage}/>
+                  </mui.Box>
                     <WhiteHueTextField
                   id="password"
                   label="Password"
@@ -194,28 +171,12 @@ const Recovery =()=> {
                   </mui.Typography>
                 </SecureButton>
                    
-                    { biometricAvail &&
-                        <mui.Box sx={{
-                            display:"flex",
-                            flexDirection:"row", 
-                            alignItems:"center",
-                            justifyContent:"space-between",
-                            alignSelf:"center",
-                            width:"90%",
-                            marginTop:"2%"
-                            }}>
-                        <mui.Typography sx={{color:"#fff"}}>
-                        Unlock with Face ID?   
-                    </mui.Typography>   
-                
-                    <mui.Switch aria-label="biometry-switch" onChange={() => setBiometric(!biometric)} sx={{color:'#00FFAA',bgcolor:'#00FFAA'}} />
-                        </mui.Box>
-                    }
-                 {isLoading && (
-                    <mui.CircularProgress sx={{ marginTop: '20%', color:'#00ffaa',top:0 }} />
-                )}
+
                 </mui.Box>
             )}
+              {isLoading && (
+                    <mui.CircularProgress sx={{ marginTop: '20%', color:'#00ffaa',top:0 }} />
+                )}
         </Layout>
     )
 }

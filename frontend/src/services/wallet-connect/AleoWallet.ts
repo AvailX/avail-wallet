@@ -83,7 +83,7 @@ export class AleoWallet {
 
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.GetBalancesRequest;
-        let request_identifier = "getBalance" + metadata?.name + request.assetId + requestEvent.topic;
+        let request_identifier = "getBalance" + metadata?.name + request.assetId ;
 
         let asset_id = request.assetId;
         if (asset_id == "credits" || asset_id == undefined) {
@@ -148,13 +148,14 @@ export class AleoWallet {
                 console.log("Emitting wallet-connect-request")
             }, 3000);
 
-            return new Promise((resolve, reject) => {
+            return new Promise( async(resolve, reject) => {
 
 
 
                 // Listen for the approval event from the secondary window
-                webview.listen('balance-approved', () => {
-
+                const unlistenApproved = webview.listen('balance-approved', async () => {
+                    const unlisten = await unlistenApproved;
+                    unlisten();
                     webview.close();
                     storeSession(request_identifier);
 
@@ -167,7 +168,9 @@ export class AleoWallet {
                 });
 
                 // Listen for the rejection event from the secondary window
-                webview.listen('balance-rejected', (response) => {
+                const unlistenRejected = webview.listen('balance-rejected', async (response) => {
+                    const unlisten = await unlistenRejected;
+                unlisten();
                     console.log('Balance share was rejected', response);
                     webview.close();
                     reject(formatJsonRpcError(requestEvent.id, "User rejected balance share"));
@@ -202,11 +205,11 @@ export class AleoWallet {
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.DecryptRequest
 
-        let request_identifier = "decrypt" + metadata?.name + requestEvent.topic;
+        let request_identifier = "decrypt" + metadata?.name ;
 
         if (!checkExpired(request_identifier)) {
             return new Promise((resolve, reject) => {
-                invoke<interfaces.DecryptResponse>("decrypt_record", { request: request }).then((response) => {
+                invoke<interfaces.DecryptResponse>("decrypt_records", { request: request }).then((response) => {
                     resolve(formatJsonRpcResult(requestEvent.id, response));
                 }).catch((error: AvailError) => {
                     console.error(error);
@@ -263,14 +266,16 @@ export class AleoWallet {
                 webview.emit('wallet-connect-request', wcRequest);
             }, 3000);
 
-            return new Promise((resolve, reject) => {
-                webview.listen('decrypt-approved', (response) => {
+            return new Promise( async(resolve, reject) => {
+                const unlistenApproved = webview.listen('decrypt-approved', async (response) => {
+                    const unlisten = await unlistenApproved;
+                unlisten();
                     webview.close();
                     storeSession(request_identifier);
 
                     try {
 
-                        invoke<interfaces.DecryptResponse>("decrypt_record", { request: request }).then((response) => {
+                        invoke<interfaces.DecryptResponse>("decrypt_records", { request: request }).then((response) => {
                             resolve(formatJsonRpcResult(requestEvent.id, response));
                         }).catch((error: AvailError) => {
                             console.error(error);
@@ -284,7 +289,9 @@ export class AleoWallet {
                 });
 
                 // Listen for the rejection event from the secondary window
-                webview.listen('decrypt-rejected', (response) => {
+                const unlistenRejected = webview.listen('decrypt-rejected', async (response) => {
+                    const unlisten = await unlistenRejected;
+                unlisten();
                     console.log(response);
                     webview.close();
                     reject(formatJsonRpcResult(requestEvent.id, response));
@@ -346,8 +353,10 @@ export class AleoWallet {
             webview.emit('wallet-connect-request', wcRequest);
         }, 3000);
 
-        return new Promise((resolve, reject) => {
-            webview.listen('sign-approved', (response) => {
+        return new Promise( async(resolve, reject) => {
+            const unlistenApproved = webview.listen('sign-approved', async (response) => {
+                const unlisten = await unlistenApproved;
+                unlisten();
                 webview.close();
                 try {
 
@@ -363,7 +372,9 @@ export class AleoWallet {
             });
 
             // Listen for the rejection event from the secondary window
-            webview.listen('sign-rejected', (response) => {
+            const unlistenRejected = webview.listen('sign-rejected', async (response) => {
+                const unlisten = await unlistenRejected;
+                unlisten();
                 console.log(response);
                 webview.close();
                 reject(formatJsonRpcResult(requestEvent.id, response));
@@ -376,7 +387,7 @@ export class AleoWallet {
     private async handleCreateRequestEvent(requestEvent: Web3WalletTypes.SessionRequest): Promise<JsonRpcResult | JsonRpcError> {
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.CreateEventRequest
-
+        console.log("===========> Request full", request);
         // TODO - User fee privacy choice
         let wcRequest: interfaces.wcRequest;
         if (request.type == interfaces.EventType.Deploy) {
@@ -444,13 +455,20 @@ export class AleoWallet {
         }, 3000);
 
         // TODO - Allow user to set fee to private or public within event
-        return new Promise((resolve, reject) => {
-            webview.listen('create-request-event-approved', (response) => {
+        return new Promise(async (resolve, reject) => {
+            const unlistenApproved = await webview.listen('create-request-event-approved', async (response) => {
+                // unlistenApproved.catch((e)=>console.log("=====> Inside unlisted of create", e))
+                const unlisten = await unlistenApproved;
+                unlisten();
                 webview.close();
-                console.log(response);
-                try {
 
-                    invoke<interfaces.CreateEventResponse>("create_event", { request: request, fee_private: false }).then((response) => {
+                let payload_obj = JSON.stringify(response.payload);
+                let fee_op = JSON.parse(payload_obj).feeOption;
+                console.log(response);
+                console.log("calling tauri................. ")
+                try {
+                    console.log(request);
+                    invoke<interfaces.CreateEventResponse>("request_create_event", { request: request, fee_private: fee_op }).then((response) => {
                         resolve(formatJsonRpcResult(requestEvent.id, response));
                     }).catch((error: AvailError) => {
                         reject(formatJsonRpcError(requestEvent.id, error.external_msg));
@@ -460,9 +478,11 @@ export class AleoWallet {
                     reject(formatJsonRpcError(requestEvent.id, error.message))
                 }
             });
+            
 
-
-            webview.listen('create-request-event-rejected', (response) => {
+            const unlistenRejected = webview.listen('create-request-event-rejected', async (response) => {
+                const unlisten = await unlistenRejected;
+                unlisten();
                 webview.close();
                 reject(formatJsonRpcResult(requestEvent.id, response));
             });
@@ -473,7 +493,7 @@ export class AleoWallet {
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.GetEventRequest
 
-        let request_identifier = "getEvent" + metadata?.name + request.id + requestEvent.topic;
+        let request_identifier = "getEvent" + metadata?.name + request.id ;
 
         if (!checkExpired(request_identifier)) {
             return new Promise((resolve, reject) => {
@@ -535,8 +555,10 @@ export class AleoWallet {
                 console.log("Emitting wallet-connect-request")
             }, 3000);
 
-            return new Promise((resolve, reject) => {
-                webview.listen('get-event-approved', (response) => {
+            return new Promise( async(resolve, reject) => {
+                const unlistenApproved = webview.listen('get-event-approved', async (response) => {
+                    const unlisten = await unlistenApproved;
+                unlisten();
                     webview.close();
                     storeSession(request_identifier);
 
@@ -556,7 +578,9 @@ export class AleoWallet {
                 });
 
 
-                webview.listen('get-event-rejected', (response) => {
+                const unlistenRejected = webview.listen('get-event-rejected', async (response) => {
+                    const unlisten = await unlistenRejected;
+                unlisten();
                     webview.close();
                     reject(formatJsonRpcResult(requestEvent.id, response));
                 });
@@ -568,7 +592,7 @@ export class AleoWallet {
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.GetEventsRequest
 
-        let request_identifier = "getEvents" + metadata?.name+request.filter?.functionId+ request.filter?.programId + requestEvent.topic;
+        let request_identifier = "getEvents" + metadata?.name+request.filter?.functionId+ request.filter?.programId ;
 
         if (!checkExpired(request_identifier)) {
             return new Promise((resolve, reject) => {
@@ -633,8 +657,10 @@ export class AleoWallet {
             console.log("Emitting wallet-connect-request")
         }, 3000);
 
-        return new Promise((resolve, reject) => {
-            webview.listen('get-events-approved', (response) => {
+        return new Promise( async(resolve, reject) => {
+            const unlistenApproved = webview.listen('get-events-approved', async (response) => {
+                const unlisten = await unlistenApproved;
+                unlisten();
                 webview.close();
                 storeSession(request_identifier);
                 
@@ -652,7 +678,9 @@ export class AleoWallet {
                 }
             })
 
-            webview.listen('get-events-rejected', (response) => {
+            const unlistenRejected = webview.listen('get-events-rejected', async (response) => {
+                const unlisten = await unlistenRejected;
+                unlisten();
                 webview.close();
                 reject(formatJsonRpcResult(requestEvent.id, response));
             });
@@ -660,13 +688,20 @@ export class AleoWallet {
         }
     }
 
-    //TODO - Fix request object, programIds: string[] not programId
+    
     private async handleGetRecords(requestEvent: Web3WalletTypes.SessionRequest): Promise<JsonRpcResult | JsonRpcError> {
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.GetRecordsRequest
 
-        let request_identifier = "getRecords" + metadata?.name + request.filter?.functionId + request.filter?.programIds + requestEvent.topic;
-
+        let request_identifier = "getRecords" + metadata?.name + request.filter?.functionId + request.filter?.programIds ;
+        if (request){
+            if(request.filter){
+                if (request.filter.programIds === undefined){
+                    request.filter.programIds = [];
+                }
+            }
+        }
+        console.log("p---------->rogramid", request.filter?.programIds);
         if (!checkExpired(request_identifier)) {
             return new Promise((resolve, reject) => {
                 invoke<interfaces.GetBackendRecordsResponse>("get_records", { request: request }).then((response) => {
@@ -730,13 +765,15 @@ export class AleoWallet {
             console.log("Emitting wallet-connect-request")
         }, 3000);
 
-        return new Promise((resolve, reject) => {
-            webview.listen('get-records-approved', (response) => {
+        return new Promise( async(resolve, reject) => {
+            const unlistenApproved = webview.listen('get-records-approved', async (response) => {
+                const unlisten = await unlistenApproved;
+                unlisten();
                 webview.close();
                 storeSession(request_identifier);
 
                 try {
-
+                    console.log("===================> INSIDE GETRECORDS");
                     invoke<interfaces.GetBackendRecordsResponse>("get_records", { request: request }).then((response) => {
                         let res = interfaces.convertGetRecordsResponse(response);
                         resolve(formatJsonRpcResult(requestEvent.id, res));
@@ -751,7 +788,9 @@ export class AleoWallet {
                 }
             })
 
-            webview.listen('get-records-rejected', (response) => {
+            const unlistenRejected = webview.listen('get-records-rejected', async (response) => {
+                const unlisten = await unlistenRejected;
+                unlisten();
                 webview.close();
                 reject(formatJsonRpcResult(requestEvent.id, response));
             });

@@ -7,8 +7,8 @@ export async function get_balance(request: GetBalancesRequest){
     return res;
 }
 
-// TODO - What should be the metric of total balance?
 export async function get_total_balance(){
     const res: GetBalancesResponse = await invoke("get_balance",{request: {assetId: ""}});
     return res;
 }
+

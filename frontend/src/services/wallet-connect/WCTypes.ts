@@ -136,15 +136,31 @@ export type GetRecordsResponse = {
 };
 
 export type GetBackendRecordsResponse = {
-    record?: BackendRecordWithPlaintext;
+    records?: [BackendRecordWithPlaintext];
     pageCount?: number;
     error?: string;
 };
 
 // function to convert from backend getRecords response to frontend getRecords response
 export const convertGetRecordsResponse = (response: GetBackendRecordsResponse): GetRecordsResponse => {
+    console.log("================> RECORDS RESPONSE PT", response.records);
+    let records = response.records;
+    let convertedRecords: RecordWithPlaintext[] | undefined = [] ;
+    if(records)    
+    {   
+        {records.forEach(record => {
+            console.log("================> PLAINTEXT CHECK", record?.plaintext)
+            if (record.plaintext !== undefined){ 
+                convertedRecords?.push(convertRecord(record));
+                console.log("================> CONVERTED RECORD", convertRecord(record))
+                console.log("================> PLAINTEXT", record?.plaintext)
+            }
+            
+        });}
+        
+    }
     return {
-        records: response.record ? [convertRecord(response.record)] : [],
+        records: response.records ? convertedRecords : [],
         pageCount: response.pageCount,
         error: response.error,
     }
@@ -168,10 +184,11 @@ export type BackendRecordWithPlaintext ={
 
 // function to convert from backend record to frontend record
 export const convertRecord = (record: BackendRecordWithPlaintext): RecordWithPlaintext => {
+    console.log("================> PLAINTEXT", record?.plaintext)
     return {
         ...record.record,
-        plaintext: record.plaintext,
-        data: record.data,
+        plaintext: record?.plaintext,
+        data: record?.data,
     }
 }
 

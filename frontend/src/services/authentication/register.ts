@@ -32,11 +32,11 @@ export function register(setSuccessAlert: React.Dispatch<React.SetStateAction<bo
 }
 
 // TODO - add backup parameter
-export function register_seed_phrase(setErrorAlert: React.Dispatch<React.SetStateAction<boolean>>, setMessage: React.Dispatch<React.SetStateAction<string>>, username: string | undefined, password: string, authType: boolean, language: Languages) {
+export function register_seed_phrase(setErrorAlert: React.Dispatch<React.SetStateAction<boolean>>, setMessage: React.Dispatch<React.SetStateAction<string>>, username: string | undefined, password: string, authType: boolean, language: Languages,length: number) {
 
   console.log("Registering seed phrase wallet");
 
-  return (invoke<string>("create_seed_phrase_wallet", { username: username, password: password, access_type: authType, backup: false, language: language }).then((response) => {
+  return (invoke<string>("create_seed_phrase_wallet", { username: username, password: password, access_type: authType, backup: false, language: language, length: length }).then((response) => {
     return response;
   }).catch((error: AvailError) => {
     //TODO - Sentry should log AvailError

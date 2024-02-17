@@ -4,6 +4,13 @@ import * as mui from '@mui/material';
 import i18n from '../../i18next-config';
 import { languages } from '../select/language';
 import { useTranslation } from 'react-i18next';
+import { updateUsername } from '../../services/storage/persistent';
+import SaveIcon from '@mui/icons-material/Save';
+
+import UsernameDialog from '../dialogs/username';
+
+//alerts
+import { ErrorAlert, SuccessAlert } from '../snackbars/alerts';
 
 interface Language {
   symbol: string;
@@ -19,6 +26,12 @@ const GeneralSettings: React.FC<{
   address: string;
 }> = ({ username, setUsername, network, address }) => {
   const [language, setLanguage] = React.useState<Language>({symbol: "en", name: "English"});
+  const [success, setSuccess] = React.useState<boolean>(false);
+  const [errorAlert, setErrorAlert] = React.useState(false);
+  const [message, setMessage] = React.useState("");
+  const [originalUsername, setOriginalUsername] = React.useState(username);
+  const [UsernameDialogOpen, setUsernameDialogOpen] = React.useState(false);
+
   const {t} = useTranslation();
   
   // Handlers for change events
@@ -34,6 +47,7 @@ const GeneralSettings: React.FC<{
   };
 
   React.useEffect(() => {
+    setOriginalUsername(username);
     const lng = i18n.language;
     const selectedLanguage = languages.find((lang) => lang.symbol === lng);
     if (selectedLanguage)
@@ -42,6 +56,9 @@ const GeneralSettings: React.FC<{
 
   return (
     <mui.Box sx={{ padding: 2 }}>
+      <ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={message}/>
+      <SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message}/>
+      <UsernameDialog isOpen={UsernameDialogOpen} onRequestClose={()=>{setUsernameDialogOpen(false)}} username={username} originalUsername={originalUsername}/>
       <mui.TextField
         label={t("signup.username")}
         variant="outlined"
@@ -50,6 +67,18 @@ const GeneralSettings: React.FC<{
         fullWidth
         margin="normal"
         sx={{ backgroundColor: '#2c2c2c', '.MuiOutlinedInput-root': { color: '#fff' }, '.MuiInputLabel-root': { color: '#aaa' } }}
+        InputProps={{
+          endAdornment: username !== originalUsername ? (
+            <mui.InputAdornment position="end">
+              <mui.IconButton
+                onClick={() => {setUsernameDialogOpen(true)}}
+                sx={{ color: '#fff' }}
+              >
+                <SaveIcon/>
+              </mui.IconButton>
+            </mui.InputAdornment>
+          ) : null,
+        }}
       />
       <mui.FormControl fullWidth margin="normal">
         <mui.InputLabel id="language-select-label" sx={{ color: '#aaa' }}>Language</mui.InputLabel>

@@ -21,7 +21,11 @@
             "password1": "Passwords do not match.",
             "password2": "Password must be at least 12 characters long.",
             "username": "Username is already taken.",
-            "signup": "Failed to create account, please try again."
+            "signup": "Failed to create account, please try again.",
+            "passwordLength":"Password must be at least 12 characters long.",
+            "passwordCapital":"Password must contain at least one capital letter.",
+            "passwordSpecial":"Password must contain at least one special character.",
+            "passwordMismatch":"Passwords do not match."
             },
         "success": "Wallet created successfully!"
         }
@@ -78,7 +82,11 @@
 
     "recover":{
         "title":"Input your secret recovery phrase to recover your wallet.",
-        "recover":"Recover"
+        "recover":"Recover",
+        "secure":{
+            "title": "Secure your account",
+            "button": "Secure"
+        }
     },
 
     "home":{
@@ -125,7 +133,7 @@
                 "zero-amount": "Please enter an amount greater than 0"
             }
         },
-        "success": "Transaction sent successfully!",
+            "success": "Transaction sent successfully!",
             "info": "Transfer in progress...",
             "private-balance": "Private Balance",
             "public-balance": "Public Balance",
@@ -181,7 +189,7 @@
             "this-week": "This Week",
             "this-month": "This Month"
         },
-        "no-acitvities": " No Acitivity yet, get out there and explore!",
+        "no_acitvities": " No Acitivity yet, get out there and explore!",
         "loading": "Loading...",
         "load-more": "Load More",
         "messages": {
@@ -230,6 +238,10 @@
         "transfer":{
             "title":"Confirm this transaction",
             "subtitle": "By confirming the transaction, you will be sending X asset to Y"
+        },
+        "logout":{
+            "title":"Are you sure you want to log out ?",
+            "description":"You will need to input your password to log back in."
         }
     },
 

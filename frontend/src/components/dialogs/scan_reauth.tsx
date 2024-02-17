@@ -1,27 +1,25 @@
 import * as React from "react";
 import * as mui from "@mui/material";
 
-import CloseIcon from '@mui/icons-material/Close';
-
-import { transfer } from "../../services/transfer/transfers";
-import { ErrorAlert, SuccessAlert } from "../snackbars/alerts";
-import { useNavigate } from "react-router-dom";
-import { TransferRequest } from "../../types/transfer_props/tokens";
-import { AvailError } from "../../types/errors";
-
-import { useTranslation } from "react-i18next";
-import { useScan } from "../../context/ScanContext";
-
+//services
+import { session_and_local_auth } from "../../services/authentication/auth";
 import { emit } from "@tauri-apps/api/event";
 
-interface DeleteDialogProps {
+//alerts
+import { ErrorAlert, SuccessAlert } from "../snackbars/alerts";
+
+//types
+import { AvailError } from "../../types/errors";
+
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+interface ScanReAuthDialogProps {
     isOpen: boolean;
     onRequestClose: () => void;
-    request: TransferRequest;
 }
 
-// This is used in case of auth session timeout
-const TransferDialog: React.FC<DeleteDialogProps> = ({ isOpen, onRequestClose,request }) => {
+const ScanReAuthDialog: React.FC<ScanReAuthDialogProps> = ({ isOpen, onRequestClose }) => {
     const [password, setPassword] = React.useState("");
    
     // alert states
@@ -29,44 +27,31 @@ const TransferDialog: React.FC<DeleteDialogProps> = ({ isOpen, onRequestClose,re
     const [errorAlert, setErrorAlert] = React.useState(false);
     const [message, setMessage] = React.useState("");
 
-    //Scan states
-    const { scanInProgress, startScan, endScan } = useScan();
-
     const navigate = useNavigate();
     const { t } = useTranslation();
 
     const handleConfirmClick = () => {
-        if (request.asset_id ===  "ALEO"){
-            request.asset_id= "credits";
-        }
-      //set the password in the request
-        request.password = password;
-        onRequestClose();
-
-        sessionStorage.setItem('transferState', 'true');
-        startScan();
-       transfer(request, setErrorAlert,setMessage).then(()=>{
-        endScan();
-        sessionStorage.setItem('transferState', 'false');
-       }).catch((e) => {
-        console.log(e);
-        const error = JSON.parse(e) as AvailError;
-        endScan();
-        
-        //handle transfer off
-        sessionStorage.setItem('transferState', 'false');
-        emit('transfer_off');
-
-        console.log("Error" + error);
-        setMessage("Failed to transfer, please try again.");
-        setErrorAlert(true);
-     });
+        session_and_local_auth(password,navigate, setErrorAlert, setMessage, false).then(async()=>{
+            setMessage("Successfully authenticated.");
+            setSuccess(true);
+            //wait for 0.8 seconds and fire onRequestClose
+            await new Promise(r => setTimeout(r, 800));
+            onRequestClose();
+           
+            emit('success_scan_reauth', {});
+            
+        }).catch((e)=>{
+            console.log(e);
+            let error = JSON.parse(e) as AvailError;
+            setMessage("Failed to authenticate, please try again.");
+            setErrorAlert(true);
+            onRequestClose();
+        });
     }
 
     const dialogStyle = {
-        bgcolor: '#363636',
+        bgcolor: '#1E1D1D',
         color: 'white',
-        borderRadius: '20px',
     };
 
     const textFieldStyle = {
@@ -93,11 +78,10 @@ const TransferDialog: React.FC<DeleteDialogProps> = ({ isOpen, onRequestClose,re
         <ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={message}/>
         <SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message}/>
         <mui.Dialog open={isOpen} onClose={onRequestClose} PaperProps={{ sx: dialogStyle }}>
-            <mui.DialogTitle>{t("dialogs.transfer.title")}</mui.DialogTitle>
+            <mui.DialogTitle>{t("dialogs.reauth.title")}</mui.DialogTitle>
             <mui.DialogContent>
-                <mui.DialogContentText sx={{color:'#B2B2B2'}}>
-                    {/* Enable translation here */}
-                   By confirming the transaction, you will be sending {request.amount/1000000} {request.asset_id} to {request.recipient}.
+                <mui.DialogContentText sx={{color:'#a3a3a3'}}>
+                {t("dialogs.reauth.description")}
                 </mui.DialogContentText>
                 <mui.TextField
                     autoFocus
@@ -119,4 +103,4 @@ const TransferDialog: React.FC<DeleteDialogProps> = ({ isOpen, onRequestClose,re
     );
 }
 
-export default TransferDialog;
+export default ScanReAuthDialog;

@@ -18,14 +18,14 @@ const WalletConnectContext = React.createContext<WalletConnectContext | undefine
 // Provider component to wrap the app and initialize the WalletConnectManager
 export const WalletConnectProvider: React.FC<WalletConnectProviderProps> = ({ children }) => {
     const [activeUrl, setActiveUrl] = React.useState('');
-    
     const manager = new WalletConnectManager();
     const shouldRunEffect = React.useRef(true);
+    manager.setup();
    
     React.useEffect(() => {
         if (!shouldRunEffect.current) return;
         console.log('WalletConnectProvider useEffect')
-        manager.setup(); // Initialize the WalletConnectManager when the component mounts
+         // Initialize the WalletConnectManager when the component mounts
         shouldRunEffect.current = false;
 
     }, []);

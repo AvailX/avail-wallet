@@ -13,7 +13,7 @@ import { getAvailEventsSuccinct } from '../services/events/get_events';
 
 //types
 import { SuccinctAvailEvent } from 'src/types/avail-events/event';
-import { isToday, isThisWeek, isThisMonth, format } from 'date-fns';
+import { isToday, isThisWeek, isThisMonth, format, set } from 'date-fns';
 
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +23,7 @@ import { ErrorAlert } from '../components/snackbars/alerts';
 //testing
 import { testEvents } from '../services/wallet-connect/WCTypes';
 
-const orderLabels = (groupedEvents: { [key: string]:  SuccinctAvailEvent[] }) => {
+const orderLabels = (groupedEvents: { [key: string]: SuccinctAvailEvent[] }) => {
   const order = ['Today', 'This Week', 'This Month']; // Base order for known labels
 
   const sortedKeys = Object.keys(groupedEvents).sort((a, b) => {
@@ -43,7 +43,7 @@ const orderLabels = (groupedEvents: { [key: string]:  SuccinctAvailEvent[] }) =>
   });
 
   // Construct a new sorted object
-  const sortedGroupedEvents: { [key: string]:  SuccinctAvailEvent[] } = {};
+  const sortedGroupedEvents: { [key: string]: SuccinctAvailEvent[] } = {};
   sortedKeys.forEach((key) => {
     sortedGroupedEvents[key] = groupedEvents[key];
   });
@@ -51,109 +51,126 @@ const orderLabels = (groupedEvents: { [key: string]:  SuccinctAvailEvent[] }) =>
   return sortedGroupedEvents;
 };
 
-  
+
 
 function Activity() {
-    //alerts
-    const [error, setError] = React.useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = React.useState<string>("");
+  //alerts
+  const [error, setError] = React.useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = React.useState<string>("");
 
-    const [events,setEvents] = React.useState< SuccinctAvailEvent[]>([]);
-    const [groupedEvents, setGroupedEvents] = React.useState<{ [key: string]:  SuccinctAvailEvent[] }>({});
+  const [events, setEvents] = React.useState<SuccinctAvailEvent[]>([]);
+  const [groupedEvents, setGroupedEvents] = React.useState<{ [key: string]: SuccinctAvailEvent[] }>({});
 
-    // Event drawer states
-    const [eventDrawerOpen, setEventDrawerOpen] = React.useState(false);
-    const [event, setEvent] = React.useState< SuccinctAvailEvent | undefined>();
-    const [page, setPage] =  React.useState(0);
+  // Event drawer states
+  const [eventDrawerOpen, setEventDrawerOpen] = React.useState(false);
+  const [event, setEvent] = React.useState<SuccinctAvailEvent | undefined>();
+  const [page, setPage] = React.useState(0);
 
-    const [isLoading, setIsLoading] =  React.useState(false);
-    const loader =  React.useRef(null);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const loader = React.useRef(null);
 
 
-    const {t} = useTranslation();
-    
+  const { t } = useTranslation();
 
-    const groupEventsByTimeSection = (events:  SuccinctAvailEvent[]) => {
-      const groupedEvents: { [key: string]:  SuccinctAvailEvent[] } = {};
-    
-      events.forEach((event) => {
-        let label = '';
-    
-        if (isToday(event.created)) {
-          label = t("activity.time-labels.today");
-        } else if (isThisWeek(event.created)) {
-          label = t("activity.time-labels.this-week");
-        } else if (isThisMonth(event.created)) {
-          label = t("activity.time-labels.this-month");
-        } else {
-          label = format(event.created, 'MMMM yyyy'); // e.g., January 2024
-        }
-    
-        if (!groupedEvents[label]) {
-          groupedEvents[label] = [];
-        }
-    
-        groupedEvents[label].push(event);
-      });
-  
-      let orderedGroupedEvents = orderLabels(groupedEvents);
-  
-      return orderedGroupedEvents;
-    };
 
-    const handleGetEvents = async () => {
-        setIsLoading(true);
+  const groupEventsByTimeSection = (events: SuccinctAvailEvent[]) => {
+    const groupedEvents: { [key: string]: SuccinctAvailEvent[] } = {};
 
-        let request = {
-            filter: undefined,
-            page: page
-         }
-    
+    events.forEach((event) => {
+      let label = '';
 
-       getAvailEventsSuccinct(request).then((fetchedEvents)=>{
-            setEvents(prevEvents => [...prevEvents, ...(fetchedEvents )]);
-            setGroupedEvents(groupEventsByTimeSection([...events, ...fetchedEvents]));
-            setIsLoading(false);
-        
-       }).catch((err) => {
-            setIsLoading(false);
-            setErrorMessage(t("activity.messages.error"));
-            setError(true);
-       });
-       
+      if (isToday(event.created)) {
+        label = t("activity.time-labels.today");
+      } else if (isThisWeek(event.created)) {
+        label = t("activity.time-labels.this-week");
+      } else if (isThisMonth(event.created)) {
+        label = t("activity.time-labels.this-month");
+      } else {
+        label = format(event.created, 'MMMM yyyy'); // e.g., January 2024
+      }
+
+      if (!groupedEvents[label]) {
+        groupedEvents[label] = [];
+      }
+
+      groupedEvents[label].push(event);
+    });
+
+    // Sort the events within each group by date in descending order
+    Object.keys(groupedEvents).forEach((key) => {
+      groupedEvents[key].sort((a, b) =>  {
+        console.log(JSON.stringify(a));
+        console.log(JSON.stringify(b));
+      const dateA = new Date(a.created);
+      const dateB = new Date(b.created);
+      return dateB.getTime() - dateA.getTime();
+    });
+      
+    });
+
+    let orderedGroupedEvents = orderLabels(groupedEvents);
+
+    return orderedGroupedEvents;
+  };
+
+  const handleGetEvents = async (page: number) => {
+    setIsLoading(true);
+
+    let request = {
+      filter: undefined,
+      page: page
     }
 
 
-    // Event Drawer services
-    const handleEventDrawerOpen = (event: SuccinctAvailEvent) => {
-        setEvent(event);
-        setEventDrawerOpen(true);
-    };
+    getAvailEventsSuccinct(request).then((fetchedEvents) => {
 
-    const handleEventDrawerClose = () => {
-        setEventDrawerOpen(false);
-    };
+      setEvents(prevEvents => [...prevEvents, ...(fetchedEvents)]);
+      setGroupedEvents(groupEventsByTimeSection([...events, ...fetchedEvents]));
+      setIsLoading(false);
+
+    }).catch((err) => {
+      console.log(err);
+      setIsLoading(false);
+      setErrorMessage(t("activity.messages.error"));
+      setError(true);
+    });
+
+  }
 
 
-    // Observer Handler
-  const handlePage = () => {
-   
-          setPage((page) => page + 1)
-      
+  // Event Drawer services
+  const handleEventDrawerOpen = (event: SuccinctAvailEvent) => {
+    setEvent(event);
+    setEventDrawerOpen(true);
   };
 
-  
+  const handleEventDrawerClose = () => {
+    setEventDrawerOpen(false);
+  };
+
+  const handlePage = () => {
+    handleGetEvents(page);
+    setPage((page) => page + 1)
+  };
+
+
+  const shouldRunEffect = React.useRef(true);
   React.useEffect(() => {
-    // have some way of getting other pages when user scrolls down to append to current events
-    handleGetEvents();
-  }, [page]);
+    if (shouldRunEffect.current) {
+      handleGetEvents(0);
+      setPage(1);
+    }
+  
+    shouldRunEffect.current = false;
+
+  }, []);
 
 
-    return (
-        <Layout>
-          <ErrorAlert errorAlert={error} setErrorAlert={setError} message={errorMessage}/>
+  return (
+    <Layout>
+      <ErrorAlert errorAlert={error} setErrorAlert={setError} message={errorMessage} />
       <MiniDrawer />
-      <mui.Box sx={{ display: 'flex', flexDirection: 'column', ml: '10%',mt:'5%' }}>
+      <mui.Box sx={{ display: 'flex', flexDirection: 'column', ml: '10%', mt: '5%' }}>
         {Object.entries(groupedEvents).map(([section, events]) => (
           <React.Fragment key={section}>
             <mui.Typography variant="h6" sx={{ color: '#FFF' }}>
@@ -165,21 +182,21 @@ function Activity() {
           </React.Fragment>
         ))}
         {events.length === 0 && (
-          <mui.Typography variant="h6" sx={{ color: '#FFF',alignSelf:'center',mr:'10%',mt:'25%' }}>
-            {t("activity.no-activities")}
+          <mui.Typography variant="h6" sx={{ color: '#FFF', alignSelf: 'center', mr: '10%', mt: '25%' }}>
+            {t("activity.no_acitvities")}
           </mui.Typography>
         )}
-        
+
         {events.length !== 0 && (
-        <mui.Box sx={{ display: 'flex',width:'100%' }}>
-          {/* TODO -This should only display when there are pages left to load, Call get pages*/}
-        <STButton onClick={handlePage} text={isLoading? t("activity.loading"):t("activity.load-more")}/>
-        </mui.Box>
-       )}
+          <mui.Box sx={{ display: 'flex', width: '100%' }}>
+            {/* TODO -This should only display when there are pages left to load, Call get pages*/}
+            <STButton onClick={handlePage} text={isLoading ? t("activity.loading") : t("activity.load-more")} />
+          </mui.Box>
+        )}
         <EventDrawer open={eventDrawerOpen} onClose={handleEventDrawerClose} event={event} />
       </mui.Box>
     </Layout>
-    );
+  );
 }
 
 export default Activity;
