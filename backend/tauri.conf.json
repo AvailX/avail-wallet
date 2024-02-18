@@ -16,12 +16,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": "all",
-    "macOS": {
-      "signingIdentity": "WTK34UZPZK",
-      "entitlements": "/Users/zk/Avail/Apple/plists/entitlements.plist",
-      "exceptionDomain": ""
-    }
+    "targets": "all"
   },
   "plugins": {
     "updater": {
