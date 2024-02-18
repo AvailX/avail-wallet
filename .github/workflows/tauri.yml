@@ -44,6 +44,7 @@ jobs:
 
   build-and-release:
     # needs: test
+    environment: ${{ github.ref_name }}
     permissions:
         contents: write
     strategy:
@@ -93,13 +94,22 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          API: ${{ secrets.AVAIL_API_URL}}
+          DEV_NODE_IP: ${{ secrets.DEV_NODE_IP}}
+          TESTNET_API_OBSCURA: ${{ secrets.TESTNET_API_OBSCURA}}
         with:
+            # Use the tauri-cli we installed earlier
             tauriScript: cargo tauri
+            # Build for the ARM architecture on macOS
             args: ${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64-apple-darwin' || '' }}
             projectPath: backend
             distPath: frontend/dist
-            tagName: "v__VERSION__-${{ github.ref_name == 'staging' && 'beta' || github.ref_name == 'release' && 'latest' || 'dev' }}"
-            releaseName: "Avail Wallet v__VERSION__-${{ github.ref_name == 'staging' && 'beta' || github.ref_name == 'release' && 'latest' || 'dev' }}"
+            # The tagName is alpha for develop, beta for staging and latest for release
+            tagName: "v__VERSION__-${{ vars.TAGNAME }}"
+            releaseName: "Avail Wallet v__VERSION__-${{ vars.TAGNAME }}"
+            # The release body is optional, but it's a good place to put release notes
             releaseBody: 'See the assets to download this version and install.'
+            # Always create a draft release, so we can check the assets before publishing
             releaseDraft: true
-            prerelease: false
+            # Only publish the release if the branch is release
+            prerelease: ${{ github.ref_name == 'release' && false || true }}
