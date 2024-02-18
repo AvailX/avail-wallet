@@ -97,6 +97,8 @@ jobs:
           API: ${{ secrets.AVAIL_API_URL}}
           DEV_NODE_IP: ${{ secrets.DEV_NODE_IP}}
           TESTNET_API_OBSCURA: ${{ secrets.TESTNET_API_OBSCURA}}
+          MAINNET_API_OBSCURA: ""
+          DEVNET_API_OBSCURA: ""
         with:
             # Use the tauri-cli we installed earlier
             tauriScript: cargo tauri
