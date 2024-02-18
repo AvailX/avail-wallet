@@ -1,5 +1,7 @@
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
-import { Window, getCurrent, getAll } from '@tauri-apps/api/window'
+import { Window } from '@tauri-apps/api/window'
+import { WebviewWindow,getAll,getCurrent } from '@tauri-apps/api/webview';
+
 
 import { invoke } from '@tauri-apps/api/core';
 
@@ -118,13 +120,13 @@ export class AleoWallet {
 
                 getAll().forEach(win => {
                     if (win.label == 'walletConnect') {
-                        webview = win;
+                        webview = win.window;
                     }
                 });
             } else {
 
                 // Open the new window
-                webview = new Window('walletConnect', {
+                webview = new WebviewWindow('walletConnect', {
                     url: 'wallet-connect-screens/wallet-connect.html',
                     title: "Avail Wallet Connect",
                     width: 350,
@@ -234,13 +236,13 @@ export class AleoWallet {
 
                 getAll().forEach(win => {
                     if (win.label == 'walletConnect') {
-                        webview = win;
+                        webview = win.window;
                     }
                 });
             } else {
 
                 // Open the new window
-                webview = new Window('walletConnect', {
+                webview = new WebviewWindow('walletConnect', {
                     url: 'wallet-connect-screens/wallet-connect.html',
                     title: "Avail Wallet Connect",
                     width: 350,
@@ -322,13 +324,13 @@ export class AleoWallet {
 
             getAll().forEach(win => {
                 if (win.label == 'walletConnect') {
-                    webview = win;
+                    webview = win.window;
                 }
             });
         } else {
 
             // Open the new window
-            webview = new Window('walletConnect', {
+            webview = new WebviewWindow('walletConnect', {
                 url: 'wallet-connect-screens/wallet-connect.html',
                 title: "Avail Wallet Connect",
                 width: 350,
@@ -424,13 +426,13 @@ export class AleoWallet {
 
             getAll().forEach(win => {
                 if (win.label == 'walletConnect') {
-                    webview = win;
+                    webview = win.window;
                 }
             });
         } else {
 
             // Open the new window
-            webview = new Window('walletConnect', {
+            webview = new WebviewWindow('walletConnect', {
                 url: 'wallet-connect-screens/wallet-connect.html',
                 title: "Avail Wallet Connect",
                 width: 350,
@@ -522,13 +524,13 @@ export class AleoWallet {
 
                 getAll().forEach(win => {
                     if (win.label == 'walletConnect') {
-                        webview = win;
+                        webview = win.window;
                     }
                 });
             } else {
 
                 // Open the new window
-                webview = new Window('walletConnect', {
+                webview = new WebviewWindow('walletConnect', {
                     url: 'wallet-connect-screens/wallet-connect.html',
                     title: "Avail Wallet Connect",
                     width: 350,
@@ -624,13 +626,13 @@ export class AleoWallet {
 
             getAll().forEach(win => {
                 if (win.label == 'walletConnect') {
-                    webview = win;
+                    webview = win.window;
                 }
             });
         } else {
 
             // Open the new window
-            webview = new Window('walletConnect', {
+            webview = new WebviewWindow('walletConnect', {
                 url: 'wallet-connect-screens/wallet-connect.html',
                 title: "Avail Wallet Connect",
                 width: 350,
@@ -732,13 +734,13 @@ export class AleoWallet {
 
             getAll().forEach(win => {
                 if (win.label == 'walletConnect') {
-                    webview = win;
+                    webview = win.window;
                 }
             });
         } else {
 
             // Open the new window
-            webview = new Window('walletConnect', {
+            webview = new WebviewWindow('walletConnect', {
                 url: 'wallet-connect-screens/wallet-connect.html',
                 title: "Avail Wallet Connect",
                 width: 350,

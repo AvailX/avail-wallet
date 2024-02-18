@@ -1,36 +1,51 @@
 {
+  "productName": "Avail",
+  "identifier": "com.avail.wallet",
   "build": {
     "beforeDevCommand": "cd frontend ; npm i; npm run dev",
     "beforeBuildCommand": "cd frontend ; npm i; npm run build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../frontend/dist",
-    "withGlobalTauri": true
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../frontend/dist"
   },
-  "package": {
-    "productName": "Avail",
-    "version": "0.0.1"
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "targets": "all",
+    "macOS": {
+      "signingIdentity": "WTK34UZPZK",
+      "entitlements": "/Users/zk/Avail/Apple/plists/entitlements.plist",
+      "exceptionDomain": ""
+    }
   },
-  "tauri": {
-    "bundle": {
-      "active": true,
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://api.avail.global/release/{target}/{arch}/{current_version}"
       ],
-      "identifier": "com.avail.wallet",
-      "targets": "all",
-      "macOS": {
-        "signingIdentity": "WTK34UZPZK",
-        "entitlements": "/Users/zk/Avail/Apple/plists/entitlements.plist",
-        "exceptionDomain": ""
-      }
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFBM0E5NTJEMTAyMzg5NApSV1NVT0FMUlVxbWpBUWt1aXREWmJBR0g2UU9ZZEk3T0FINy9TVERLS1dtM2RITm5LVkNySXByYwo=="
     },
+    "deep-link": {
+      "domains": [
+        {
+          "host": "com.avail.wallet",
+          "pathPrefix": [
+            "avail://"
+          ]
+        }
+      ]
+    }
+  },
+  "app": {
     "security": {
       "csp": null
     },
+    "withGlobalTauri": true,
     "windows": [
       {
         "fullscreen": false,

@@ -9,17 +9,13 @@ use super::ios::{delete_ios, search, store_keys_local};
 
 use snarkvm::prelude::{Identifier, Network, PrivateKey, ViewKey};
 
-use super::desktop::{delete_key, read_key, store,read_seed_phrase};
+use super::desktop::{delete_key, read_key, read_seed_phrase, store};
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 
 /// This trait is used as a standard interface for the key management service.
 /// The key_type field refers to the private key type when true and the viewing key type when false.
 pub trait KeyController<N: Network> {
-    fn store_key(
-        &self,
-        password: &str,
-        wallet: &BetterAvailWallet<N>
-    ) -> AvailResult<String>;
+    fn store_key(&self, password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String>;
 
     fn delete_key(&self, password: Option<&str>, ext: Identifier<N>) -> AvailResult<String>;
     fn read_key(&self, password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>>;
@@ -30,11 +26,7 @@ pub struct AndroidKeyController;
 
 #[cfg(target_os = "android")]
 impl<N: Network> KeyController<N> for AndroidKeyController {
-    fn store_key(
-        &self,
-        password: &str,
-        wallet: BetterAvailWallet<N>
-    ) -> AvailResult<String> {
+    fn store_key(&self, password: &str, wallet: BetterAvailWallet<N>) -> AvailResult<String> {
         keystore_init(password, access_type, p_key, v_key)
     }
 
@@ -65,11 +57,7 @@ pub struct iOSKeyController;
 
 #[cfg(target_os = "ios")]
 impl<N: Network> KeyController<N> for iOSKeyController {
-    fn store_key(
-        &self,
-        password: &str,
-        wallet: BetterAvailWallet<N>
-    ) -> AvailResult<String> {
+    fn store_key(&self, password: &str, wallet: BetterAvailWallet<N>) -> AvailResult<String> {
         store_keys_local(password, access_type, p_key, v_key)
     }
 
@@ -101,12 +89,8 @@ pub struct macKeyController;
 
 #[cfg(target_os = "macos")]
 impl<N: Network> KeyController<N> for macKeyController {
-    fn store_key(
-        &self,
-        password: &str,
-        wallet: &BetterAvailWallet<N>
-    ) -> AvailResult<String> {
-        store(wallet,password)
+    fn store_key(&self, password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String> {
+        store(wallet, password)
     }
 
     fn delete_key(&self, password: Option<&str>, _ext: Identifier<N>) -> AvailResult<String> {
@@ -144,12 +128,8 @@ impl<N: Network> KeyController<N> for macKeyController {
 pub struct linuxKeyController;
 
 impl<N: Network> KeyController<N> for linuxKeyController {
-    fn store_key(
-        &self,
-        password: &str,
-        wallet: &BetterAvailWallet<N>
-    ) -> AvailResult<String> {
-        store(wallet,password)
+    fn store_key(&self, password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String> {
+        store(wallet, password)
     }
 
     //TODO authenticate using read_key
@@ -189,12 +169,8 @@ pub struct windowsKeyController;
 
 #[cfg(target_os = "windows")]
 impl<N: Network> KeyController<N> for windowsKeyController {
-    fn store_key(
-        &self,
-        password: &str,
-        wallet: &BetterAvailWallet<N>
-    ) -> AvailResult<String> {
-        store(wallet,password)
+    fn store_key(&self, password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String> {
+        store(wallet, password)
     }
 
     //TODO authenticate using read_key

@@ -3,8 +3,6 @@ pub mod helpers;
 pub mod models;
 pub mod services;
 
-use tauri::Manager;
-
 use services::account::generation::create_seed_phrase_wallet;
 use services::account::generation::import_wallet;
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
@@ -22,7 +20,10 @@ use api::user::{update_backup_flag, update_username};
 use services::local_storage::{
     encrypted_data::get_and_store_all_data,
     tokens::get_stored_tokens,
-    utils::{delete_util, get_private_key_tauri, get_seed_phrase, get_view_key_tauri,delete_local_for_recovery},
+    utils::{
+        delete_local_for_recovery, delete_util, get_private_key_tauri, get_seed_phrase,
+        get_view_key_tauri,
+    },
 };
 
 // record handliong services
@@ -40,18 +41,11 @@ use crate::services::wallet_connect_api::{
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri_plugin_deep_link::prepare("com.avail.wallet");
-
     #[cfg(target_os = "macos")]
     tauri::Builder::default()
+        .plugin(tauri_plugin_deep_link::init())
         .setup(|app| {
             let handle = app.handle().clone();
-
-            let _ = tauri_plugin_deep_link::register("avail", move |request| {
-                dbg!(&request);
-                handle.emit("wc-request-received", request).unwrap();
-            });
-
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

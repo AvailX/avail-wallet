@@ -35,14 +35,16 @@ use crate::models::wallet_connect::balance::Balance;
 use crate::models::wallet_connect::records::{GetRecordsRequest, RecordFilterType, RecordsFilter};
 use crate::services::local_storage::encrypted_data::get_encrypted_data_by_flavour;
 use crate::services::local_storage::tokens::{
-    add_balance, get_balance, get_program_id_for_token, if_token_exists, init_token
+    add_balance, get_balance, get_program_id_for_token, if_token_exists, init_token,
 };
 use crate::services::local_storage::{
     encrypted_data::{
         store_encrypted_data, update_encrypted_data_by_id, update_encrypted_data_synced_on_by_id,
         update_encrypted_transaction_confirmed_by_id, update_encrypted_transaction_state_by_id,
     },
-    persistent_storage::{get_address, get_address_string, get_backup_flag, get_username},
+    persistent_storage::{
+        get_address, get_address_string, get_backup_flag, get_network, get_username,
+    },
     session::view::VIEWSESSION,
     storage_api::{
         deployment::get_deployment_pointer,
@@ -572,19 +574,24 @@ pub fn output_to_record_pointer<N: Network>(
     }
 }
 
-// #[tauri::command(rename_all = "snake_case")]
-// pub fn get_all_nft_data() -> AvailResult<Vec<String>> {
-//     const network: Network = match SupportedNetworks::try_from(get_network()?)? {
-//         SupportedNetworks::Testnet3 => Testnet3,
-//     };
+#[tauri::command(rename_all = "snake_case")]
+pub fn get_all_nft_data() -> AvailResult<Vec<String>> {
+    let network = get_network()?;
 
-//     let nft_data = get_all_nft_raw::<network>()?;
-//     Ok(nft_data)
-// }
+    match SupportedNetworks::from_str(network.as_str())? {
+        SupportedNetworks::Testnet3 => {
+            let nft_data = get_all_nft_raw::<Testnet3>()?;
+            Ok(nft_data)
+        }
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Network not supported".to_string(),
+            "Network not supported".to_string(),
+        )),
+    }
+}
 
 pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
-    VIEWSESSION.set_view_session("").unwrap();
-
     let nft_encrypted_data =
         get_encrypted_data_by_flavour(EncryptedDataTypeCommon::Record).unwrap();
     let v_key = VIEWSESSION.get_instance::<N>().unwrap();
@@ -667,7 +674,7 @@ pub fn get_public_token_balance<N: Network>(asset_id: &str) -> AvailResult<f64> 
     let record_name = format!("{}.record", asset_id);
     // let program_id = format!("{}.aleo", asset_id);
     let mut program_id = get_program_id_for_token(&record_name)?;
-    if (program_id == ""){
+    if (program_id == "") {
         program_id = format!("{}.aleo", asset_id);
     }
     println!("===> PROGRAM ID FOR FETCH {:?}", program_id);
@@ -695,7 +702,6 @@ pub fn get_private_token_balance<N: Network>(asset_id: &str) -> AvailResult<f64>
     let program_id = format!("{}.aleo", asset_id);
     println!("===> Asset ID in get_private_balance() {:?}", asset_id);
 
-    
     let vk = VIEWSESSION.get_instance::<N>()?;
     let balance = get_balance(&record_name, vk)?;
 
@@ -707,8 +713,8 @@ pub fn get_private_token_balance<N: Network>(asset_id: &str) -> AvailResult<f64>
 
 /// Get Arc20 Token Balance
 pub fn get_token_balance<N: Network>(asset_id: &str) -> AvailResult<Balance> {
-    let asset_id_modified = asset_id.to_string(); 
-    let asset_id_final = asset_id.to_string().replace(".record","");
+    let asset_id_modified = asset_id.to_string();
+    let asset_id_final = asset_id.to_string().replace(".record", "");
     println!("===> Asset ID after mpod {:?}", asset_id_final);
     let public = get_public_token_balance::<N>(&asset_id_final)?;
     let private = get_private_token_balance::<N>(&asset_id_final)?;
@@ -1722,13 +1728,11 @@ pub fn parse_inputs<N: Network>(
                     values.push(value);
                 }
                 Err(_) => {
-
                     let value = Value::from_str(input)?;
-                        values.push(value);
+                    values.push(value);
 
                     // value is constant plaintext input
                     if function_identifier.contains("transfer") {
-
                         let trimmed_input = input.trim_end_matches("u64");
 
                         if let Ok(amount_found) = trimmed_input.parse::<u64>() {
@@ -1820,7 +1824,7 @@ mod test {
     use snarkvm::prelude::Testnet3;
     #[tokio::test]
     async fn test_get_all_nft_data() {
-        let res = get_all_nft_data::<Testnet3>().unwrap();
+        let res = get_all_nft_data().unwrap();
         println!("res\n {:?}", res);
     }
     // #[tokio::test]

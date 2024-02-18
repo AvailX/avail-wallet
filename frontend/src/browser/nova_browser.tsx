@@ -235,7 +235,7 @@ const Browser: React.FC<BrowserProps> = ({ initialUrl, theme = 'light',handleDap
               boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.8)',
             },
           }}
-          onClick={() => { connected? handleDisconnect():handleConnected()}}
+          onClick={() => { connected? handleDisconnect():walletConnectManager.pair(wcURL)}}
           > {connected? t("browser.message.success.disconnect"):t("browser.connect")}</Button>
         </Toolbar>
       </AppBar>
