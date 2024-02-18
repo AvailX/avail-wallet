@@ -1,20 +1,37 @@
 repos:
+  - repo: https://github.com/sirosen/check-jsonschema
+    rev: 0.10.0
+    hooks:
+      - id: check-github-actions
+      - id: check-github-workflows
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0 # Use the ref you want to point at
+    hooks:
+      - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
   - repo: https://github.com/doublify/pre-commit-rust
     rev: v1.0
     hooks:
       - id: fmt
-        args: ["--manifest-path", "./backend/Cargo.toml"]
+        stages:
+          - "pre-commit"
+        args: ["--manifest-path", "backend/Cargo.toml", "--all", "--"]
   - repo: local
     hooks:
       - id: auto-changelog
         name: auto-changelog
         description: Generate a changelog from git metadata
+        types: ["text", "markdown"]
         language: system
         files: CHANGELOG.md
         entry: auto-changelog
         args:
-          - --hide-credit
-          - --template
-          - keepachangelog
-          - --output
-          - CHANGELOG.md
+          [
+            "--hide-credit",
+            "--template",
+            "keepachangelog",
+            "--output",
+            "CHANGELOG.md",
+          ]
