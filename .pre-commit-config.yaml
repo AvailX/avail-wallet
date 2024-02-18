@@ -24,9 +24,8 @@ repos:
       - id: auto-changelog
         name: auto-changelog
         description: Generate a changelog from git metadata
-        types: ["text", "markdown"]
+        types: [rust]
         language: system
-        files: CHANGELOG.md
         entry: auto-changelog
         args:
           [
