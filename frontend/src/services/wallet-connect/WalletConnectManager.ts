@@ -10,7 +10,7 @@ import { AleoWallet } from './AleoWallet'
 
 import { SessionInfo } from './SessionInfo'
 
-import { Window } from '@tauri-apps/api/window'
+import { WebviewWindow } from '@tauri-apps/api/webview'
 import { emit } from '@tauri-apps/api/event'
 
 import { DappSession, wcRequest } from './WCTypes'
@@ -108,7 +108,7 @@ export class WalletConnectManager {
 
             {/* Approve/Reject Connection window -- START*/ }
             // Open the new window
-            const webview = new Window('walletConnect', {
+            const webview = new WebviewWindow('walletConnect', {
                 url: 'wallet-connect-screens/wallet-connect.html',
                 title: "Avail Wallet Connect",
                 width: 350,
@@ -131,7 +131,7 @@ export class WalletConnectManager {
                 console.log('Window created');
 
                 setTimeout(() => {
-                    webview.emit('wallet-connect-request', wcRequest);
+                    emit('wallet-connect-request', wcRequest);
                     console.log("Emitting wallet-connect-request")
                 }, 3000);
 

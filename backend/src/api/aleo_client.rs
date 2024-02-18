@@ -10,25 +10,16 @@ use crate::services::local_storage::persistent_storage::update_network;
 
 /* --Client Setup functions-- */
 pub fn setup_local_client<N: Network>() -> AleoAPIClient<N> {
-    dotenv::dotenv().ok();
 
-    let dev_node_ip = match std::env::var("DEV_NODE_IP") {
-        Ok(val) => val,
-        Err(_e) => _e.to_string(),
-    };
-
+    let dev_node_ip = env!("DEV_NODE_IP");
     let api_client = AleoAPIClient::<N>::local_testnet3("3030", &dev_node_ip);
 
     api_client
 }
 
 pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
-    dotenv::dotenv().ok();
 
-    let node_api_obscura = match std::env::var("TESTNET_API_OBSCURA") {
-        Ok(val) => val,
-        Err(_e) => "".to_string(),
-    };
+    let node_api_obscura = env!("TESTNET_API_OBSCURA");
 
     println!("Node API Obscura: {:?}", node_api_obscura);
 
@@ -50,10 +41,7 @@ pub struct AleoClient<N: Network> {
 
 impl<N: Network> AleoClient<N> {
     pub fn new() -> AvailResult<Self> {
-        let node_api_obscura = match std::env::var("MAINNET_API_OBSCURA") {
-            Ok(val) => val,
-            Err(_e) => "".to_string(),
-        };
+        let node_api_obscura = env!("MAINNET_API_OBSCURA");
 
         let base_url = format!("https://aleo-mainnet.obscura.build/v1/{}", node_api_obscura);
 
@@ -63,10 +51,7 @@ impl<N: Network> AleoClient<N> {
     }
 
     pub fn devnet() -> AvailResult<Self> {
-        let node_api_obscura = match std::env::var("DEVNET_API_OBSCURA") {
-            Ok(val) => val,
-            Err(_e) => "".to_string(),
-        };
+        let node_api_obscura = env!("DEVNET_API_OBSCURA");
 
         let base_url = format!("https://aleo-devnet.obscura.build/v1/{}", node_api_obscura);
 
@@ -76,10 +61,7 @@ impl<N: Network> AleoClient<N> {
     }
 
     pub fn testnet3() -> AvailResult<Self> {
-        let node_api_obscura = match std::env::var("TESTNET_API_OBSCURA") {
-            Ok(val) => val,
-            Err(_e) => "".to_string(),
-        };
+        let node_api_obscura = env!("TESTNET_API_OBSCURA");
 
         let base_url = format!(
             "https://aleo-testnet3.obscura.build/v1/{}",
@@ -117,10 +99,7 @@ impl<N: Network> AleoClient<N> {
     }
 
     pub fn local_dev() -> AvailResult<Self> {
-        let dev_node_ip = match std::env::var("DEV_NODE_IP") {
-            Ok(val) => val,
-            Err(_e) => "".to_string(),
-        };
+        let dev_node_ip = env!("DEV_NODE_IP");
 
         Ok(Self {
             client: AleoAPIClient::local_testnet3("3030", &dev_node_ip),

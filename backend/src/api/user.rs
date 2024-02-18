@@ -23,7 +23,7 @@ use avail_common::{
 
 // create user online account
 pub async fn create_user(request: User) -> AvailResult<String> {
-    dotenv::dotenv().ok();
+ 
 
     let api = env!("API");
 

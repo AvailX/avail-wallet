@@ -10,9 +10,8 @@ pub fn get_rm_client_with_session(
     method: reqwest::Method,
     path: &str,
 ) -> AvailResult<reqwest::RequestBuilder> {
-    dotenv::dotenv().ok();
-
-    let api = env!("API");
+   
+     let api = env!("API");
 
     let client = reqwest::Client::new();
     let cookie_name = "id";
@@ -41,8 +40,7 @@ pub fn get_um_client_with_session(
     method: reqwest::Method,
     path: &str,
 ) -> AvailResult<reqwest::RequestBuilder> {
-    dotenv::dotenv().ok();
-
+   
     let api = env!("API");
 
     let client = reqwest::Client::new();

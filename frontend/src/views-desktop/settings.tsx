@@ -360,6 +360,7 @@ function Settings() {
             </mui.Box>
             <STButton text="Sign" onClick={() => { handleSign() }} />
             <SmallText400 sx={{ color: '#fff', mt: '2%', mb: '2%', wordWrap: "break-word" }}>{signature}</SmallText400>
+            {/* 
             <BodyText sx={{ color: '#fff', mt: '5%' }}>Verify a Signature</BodyText>
             <mui.Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <WhiteHueTextField sx={{ width: '40%', mt: '1%' }} inputProps={{ style: { color: "#fff" } }} InputLabelProps={{ style: { color: "#fff" } }} value={addressToVerify} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setAddressToVerify(event.target.value); }} label="address" />
@@ -369,6 +370,7 @@ function Settings() {
 
             <STButton text="Verify" onClick={() => { handleVerify() }} />
             <SmallText400 sx={{ color: '#fff', mt: '2%', mb: '2%', wordWrap: "break-word" }}>{verifyResult === undefined ? '' : verifyResult ? 'Signature verified successfully.' : 'Signature verification failed.'}</SmallText400>
+                */}
             <mui.Box sx={{ mb: '4%' }} />
           </MenuSection>
           {/* --Remove Account-- */}

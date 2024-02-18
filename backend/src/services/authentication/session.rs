@@ -37,8 +37,6 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
         session_id: session_request.session_id,
     };
 
-    dotenv::dotenv().ok();
-
     let api = env!("API");
 
     let client = reqwest::Client::new();
@@ -93,8 +91,6 @@ pub async fn get_session_after_creation<N: Network>(
         session_id: session_request.session_id,
     };
 
-    dotenv::dotenv().ok();
-
     let api = env!("API");
 
     let res = reqwest::Client::new()
@@ -146,8 +142,6 @@ pub async fn request_hash(address:&str) -> AvailResult<server_auth::CreateSessio
     let request = server_auth::CreateSessionRequest {
         public_key: address.to_owned(),
     };
-
-    dotenv::dotenv().ok();
 
     let api = env!("API");
 
