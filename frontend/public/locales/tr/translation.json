@@ -25,7 +25,7 @@
         },
         "success": "Cüzdan başarıyla oluşturuldu!"
       }
-      
+
     },
     "seedphrase": {
       "title": "Gizli kurtarma cümleniz",
@@ -226,4 +226,3 @@
       }
     }
   }
-  

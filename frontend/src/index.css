@@ -3,11 +3,11 @@
     font-family: 'DM Sans';
     src: local('DM Sans'), local('DMSans-Regular'),
          url('./assets/fonts/DMsans/DMSans-Regular.ttf') format('truetype'); /* Adjust the path to where your font files are located */
-      
-     font-weight: 400; 
+
+     font-weight: 400;
      font-style: normal;
   }
-  
+
   @font-face {
     font-family: 'DM Sans';
     src: local('DM Sans Bold'), local('DMSans-Bold'),
@@ -39,7 +39,7 @@
         font-weight: 300;
         font-style: normal;
     }
-    
+
     @font-face {
         font-family: 'DM Sans';
         src: local('DM Sans Thin'), local('DMSans-Thin'),
@@ -47,6 +47,5 @@
         font-weight: 100;
         font-style: normal;
     }
-  
+
   /* Include other font weights and styles if available */
-  

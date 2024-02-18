@@ -25,7 +25,7 @@
         },
         "success": "Portemonnee succesvol aangemaakt!"
       }
-      
+
     },
     "seedphrase": {
       "title": "Je geheime herstelzin",
@@ -226,4 +226,3 @@
       }
     }
   }
-  

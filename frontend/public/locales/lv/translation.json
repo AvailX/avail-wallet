@@ -25,7 +25,7 @@
         },
         "success": "Maks sekmīgi izveidots!"
       }
-      
+
     },
     "seedphrase": {
       "title": "Tava slepenā atkopšanas frāze",
@@ -226,4 +226,3 @@
       }
     }
   }
-  
