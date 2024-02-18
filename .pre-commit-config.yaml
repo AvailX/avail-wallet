@@ -19,19 +19,3 @@ repos:
         stages:
           - "pre-commit"
         args: ["--manifest-path", "backend/Cargo.toml", "--all", "--"]
-  - repo: local
-    hooks:
-      - id: auto-changelog
-        name: auto-changelog
-        description: Generate a changelog from git metadata
-        types: [rust]
-        language: system
-        entry: auto-changelog
-        args:
-          [
-            "--hide-credit",
-            "--template",
-            "keepachangelog",
-            "--output",
-            "CHANGELOG.md",
-          ]
