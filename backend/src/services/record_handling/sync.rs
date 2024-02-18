@@ -86,7 +86,7 @@ pub async fn txs_sync_raw<N: Network>() -> AvailResult<TxScanResponse> {
 
     let (txs_in, ids) = get_new_transaction_messages::<N>().await?;
 
-    println!("Transactions In: {:?}",txs_in);
+    println!("Transactions In: {:?}", txs_in);
 
     if txs_in == vec![] {
         let res = TxScanResponse {

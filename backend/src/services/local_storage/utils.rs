@@ -101,14 +101,16 @@ pub fn get_seed_phrase(password: Option<String>) -> AvailResult<String> {
             };
 
             let val: Identifier<Testnet3> = Identifier::<Testnet3>::from_str("test")?;
-            
+
             let seed_phrase = match password {
                 Some(password) => key_manager.read_phrase(&password, val),
-                None => return Err(AvailError::new(
-                    AvailErrorType::Internal,
-                    "Password is required.".to_string(),
-                    "Password is required.".to_string(),
-                )),
+                None => {
+                    return Err(AvailError::new(
+                        AvailErrorType::Internal,
+                        "Password is required.".to_string(),
+                        "Password is required.".to_string(),
+                    ))
+                }
             }?;
 
             Ok(seed_phrase)
@@ -181,9 +183,9 @@ pub fn encrypt_with_password<N: Network>(
     }
 }
 
-pub fn encrypt_private_key_with_password<N:Network>(
+pub fn encrypt_private_key_with_password<N: Network>(
     password: &str,
-    private_key: &PrivateKey<N>
+    private_key: &PrivateKey<N>,
 ) -> AvailResult<Ciphertext<N>> {
     Ok(Encryptor::encrypt_private_key_with_secret(
         private_key,
@@ -191,14 +193,11 @@ pub fn encrypt_private_key_with_password<N:Network>(
     )?)
 }
 
-pub fn encrypt_view_key_with_password<N:Network>(
+pub fn encrypt_view_key_with_password<N: Network>(
     password: &str,
-    view_key: &ViewKey<N>
+    view_key: &ViewKey<N>,
 ) -> AvailResult<Ciphertext<N>> {
-    Ok(Encryptor::encrypt_view_key_with_secret(
-        view_key,
-        password,
-    )?)
+    Ok(Encryptor::encrypt_view_key_with_secret(view_key, password)?)
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -248,7 +247,7 @@ pub async fn delete_util(password: &str) -> AvailResult<String> {
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn delete_local_for_recovery(password: &str) -> AvailResult<()>{
+pub fn delete_local_for_recovery(password: &str) -> AvailResult<()> {
     let key_manager = {
         #[cfg(target_os = "macos")]
         {

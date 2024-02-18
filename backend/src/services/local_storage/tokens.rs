@@ -17,7 +17,7 @@ pub fn init_tokens_table() -> AvailResult<()> {
 
 pub fn drop_tokens_table() -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
-    match storage.execute_query("DROP TABLE IF EXISTS ARC20_tokens"){
+    match storage.execute_query("DROP TABLE IF EXISTS ARC20_tokens") {
         Ok(r) => r,
         Err(e) => match e.error_type {
             AvailErrorType::NotFound => {}
@@ -58,7 +58,7 @@ pub fn init_token<N: Network>(
     let plaintext = Plaintext::<N>::from_str(balance)?;
     let address = Address::<N>::from_str(encryption_address)?;
     let encrypted_balance = plaintext.encrypt(&address, scalar)?;
-    
+
     storage.save(
         vec![
             token_name.to_string(),
@@ -218,7 +218,7 @@ pub fn if_token_exists(token_name: &str) -> AvailResult<bool> {
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn get_program_id_for_token (token_name: &str) -> AvailResult<String>{
+pub fn get_program_id_for_token(token_name: &str) -> AvailResult<String> {
     let storage = PersistentStorage::new()?;
     let query = format!(
         "SELECT program_id FROM ARC20_tokens WHERE token_name='{}'",
@@ -227,9 +227,7 @@ pub fn get_program_id_for_token (token_name: &str) -> AvailResult<String>{
     // let res = ?;
     let res = storage.get_all::<String>(&query, 1)?;
     match res.get(0) {
-        Some(p_id) => {
-            Ok(p_id[0].clone())
-        }
+        Some(p_id) => Ok(p_id[0].clone()),
         None => Ok("".to_string()),
     }
 }
@@ -278,7 +276,9 @@ mod test_tokens {
         let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
         let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
-        let res = init_token::<Testnet3>("testnew111.record", "diff.aleo",TESTNET_ADDRESS, "100u64").unwrap();
+        let res =
+            init_token::<Testnet3>("testnew111.record", "diff.aleo", TESTNET_ADDRESS, "100u64")
+                .unwrap();
     }
     #[test]
     fn test_pid() {

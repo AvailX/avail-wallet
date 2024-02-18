@@ -28,7 +28,7 @@ pub async fn recover_wallet_from_seed_phrase(
     password: &str,
     access_type: bool,
     language: Languages,
-) -> AvailResult<()> { 
+) -> AvailResult<()> {
     let avail_wallet = BetterAvailWallet::<Testnet3>::from_seed_phrase(
         seed_phrase,
         Languages::to_bip39_language(&language),
@@ -49,10 +49,7 @@ pub async fn recover_wallet_from_seed_phrase(
         }
     };
 
-    key_manager.store_key(
-        password,
-        &avail_wallet
-    )?;
+    key_manager.store_key(password, &avail_wallet)?;
 
     get_session_after_creation::<Testnet3>(&avail_wallet.private_key).await?;
 

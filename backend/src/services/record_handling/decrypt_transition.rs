@@ -138,7 +138,7 @@ impl DecryptTransition {
 
         //check inputs
         for (index, input) in transition.inputs().iter().enumerate() {
-           if let Input::Record(_id, _checksum) = input {
+            if let Input::Record(_id, _checksum) = input {
                 // spent records should be handled here
                 let input_tag = match input.tag() {
                     Some(tag) => tag,

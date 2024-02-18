@@ -42,7 +42,7 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
     let client = reqwest::Client::new();
 
     let res = client
-        .post(format!("{}/auth/login/",api))
+        .post(format!("{}/auth/login/", api))
         .json(&verify_request)
         .send()
         .await?;
@@ -94,7 +94,7 @@ pub async fn get_session_after_creation<N: Network>(
     let api = env!("API");
 
     let res = reqwest::Client::new()
-        .post(format!("{}/auth/login/",api))
+        .post(format!("{}/auth/login/", api))
         .json(&verify_request)
         .send()
         .await?;
@@ -135,8 +135,7 @@ pub async fn get_session_after_creation<N: Network>(
 
 /// requests the initial hash to sign from server
 /// Function 1
-pub async fn request_hash(address:&str) -> AvailResult<server_auth::CreateSessionResponse> {
-
+pub async fn request_hash(address: &str) -> AvailResult<server_auth::CreateSessionResponse> {
     let client = reqwest::Client::new();
 
     let request = server_auth::CreateSessionRequest {
@@ -146,7 +145,7 @@ pub async fn request_hash(address:&str) -> AvailResult<server_auth::CreateSessio
     let api = env!("API");
 
     let res = client
-        .post(format!("{}/auth/request/",api))
+        .post(format!("{}/auth/request/", api))
         .header("Content-Type", "application/json")
         .json(&request)
         .send()
@@ -278,7 +277,7 @@ mod tests {
 
         create_user(user_request).await.unwrap();
 
-        store::<Testnet3>(&wallet,STRONG_PASSWORD).unwrap();
+        store::<Testnet3>(&wallet, STRONG_PASSWORD).unwrap();
     }
 
     #[tokio::test]

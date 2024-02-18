@@ -42,25 +42,28 @@ use crate::models::wallet_connect::{
 use snarkvm::circuit::Aleo;
 use snarkvm::{
     circuit::{AleoV0, Environment},
-    prelude::{Ciphertext, Network, Program, Record, Testnet3,Signature,Address,Field},
+    prelude::{Address, Ciphertext, Field, Network, Program, Record, Signature, Testnet3},
 };
 
 use tauri::{Manager, Window};
 
 use avail_common::{
     aleo_tools::program_manager::*,
+    converters::messages::{field_to_fields, utf8_string_to_bits},
     errors::{AvailError, AvailErrorType, AvailResult},
     models::{
         encrypted_data::{EventTypeCommon, TransactionState},
         network::SupportedNetworks,
     },
-    converters::messages::{utf8_string_to_bits,field_to_fields}
 };
 
 #[tauri::command(rename_all = "snake_case")]
 pub fn get_balance(request: BalanceRequest) -> AvailResult<BalanceResponse> {
     let network = get_network()?;
-    println!("===> Asset ID in Request Backend {:?}", Some(request.asset_id()));
+    println!(
+        "===> Asset ID in Request Backend {:?}",
+        Some(request.asset_id())
+    );
     //TODO - Read ARC20 to deduce assets id something like {program_id/record_name} seems reasonable.
     let asset_id = match request.asset_id() {
         Some(asset_id) => asset_id,
@@ -110,8 +113,8 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
         Err(e) => match e.error_type {
             AvailErrorType::Unauthorized => {
                 if let Some(window) = window {
-                    match window.emit("reauthenticate", "create-event"){
-                        Ok(_) => {},
+                    match window.emit("reauthenticate", "create-event") {
+                        Ok(_) => {}
                         Err(e) => {
                             return Err(AvailError::new(
                                 AvailErrorType::Internal,
@@ -204,8 +207,8 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
         let pending_event_id = pending_deployment_tx.encrypt_and_store(address)?;
 
         if let Some(window) = window.clone() {
-            match window.emit("tx_state_change", &pending_event_id){
-                Ok(_) => {},
+            match window.emit("tx_state_change", &pending_event_id) {
+                Ok(_) => {}
                 Err(e) => {
                     return Err(AvailError::new(
                         AvailErrorType::Internal,
@@ -243,8 +246,8 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
                 )?;
 
                 if let Some(window) = window.clone() {
-                    match window.emit("tx_state_change", &pending_event_id){
-                        Ok(_) => {},
+                    match window.emit("tx_state_change", &pending_event_id) {
+                        Ok(_) => {}
                         Err(e) => {
                             return Err(AvailError::new(
                                 AvailErrorType::Internal,
@@ -257,10 +260,7 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
 
                 return Ok(CreateEventResponse::new(
                     Some(pending_event_id),
-                    Some(format!(
-                        "Error deploying program: '{}'",
-                        program.id()
-                    )),
+                    Some(format!("Error deploying program: '{}'", program.id())),
                 ));
             }
         };
@@ -278,7 +278,7 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
         let mut record_nonces: Vec<String> = vec![];
 
         let (input_values, input_nonces, recipient_address, amount) =
-            parse_inputs::<N>(request.inputs().clone(),&request.function_id().clone())?;
+            parse_inputs::<N>(request.inputs().clone(), &request.function_id().clone())?;
 
         let (fee_record, _fee_commitment, fee_id) = match fee_private {
             true => {
@@ -316,16 +316,16 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
         let pending_event_id = pending_transaction.encrypt_and_store(address)?;
 
         if let Some(window) = window.clone() {
-           match window.emit("tx_state_change", &pending_event_id){
-            Ok(_) => {},
-            Err(e) => {
-                return Err(AvailError::new(
-                    AvailErrorType::Internal,
-                    "Error emitting tx_state_change event".to_string(),
-                    "Error emitting transaction state".to_string(),
-                ));
-            }
-        };
+            match window.emit("tx_state_change", &pending_event_id) {
+                Ok(_) => {}
+                Err(e) => {
+                    return Err(AvailError::new(
+                        AvailErrorType::Internal,
+                        "Error emitting tx_state_change event".to_string(),
+                        "Error emitting transaction state".to_string(),
+                    ));
+                }
+            };
         }
 
         // TODO - Update fee to spent and input_nonces to spent
@@ -370,8 +370,8 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
                 )?;
 
                 if let Some(window) = window.clone() {
-                    match window.emit("tx_state_change", &pending_event_id){
-                        Ok(_) => {},
+                    match window.emit("tx_state_change", &pending_event_id) {
+                        Ok(_) => {}
                         Err(e) => {
                             return Err(AvailError::new(
                                 AvailErrorType::Internal,
@@ -481,8 +481,8 @@ pub fn sign(request: SignatureRequest, window: Window) -> AvailResult<SignatureR
                 )),
                 Err(e) => {
                     if e.error_type == AvailErrorType::Unauthorized {
-                        match window.emit("reauthenticate", "sign"){
-                            Ok(_) => {},
+                        match window.emit("reauthenticate", "sign") {
+                            Ok(_) => {}
                             Err(e) => {
                                 return Err(AvailError::new(
                                     AvailErrorType::Internal,
@@ -508,8 +508,8 @@ pub fn sign(request: SignatureRequest, window: Window) -> AvailResult<SignatureR
             )),
             Err(e) => {
                 if e.error_type == AvailErrorType::Unauthorized {
-                    match window.emit("reauthenticate", "sign"){
-                        Ok(_) => {},
+                    match window.emit("reauthenticate", "sign") {
+                        Ok(_) => {}
                         Err(e) => {
                             return Err(AvailError::new(
                                 AvailErrorType::Internal,
@@ -531,7 +531,7 @@ pub fn sign(request: SignatureRequest, window: Window) -> AvailResult<SignatureR
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn verify(message: &str, address:&str, signature: &str) -> AvailResult<bool>{
+pub fn verify(message: &str, address: &str, signature: &str) -> AvailResult<bool> {
     let network = get_network()?;
 
     match SupportedNetworks::from_str(&network)? {
@@ -540,7 +540,11 @@ pub fn verify(message: &str, address:&str, signature: &str) -> AvailResult<bool>
     }
 }
 
-fn verify_signature<N:Network>(message: &str, address:&str, signature: &str) -> AvailResult<bool>{
+fn verify_signature<N: Network>(
+    message: &str,
+    address: &str,
+    signature: &str,
+) -> AvailResult<bool> {
     let signature = Signature::<N>::from_str(signature)?;
     let address = Address::<N>::from_str(address)?;
 
@@ -1175,16 +1179,15 @@ mod test {
     #[test]
     fn test_verify_signature() {
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-    
+
         let message = "Hello World";
 
-        let (signature,_) = sign_message_w_key::<Testnet3>(message, &pk).unwrap();
+        let (signature, _) = sign_message_w_key::<Testnet3>(message, &pk).unwrap();
 
         let address = Address::<Testnet3>::try_from(&pk).unwrap();
-        
 
         let res = verify(message, &address.to_string(), &signature.to_string()).unwrap();
-        
+
         assert_eq!(res, true);
     }
 

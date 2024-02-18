@@ -10,7 +10,6 @@ use crate::services::local_storage::persistent_storage::update_network;
 
 /* --Client Setup functions-- */
 pub fn setup_local_client<N: Network>() -> AleoAPIClient<N> {
-
     let dev_node_ip = env!("DEV_NODE_IP");
     let api_client = AleoAPIClient::<N>::local_testnet3("3030", &dev_node_ip);
 
@@ -18,7 +17,6 @@ pub fn setup_local_client<N: Network>() -> AleoAPIClient<N> {
 }
 
 pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
-
     let node_api_obscura = env!("TESTNET_API_OBSCURA");
 
     println!("Node API Obscura: {:?}", node_api_obscura);

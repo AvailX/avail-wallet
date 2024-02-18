@@ -1,22 +1,28 @@
+use bip39::Mnemonic;
 use keyring::Entry;
 use snarkvm::console::program::{FromFields, Itertools, ToFields};
-use snarkvm::prelude::{Ciphertext, FromStr, Network, PrivateKey, ViewKey,Plaintext,Literal,StringType,Field};
-use bip39::Mnemonic;
+use snarkvm::prelude::{
+    Ciphertext, Field, FromStr, Literal, Network, Plaintext, PrivateKey, StringType, ViewKey,
+};
 
 use crate::{
     helpers::validation::validate_secret_password,
-    services::local_storage::utils::{encrypt_private_key_with_password,encrypt_view_key_with_password},
-    models::wallet::BetterAvailWallet
+    models::wallet::BetterAvailWallet,
+    services::local_storage::utils::{
+        encrypt_private_key_with_password, encrypt_view_key_with_password,
+    },
 };
 
 use crate::models::storage::encryption::{Keys, Keys::PrivateKey as PKey, Keys::ViewKey as VKey};
 use avail_common::{
     aleo_tools::encryptor::Encryptor,
-    errors::{AvailError, AvailErrorType, AvailResult} 
+    errors::{AvailError, AvailErrorType, AvailResult},
 };
 
-fn encrypt_seed_phrase_with_password<N: Network>(password: &str, seed_phrase: &str) -> AvailResult<Ciphertext<N>> {
-
+fn encrypt_seed_phrase_with_password<N: Network>(
+    password: &str,
+    seed_phrase: &str,
+) -> AvailResult<Ciphertext<N>> {
     let pass_field = Field::<N>::new_domain_separator(password);
 
     let seed_phrase = Plaintext::<N>::Literal(
@@ -24,12 +30,15 @@ fn encrypt_seed_phrase_with_password<N: Network>(password: &str, seed_phrase: &s
         once_cell::sync::OnceCell::new(),
     );
 
-    let cipher= seed_phrase.encrypt_symmetric(pass_field)?;
+    let cipher = seed_phrase.encrypt_symmetric(pass_field)?;
 
     Ok(cipher)
 }
 
-fn decrypt_seed_phrase_with_password<N:Network>(ciphertext: Ciphertext<N>,password: &str) -> AvailResult<String>{
+fn decrypt_seed_phrase_with_password<N: Network>(
+    ciphertext: Ciphertext<N>,
+    password: &str,
+) -> AvailResult<String> {
     let pass_field = Field::<N>::new_domain_separator(password);
     let seed_phrase = ciphertext.decrypt_symmetric(pass_field)?;
 
@@ -40,10 +49,7 @@ fn decrypt_seed_phrase_with_password<N:Network>(ciphertext: Ciphertext<N>,passwo
     Ok(seed_phrase)
 }
 
-pub fn store<N: Network>(
-    wallet: &BetterAvailWallet<N>,
-    password: &str
-) -> AvailResult<String> {
+pub fn store<N: Network>(wallet: &BetterAvailWallet<N>, password: &str) -> AvailResult<String> {
     //encrypt keys with password
     if validate_secret_password(password).is_err() {
         return Err(AvailError::new(
@@ -59,7 +65,7 @@ pub fn store<N: Network>(
 
     if let Some(mnemonic) = &wallet.mnemonic {
         let ciphertext_seed = encrypt_seed_phrase_with_password::<N>(password, mnemonic.phrase())?;
-         //seed-phrase storage
+        //seed-phrase storage
         let s_entry = Entry::new("com.avail.wallet.phrase", "avl-s")?;
         let encrypted_seed_phrase = ciphertext_seed.to_string();
         s_entry.set_password(&encrypted_seed_phrase)?;
@@ -113,7 +119,7 @@ pub fn read_key<N: Network>(password: &str, key_type: &str) -> AvailResult<Keys<
     }
 }
 
-pub fn read_seed_phrase<N:Network>(password: &str) -> AvailResult<String>{
+pub fn read_seed_phrase<N: Network>(password: &str) -> AvailResult<String> {
     let entry = Entry::new("com.avail.wallet.phrase", "avl-s")?;
     let seed_phrase = entry.get_password()?;
 
@@ -152,7 +158,7 @@ mod windows_linux_key_management_tests {
 
         let avail_wallet = BetterAvailWallet::<Testnet3>::try_from(p_key).unwrap();
 
-        store::<Testnet3>(&avail_wallet,STRONG_PASSWORD).unwrap();
+        store::<Testnet3>(&avail_wallet, STRONG_PASSWORD).unwrap();
     }
 
     #[test]
@@ -163,7 +169,7 @@ mod windows_linux_key_management_tests {
         let avail_wallet = BetterAvailWallet::<Testnet3>::try_from(p_key.to_string()).unwrap();
         let access_type = true;
 
-        store::<Testnet3>(&avail_wallet,WEAK_PASSWORD).unwrap();
+        store::<Testnet3>(&avail_wallet, WEAK_PASSWORD).unwrap();
     }
 
     #[test]
@@ -175,7 +181,7 @@ mod windows_linux_key_management_tests {
         println!("Original Private Key: {:?}", p_key);
         println!("Original Viewing Key: {:?}", v_key);
 
-        store::<Testnet3>(&avail_wallet,STRONG_PASSWORD).unwrap();
+        store::<Testnet3>(&avail_wallet, STRONG_PASSWORD).unwrap();
 
         let read_p_key = read_key::<Testnet3>(STRONG_PASSWORD, "avl-p")
             .unwrap()
@@ -202,18 +208,21 @@ mod windows_linux_key_management_tests {
         let v_key = ViewKey::<Testnet3>::try_from(&p_key).unwrap();
         let avail_wallet = BetterAvailWallet::<Testnet3>::try_from(p_key.to_string()).unwrap();
 
-        store::<Testnet3>(&avail_wallet,STRONG_PASSWORD).unwrap();
+        store::<Testnet3>(&avail_wallet, STRONG_PASSWORD).unwrap();
 
         delete_key::<Testnet3>(STRONG_PASSWORD).unwrap();
     }
 
     #[test]
     fn test_encrypt_seed_phrase_with_password() {
-        let seed_phrase = "light soon prepare wire blade charge female stage ridge happy pony chief";
+        let seed_phrase =
+            "light soon prepare wire blade charge female stage ridge happy pony chief";
         let password = "password";
 
-        let ciphertext = encrypt_seed_phrase_with_password::<Testnet3>(password, seed_phrase).unwrap();
-        let decrypted_seed_phrase = decrypt_seed_phrase_with_password::<Testnet3>(ciphertext, password).unwrap();
+        let ciphertext =
+            encrypt_seed_phrase_with_password::<Testnet3>(password, seed_phrase).unwrap();
+        let decrypted_seed_phrase =
+            decrypt_seed_phrase_with_password::<Testnet3>(ciphertext, password).unwrap();
 
         assert_eq!(seed_phrase, decrypted_seed_phrase);
     }

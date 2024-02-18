@@ -17,10 +17,9 @@ use avail_common::{
     models::{
         encrypted_data::{
             Data, DataRequest, EncryptedData, EncryptedDataRecord, EncryptedDataSyncRequest,
-            EncryptedDataUpdateRequest,PageRequest
+            EncryptedDataUpdateRequest, PageRequest,
         },
         traits::encryptable::EncryptedStruct,
-        
     },
 };
 
@@ -28,8 +27,7 @@ use avail_common::{
 
 /// update encrypted data by id
 pub async fn update_data(data: Vec<EncryptedData>, idx: Vec<String>) -> AvailResult<String> {
-    
-    const MAX_BATCH_SIZE: usize = 300; 
+    const MAX_BATCH_SIZE: usize = 300;
 
     // Assuming data and idx have the same length
     let batches = data.chunks(MAX_BATCH_SIZE);
@@ -55,21 +53,20 @@ pub async fn update_data(data: Vec<EncryptedData>, idx: Vec<String>) -> AvailRes
             .await?;
 
         if res.status() == 200 {
-                let _result = res.text().await?;
-            }else if res.status() == 401 {
-                return Err(AvailError::new(
-                    AvailErrorType::Unauthorized,
-                    "User session has expired.".to_string(),
-                    "Your session has expired, please authenticate again.".to_string(),
-                ));
-            }else{
-                return Err(AvailError::new(
-                    AvailErrorType::External,
-                    "Error updating encrypted data record ".to_string(),
-                    "Error updating backup data.".to_string(),
-                ));
-            }
-        
+            let _result = res.text().await?;
+        } else if res.status() == 401 {
+            return Err(AvailError::new(
+                AvailErrorType::Unauthorized,
+                "User session has expired.".to_string(),
+                "Your session has expired, please authenticate again.".to_string(),
+            ));
+        } else {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                "Error updating encrypted data record ".to_string(),
+                "Error updating backup data.".to_string(),
+            ));
+        }
     }
 
     Ok("Updated Succesfully".to_string())
@@ -116,7 +113,7 @@ pub async fn get_new_transaction_messages<N: Network>(
 
         let result: Vec<EncryptedDataRecord> = res.json().await?;
 
-        println!("Enc Data {:?}",result);
+        println!("Enc Data {:?}", result);
         let encrypted_txs = result
             .clone()
             .into_iter()
@@ -243,7 +240,7 @@ pub async fn delete_invalid_transactions_in(ids: Vec<Uuid>) -> AvailResult<Strin
     }
 }
 
-pub async fn get_data_count() -> AvailResult<i64>{
+pub async fn get_data_count() -> AvailResult<i64> {
     let res = get_rm_client_with_session(reqwest::Method::GET, "data_count")?
         .send()
         .await?;
@@ -265,7 +262,6 @@ pub async fn get_data_count() -> AvailResult<i64>{
             "Error getting encrypted data count".to_string(),
         ))
     }
-
 }
 
 pub async fn recover_data(_address: &str) -> AvailResult<Data> {
@@ -275,10 +271,7 @@ pub async fn recover_data(_address: &str) -> AvailResult<Data> {
     let mut encrypted_data: Vec<Data> = vec![];
 
     for page in 0..pages {
-
-        let page_request = PageRequest {
-            page
-        };
+        let page_request = PageRequest { page };
 
         let res = get_rm_client_with_session(reqwest::Method::GET, "recover_data")?
             .json(&page_request)
@@ -321,7 +314,6 @@ pub async fn recover_data(_address: &str) -> AvailResult<Data> {
         transitions,
         deployments,
     })
-
 }
 
 pub async fn delete_all_server_storage() -> AvailResult<String> {
@@ -349,7 +341,6 @@ pub async fn delete_all_server_storage() -> AvailResult<String> {
 }
 
 pub async fn import_encrypted_data(request: DataRequest) -> AvailResult<String> {
-
     // check that every vector in data request does not exceed 75
 
     let record_pointers = request.data.record_pointers.len();
@@ -359,7 +350,6 @@ pub async fn import_encrypted_data(request: DataRequest) -> AvailResult<String> 
 
     // if they exceed 300 in sum, then split into several DataRequest where the sum of the data vectors inside is less than 300
     if record_pointers + transactions + transitions + deployments > 300 {
-
         let mut data_requests: Vec<DataRequest> = vec![];
 
         let mut record_pointers = request.data.record_pointers.clone();
@@ -367,7 +357,9 @@ pub async fn import_encrypted_data(request: DataRequest) -> AvailResult<String> 
         let mut transitions = request.data.transitions.clone();
         let mut deployments = request.data.deployments.clone();
 
-        while record_pointers.len() + transactions.len() + transitions.len() + deployments.len() > 300 {
+        while record_pointers.len() + transactions.len() + transitions.len() + deployments.len()
+            > 300
+        {
             let mut record_pointers_batch = record_pointers.split_off(75);
             let mut transactions_batch = transactions.split_off(75);
             let mut transitions_batch = transitions.split_off(75);
@@ -445,9 +437,7 @@ pub async fn import_encrypted_data(request: DataRequest) -> AvailResult<String> 
                 "Error backing up encrypted data.".to_string(),
             ))
         }
-
     }
-
 }
 
 #[cfg(test)]
