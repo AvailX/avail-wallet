@@ -1,31 +1,28 @@
-import * as React from "react";
-import * as mui from "@mui/material";
+import * as React from 'react';
+import * as mui from '@mui/material';
+import MiniDrawer from '../../components/sidebar';
 
-import MiniDrawer from "../../components/sidebar";
-interface LayoutWrapperProps {
-    children: React.ReactNode;
-  }
+type LayoutWrapperProperties = {
+	children: React.ReactNode;
+};
 
+const Layout: React.FC<LayoutWrapperProperties> = ({children}) => (
+	<div>
+		{/* <MiniDrawer></MiniDrawer> */}
 
-const Layout:React.FC<LayoutWrapperProps> = ({children}) =>{
-    return(
-        <div>
-        {/* <MiniDrawer></MiniDrawer> */}
-
-        <mui.Box sx={{
-            display:"flex",
-            flexDirection:"column", 
-            // backgroundColor:"#081424",
-            backgroundColor:"#111111", 
-            minWidth:"100%", 
-            minHeight:"100vh",
-            margin:0,
-            padding:0,
-            }}>
-            {children}
-        </mui.Box>
-        </div>
-    )
-}
+		<mui.Box sx={{
+			display: 'flex',
+			flexDirection: 'column',
+			// BackgroundColor:"#081424",
+			backgroundColor: '#111111',
+			minWidth: '100%',
+			minHeight: '100vh',
+			margin: 0,
+			padding: 0,
+		}}>
+			{children}
+		</mui.Box>
+	</div>
+);
 
 export default Layout;

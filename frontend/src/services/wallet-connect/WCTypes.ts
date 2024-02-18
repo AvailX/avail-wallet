@@ -1,667 +1,660 @@
-export const ALEO_CHAIN = 'aleo:1'
+export const ALEO_CHAIN = 'aleo:1';
 
 export const ALEO_METHODS = {
 
-    ALEO_DISCONNECT: 'disconnect',
+	ALEO_DISCONNECT: 'disconnect',
 
-    ALEO_GETBALANCE: 'getBalance',             
-    ALEO_GETACCOUNT: 'getSelectedAccount',      
-    ALEO_DECRYPT: 'decrypt',                    
-    ALEO_SIGN: 'requestSignature',              
-    ALEO_GET_RECORDS: 'getRecords',             
-    ALEO_CREATE_EVENT: 'requestCreateEvent',   
-    ALEO_GET_EVENT: 'getEvent',                 
-    ALEO_GET_EVENTS: 'getEvents',               
-    ALEO_CREATE_STATE: 'createSharedState',     // not for now
-    ALEO_IMPORT_STATE: 'importSharedState',     // not for now
-}
+	ALEO_GETBALANCE: 'getBalance',
+	ALEO_GETACCOUNT: 'getSelectedAccount',
+	ALEO_DECRYPT: 'decrypt',
+	ALEO_SIGN: 'requestSignature',
+	ALEO_GET_RECORDS: 'getRecords',
+	ALEO_CREATE_EVENT: 'requestCreateEvent',
+	ALEO_GET_EVENT: 'getEvent',
+	ALEO_GET_EVENTS: 'getEvents',
+	ALEO_CREATE_STATE: 'createSharedState', // Not for now
+	ALEO_IMPORT_STATE: 'importSharedState', // Not for now
+};
 
 export const ALEO_EVENTS = [
-    'chainChanged',
-    'accountSelected',
-    'selectedAccountSynced',
-    'sharedAccountSynced'];
+	'chainChanged',
+	'accountSelected',
+	'selectedAccountSynced',
+	'sharedAccountSynced',
+];
 
 export type wcRequest = {
-    method: string;
-    question: string;
-    image_ref: string;
-    approveResponse: string;
-    rejectResponse: string;
-    //dapp metadata
-    description?: string;
-    dapp_img?: string;
-    dapp_url?: string;
-    //possible parameters
-    fee?: string; 
-    asset_id?: string;
-    program_id?: string;
-    program_ids?: string[];
-    function_id?: string;
-    inputs?: string[];
-    ciphertexts?: string[];
-    type?: string;
-    message?: string;
-}
+	method: string;
+	question: string;
+	image_ref: string;
+	approveResponse: string;
+	rejectResponse: string;
+	// Dapp metadata
+	description?: string;
+	dapp_img?: string;
+	dapp_url?: string;
+	// Possible parameters
+	fee?: string;
+	asset_id?: string;
+	program_id?: string;
+	program_ids?: string[];
+	function_id?: string;
+	inputs?: string[];
+	ciphertexts?: string[];
+	type?: string;
+	message?: string;
+};
 
 // Stores dapp metadata to display to user
 export type DappSession = {
-    name: string;
-    description: string;
-    url: string;
-    img: string;
-}
+	name: string;
+	description: string;
+	url: string;
+	img: string;
+};
 
-export const DappSession = (name: string, description: string, url: string, img: string): DappSession => {
-    return {
-        name: name,
-        description: description,
-        url: url,
-        img: img,
-    }
-}
+export const DappSession = (name: string, description: string, url: string, img: string): DappSession => ({
+	name,
+	description,
+	url,
+	img,
+});
 
-export type RequestSession ={
-    
-    method: string;
-    request: string;
-    expiry: Date;
-}
+export type RequestSession = {
 
+	method: string;
+	request: string;
+	expiry: Date;
+};
 
 // ALEO_GETBALANCE: 'getBalance'
 export type GetBalancesRequest = {
-    assetId?: string;
-    address?: string;
+	assetId?: string;
+	address?: string;
 };
 export type GetBalancesResponse = {
-    balances?: Balance[]; // [ALEO, PIECES];
-    error?: string;
+	balances?: Balance[]; // [ALEO, PIECES];
+	error?: string;
 };
 export type Balance = {
-    private: number;
-    public: number;
+	private: number;
+	public: number;
 };
 
 // ALEO_GETACCOUNT: 'getSelectedAccount'
 export type GetSelectedAccountResponse = {
-    account?: Account;
-    error?: string;
+	account?: Account;
+	error?: string;
 };
 export type Account = {
-    network: string;
-    chainId: string;
-    address: string;
-    shortenedAddress: string;
+	network: string;
+	chainId: string;
+	address: string;
+	shortenedAddress: string;
 };
 
 export const shortenAddress = (address: string) => {
-    const length = 5;
-    if (address.length < length * 2) return address;
-    return `${address.slice(0, length + 'aleo1'.length)}...${address.slice(
-        address.length - length,
-        address.length
-    )}`;
+	const length = 5;
+	if (address.length < length * 2) {
+		return address;
+	}
+
+	return `${address.slice(0, length + 'aleo1'.length)}...${address.slice(
+		address.length - length,
+		address.length,
+	)}`;
 };
 
-
-
-{/* --Sign-- */}
+{/* --Sign-- */ }
 export type SignatureRequest = {
-    message: string;
-    address?: string;
+	message: string;
+	address?: string;
 };
 export type SignatureResponse = {
-    signature?: string;
-    messageFields?: string;
-    error?: string;
+	signature?: string;
+	messageFields?: string;
+	error?: string;
 };
 
-{/* --GetRecords-- */}
+{/* --GetRecords-- */ }
 export type GetRecordsRequest = {
-    address?: string;
-    filter?: RecordsFilter;
-    page?: number;
+	address?: string;
+	filter?: RecordsFilter;
+	page?: number;
 };
 export type RecordsFilter = {
-    programIds?: string[];
-    functionId?: string;
-    type: 'all' | 'spent' | 'unspent';
+	programIds?: string[];
+	functionId?: string;
+	type: 'all' | 'spent' | 'unspent';
 };
 
 export type GetRecordsResponse = {
-    records?: RecordWithPlaintext[];
-    pageCount?: number;
-    error?: string;
+	records?: RecordWithPlaintext[];
+	pageCount?: number;
+	error?: string;
 };
 
 export type GetBackendRecordsResponse = {
-    records?: [BackendRecordWithPlaintext];
-    pageCount?: number;
-    error?: string;
+	records?: [BackendRecordWithPlaintext];
+	pageCount?: number;
+	error?: string;
 };
 
-// function to convert from backend getRecords response to frontend getRecords response
+// Function to convert from backend getRecords response to frontend getRecords response
 export const convertGetRecordsResponse = (response: GetBackendRecordsResponse): GetRecordsResponse => {
-    console.log("================> RECORDS RESPONSE PT", response.records);
-    let records = response.records;
-    let convertedRecords: RecordWithPlaintext[] | undefined = [] ;
-    if(records)    
-    {   
-        {records.forEach(record => {
-            console.log("================> PLAINTEXT CHECK", record?.plaintext)
-            if (record.plaintext !== undefined){ 
-                convertedRecords?.push(convertRecord(record));
-                console.log("================> CONVERTED RECORD", convertRecord(record))
-                console.log("================> PLAINTEXT", record?.plaintext)
-            }
-            
-        });}
-        
-    }
-    return {
-        records: response.records ? convertedRecords : [],
-        pageCount: response.pageCount,
-        error: response.error,
-    }
-}
+	console.log('================> RECORDS RESPONSE PT', response.records);
+	const records = response.records;
+	const convertedRecords: RecordWithPlaintext[] | undefined = [];
+	if (records) {
+		{
+			for (const record of records) {
+				console.log('================> PLAINTEXT CHECK', record?.plaintext);
+				if (record.plaintext !== undefined) {
+					convertedRecords?.push(convertRecord(record));
+					console.log('================> CONVERTED RECORD', convertRecord(record));
+					console.log('================> PLAINTEXT', record?.plaintext);
+				}
+			}
+		}
+	}
 
+	return {
+		records: response.records ? convertedRecords : [],
+		pageCount: response.pageCount,
+		error: response.error,
+	};
+};
 
 export type RecordWithPlaintext = Record & {
-    plaintext: string;
-    data: {
-        [key: string]: string;
-    };
+	plaintext: string;
+	data: Record
 };
 
-export type BackendRecordWithPlaintext ={
-    record: Record;
-    plaintext: string;
-    data: {
-        [key: string]: string;
-    };
-}
+export type BackendRecordWithPlaintext = {
+	record: Record;
+	plaintext: string;
+	data: Record
+};
 
-// function to convert from backend record to frontend record
+// Function to convert from backend record to frontend record
 export const convertRecord = (record: BackendRecordWithPlaintext): RecordWithPlaintext => {
-    console.log("================> PLAINTEXT", record?.plaintext)
-    return {
-        ...record.record,
-        plaintext: record?.plaintext,
-        data: record?.data,
-    }
-}
-
-export type Record = {  // from @puzzlehq/types
-    _id: string;
-    eventId: string;
-    height: number;
-    ciphertext: string;
-    programId: string;
-    functionId: string;
-    transitionId: string;
-    transactionId: string;
-    owner: string;
-    spent: boolean;
-    serialNumber?: string;
+	console.log('================> PLAINTEXT', record?.plaintext);
+	return {
+		...record.record,
+		plaintext: record?.plaintext,
+		data: record?.data,
+	};
 };
 
-{/* --Events-- */}
+export type Record = { // From @puzzlehq/types
+	_id: string;
+	eventId: string;
+	height: number;
+	ciphertext: string;
+	programId: string;
+	functionId: string;
+	transitionId: string;
+	transactionId: string;
+	owner: string;
+	spent: boolean;
+	serialNumber?: string;
+};
+
+{/* --Events-- */ }
 
 export type AvailEvent = {
-    _id: string;
-    type: EventType;
-    owner: string;
+	_id: string;
+	type: EventType;
+	owner: string;
 
-    status: AvailEventStatus;
-    created: Date;
-    broadcast?: Date;
-    broadcast_height?: number;
-    settled?: Date;
+	status: AvailEventStatus;
+	created: Date;
+	broadcast?: Date;
+	broadcast_height?: number;
+	settled?: Date;
 
-    network: Network;
-    transactionId?: string;
-    programId?: string;
-    functionId?: string;
-    inputs: (string | null)[];
-    transitions: EventTransition[];
-    fee_transition?: EventTransition;
-    height?: number;
-    description?: string;
-    fee?: number;
-    visibility: Visibility;
-    error?: string;
-    message?: string;
-    to?: string;
-    from?: string;
-    amount?: number;
-}
+	network: Network;
+	transactionId?: string;
+	programId?: string;
+	functionId?: string;
+	inputs: Array<string | undefined>;
+	transitions: EventTransition[];
+	fee_transition?: EventTransition;
+	height?: number;
+	description?: string;
+	fee?: number;
+	visibility: Visibility;
+	error?: string;
+	message?: string;
+	to?: string;
+	from?: string;
+	amount?: number;
+};
 
 export type Event = {
-    _id: string;
-    type: EventType;
-    owner: string;
+	_id: string;
+	type: EventType;
+	owner: string;
 
-    status: EventStatus;
-    created: Date;
-    broadcast?: Date;
-    broadcast_height?: number;
-    settled?: Date;
+	status: EventStatus;
+	created: Date;
+	broadcast?: Date;
+	broadcast_height?: number;
+	settled?: Date;
 
-    network: Network;
-    transactionId?: string;
-    programId?: string;
-    functionId?: string;
-    inputs: (string | null)[];
-    tranitions: EventTransition[];
-    fee_transition?: EventTransition;
-    height?: number;
-    description?: string;
-    fee?: number;
-    visibility: Visibility;
-    error?: string;
-}
+	network: Network;
+	transactionId?: string;
+	programId?: string;
+	functionId?: string;
+	inputs: Array<string | undefined>;
+	tranitions: EventTransition[];
+	fee_transition?: EventTransition;
+	height?: number;
+	description?: string;
+	fee?: number;
+	visibility: Visibility;
+	error?: string;
+};
 
 export type EventTransition = {
-    transitionId: string;
-    programId: string;
-    functionId: string;
-    inputs: (string | null)[];
-    outputs: (string | null)[];
-}
+	transitionId: string;
+	programId: string;
+	functionId: string;
+	inputs: Array<string | undefined>;
+	outputs: Array<string | undefined>;
+};
 
 export enum Network {
-    AleoTestnet = 'AleoTestnet',
-    AleoMainnet = 'AleoMainnet',
+	AleoTestnet = 'AleoTestnet',
+	AleoMainnet = 'AleoMainnet',
 }
 
 export enum Visibility {
-    Private = 'Private',
-    Public = 'Public',
+	Private = 'Private',
+	Public = 'Public',
 }
 
 export enum EventStatus {
-    Creating = 'Creating',
-    Pending = 'Pending',
-    Settled = 'Settled',
-    Failed = 'Failed',
+	Creating = 'Creating',
+	Pending = 'Pending',
+	Settled = 'Settled',
+	Failed = 'Failed',
 }
 
-export enum AvailEventStatus{
-    Processing = "Processing",
-    Pending = "Pending",
-    Confirmed = "Confirmed",
-    Failed = "Failed",
-    Rejected = "Rejected",
-    Aborted = "Aborted",
-    Cancelled = "Cancelled",
+export enum AvailEventStatus {
+	Processing = 'Processing',
+	Pending = 'Pending',
+	Confirmed = 'Confirmed',
+	Failed = 'Failed',
+	Rejected = 'Rejected',
+	Aborted = 'Aborted',
+	Cancelled = 'Cancelled',
 }
 
 export type CreateEventRequest = {
-    address?: string;
-    type: EventType;
-    programId: string;
-    functionId: string;
-    fee: number;
-    inputs: string[];
+	address?: string;
+	type: EventType;
+	programId: string;
+	functionId: string;
+	fee: number;
+	inputs: string[];
 };
 
 export enum EventType {
-    Deploy = 'Deploy',
-    Execute = 'Execute',
-    Send = 'Send',
-    Receive = 'Receive',
-    Join = 'Join',
-    Split = 'Split',
-    Shield = 'Shield',
-    Unshield = 'Unshield',
+	Deploy = 'Deploy',
+	Execute = 'Execute',
+	Send = 'Send',
+	Receive = 'Receive',
+	Join = 'Join',
+	Split = 'Split',
+	Shield = 'Shield',
+	Unshield = 'Unshield',
 }
 export type CreateEventResponse = {
-    eventId?: string;
-    error?: string;
+	eventId?: string;
+	error?: string;
 };
 
 export type GetEventRequest = {
-    id: string;
-    address?: string;
+	id: string;
+	address?: string;
 };
 export type GetEventResponse = {
-    event?: Event;
-    error?: string;
+	event?: Event;
+	error?: string;
 };
 
 export type GetEventsRequest = {
-    filter?: EventsFilter;
-    page?: number;
+	filter?: EventsFilter;
+	page?: number;
 };
 
 export type EventsFilter = {
-    type?: EventType;
-    programId?: string;
-    functionId?: string;
+	type?: EventType;
+	programId?: string;
+	functionId?: string;
 };
 
 export type GetEventsResponse = {
-    events?: Event[];
-    pageCount?: number;
-    error?: string;
+	events?: Event[];
+	pageCount?: number;
+	error?: string;
 };
 
-export type GetAvailEventsResponse={
-    events?: AvailEvent[];
-    pageCount?: number;
-    error?: string;
-}
+export type GetAvailEventsResponse = {
+	events?: AvailEvent[];
+	pageCount?: number;
+	error?: string;
+};
 
-export type GetAvailEventResponse ={
-    event?: AvailEvent;
-    error?: string;
-}
+export type GetAvailEventResponse = {
+	event?: AvailEvent;
+	error?: string;
+};
 
-{/* --Decrypt-- */}
+{/* --Decrypt-- */ }
 export type DecryptRequest = {
-    ciphertexts: string[];
-  };
-  
+	ciphertexts: string[];
+};
+
 export type DecryptResponse = {
-    plaintexts?: string[];
-    error?: string;
-  };
+	plaintexts?: string[];
+	error?: string;
+};
 
 // Not Implemented
-{/* --Shared State-- */}
+{/* --Shared State-- */ }
 export type CreateSharedStateResponse = {
-    data?: {
-        seed: string;
-        address: string;
-    };
-    error?: string;
+	data?: {
+		seed: string;
+		address: string;
+	};
+	error?: string;
 };
 
-
 export type ImportSharedStateRequest = {
-    seed: string;
+	seed: string;
 };
 
 export type ImportSharedStateResponse = {
-    data?: {
-        address: string,
-        seed: string,
-    },
-    error?: string;
+	data?: {
+		address: string;
+		seed: string;
+	};
+	error?: string;
 };
 
-
-// make an array of two test Avail Events one a transfer of type Send and another of type Execute
+// Make an array of two test Avail Events one a transfer of type Send and another of type Execute
 export const testEvents: AvailEvent[] = [
-    {
-        _id: '1',
-        type: EventType.Receive,
-        owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
-        status: AvailEventStatus.Confirmed,
-        created: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-        broadcast: new Date(),
-        settled: new Date(),
-        network: Network.AleoTestnet,
-        transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
-        programId: 'credits.aleo',
-        functionId: 'transfer_private',
-        inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '20000000u64'],
-        transitions: [
-            {
-                transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-                programId: 'credits.aleo',
-                functionId: 'transfer_private',
-                inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '20000000u64', 'recordajbvajnvjnavjen'],
-                outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-            },
-        ],
-        fee_transition: {
-            transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-            programId: 'credits.aleo',
-            functionId: 'fee_private',
-            inputs: ['300000u64', 'recordajbvajnvjnavjen'],
-            outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 20000u64,data: {}}'],
-        },
-        height: 123456,
-        description: 'Private transfer',
-        fee: undefined,
-        visibility: Visibility.Private,
-        message: "Hey, thanks for the beer.",
-        to: undefined,
-        from: "Satoshi",
-        amount: 20,
-    },
-    {
-        _id: '2',
-        type: EventType.Execute,
-        owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
-        status: AvailEventStatus.Confirmed,
-        created: new Date(),
-        broadcast: new Date(),
-        settled: new Date(),
-        network: Network.AleoTestnet,
-        transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
-        programId: 'avail_disruptors.aleo',
-        functionId: 'mint_private',
-        inputs: ['record1zkp7a76879868433b38qy83692835b3193'],
-        transitions: [
-            {
-                transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-                programId: 'avail_disruptors.aleo',
-                functionId: 'mint_private',
-                inputs: ['record1zkp7a76879868433b38qy83692835b3193'],
-                outputs: ['{owner: aleo1zkp731567351bjbh13,amount: 100u64, data:{ bytes1: 0x001010210102011010021010101, bytes2: 0x001010210102011010021010101}}'],
-            },
-        ],
-        fee_transition: {
-            transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-            programId: 'credits.aleo',
-            functionId: 'fee_private',
-            inputs: ['10000u64', 'recordajbvajnvjnavjen'],
-            outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-        },
-        height: 123456,
-        description: 'test event 1',
-        fee: 1.4,
-        visibility: Visibility.Private,
-        message: undefined,
-        to: undefined,
-        from: undefined,
-    }
-   ];
+	{
+		_id: '1',
+		type: EventType.Receive,
+		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		status: AvailEventStatus.Confirmed,
+		created: new Date(Date.now() - 24 * 60 * 60 * 1000),
+		broadcast: new Date(),
+		settled: new Date(),
+		network: Network.AleoTestnet,
+		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		programId: 'credits.aleo',
+		functionId: 'transfer_private',
+		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '20000000u64'],
+		transitions: [
+			{
+				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				programId: 'credits.aleo',
+				functionId: 'transfer_private',
+				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '20000000u64', 'recordajbvajnvjnavjen'],
+				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+			},
+		],
+		fee_transition: {
+			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			programId: 'credits.aleo',
+			functionId: 'fee_private',
+			inputs: ['300000u64', 'recordajbvajnvjnavjen'],
+			outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 20000u64,data: {}}'],
+		},
+		height: 123_456,
+		description: 'Private transfer',
+		fee: undefined,
+		visibility: Visibility.Private,
+		message: 'Hey, thanks for the beer.',
+		to: undefined,
+		from: 'Satoshi',
+		amount: 20,
+	},
+	{
+		_id: '2',
+		type: EventType.Execute,
+		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		status: AvailEventStatus.Confirmed,
+		created: new Date(),
+		broadcast: new Date(),
+		settled: new Date(),
+		network: Network.AleoTestnet,
+		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		programId: 'avail_disruptors.aleo',
+		functionId: 'mint_private',
+		inputs: ['record1zkp7a76879868433b38qy83692835b3193'],
+		transitions: [
+			{
+				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				programId: 'avail_disruptors.aleo',
+				functionId: 'mint_private',
+				inputs: ['record1zkp7a76879868433b38qy83692835b3193'],
+				outputs: ['{owner: aleo1zkp731567351bjbh13,amount: 100u64, data:{ bytes1: 0x001010210102011010021010101, bytes2: 0x001010210102011010021010101}}'],
+			},
+		],
+		fee_transition: {
+			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			programId: 'credits.aleo',
+			functionId: 'fee_private',
+			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
+			outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+		},
+		height: 123_456,
+		description: 'test event 1',
+		fee: 1.4,
+		visibility: Visibility.Private,
+		message: undefined,
+		to: undefined,
+		from: undefined,
+	},
+];
 
 export const testCreditsEvents: AvailEvent[] = [
-    {
-        _id: '2',
-        type: EventType.Send,
-        owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
-        status: AvailEventStatus.Confirmed,
-        created: new Date(),
-        broadcast: new Date(),
-        settled: new Date(),
-        network: Network.AleoTestnet,
-        transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
-        programId: 'credits.aleo',
-        functionId: 'transfer_private',
-        inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
-        transitions: [
-            {
-                transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-                programId: 'credits.aleo',
-                functionId: 'transfer_private',
-                inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-                outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-            },
-        ],
-        fee_transition: {
-            transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-            programId: 'credits.aleo',
-            functionId: 'fee_private',
-            inputs: ['10000u64', 'recordajbvajnvjnavjen'],
-            outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-        },
-        height: 123456,
-        description: 'test event 2',
-        fee: 0.01,
-        visibility: Visibility.Private,
-        message: undefined,
-        to: "Julian",
-        from: undefined,
-        amount: 10000,
-    },
-    {
-        _id: '2',
-        type: EventType.Send,
-        owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
-        status: AvailEventStatus.Confirmed,
-        created: new Date(),
-        broadcast: new Date(),
-        settled: new Date(),
-        network: Network.AleoTestnet,
-        transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
-        programId: 'credits.aleo',
-        functionId: 'transfer_private',
-        inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
-        transitions: [
-            {
-                transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-                programId: 'credits.aleo',
-                functionId: 'transfer_private',
-                inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-                outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-            },
-        ],
-        fee_transition: {
-            transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-            programId: 'credits.aleo',
-            functionId: 'fee_private',
-            inputs: ['10000u64', 'recordajbvajnvjnavjen'],
-            outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-        },
-        height: 123456,
-        description: 'test event 2',
-        fee: 0.01,
-        visibility: Visibility.Private,
-        message: undefined,
-        to: "Julian",
-        from: undefined,
-        amount: 10000,
-    },
-    {
-        _id: '2',
-        type: EventType.Send,
-        owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
-        status: AvailEventStatus.Confirmed,
-        created: new Date(),
-        broadcast: new Date(),
-        settled: new Date(),
-        network: Network.AleoTestnet,
-        transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
-        programId: 'credits.aleo',
-        functionId: 'transfer_private',
-        inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
-        transitions: [
-            {
-                transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-                programId: 'credits.aleo',
-                functionId: 'transfer_private',
-                inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-                outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-            },
-        ],
-        fee_transition: {
-            transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-            programId: 'credits.aleo',
-            functionId: 'fee_private',
-            inputs: ['10000u64', 'recordajbvajnvjnavjen'],
-            outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-        },
-        height: 123456,
-        description: 'test event 2',
-        fee: 0.01,
-        visibility: Visibility.Private,
-        message: undefined,
-        to: "Julian",
-        from: undefined,
-        amount: 10000,
-    },
-    {
-        _id: '2',
-        type: EventType.Send,
-        owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
-        status: AvailEventStatus.Confirmed,
-        created: new Date(),
-        broadcast: new Date(),
-        settled: new Date(),
-        network: Network.AleoTestnet,
-        transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
-        programId: 'credits.aleo',
-        functionId: 'transfer_private',
-        inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
-        transitions: [
-            {
-                transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-                programId: 'credits.aleo',
-                functionId: 'transfer_private',
-                inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-                outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-            },
-        ],
-        fee_transition: {
-            transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-            programId: 'credits.aleo',
-            functionId: 'fee_private',
-            inputs: ['10000u64', 'recordajbvajnvjnavjen'],
-            outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-        },
-        height: 123456,
-        description: 'test event 2',
-        fee: 0.01,
-        visibility: Visibility.Private,
-        message: undefined,
-        to: "Julian",
-        from: undefined,
-        amount: 10000,
-    }
-]
+	{
+		_id: '2',
+		type: EventType.Send,
+		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		status: AvailEventStatus.Confirmed,
+		created: new Date(),
+		broadcast: new Date(),
+		settled: new Date(),
+		network: Network.AleoTestnet,
+		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		programId: 'credits.aleo',
+		functionId: 'transfer_private',
+		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
+		transitions: [
+			{
+				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				programId: 'credits.aleo',
+				functionId: 'transfer_private',
+				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
+				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+			},
+		],
+		fee_transition: {
+			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			programId: 'credits.aleo',
+			functionId: 'fee_private',
+			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
+			outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+		},
+		height: 123_456,
+		description: 'test event 2',
+		fee: 0.01,
+		visibility: Visibility.Private,
+		message: undefined,
+		to: 'Julian',
+		from: undefined,
+		amount: 10_000,
+	},
+	{
+		_id: '2',
+		type: EventType.Send,
+		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		status: AvailEventStatus.Confirmed,
+		created: new Date(),
+		broadcast: new Date(),
+		settled: new Date(),
+		network: Network.AleoTestnet,
+		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		programId: 'credits.aleo',
+		functionId: 'transfer_private',
+		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
+		transitions: [
+			{
+				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				programId: 'credits.aleo',
+				functionId: 'transfer_private',
+				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
+				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+			},
+		],
+		fee_transition: {
+			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			programId: 'credits.aleo',
+			functionId: 'fee_private',
+			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
+			outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+		},
+		height: 123_456,
+		description: 'test event 2',
+		fee: 0.01,
+		visibility: Visibility.Private,
+		message: undefined,
+		to: 'Julian',
+		from: undefined,
+		amount: 10_000,
+	},
+	{
+		_id: '2',
+		type: EventType.Send,
+		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		status: AvailEventStatus.Confirmed,
+		created: new Date(),
+		broadcast: new Date(),
+		settled: new Date(),
+		network: Network.AleoTestnet,
+		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		programId: 'credits.aleo',
+		functionId: 'transfer_private',
+		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
+		transitions: [
+			{
+				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				programId: 'credits.aleo',
+				functionId: 'transfer_private',
+				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
+				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+			},
+		],
+		fee_transition: {
+			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			programId: 'credits.aleo',
+			functionId: 'fee_private',
+			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
+			outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+		},
+		height: 123_456,
+		description: 'test event 2',
+		fee: 0.01,
+		visibility: Visibility.Private,
+		message: undefined,
+		to: 'Julian',
+		from: undefined,
+		amount: 10_000,
+	},
+	{
+		_id: '2',
+		type: EventType.Send,
+		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		status: AvailEventStatus.Confirmed,
+		created: new Date(),
+		broadcast: new Date(),
+		settled: new Date(),
+		network: Network.AleoTestnet,
+		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		programId: 'credits.aleo',
+		functionId: 'transfer_private',
+		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
+		transitions: [
+			{
+				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				programId: 'credits.aleo',
+				functionId: 'transfer_private',
+				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
+				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+			},
+		],
+		fee_transition: {
+			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			programId: 'credits.aleo',
+			functionId: 'fee_private',
+			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
+			outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+		},
+		height: 123_456,
+		description: 'test event 2',
+		fee: 0.01,
+		visibility: Visibility.Private,
+		message: undefined,
+		to: 'Julian',
+		from: undefined,
+		amount: 10_000,
+	},
+];
 
 export const testCreditsEvents2: AvailEvent[] = [
-    {
-        _id: '1',
-        type: EventType.Send,
-        owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
-        status: AvailEventStatus.Confirmed,
-        created: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-        broadcast: new Date(),
-        settled: new Date(),
-        network: Network.AleoTestnet,
-        transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
-        programId: 'credits.aleo',
-        functionId: 'transfer_private',
-        inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
-        transitions: [
-            {
-                transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-                programId: 'credits.aleo',
-                functionId: 'transfer_private',
-                inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-                outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-            },
-        ],
-        fee_transition: {
-            transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
-            programId: 'credits.aleo',
-            functionId: 'fee_private',
-            inputs: ['10000u64', 'recordajbvajnvjnavjen'],
-            outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
-        },
-        height: 123456,
-        description: 'test event 2',
-        fee: 0.28,
-        visibility: Visibility.Private,
-        message: undefined,
-        to: "zack_x",
-        from: undefined,
-        amount: 2,
-    },]
+	{
+		_id: '1',
+		type: EventType.Send,
+		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		status: AvailEventStatus.Confirmed,
+		created: new Date(Date.now() - 24 * 60 * 60 * 1000),
+		broadcast: new Date(),
+		settled: new Date(),
+		network: Network.AleoTestnet,
+		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		programId: 'credits.aleo',
+		functionId: 'transfer_private',
+		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
+		transitions: [
+			{
+				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				programId: 'credits.aleo',
+				functionId: 'transfer_private',
+				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
+				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+			},
+		],
+		fee_transition: {
+			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			programId: 'credits.aleo',
+			functionId: 'fee_private',
+			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
+			outputs: ['{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+		},
+		height: 123_456,
+		description: 'test event 2',
+		fee: 0.28,
+		visibility: Visibility.Private,
+		message: undefined,
+		to: 'zack_x',
+		from: undefined,
+		amount: 2,
+	},
+];

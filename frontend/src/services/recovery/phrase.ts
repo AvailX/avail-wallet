@@ -1,31 +1,29 @@
-import { invoke } from "@tauri-apps/api/core";
-import { NavigateFunction } from "react-router-dom";
-import { AvailError } from "../../types/errors";
-import { Languages } from "../../types/languages";
+import {invoke} from '@tauri-apps/api/core';
+import {type NavigateFunction} from 'react-router-dom';
+import {type AvailError} from '../../types/errors';
+import {type Languages} from '../../types/languages';
 
-export function recover(phrase: string, password: string, authType: boolean, language: Languages, navigate: NavigateFunction, setSuccessAlert: React.Dispatch<React.SetStateAction<boolean>>, setErrorAlert: React.Dispatch<React.SetStateAction<boolean>>, setMessage: React.Dispatch<React.SetStateAction<string>>,) {
-   
-  return delete_local_for_recovery(password).then(() => {
-  
-    invoke<string>("recover_wallet_from_seed_phrase", { seed_phrase: phrase, password: password, access_type: authType, language: language }).then((response) => {
-        setMessage("Wallet recovered successfully.");
-        setSuccessAlert(true);
+export async function recover(phrase: string, password: string, authType: boolean, language: Languages, navigate: NavigateFunction, setSuccessAlert: React.Dispatch<React.SetStateAction<boolean>>, setErrorAlert: React.Dispatch<React.SetStateAction<boolean>>, setMessage: React.Dispatch<React.SetStateAction<string>>) {
+	return delete_local_for_recovery(password).then(() => {
+		invoke<string>('recover_wallet_from_seed_phrase', {
+			seed_phrase: phrase, password, access_type: authType, language,
+		}).then(response => {
+			setMessage('Wallet recovered successfully.');
+			setSuccessAlert(true);
 
-        setTimeout(() => {
-            navigate("/home");
-        }, 800);
-    })
+			setTimeout(() => {
+				navigate('/home');
+			}, 800);
+		});
+	}).catch(error_ => {
+		const error: AvailError = JSON.parse(error_);
+		console.log('Error: ' + error.internal_msg);
 
-    }).catch((e) => {
-        let error: AvailError = JSON.parse(e);
-        console.log("Error: " + error.internal_msg);
-
-        setMessage(error.external_msg);
-        setErrorAlert(true);
-
-    });
+		setMessage(error.external_msg);
+		setErrorAlert(true);
+	});
 }
 
-export function delete_local_for_recovery(password: string){
-    return invoke("delete_local_for_recovery", { password: password });
+export async function delete_local_for_recovery(password: string) {
+	return invoke('delete_local_for_recovery', {password});
 }

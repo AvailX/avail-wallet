@@ -1,21 +1,21 @@
 
- export interface initial_preferences {
-     biometric: boolean;
-     username: string;
-}
+export type initial_preferences = {
+	biometric: boolean;
+	username: string;
+};
 
-export interface user_preferences {
-    theme: Theme;
-    biometric: boolean;
-    username: string;
-    language: Language;
-}
+export type user_preferences = {
+	theme: Theme;
+	biometric: boolean;
+	username: string;
+	language: Language;
+};
 
 enum Theme {
-    LIGHT = "light",
-    DARK = "dark"
+	LIGHT = 'light',
+	DARK = 'dark',
 }
 
 enum Language {
-    ENGLISH = "english"
+	ENGLISH = 'english',
 }
