@@ -42,8 +42,23 @@ jobs:
   #         cd backend
   #         cargo test
 
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+      - name: Install pre-commit
+        run: pip install pre-commit
+      - name: Run pre-commit
+        run: |
+          pre-commit install
+          pre-commit run --all-files
+
   build-and-release:
-    # needs: test
+    needs: pre-commit
     environment: ${{ github.ref_name }}
     permissions:
         contents: write
