@@ -13,9 +13,6 @@ use services::local_storage::persistent_storage::{
     get_username, update_language,
 };
 
-#[cfg(any(target_os = "macos", target_os = "ios"))]
-use services::account::key_management::ios::prepare_context;
-
 use api::user::{update_backup_flag, update_username};
 use services::local_storage::{
     encrypted_data::get_and_store_all_data,
@@ -76,8 +73,6 @@ pub fn run() {
             /* Authentication */
             get_session,
             get_auth_type,
-            #[cfg(any(target_os = "macos", target_os = "ios"))]
-            prepare_context,
             /* Scanning */
             txs_sync,
             blocks_sync,
