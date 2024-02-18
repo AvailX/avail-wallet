@@ -23,7 +23,7 @@
       "endpoints": [
         "https://api.avail.global/release/{target}/{arch}/{current_version}"
       ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZGMDY2RTgzQ0M2OEI1OUUKUldTZXRXak1nMjRHLzg2RlRRMWZRRHdoVVF1Njd4QXpjemE0Y1prOFFUVU9USWd1aml2Nld4MGwK"
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRDM0Y4QzExNTM2REEyQUMKUldTc29tMVRFWXcvVEQ0MDRqdHVKZjU4MkxjUUtRM3JvZTc0eE1ZZGI2YmZrRWVFQVlKTk1MZFMK"
     },
     "deep-link": {
       "domains": [
