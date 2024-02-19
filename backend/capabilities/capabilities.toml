@@ -11,7 +11,7 @@ permissions = [
   "window:allow-close",
   "window:allow-set-title",
   "window:allow-destroy",
-  "webview:allow-create-webview-window", 
+  "webview:allow-create-webview-window",
   "webview:default",
   "app:default",
   "resources:default",

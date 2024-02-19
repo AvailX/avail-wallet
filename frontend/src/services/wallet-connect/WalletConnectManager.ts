@@ -248,14 +248,14 @@ export class WalletConnectManager {
             const requestSession = this.theWallet.engine.signClient.session.get(requestEvent.topic)
             console.log("requestSession", requestSession)
 
-           
+
 
             // set the verify context so it can be displayed in the projectInfoCard
             this.currentRequestVerifyContext = requestEvent.verifyContext;
 
             // Call information chain | method
             const chainId = requestEvent.params.chainId;
-           
+
             const request_method = requestEvent.params.request.method;
             console.log(`Handling request for ${chainId} | ${request_method}...`)
 
@@ -311,7 +311,7 @@ export class WalletConnectManager {
     }
 
     async close() {
-        /* 
+        /*
         if (this.pairingTopic) {
             console.log("Closing pairing...")
             await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
@@ -332,5 +332,5 @@ export class WalletConnectManager {
         this.theWallet?.off('session_delete', this.onSessionDelete)
     }
 
-  
+
 }

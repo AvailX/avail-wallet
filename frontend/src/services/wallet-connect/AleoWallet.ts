@@ -463,7 +463,7 @@ export class AleoWallet {
 
         let stopper = true;
         return new Promise(async (resolve, reject) => {
-          await webview.once('create-request-event-approved', async (response) => {     
+          await webview.once('create-request-event-approved', async (response) => {
                 webview.destroy();
                 if(stopper){
                 stopper = false;
@@ -473,17 +473,17 @@ export class AleoWallet {
                 let fee_op = JSON.parse(payload_obj).feeOption;
 
                 console.log("--EXECUTION CALLED--")
-                
+
                 try {
                     console.log(request);
                     invoke<interfaces.CreateEventResponse>("request_create_event", { request: request, fee_private: fee_op }).then((response) => {
                         sessionStorage.setItem("transfer_on", "false");
                         resolve(formatJsonRpcResult(requestEvent.id, response));
-                        
+
                     }).catch((error: AvailError) => {
                         sessionStorage.setItem("transfer_on", "false");
                         reject(formatJsonRpcError(requestEvent.id, error.external_msg));
-                       
+
                     });
 
                 } catch (error: any) {
@@ -491,7 +491,7 @@ export class AleoWallet {
                     reject(formatJsonRpcError(requestEvent.id, error.message))
                 }}
             });
-            
+
 
             await webview.once('create-request-event-rejected', async (response) => {
                 webview.destroy();
@@ -677,7 +677,7 @@ export class AleoWallet {
                 unlisten();
                 webview.close();
                 storeSession(request_identifier);
-                
+
                 try {
                     invoke<interfaces.GetEventsResponse>("get_events", { request: request }).then((response) => {
                         resolve(formatJsonRpcResult(requestEvent.id, response));
@@ -702,7 +702,6 @@ export class AleoWallet {
         }
     }
 
-    
     private async handleGetRecords(requestEvent: Web3WalletTypes.SessionRequest): Promise<JsonRpcResult | JsonRpcError> {
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.GetRecordsRequest
