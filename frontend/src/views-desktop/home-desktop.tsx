@@ -4,6 +4,7 @@ import * as mui from "@mui/material";
 import Layout from "./reusable/layout";
 import { useNavigate } from "react-router-dom";
 
+
 import { listen } from "@tauri-apps/api/event";
 import '../styles/animations.css';
 
@@ -13,6 +14,7 @@ import { scan_messages } from "../services/scans/encrypted_messages";
 import { scan_blocks } from "../services/scans/blocks";
 import { sync_backup } from "../services/scans/backup";
 import { pre_install_inclusion_prover } from "../services/transfer/inclusion";
+import { os } from "../services/util/open";
 
 import { set_first_visit, get_first_visit, set_visit_session_flag, get_visit_session_flag } from "../services/storage/localStorage";
 
@@ -97,7 +99,7 @@ function Home() {
 
     {/* --Block Scan State-- */ }
     const { scanInProgress, startScan, endScan } = useScan();
-    const [localScan,setLocalScan] = React.useState<boolean>(false);
+    const [localScan, setLocalScan] = React.useState<boolean>(false);
     const [scanProgressPercent, setScanProgressPercent] = React.useState<number>(0);
 
     {/* -- Recent Events State -- */ }
@@ -119,7 +121,7 @@ function Home() {
         height: '30px',
         cursor: shouldRotate ? 'default' : 'pointer',
         animation: shouldRotate ? '$rotate360 2s linear infinite' : 'none',
-      }));
+    }));
 
     const handleGetAssets = () => {
 
@@ -157,7 +159,7 @@ function Home() {
 
         /*
         const unlisten_reauth = listen('success_scan_reauth', (event) => {
-    
+
             scan_messages().then(async (res) => {
                 await handleBlockScan(res);
 
@@ -178,7 +180,7 @@ function Home() {
                     setErrorAlert(true);
                 }
             });
-            
+
         })
         */
 
@@ -219,8 +221,12 @@ function Home() {
                     fetchEvents();
                 }
 
-            }).catch((e) => {
-                let error = JSON.parse(e) as AvailError;
+            }).catch(async (e) => {
+                let error = e;
+                const os_type = await os();
+                if (os_type !== 'linux') {
+                    error = JSON.parse(e) as AvailError;
+                }
                 console.log("Error" + error.internal_msg);
                 endScan();
                 setMessage(t("home.messages.errors.blocks-scan"));
@@ -240,8 +246,13 @@ function Home() {
         scan_messages().then(async (res) => {
             await handleBlockScan(res);
 
-        }).catch((e) => {
-            let error = JSON.parse(e) as AvailError;
+        }).catch(async (e) => {
+            let error = e;
+            const os_type = await os();
+            if (os_type !== 'linux') {
+                error = JSON.parse(e) as AvailError;
+            }
+
             console.log(error.error_type);
             if (error.error_type === AvailErrorType.Network) {
                 setMessage(t("home.messages.errors.network"));
@@ -402,7 +413,7 @@ function Home() {
                             <SubtitleText sx={{ color: '#a3a3a3' }}>
                                 {t("home.balance")}
                             </SubtitleText>
-                            <RotatingSyncIcon onClick={() => { shouldRotate? {}:handleScan() }} />
+                            <RotatingSyncIcon onClick={() => { shouldRotate ? {} : handleScan() }} />
                         </mui.Box>
 
                         <Balance props={{ balance }} />

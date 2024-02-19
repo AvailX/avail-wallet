@@ -1,16 +1,19 @@
 import * as React from 'react';
 import * as mui from '@mui/material';
+import { os } from '../../services/util/open';
+
+
 
 // Services
-import {useNavigate} from 'react-router-dom';
-import {useTranslation} from 'react-i18next';
-import {delete_util, session_and_local_auth} from '../../services/authentication/auth';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { delete_util, session_and_local_auth } from '../../services/authentication/auth';
 
 // Alerts
-import {ErrorAlert, SuccessAlert} from '../snackbars/alerts';
+import { ErrorAlert, SuccessAlert } from '../snackbars/alerts';
 
 // Types
-import {type AvailError} from '../../types/errors';
+import { type AvailError } from '../../types/errors';
 
 type ReAuthDialogProperties = {
 	isOpen: boolean;
@@ -18,7 +21,7 @@ type ReAuthDialogProperties = {
 	onAuthSuccess?: () => Promise<void>;
 };
 
-const ReAuthDialog: React.FC<ReAuthDialogProperties> = ({isOpen, onRequestClose, onAuthSuccess}) => {
+const ReAuthDialog: React.FC<ReAuthDialogProperties> = ({ isOpen, onRequestClose, onAuthSuccess }) => {
 	const [password, setPassword] = React.useState('');
 
 	// Alert states
@@ -27,7 +30,7 @@ const ReAuthDialog: React.FC<ReAuthDialogProperties> = ({isOpen, onRequestClose,
 	const [message, setMessage] = React.useState('');
 
 	const navigate = useNavigate();
-	const {t} = useTranslation();
+	const { t } = useTranslation();
 
 	const handleConfirmClick = () => {
 		session_and_local_auth(password, navigate, setErrorAlert, setMessage, false).then(async () => {
@@ -40,9 +43,14 @@ const ReAuthDialog: React.FC<ReAuthDialogProperties> = ({isOpen, onRequestClose,
 			if (onAuthSuccess !== undefined) {
 				await onAuthSuccess();
 			}
-		}).catch(error_ => {
-			console.log(error_);
-			const error = JSON.parse(error_) as AvailError;
+		}).catch(async (e) => {
+			console.log(e);
+			let error = e;
+			const os_type = await os();
+			if (os_type !== 'linux') {
+				error = JSON.parse(e) as AvailError;
+			}
+
 			setMessage('Failed to authenticate, please try again.');
 			setErrorAlert(true);
 			onRequestClose();
@@ -55,14 +63,14 @@ const ReAuthDialog: React.FC<ReAuthDialogProperties> = ({isOpen, onRequestClose,
 	};
 
 	const textFieldStyle = {
-		input: {color: 'white'},
-		label: {color: 'gray'},
-		'& label.Mui-focused': {color: '#00FFAA'},
-		'& .MuiInput-underline:after': {borderBottomColor: '#00FFAA'},
+		input: { color: 'white' },
+		label: { color: 'gray' },
+		'& label.Mui-focused': { color: '#00FFAA' },
+		'& .MuiInput-underline:after': { borderBottomColor: '#00FFAA' },
 		'& .MuiOutlinedInput-root': {
-			'& fieldset': {borderColor: 'gray'},
-			'&:hover fieldset': {borderColor: 'white'},
-			'&.Mui-focused fieldset': {borderColor: '#00FFAA'},
+			'& fieldset': { borderColor: 'gray' },
+			'&:hover fieldset': { borderColor: 'white' },
+			'&.Mui-focused fieldset': { borderColor: '#00FFAA' },
 		},
 	};
 
@@ -75,12 +83,12 @@ const ReAuthDialog: React.FC<ReAuthDialogProperties> = ({isOpen, onRequestClose,
 
 	return (
 		<>
-			<ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={message}/>
-			<SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message}/>
-			<mui.Dialog open={isOpen} onClose={onRequestClose} PaperProps={{sx: dialogStyle}}>
+			<ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={message} />
+			<SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message} />
+			<mui.Dialog open={isOpen} onClose={onRequestClose} PaperProps={{ sx: dialogStyle }}>
 				<mui.DialogTitle>{t('dialogs.reauth.title')}</mui.DialogTitle>
 				<mui.DialogContent>
-					<mui.DialogContentText sx={{color: '#a3a3a3'}}>
+					<mui.DialogContentText sx={{ color: '#a3a3a3' }}>
 						{t('dialogs.reauth.description')}
 					</mui.DialogContentText>
 					<mui.TextField
@@ -93,7 +101,7 @@ const ReAuthDialog: React.FC<ReAuthDialogProperties> = ({isOpen, onRequestClose,
 						onChange={e => {
 							setPassword(e.target.value);
 						}}
-						sx={{mt: '8%', ...textFieldStyle}}
+						sx={{ mt: '8%', ...textFieldStyle }}
 					/>
 				</mui.DialogContent>
 				<mui.DialogActions>
