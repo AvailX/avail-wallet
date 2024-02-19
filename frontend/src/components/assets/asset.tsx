@@ -37,7 +37,7 @@ type SlideProp = {
 const Asset: React.FC<AssetType & SlideProp> = ({ image_ref, symbol, total,balance, value,onClick }) => {
 
   const formatNumber = (num: number) => {
-    num = Math.round((num + Number.EPSILON) * 100) / 100;
+    num = Math.round((num + Number.EPSILON) * 1000) / 1000;
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
 

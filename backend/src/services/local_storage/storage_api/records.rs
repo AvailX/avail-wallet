@@ -276,12 +276,16 @@ pub fn update_record_spent_local_via_nonce<N: Network>(
                     Some(bal) => Ok(bal),
                     None => Err(()),
                 };
-                let balance_f = match balance_entry.unwrap() {
-                    Entry::Private(Plaintext::Literal(Literal::<N>::U64(amount), _)) => amount,
-                    _ => todo!(),
+
+                let balance = match balance_entry.unwrap() {
+                    Entry::Private(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    Entry::Public(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    Entry::Constant(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    _ => 0u64,
                 };
-                let balance_field = balance_f.to_be_bytes();
-                let balance = u64::from_be_bytes(balance_field);
+
+                //let balance_field = balance_f.to_be_bytes();
+                //let balance = u64::from_be_bytes(balance_field);
 
                 let _ = match spent {
                     true => subtract_balance(&record_name, &balance.to_string(), v_key)?,
@@ -345,12 +349,16 @@ pub fn update_record_spent_local<N: Network>(id: &str, spent: bool) -> AvailResu
                     Some(bal) => Ok(bal),
                     None => Err(()),
                 };
-                let balance_f = match balance_entry.unwrap() {
-                    Entry::Private(Plaintext::Literal(Literal::<N>::U64(amount), _)) => amount,
-                    _ => todo!(),
+
+                let balance = match balance_entry.unwrap() {
+                    Entry::Private(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    Entry::Public(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    Entry::Constant(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    _ => 0u64,
                 };
-                let balance_field = balance_f.to_be_bytes();
-                let balance = u64::from_be_bytes(balance_field);
+                
+                //let balance_field = balance_f.to_be_bytes();
+                //let balance = u64::from_be_bytes(balance_field);
 
                 let _ = match spent {
                     true => subtract_balance(&record_name, &balance.to_string(), v_key)?,

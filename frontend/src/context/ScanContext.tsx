@@ -21,6 +21,7 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
   };
 
   const endScan = () => {
+    console.log("end scan");
     setScanInProgress(false);
   };
 

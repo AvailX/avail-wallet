@@ -178,7 +178,7 @@ export default function SideMenu() {
         navigate("/browser")
         break;
       case 5:
-        open_url("https://discord.gg/A6N5X2yX").then((res) => {
+        open_url("https://discord.gg/avail-1140618884764942386").then((res) => {
           console.log(res);
         }).catch((e) => {
           console.log(e);

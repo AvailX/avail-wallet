@@ -22,6 +22,7 @@ document.querySelector('.btn.approve').addEventListener('click', async () => {
     const eventName = request.method + '-approved';
     console.log(eventName);
     if (request.method === 'create-request-event') {
+        console.log('emitting!')
         await emit(eventName, { message: request.approveResponse, feeOption: feeOption });
     }else{
     await emit(eventName, { message: request.approveResponse });

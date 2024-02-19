@@ -5,7 +5,7 @@ import Layout from "./reusable/layout";
 import { useNavigate } from "react-router-dom";
 
 import { listen } from "@tauri-apps/api/event";
-
+import '../styles/animations.css';
 
 //services
 import { getNetwork, getBackupFlag } from "../services/storage/persistent";
@@ -30,6 +30,7 @@ import Receive from "../components/dialogs/receive";
 import ScanReAuthDialog from "../components/dialogs/scan_reauth";
 import BackupDialog from "../components/backup/backup_dialog";
 import RiseLoader from "react-spinners/RiseLoader";
+import SyncIcon from '@mui/icons-material/Sync';
 
 //state functions
 import { getName } from "../services/states/utils";
@@ -94,11 +95,9 @@ function Home() {
     const [eventDrawerOpen, setEventDrawerOpen] = React.useState(false);
     const [event, setEvent] = React.useState<SuccinctAvailEvent | undefined>();
 
-    {/* --Wallet Connect Url-- */ }
-    const [uri, setUri] = React.useState<string>("");
-
     {/* --Block Scan State-- */ }
     const { scanInProgress, startScan, endScan } = useScan();
+    const [localScan,setLocalScan] = React.useState<boolean>(false);
     const [scanProgressPercent, setScanProgressPercent] = React.useState<number>(0);
 
     {/* -- Recent Events State -- */ }
@@ -111,7 +110,16 @@ function Home() {
     const [transferState, setTransferState] = React.useState<boolean>(false);
 
     const { t } = useTranslation();
+    const shouldRotate = transferState || scanInProgress || localScan;
     const shouldRunEffect = React.useRef(true);
+
+    const RotatingSyncIcon = mui.styled(SyncIcon)(({ theme }) => ({
+        color: '#00FFAA',
+        width: '40px',
+        height: '30px',
+        cursor: shouldRotate ? 'default' : 'pointer',
+        animation: shouldRotate ? '$rotate360 2s linear infinite' : 'none',
+      }));
 
     const handleGetAssets = () => {
 
@@ -174,14 +182,14 @@ function Home() {
         })
         */
 
-        const unlisten_transfer = listen('transfer_off', async(event) => {
+        const unlisten_transfer = listen('transfer_off', async (event) => {
             setTransferState(false);
         })
 
         return () => {
             unlisten_scan.then(remove => remove());
             unlisten_tx.then(remove => remove());
-           // unlisten_reauth.then(remove => remove());
+            // unlisten_reauth.then(remove => remove());
             unlisten_transfer.then(remove => remove());
         }
 
@@ -193,15 +201,17 @@ function Home() {
             fetchEvents();
         }
 
-        if (!scanInProgress) {
+        if (!scanInProgress && !transferState) {
             //set Scanning state to true
             startScan();
+            setLocalScan(true);
 
             //syncs blocks in different thread
             scan_blocks(res.block_height, setErrorAlert, setMessage).then((res) => {
                 setSuccessAlert(true);
                 setMessage(t("home.messages.success.scan"));
                 endScan();
+                setLocalScan(false);
 
                 if (res) {
                     console.log("Res: " + res);
@@ -225,8 +235,33 @@ function Home() {
         }
     }
 
+    const handleScan = async () => {
+        //to get the initial balance and transactions
+        scan_messages().then(async (res) => {
+            await handleBlockScan(res);
+
+        }).catch((e) => {
+            let error = JSON.parse(e) as AvailError;
+            console.log(error.error_type);
+            if (error.error_type === AvailErrorType.Network) {
+                setMessage(t("home.messages.errors.network"));
+                setErrorAlert(true);
+            } else if (error.error_type.toString() === "Unauthorized") {
+                //TODO - Re-authenticate
+                console.log("Unauthorized, re auth");
+
+                setReAuthDialogOpen(true);
+            } else {
+                console.log(error.internal_msg);
+                setMessage(error.internal_msg);
+                setErrorAlert(true);
+            }
+        });
+    }
+
     React.useEffect(() => {
         if (shouldRunEffect.current) {
+            handleTransferCheck();
             let first_visit_session = get_visit_session_flag();
             console.log("First visit session: " + first_visit_session);
 
@@ -241,7 +276,7 @@ function Home() {
 
             let first_visit_persistent = get_first_visit();
             console.log("First visit persistent: " + first_visit_persistent);
-            
+
             if (!first_visit_persistent) {
                 set_first_visit();
                 setBackupDialog(true);
@@ -251,8 +286,8 @@ function Home() {
                 setMessage("Pre installing Aleo SRS...");
             }
 
-            let transferState =sessionStorage.getItem('transferState'); 
-            if (transferState === 'true'){
+            let transferState = sessionStorage.getItem('transferState');
+            if (transferState === 'true') {
                 setTransferState(true);
             }
 
@@ -275,33 +310,20 @@ function Home() {
 
             setLoading(false);
 
-
-            //to get the initial balance and transactions
-            scan_messages().then(async (res) => {
-                await handleBlockScan(res);
-
-            }).catch((e) => {
-                let error = JSON.parse(e) as AvailError;
-                console.log(error.error_type);
-                if (error.error_type === AvailErrorType.Network) {
-                    setMessage(t("home.messages.errors.network"));
-                    setErrorAlert(true);
-                } else if (error.error_type.toString() === "Unauthorized") {
-                    //TODO - Re-authenticate
-                    console.log("Unauthorized, re auth");
-
-                    setReAuthDialogOpen(true);
-                } else {
-                    console.log(error.internal_msg);
-                    setMessage(error.internal_msg);
-                    setErrorAlert(true);
-                }
-            });
+            handleScan();
 
             shouldRunEffect.current = false;
         }
     }, [scanInProgress, startScan, endScan])
 
+    const handleTransferCheck = () => {
+        let transfer_flag = sessionStorage.getItem("transfer_on");
+        if (transfer_flag === 'true') {
+            setTransferState(true);
+        } else {
+            setTransferState(false);
+        }
+    }
 
     const navigate = useNavigate();
 
@@ -344,7 +366,7 @@ function Home() {
             <Receive open={receiveDialogOpen} handleClose={() => setReceiveDialogOpen(false)} address={address} username={username} />
 
             {/* ReAuth Dialog */}
-            <ScanReAuthDialog isOpen={reAuthDialogOpen}  onRequestClose={() => setReAuthDialogOpen(false)} />
+            <ScanReAuthDialog isOpen={reAuthDialogOpen} onRequestClose={() => setReAuthDialogOpen(false)} />
 
             <SideMenu />
             {loading &&
@@ -376,9 +398,12 @@ function Home() {
 
                     {/* Balance section */}
                     <mui.Box sx={{ background: 'linear-gradient(90deg, #1E1D1D 0%, #111111 100%)', display: 'flex', flexDirection: 'column', p: 2, borderRadius: '30px', width: '65%' }}>
-                        <SubtitleText sx={{ color: '#a3a3a3' }}>
-                            {t("home.balance")}
-                        </SubtitleText>
+                        <mui.Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                            <SubtitleText sx={{ color: '#a3a3a3' }}>
+                                {t("home.balance")}
+                            </SubtitleText>
+                            <RotatingSyncIcon onClick={() => { shouldRotate? {}:handleScan() }} />
+                        </mui.Box>
 
                         <Balance props={{ balance }} />
 

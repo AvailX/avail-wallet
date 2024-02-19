@@ -16,7 +16,7 @@ export const dapps: Dapp[] = [
     {
         name: "Arcane Finance",
         description: "Arcane Finance is a fully private non-custodial decentralized exchange enabling fully confidential DeFi on Aleo.",
-        url: "https://arcane.finance",
+        url: "https://dev.arcane.finance",
         img: arcane,
         tags: ["finance"]
     },

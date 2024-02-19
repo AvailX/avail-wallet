@@ -147,7 +147,7 @@ export class WalletConnectManager {
             let aleo_wallet = this.aleo_wallet;
             let theWallet = this.theWallet;
 
-            await webview.listen('connect-approved', async (response) => {
+            await webview.once('connect-approved', async (response) => {
                 console.log('Wallet connect was approved', response);
                 webview.close();
 
@@ -197,7 +197,7 @@ export class WalletConnectManager {
 
 
             // Listen for the rejection event from the secondary window
-            await webview.listen('connect-rejected', async (response) => {
+            await webview.once('connect-rejected', async (response) => {
                 // Handle the rejection logic here
                 console.log('Wallet connect was rejected', response);
                 webview.close();
@@ -291,7 +291,6 @@ export class WalletConnectManager {
     private async onSessionDelete(data: Web3WalletTypes.SessionDelete) {
         console.log('Event: session_delete received')
         console.log(data);
-        window.localStorage.clear();
         this.close();
         emit('disconnected', 'disconnected')
     }
@@ -313,18 +312,18 @@ export class WalletConnectManager {
     }
 
     async close() {
+        /* 
         if (this.pairingTopic) {
             console.log("Closing pairing...")
             await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
             await this.theWallet?.core.history.delete(this.pairingTopic);
-        }
+        }*/
         if (this.sessionTopic) {
             console.log("Closing pairing...")
             await this.theWallet?.disconnectSession({ topic: this.sessionTopic , reason: getSdkError('USER_DISCONNECTED')});
-            await this.theWallet?.core.history.delete(this.sessionTopic);
+           // await this.theWallet?.core.history.delete(this.sessionTopic);
         }
         emit('disconnected', 'disconnected')
-        window.localStorage.clear();
 
         console.log("Closing event handling...")
         this.theWallet?.off('session_proposal', this.onSessionProposal)

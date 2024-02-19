@@ -14,18 +14,21 @@ import {
 
 import * as interfaces from './WCTypes';
 import { AvailError } from '../../types/errors';
+import { emit } from '@tauri-apps/api/event';
 
 function checkWindow(reference: string) {
     let windows = getAll();
     let found = false;
     windows.forEach(win => {
-        if (win.label == reference) {
+        if (win.window.label == reference) {
+            console.log("Found Label", win.label)
             found = true;
         }
     })
     return found;
 }
 
+//TODO - Switch to pairing topic or dapp name as key to sessionStorage entry
 function getDappMetadata(session_topic: string) {
     let dapp_session_str = sessionStorage.getItem(session_topic);
     if (dapp_session_str !== null) {
@@ -155,7 +158,7 @@ export class AleoWallet {
 
 
                 // Listen for the approval event from the secondary window
-                const unlistenApproved = webview.listen('balance-approved', async () => {
+                const unlistenApproved = webview.once('balance-approved', async () => {
                     const unlisten = await unlistenApproved;
                     unlisten();
                     webview.close();
@@ -170,7 +173,7 @@ export class AleoWallet {
                 });
 
                 // Listen for the rejection event from the secondary window
-                const unlistenRejected = webview.listen('balance-rejected', async (response) => {
+                const unlistenRejected = webview.once('balance-rejected', async (response) => {
                     const unlisten = await unlistenRejected;
                 unlisten();
                     console.log('Balance share was rejected', response);
@@ -269,7 +272,7 @@ export class AleoWallet {
             }, 3000);
 
             return new Promise( async(resolve, reject) => {
-                const unlistenApproved = webview.listen('decrypt-approved', async (response) => {
+                const unlistenApproved = webview.once('decrypt-approved', async (response) => {
                     const unlisten = await unlistenApproved;
                 unlisten();
                     webview.close();
@@ -291,7 +294,7 @@ export class AleoWallet {
                 });
 
                 // Listen for the rejection event from the secondary window
-                const unlistenRejected = webview.listen('decrypt-rejected', async (response) => {
+                const unlistenRejected = webview.once('decrypt-rejected', async (response) => {
                     const unlisten = await unlistenRejected;
                 unlisten();
                     console.log(response);
@@ -356,7 +359,7 @@ export class AleoWallet {
         }, 3000);
 
         return new Promise( async(resolve, reject) => {
-            const unlistenApproved = webview.listen('sign-approved', async (response) => {
+            const unlistenApproved = webview.once('sign-approved', async (response) => {
                 const unlisten = await unlistenApproved;
                 unlisten();
                 webview.close();
@@ -374,7 +377,7 @@ export class AleoWallet {
             });
 
             // Listen for the rejection event from the secondary window
-            const unlistenRejected = webview.listen('sign-rejected', async (response) => {
+            const unlistenRejected = webview.once('sign-rejected', async (response) => {
                 const unlisten = await unlistenRejected;
                 unlisten();
                 console.log(response);
@@ -425,10 +428,14 @@ export class AleoWallet {
         if (checkWindow('walletConnect')) {
 
             getAll().forEach(win => {
-                if (win.label == 'walletConnect') {
+                if (win.window.label == 'walletConnect') {
                     webview = win.window;
+                    webview.destroy();
                 }
             });
+
+            return formatJsonRpcError(requestEvent.id, "ERROR OPENING WINDOW")
+
         } else {
 
             // Open the new window
@@ -448,47 +455,56 @@ export class AleoWallet {
             webview.once('tauri://error', function (e) {
                 console.error(e);
                 //TODO - Handle window creation error
+                if (e){
+                    webview.destroy();
+                    return formatJsonRpcError(requestEvent.id, "ERROR CREATING WINDOW");
+                }
             });
 
-        }
+        setTimeout(async() => {
+           await webview.emit('wallet-connect-request', wcRequest);
+        }, 2700);
 
-        setTimeout(() => {
-            webview.emit('wallet-connect-request', wcRequest);
-        }, 3000);
-
-        // TODO - Allow user to set fee to private or public within event
+        let stopper = true;
         return new Promise(async (resolve, reject) => {
-            const unlistenApproved = await webview.listen('create-request-event-approved', async (response) => {
-                // unlistenApproved.catch((e)=>console.log("=====> Inside unlisted of create", e))
-                const unlisten = await unlistenApproved;
-                unlisten();
-                webview.close();
+          await webview.once('create-request-event-approved', async (response) => {     
+                webview.destroy();
+                if(stopper){
+                stopper = false;
+                sessionStorage.setItem("transfer_on", "true");
 
                 let payload_obj = JSON.stringify(response.payload);
                 let fee_op = JSON.parse(payload_obj).feeOption;
-                console.log(response);
-                console.log("calling tauri................. ")
+
+                console.log("--EXECUTION CALLED--")
+                
                 try {
                     console.log(request);
                     invoke<interfaces.CreateEventResponse>("request_create_event", { request: request, fee_private: fee_op }).then((response) => {
+                        sessionStorage.setItem("transfer_on", "false");
                         resolve(formatJsonRpcResult(requestEvent.id, response));
+                        
                     }).catch((error: AvailError) => {
+                        sessionStorage.setItem("transfer_on", "false");
                         reject(formatJsonRpcError(requestEvent.id, error.external_msg));
+                       
                     });
 
                 } catch (error: any) {
+                    sessionStorage.setItem("transfer_on", "false");
                     reject(formatJsonRpcError(requestEvent.id, error.message))
-                }
+                }}
             });
             
 
-            const unlistenRejected = webview.listen('create-request-event-rejected', async (response) => {
-                const unlisten = await unlistenRejected;
-                unlisten();
-                webview.close();
+            await webview.once('create-request-event-rejected', async (response) => {
+                webview.destroy();
                 reject(formatJsonRpcResult(requestEvent.id, response));
             });
+
         });
+    }
+
     }
 
     private async handleGetEvent(requestEvent: Web3WalletTypes.SessionRequest): Promise<JsonRpcResult | JsonRpcError> {
@@ -558,7 +574,7 @@ export class AleoWallet {
             }, 3000);
 
             return new Promise( async(resolve, reject) => {
-                const unlistenApproved = webview.listen('get-event-approved', async (response) => {
+                const unlistenApproved = webview.once('get-event-approved', async (response) => {
                     const unlisten = await unlistenApproved;
                 unlisten();
                     webview.close();
@@ -580,7 +596,7 @@ export class AleoWallet {
                 });
 
 
-                const unlistenRejected = webview.listen('get-event-rejected', async (response) => {
+                const unlistenRejected = webview.once('get-event-rejected', async (response) => {
                     const unlisten = await unlistenRejected;
                 unlisten();
                     webview.close();
@@ -660,7 +676,7 @@ export class AleoWallet {
         }, 3000);
 
         return new Promise( async(resolve, reject) => {
-            const unlistenApproved = webview.listen('get-events-approved', async (response) => {
+            const unlistenApproved = webview.once('get-events-approved', async (response) => {
                 const unlisten = await unlistenApproved;
                 unlisten();
                 webview.close();
@@ -680,7 +696,7 @@ export class AleoWallet {
                 }
             })
 
-            const unlistenRejected = webview.listen('get-events-rejected', async (response) => {
+            const unlistenRejected = webview.once('get-events-rejected', async (response) => {
                 const unlisten = await unlistenRejected;
                 unlisten();
                 webview.close();
@@ -768,7 +784,7 @@ export class AleoWallet {
         }, 3000);
 
         return new Promise( async(resolve, reject) => {
-            const unlistenApproved = webview.listen('get-records-approved', async (response) => {
+            const unlistenApproved = webview.once('get-records-approved', async (response) => {
                 const unlisten = await unlistenApproved;
                 unlisten();
                 webview.close();
@@ -790,7 +806,7 @@ export class AleoWallet {
                 }
             })
 
-            const unlistenRejected = webview.listen('get-records-rejected', async (response) => {
+            const unlistenRejected = webview.once('get-records-rejected', async (response) => {
                 const unlisten = await unlistenRejected;
                 unlisten();
                 webview.close();
