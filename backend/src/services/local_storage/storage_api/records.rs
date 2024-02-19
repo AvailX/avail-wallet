@@ -238,81 +238,84 @@ pub fn update_record_spent_local_via_nonce<N: Network>(
 
     let v_key = VIEWSESSION.get_instance::<N>()?;
 
-    if let Some(encrypted_data) = get_encrypted_data_by_nonce(nonce)? {
-        let encrypted_data_id = match encrypted_data.id {
-            Some(id) => id.to_string(),
-            None => {
-                return Err(AvailError::new(
-                    avail_common::errors::AvailErrorType::Internal,
-                    "No id found for encrypted data".to_string(),
-                    "No id found for encrypted data".to_string(),
-                ))
-            }
-        };
+    if let Some(encrypted_data) = get_encrypted_data_by_nonce(nonce)?{
 
-        println!(
-            "Updating record spent {} status for id: {}",
-            spent, encrypted_data_id
-        );
-
-        let encrypted_struct = encrypted_data.to_enrypted_struct::<N>()?;
-
-        let mut record_pointer: AvailRecord<N> = encrypted_struct.decrypt(v_key)?;
-
-        if record_pointer.metadata.spent == spent {
-            return Ok(());
+    let encrypted_data_id = match encrypted_data.id {
+        Some(id) => id.to_string(),
+        None => {
+            return Err(AvailError::new(
+                avail_common::errors::AvailErrorType::Internal,
+                "No id found for encrypted data".to_string(),
+                "No id found for encrypted data".to_string(),
+            ))
         }
+    };
 
-        record_pointer.metadata.spent = spent;
-        if record_pointer.clone().metadata.record_type == RecordTypeCommon::Tokens
-            || record_pointer.clone().metadata.record_type == RecordTypeCommon::AleoCredits
-        {
-            let record = record_pointer.clone().to_record()?;
-            let record_data_keys = record.data().clone().into_keys();
-            let record_name = record_pointer.clone().metadata.name;
-            for key in record_data_keys {
-                let is_key: bool = matches!(key.to_string().as_str(), "amount" | "microcredits");
+    println!("Updating record spent {} status for id: {}",spent, encrypted_data_id);
 
-                if is_key {
-                    let balance_entry = match record.data().get(&key.clone()) {
-                        Some(bal) => Ok(bal),
-                        None => Err(()),
-                    };
-                    let balance_f = match balance_entry.unwrap() {
-                        Entry::Private(Plaintext::Literal(Literal::<N>::U64(amount), _)) => amount,
-                        _ => todo!(),
-                    };
-                    let balance_field = balance_f.to_be_bytes();
-                    let balance = u64::from_be_bytes(balance_field);
+    let encrypted_struct = encrypted_data.to_enrypted_struct::<N>()?;
 
-                    let _ = match spent {
-                        true => subtract_balance(&record_name, &balance.to_string(), v_key)?,
-                        false => add_balance(&record_name, &balance.to_string(), v_key)?,
-                    };
-                }
-            }
-        }
-        let updated_record_pointer = record_pointer.encrypt_for(address)?;
+    let mut record_pointer: AvailRecord<N> = encrypted_struct.decrypt(v_key)?;
 
-        update_encrypted_data_spent_by_id(
-            &encrypted_data_id,
-            &updated_record_pointer.cipher_text.to_string(),
-            &updated_record_pointer.nonce.to_string(),
-            spent,
-        )?;
+    if record_pointer.metadata.spent == spent {
+        return Ok(());
     }
+
+    record_pointer.metadata.spent = spent;
+    if record_pointer.clone().metadata.record_type == RecordTypeCommon::Tokens
+        || record_pointer.clone().metadata.record_type == RecordTypeCommon::AleoCredits
+    {
+        let record = record_pointer.clone().to_record()?;
+        let record_data_keys = record.data().clone().into_keys();
+        let record_name = record_pointer.clone().metadata.name;
+        for key in record_data_keys {
+            let is_key: bool = matches!(key.to_string().as_str(), "amount" | "microcredits");
+
+            if is_key {
+                let balance_entry = match record.data().get(&key.clone()) {
+                    Some(bal) => Ok(bal),
+                    None => Err(()),
+                };
+
+                let balance = match balance_entry.unwrap() {
+                    Entry::Private(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    Entry::Public(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    Entry::Constant(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    _ => 0u64,
+                };
+
+                //let balance_field = balance_f.to_be_bytes();
+                //let balance = u64::from_be_bytes(balance_field);
+
+                let _ = match spent {
+                    true => subtract_balance(&record_name, &balance.to_string(), v_key)?,
+                    false => add_balance(&record_name, &balance.to_string(), v_key)?,
+                };
+            }
+        }
+    }
+    let updated_record_pointer = record_pointer.encrypt_for(address)?;
+
+    update_encrypted_data_spent_by_id(
+        &encrypted_data_id,
+        &updated_record_pointer.cipher_text.to_string(),
+        &updated_record_pointer.nonce.to_string(),
+        spent,
+    )?;
+}
 
     Ok(())
 }
 
-pub fn check_if_record_exists<N: Network>(nonce: &str) -> AvailResult<bool> {
+pub fn check_if_record_exists<N:Network>(nonce: &str) -> AvailResult<bool>{
     let encrypted_data = get_encrypted_data_by_nonce(nonce)?;
 
-    if let Some(encrypted_data) = encrypted_data {
+    if let Some(encrypted_data)= encrypted_data{
         Ok(encrypted_data.id.is_some())
-    } else {
+    }else{
         Ok(false)
     }
+   
 }
 
 /// Update record spent status on local storage
@@ -346,12 +349,16 @@ pub fn update_record_spent_local<N: Network>(id: &str, spent: bool) -> AvailResu
                     Some(bal) => Ok(bal),
                     None => Err(()),
                 };
-                let balance_f = match balance_entry.unwrap() {
-                    Entry::Private(Plaintext::Literal(Literal::<N>::U64(amount), _)) => amount,
-                    _ => todo!(),
+
+                let balance = match balance_entry.unwrap() {
+                    Entry::Private(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    Entry::Public(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    Entry::Constant(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    _ => 0u64,
                 };
-                let balance_field = balance_f.to_be_bytes();
-                let balance = u64::from_be_bytes(balance_field);
+                
+                //let balance_field = balance_f.to_be_bytes();
+                //let balance = u64::from_be_bytes(balance_field);
 
                 let _ = match spent {
                     true => subtract_balance(&record_name, &balance.to_string(), v_key)?,
@@ -620,10 +627,12 @@ mod records_storage_api_tests {
     #[test]
     fn test_check_if_record_exists() {
         VIEWSESSION
-            .set_view_session("AViewKey1myvhAr2nes8MF1y8gPV19azp4evwsBR4CqyzAi62nufW")
-            .unwrap();
+        .set_view_session("AViewKey1myvhAr2nes8MF1y8gPV19azp4evwsBR4CqyzAi62nufW")
+        .unwrap();
 
         let res = check_if_record_exists::<Testnet3>("").unwrap();
         println!("{:?}", res);
+
+       ;
     }
 }
