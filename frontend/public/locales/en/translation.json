@@ -224,7 +224,7 @@
             "description":"This will delete your backed up encrypted data and not backup any more of your encrypted data pointers. This means if or when you need to recover your acccount you will not have access to your Aleo data records until the whole blockchain is scanned."
         },
         "reauth":{
-            "title":"Authenticate Account",
+            "title":"Authenticate Account, then retry action.",
             "description":"This is done to secure your account. Please enter your password to continue."
         },
         "receive":{
