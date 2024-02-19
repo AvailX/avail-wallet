@@ -24,7 +24,7 @@
           "signup": "Konto loomine ebaõnnestus, palun proovi uuesti."
         },
         "success": "Rahakott edukalt loodud!"
-      }      
+      }
     },
     "seedphrase": {
       "title": "Sinu salajane taastefraas",
@@ -225,4 +225,3 @@
       }
     }
   }
-  

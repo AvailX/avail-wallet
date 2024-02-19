@@ -34,7 +34,6 @@ pub async fn create_seed_phrase_wallet(
     language: Languages,
     length: usize,
 ) -> AvailResult<String> {
-    
     let avail_wallet = BetterAvailWallet::<Testnet3>::new(length, &language)?;
 
     let tag = username.clone().map(|_| generate_discriminant());
@@ -78,10 +77,7 @@ pub async fn create_seed_phrase_wallet(
         }
     };
 
-    key_manager.store_key(
-        &password,
-        &avail_wallet
-    )?;
+    key_manager.store_key(&password, &avail_wallet)?;
 
     VIEWSESSION.set_view_session(&avail_wallet.get_view_key())?;
 
@@ -149,10 +145,7 @@ pub async fn import_wallet(
         }
     };
 
-    let storage = key_manager.store_key(
-        &password,
-        &avail_wallet
-    )?;
+    let storage = key_manager.store_key(&password, &avail_wallet)?;
 
     VIEWSESSION.set_view_session(&avail_wallet.view_key.to_string())?;
 

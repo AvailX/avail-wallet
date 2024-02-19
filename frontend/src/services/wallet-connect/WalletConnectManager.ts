@@ -1,5 +1,4 @@
 
-
 import { Core } from '@walletconnect/core'
 import { Verify, SignClientTypes } from '@walletconnect/types'
 import { Web3Wallet, IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet'
@@ -333,59 +332,5 @@ export class WalletConnectManager {
         this.theWallet?.off('session_delete', this.onSessionDelete)
     }
 
-    /*
-    private async onAuthRequest(requestEvent: Web3WalletTypes.AuthRequest) {
-
-        console.log()
-        console.log()
-        console.log("  ========================== ")
-        console.log("  >>> auth_request event >>>")
-        console.log()
-
-        try {
-            if (!this.theWallet || !this.eth_wallet || !this.aleo_wallet) {
-                console.log("Wallet is null! Call setup()");
-                return;
-            }
-
-            if (!requestEvent) {
-                console.log("Missing requestEvent data.");
-                return;
-            }
-
-            console.log('request', requestEvent)
-
-            // TO DO - TO DO - TO DO - TO DO - TO DO
-            //
-            // Instead of getting the Etherum account we should get
-            // the address for the currently selected account which
-            const address = this.eth_wallet.getAddress()
-            const iss = `did:pkh:eip155:1:${address}`
-
-            const message = this.theWallet.formatMessage(requestEvent.params.cacaoPayload, iss)
-            const signature = await this.eth_wallet.signMessage(message)
-
-            console.log("Responding with...", signature)
-            await this.theWallet.respondAuthRequest(
-                {
-                    id: requestEvent.id,
-                    signature: {
-                        s: signature,
-                        t: 'eip191'
-                    }
-                },
-                iss
-            )
-
-        } catch (err) {
-            console.log("Failed", (err as Error).message)
-        }
-        finally {
-            console.log()
-            console.log("  <<< auth_request event <<<")
-            console.log("  ========================== ")
-            console.log()
-        }
-    } 
-    */
+  
 }

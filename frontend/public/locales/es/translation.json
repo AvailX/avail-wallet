@@ -24,7 +24,7 @@
           "signup": "Error al crear la cuenta, por favor intenta de nuevo."
         },
         "success": "¡Cartera creada con éxito!"
-      }  
+      }
     },
     "seedphrase": {
       "title": "Tu frase de recuperación secreta",
@@ -225,4 +225,3 @@
       }
     }
   }
-  

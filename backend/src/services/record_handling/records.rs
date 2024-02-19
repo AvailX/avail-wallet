@@ -84,7 +84,10 @@ pub fn get_records<N: Network>(
         .cloned()
         .collect_vec();
 
-    println!("Stored transaction ids without unconfirmed and failed: {:?}", stored_transaction_ids);
+    println!(
+        "Stored transaction ids without unconfirmed and failed: {:?}",
+        stored_transaction_ids
+    );
 
     let mut end_height = last_sync.saturating_add(step_size);
     let mut start_height = last_sync;
@@ -150,7 +153,6 @@ pub fn get_records<N: Network>(
                         tx_id == &transaction_id || tx_id == &unconfirmed_transaction_id
                     })
                 {
-                    
                     let inner_tx = transaction.transaction();
                     let fee = match inner_tx.fee_amount() {
                         Ok(fee) => *fee as f64 / 1000000.0,
@@ -467,9 +469,10 @@ pub fn get_records<N: Network>(
             }
 
             match update_last_sync(height) {
-                Ok(_) => {println!("Synced {}", height);}
+                Ok(_) => {
+                    println!("Synced {}", height);
+                }
                 Err(e) => {
-                    
                     match handle_block_scan_failure::<N>(height) {
                         Ok(_) => {}
                         Err(e) => {

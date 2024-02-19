@@ -185,8 +185,8 @@ async fn transfer_private_util<N: Network>(
     let pending_tx_id = pending_transaction.encrypt_and_store(sender_address)?;
 
     if let Some(window) = window.clone() {
-        match window.emit("tx_state_change", &pending_tx_id){
-            Ok(_) => {},
+        match window.emit("tx_state_change", &pending_tx_id) {
+            Ok(_) => {}
             Err(e) => {
                 return Err(AvailError::new(
                     AvailErrorType::Internal,
@@ -240,8 +240,8 @@ async fn transfer_private_util<N: Network>(
             )?;
 
             if let Some(window) = window.clone() {
-                match window.emit("tx_state_change", &pending_tx_id){
-                    Ok(_) => {},
+                match window.emit("tx_state_change", &pending_tx_id) {
+                    Ok(_) => {}
                     Err(e) => {
                         return Err(AvailError::new(
                             AvailErrorType::Internal,
@@ -342,8 +342,8 @@ async fn transfer_public_to_private_util<N: Network>(
     let pending_tx_id = pending_transaction.encrypt_and_store(sender_address)?;
 
     if let Some(window) = window.clone() {
-        match window.emit("tx_state_change", &pending_tx_id){
-            Ok(_) => {},
+        match window.emit("tx_state_change", &pending_tx_id) {
+            Ok(_) => {}
             Err(e) => {
                 return Err(AvailError::new(
                     AvailErrorType::Internal,
@@ -390,8 +390,8 @@ async fn transfer_public_to_private_util<N: Network>(
             )?;
 
             if let Some(window) = window.clone() {
-                match window.emit("tx_state_change", &pending_tx_id){
-                    Ok(_) => {},
+                match window.emit("tx_state_change", &pending_tx_id) {
+                    Ok(_) => {}
                     Err(e) => {
                         return Err(AvailError::new(
                             AvailErrorType::Internal,
@@ -490,8 +490,8 @@ async fn transfer_private_to_public_util<N: Network>(
     let pending_tx_id = pending_transaction.encrypt_and_store(sender_address)?;
 
     if let Some(window) = window.clone() {
-        match window.emit("tx_state_change", &pending_tx_id){
-            Ok(_) => {},
+        match window.emit("tx_state_change", &pending_tx_id) {
+            Ok(_) => {}
             Err(e) => {
                 return Err(AvailError::new(
                     AvailErrorType::Internal,
@@ -541,8 +541,8 @@ async fn transfer_private_to_public_util<N: Network>(
             )?;
 
             if let Some(window) = window.clone() {
-                match window.emit("tx_state_change", &pending_tx_id){
-                    Ok(_) => {},
+                match window.emit("tx_state_change", &pending_tx_id) {
+                    Ok(_) => {}
                     Err(e) => {
                         return Err(AvailError::new(
                             AvailErrorType::Internal,
@@ -637,8 +637,8 @@ async fn transfer_public<N: Network>(
     let pending_tx_id = pending_transaction.encrypt_and_store(sender_address)?;
 
     if let Some(window) = window.clone() {
-        match window.emit("tx_state_change", &pending_tx_id){
-            Ok(_) => {},
+        match window.emit("tx_state_change", &pending_tx_id) {
+            Ok(_) => {}
             Err(e) => {
                 return Err(AvailError::new(
                     AvailErrorType::Internal,
@@ -685,8 +685,8 @@ async fn transfer_public<N: Network>(
             )?;
 
             if let Some(window) = window.clone() {
-                match window.emit("tx_state_change", &pending_tx_id){
-                    Ok(_) => {},
+                match window.emit("tx_state_change", &pending_tx_id) {
+                    Ok(_) => {}
                     Err(e) => {
                         return Err(AvailError::new(
                             AvailErrorType::Internal,

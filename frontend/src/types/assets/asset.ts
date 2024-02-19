@@ -1,9 +1,9 @@
-import { Balance } from "src/services/wallet-connect/WCTypes";
+import {type Balance} from 'src/services/wallet-connect/WCTypes';
 
 export type AssetType = {
-  image_ref: string | null;
-  symbol: string;
-  balance: Balance;
-  total: number;
-  value: number;
-}
+	image_ref: string | undefined;
+	symbol: string;
+	balance: Balance;
+	total: number;
+	value: number;
+};

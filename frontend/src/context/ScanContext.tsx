@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, {createContext, useContext, useState} from 'react';
 
 interface ScanContextProps {
   scanInProgress: boolean;
@@ -33,9 +33,10 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
 };
 
 export const useScan = (): ScanContextProps => {
-  const context = useContext(ScanContext);
-  if (!context) {
-    throw new Error('useScan must be used within a ScanProvider');
-  }
-  return context;
+	const context = useContext(ScanContext);
+	if (!context) {
+		throw new Error('useScan must be used within a ScanProvider');
+	}
+
+	return context;
 };

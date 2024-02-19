@@ -465,25 +465,3 @@ function Home() {
 }
 
 export default Home;
-
-{/* WalletConnect Tester */ }
-{/* 
-            <mui.Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}>
-                <mui.TextField
-                    value={uri}
-                    onChange={(e) => setUri(e.target.value)}
-                    label="WalletConnect URI"
-                    variant="outlined"
-                    fullWidth
-                    sx={{ mb: '2%', width: '30%' }}
-                />
-                <mui.Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ width: '30%' }}
-                    onClick={() => manager.pair(uri)}
-                >
-                    Pair
-                </mui.Button>
-            </mui.Box>
-            */}

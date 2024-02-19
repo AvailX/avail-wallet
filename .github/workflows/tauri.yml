@@ -42,8 +42,24 @@ jobs:
   #         cd backend
   #         cargo test
 
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install pre-commit
+        run: pip install pre-commit
+      - name: Run pre-commit
+        run: |
+          pre-commit install
+          pre-commit run --all-files
+
   build-and-release:
-    # needs: test
+    needs: pre-commit
+    environment: ${{ github.ref_name }}
     permissions:
         contents: write
     strategy:
@@ -91,15 +107,28 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          API: ${{ secrets.AVAIL_API_URL}}
+          DEV_NODE_IP: ${{ secrets.DEV_NODE_IP}}
+          TESTNET_API_OBSCURA: ${{ secrets.TESTNET_API_OBSCURA}}
+          MAINNET_API_OBSCURA: ""
+          DEVNET_API_OBSCURA: ""
         with:
+            # Use the tauri-cli we installed earlier
             tauriScript: cargo tauri
+            # Build for the ARM architecture on macOS
             args: ${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64-apple-darwin' || '' }}
             projectPath: backend
             distPath: frontend/dist
-            tagName: "v__VERSION__-${{ github.ref_name == 'staging' && 'beta' || github.ref_name == 'release' && 'latest' || 'dev' }}"
-            releaseName: "Avail Wallet v__VERSION__-${{ github.ref_name == 'staging' && 'beta' || github.ref_name == 'release' && 'latest' || 'dev' }}"
+            # The tagName is alpha for develop, beta for staging and latest for release
+            includeDebug: ${{ github.ref_name == 'release' && false || true }}
+            includeRelease: ${{ github.ref_name == 'release' && true || false }}
+            tagName: "v__VERSION__-${{ vars.TAGNAME }}"
+            releaseName: "v__VERSION__-${{ vars.TAGNAME }}"
+            # The release body is optional, but it's a good place to put release notes
             releaseBody: 'See the assets to download this version and install.'
+            # Always create a draft release, so we can check the assets before publishing
             releaseDraft: true
-            prerelease: false
+            # Only publish the release if the branch is release
+            prerelease: ${{ github.ref_name == 'release' && false || true }}

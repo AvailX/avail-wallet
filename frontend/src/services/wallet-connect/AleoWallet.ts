@@ -1,15 +1,12 @@
-import { Web3WalletTypes } from '@walletconnect/web3wallet';
-import { Window } from '@tauri-apps/api/window'
-import { WebviewWindow,getAll,getCurrent } from '@tauri-apps/api/webview';
-
-
-import { invoke } from '@tauri-apps/api/core';
-
+import {type Web3WalletTypes} from '@walletconnect/web3wallet';
+import {type Window} from '@tauri-apps/api/window';
+import {WebviewWindow, getAll, getCurrent} from '@tauri-apps/api/webview';
+import {invoke} from '@tauri-apps/api/core';
 import {
-    formatJsonRpcResult,
-    formatJsonRpcError,
-    JsonRpcResult,
-    JsonRpcError,
+	formatJsonRpcResult,
+	formatJsonRpcError,
+	type JsonRpcResult,
+	type JsonRpcError,
 } from '@walletconnect/jsonrpc-utils';
 
 import * as interfaces from './WCTypes';
@@ -30,34 +27,34 @@ function checkWindow(reference: string) {
 
 //TODO - Switch to pairing topic or dapp name as key to sessionStorage entry
 function getDappMetadata(session_topic: string) {
-    let dapp_session_str = sessionStorage.getItem(session_topic);
-    if (dapp_session_str !== null) {
-        let dapp_session: interfaces.DappSession = JSON.parse(dapp_session_str) as interfaces.DappSession;
-        return dapp_session;
-    }
+	const dapp_session_string = sessionStorage.getItem(session_topic);
+	if (dapp_session_string !== null) {
+		const dapp_session: interfaces.DappSession = JSON.parse(dapp_session_string) as interfaces.DappSession;
+		return dapp_session;
+	}
 }
 
 function storeSession(unique_request_id: string) {
-    let expiry = new Date();
-    expiry.setHours(expiry.getHours() + 1);
+	const expiry = new Date();
+	expiry.setHours(expiry.getHours() + 1);
 
-    sessionStorage.setItem(unique_request_id, expiry.toISOString());
-
+	sessionStorage.setItem(unique_request_id, expiry.toISOString());
 }
 
 function checkExpired(unique_request_id: string) {
-    let expiry_str = sessionStorage.getItem(unique_request_id);
-    if (expiry_str !== null) {
-        let expiry = new Date(expiry_str);
-        let now = new Date();
-        let check = now > expiry;
-        if (check) {
-            sessionStorage.removeItem(unique_request_id);
-        }
-        return check;
-    }
+	const expiry_string = sessionStorage.getItem(unique_request_id);
+	if (expiry_string !== null) {
+		const expiry = new Date(expiry_string);
+		const now = new Date();
+		const check = now > expiry;
+		if (check) {
+			sessionStorage.removeItem(unique_request_id);
+		}
 
-    return true;
+		return check;
+	}
+
+	return true;
 }
 
 export class AleoWallet {
@@ -454,7 +451,6 @@ export class AleoWallet {
 
             webview.once('tauri://error', function (e) {
                 console.error(e);
-                //TODO - Handle window creation error
                 if (e){
                     webview.destroy();
                     return formatJsonRpcError(requestEvent.id, "ERROR CREATING WINDOW");

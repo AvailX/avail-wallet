@@ -309,9 +309,9 @@ pub fn get_encrypted_data_by_nonce(nonce: &str) -> AvailResult<Option<EncryptedD
 
     if !encrypted_data.is_empty() {
         Ok(Some(encrypted_data[0].clone()))
-    }else{
+    } else {
         Ok(None)
-    } 
+    }
 }
 
 /* Main Encrypted Data funcions */
@@ -388,7 +388,13 @@ pub fn update_encrypted_transaction_confirmed_by_id(
     );
 
     storage.save_mixed(
-        vec![&ciphertext, &nonce, &program_ids, &function_ids, &TransactionState::Confirmed.to_str()],
+        vec![
+            &ciphertext,
+            &nonce,
+            &program_ids,
+            &function_ids,
+            &TransactionState::Confirmed.to_str(),
+        ],
         query,
     )?;
 

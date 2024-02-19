@@ -1,16 +1,14 @@
-import { invoke } from "@tauri-apps/api/core";
-import { SignatureRequest,SignatureResponse } from "../wallet-connect/WCTypes";
+import {invoke} from '@tauri-apps/api/core';
+import {type SignatureRequest, type SignatureResponse} from '../wallet-connect/WCTypes';
 
+export async function sign(message: string) {
+	const request: SignatureRequest = {
+		message,
+	};
 
-export async function sign(message: string){
-let request : SignatureRequest = {
-    message: message
+	return invoke<SignatureResponse>('sign', {request});
 }
 
-return invoke<SignatureResponse>("sign", { request: request })
+export async function verify(message: string, signature: string, address: string) {
+	return invoke<boolean>('verify', {message, address, signature});
 }
-
-export async function verify(message: string, signature: string, address: string){
-    return invoke<boolean>("verify",{message: message, address: address,signature: signature})
-}
-

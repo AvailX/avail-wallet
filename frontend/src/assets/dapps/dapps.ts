@@ -3,14 +3,13 @@ import staking from './staking.png';
 import ans from './ans.svg';
 import arcane from './arcane.svg';
 
-export interface Dapp {
-    name: string;
-    description: string;
-    url: string;
-    img: string;
-    tags: string[];
-}
-
+export type Dapp = {
+	name: string;
+	description: string;
+	url: string;
+	img: string;
+	tags: string[];
+};
 
 export const dapps: Dapp[] = [
     {
@@ -42,4 +41,3 @@ export const dapps: Dapp[] = [
         tags: ['finance']
     }
 ];
-
