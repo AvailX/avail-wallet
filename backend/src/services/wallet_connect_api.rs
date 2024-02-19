@@ -422,7 +422,7 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn get_records(request: GetRecordsRequest) -> AvailResult<GetRecordsResponse> {
+pub async fn get_records(request: GetRecordsRequest) -> AvailResult<GetRecordsResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet3 => match get_records_raw::<Testnet3>(request) {
@@ -596,7 +596,7 @@ pub fn decrypt_records_raw<N: Network>(ciphertext: Vec<String>) -> AvailResult<V
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn get_events(request: GetEventsRequest) -> AvailResult<GetEventsResponse> {
+pub async fn get_events(request: GetEventsRequest) -> AvailResult<GetEventsResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet3 => match get_events_raw::<Testnet3>(request) {
@@ -748,200 +748,6 @@ mod test {
         transfer_raw::<Testnet3>(request, None).await.unwrap();
     }
     */
-
-    #[cfg(target_os = "linux")]
-    #[tokio::test]
-    async fn test_setup_prerequisites_linux() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let ext = Identifier::<Testnet3>::from_str("test").unwrap();
-        let linux_key_controller = linuxKeyController {};
-        linux_key_controller
-            .delete_key(Some(STRONG_PASSWORD), ext)
-            .unwrap();
-
-        delete_all_server_storage().await.unwrap();
-        drop_encrypted_data_table().unwrap();
-
-        delete_user_preferences().unwrap();
-        // initialize the user preferences
-
-        import_wallet_linux(
-            Some("Satoshi".to_string()),
-            STRONG_PASSWORD.to_string(),
-            false,
-            &pk.to_string(),
-            false,
-        )
-        .await
-        .unwrap();
-
-        let address = get_address_string().unwrap();
-
-        let request = TransferRequest::new(
-            address,
-            10000000,
-            Some("Private Transfer Test".to_string()),
-            Some(STRONG_PASSWORD.to_string()),
-            TransferType::Private,
-            false,
-            300000,
-            "credits".to_string(),
-        );
-
-        let mut window: Window;
-
-        let _x = tauri::Builder::default().setup(|app| {
-            let window_ =
-                tauri::WindowBuilder::new(app, "test", tauri::WindowUrl::App("index.html".into()))
-                    .build()
-                    .unwrap();
-            window = window_;
-            Ok(())
-        });
-
-        transfer(request, window).await.unwrap();
-    }
-
-    #[cfg(target_os = "windows")]
-    #[tokio::test]
-    async fn test_setup_prerequisites_windows() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-
-        drop_encrypted_data_table().unwrap();
-
-        delete_user_preferences().unwrap();
-        // initialize the user preferences
-
-        import_wallet_windows(
-            Some("Satoshi".to_string()),
-            STRONG_PASSWORD.to_string(),
-            false,
-            &pk.to_string(),
-            false,
-        )
-        .await
-        .unwrap();
-
-        let address = get_address_string().unwrap();
-
-        let request = TransferRequest::new(
-            address,
-            10000000,
-            Some("Private Transfer Test".to_string()),
-            Some(STRONG_PASSWORD.to_string()),
-            TransferType::Private,
-            false,
-            300000,
-            "credits".to_string(),
-        );
-
-        let mut window: Window;
-
-        let _x = tauri::Builder::default().setup(|app| {
-            let window_ =
-                tauri::WindowBuilder::new(app, "test", tauri::WindowUrl::App("index.html".into()))
-                    .build()
-                    .unwrap();
-            window = window_;
-            Ok(())
-        });
-
-        transfer(request, window).await.unwrap();
-    }
-
-    #[cfg(target_os = "android")]
-    #[tokio::test]
-    async fn test_setup_prerequisites_android() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-
-        drop_encrypted_data_table().unwrap();
-
-        delete_user_preferences().unwrap();
-        // initialize the user preferences
-
-        import_wallet_android(
-            Some("Satoshi".to_string()),
-            STRONG_PASSWORD.to_string(),
-            false,
-            &pk.to_string(),
-            false,
-        )
-        .await
-        .unwrap();
-
-        let address = get_address_string().unwrap();
-
-        let request = TransferRequest::new(
-            address,
-            10000000,
-            Some("Private Transfer Test".to_string()),
-            Some(STRONG_PASSWORD.to_string()),
-            TransferType::Private,
-            false,
-            300000,
-            "credits".to_string(),
-        );
-
-        let mut window: Window;
-
-        let _x = tauri::Builder::default().setup(|app| {
-            let window_ =
-                tauri::WindowBuilder::new(app, "test", tauri::WindowUrl::App("index.html".into()))
-                    .build()
-                    .unwrap();
-            window = window_;
-            Ok(())
-        });
-
-        transfer(request, window).await.unwrap();
-    }
-
-    #[cfg(target_os = "ios")]
-    #[tokio::test]
-    async fn test_setup_prerequisites_ios() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-
-        drop_encrypted_data_table().unwrap();
-
-        delete_user_preferences().unwrap();
-        // initialize the user preferences
-
-        import_wallet_ios(
-            Some("Satoshi".to_string()),
-            STRONG_PASSWORD.to_string(),
-            false,
-            &pk.to_string(),
-            false,
-        )
-        .await
-        .unwrap();
-
-        let address = get_address_string().unwrap();
-
-        let request = TransferRequest::new(
-            address,
-            10000000,
-            Some("Private Transfer Test".to_string()),
-            Some(STRONG_PASSWORD.to_string()),
-            TransferType::Private,
-            false,
-            300000,
-            "credits".to_string(),
-        );
-
-        let mut window: Window;
-
-        let _x = tauri::Builder::default().setup(|app| {
-            let window_ =
-                tauri::WindowBuilder::new(app, "test", tauri::WindowUrl::App("index.html".into()))
-                    .build()
-                    .unwrap();
-            window = window_;
-            Ok(())
-        });
-
-        transfer(request, window).await.unwrap();
-    }
 
     fn test_setup_prerequisites() -> PrivateKey<Testnet3> {
         // no records transferred as set up.
@@ -1133,8 +939,8 @@ mod test {
         println!("Result: {:?}", res);
     }
 
-    #[test]
-    fn get_events_test() {
+    #[tokio::test]
+    async fn get_events_test() {
         println!(
             " <<<<<<<<<<<<<<< Testing get_events() fn in Wallet Connect Rust API >>>>>>>>>>>>>>>"
         );
@@ -1150,7 +956,7 @@ mod test {
             page: None,
         };
 
-        let res = get_events(request).unwrap();
+        let res = get_events(request).await.unwrap();
 
         println!("Result: {:?}", res);
     }

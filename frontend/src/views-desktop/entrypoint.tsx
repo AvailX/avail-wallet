@@ -1,17 +1,19 @@
 import * as React from 'react';
 import * as mui from '@mui/material';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { os } from '../services/util/open';
+
 
 // Components
 
 // services
-import {session_and_local_auth} from '../services/authentication/auth';
+import { session_and_local_auth } from '../services/authentication/auth';
 
 // Images
 import a_logo from '../assets/logo/a-icon.svg';
 
 // Types
-import {type AvailError, AvailErrorType} from '../types/errors';
+import { type AvailError, AvailErrorType } from '../types/errors';
 import Layout from './reusable/layout';
 
 function Entrypoint() {
@@ -24,13 +26,16 @@ function Entrypoint() {
 		if (shouldRunEffect.current) {
 			setTimeout(() => {
 				/* -- Local + Session Auth -- */
-				session_and_local_auth(undefined, navigate, setAlert, setAlertMessage, true).then(res => {}).catch(error_ => {
-					console.log(error_);
+				session_and_local_auth(undefined, navigate, setAlert, setAlertMessage, true).then(res => { }).catch(async (e) => {
+					console.log(e);
 
-					const error = JSON.parse(error_) as AvailError;
-
+					let error = e;
+					const os_type = await os();
+					if (os_type !== 'linux') {
+						error = JSON.parse(e) as AvailError;
+					}
 					if (error.error_type === AvailErrorType.Network) {
-						// TODO - Fallback of local login by just getting the view key.
+						// TODO - Desktop login
 					}
 
 					if (error.error_type.toString() === 'Unauthorized') {
@@ -49,7 +54,7 @@ function Entrypoint() {
 			<mui.Box sx={{
 				display: 'flex', alignItems: 'center', alignContent: 'center', height: '100vh', justifyContent: 'center',
 			}}>
-				<img src={a_logo} style={{width: '12%', alignSelf: 'center'}} />
+				<img src={a_logo} style={{ width: '12%', alignSelf: 'center' }} />
 			</mui.Box>
 		</Layout>
 	);

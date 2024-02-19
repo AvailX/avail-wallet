@@ -190,40 +190,29 @@ export default function SideMenu() {
       navigate("/nfts")
       break;
       */
-			case 3: {
-				navigate('/browser', {state: 'https://faucet.puzzle.online'});
-				break;
-			}
-
-			case 4: {
-				navigate('/browser');
-				break;
-			}
-
-			case 5: {
-				open_url('https://discord.gg/A6N5X2yX').then(res => {
-					console.log(res);
-				}).catch(error => {
-					console.log(error);
-				});
-				break;
-			}
-
-			case 6: {
-				navigate('/settings');
-				break;
-			}
-
-			case 7: {
-				setLogoutDialog(true);
-				break;
-			}
-
-			default: {
-				break;
-			}
-		}
-	};
+      case 3:
+        navigate("/browser", { state: "https://faucet.puzzle.online" })
+        break;
+      case 4:
+        navigate("/browser")
+        break;
+      case 5:
+        open_url("https://discord.gg/avail-1140618884764942386").then((res) => {
+          console.log(res);
+        }).catch((e) => {
+          console.log(e);
+        })
+        break;
+      case 6:
+        navigate("/settings")
+        break;
+      case 7:
+        setLogoutDialog(true);
+        break;
+      default:
+        break;
+    }
+  }
 
 	return (
 

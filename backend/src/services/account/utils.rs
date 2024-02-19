@@ -50,6 +50,18 @@ pub fn open_url(url: &str) -> AvailResult<()> {
     };
 }
 
+#[tauri::command(rename_all = "snake_case")]
+pub fn os_type() -> AvailResult<String> {
+    #[cfg(target_os = "windows")]
+    return Ok("windows".to_string());
+
+    #[cfg(target_os = "macos")]
+    return Ok("macos".to_string());
+
+    #[cfg(target_os = "linux")]
+    return Ok("linux".to_string());
+}
+
 #[test]
 fn test_generate_discriminant() {
     let discriminant = generate_discriminant();

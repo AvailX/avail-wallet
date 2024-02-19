@@ -1,5 +1,9 @@
-import {invoke} from '@tauri-apps/api/core';
+import { invoke } from '@tauri-apps/api/core';
 
 export async function open_url(url: string) {
-	return invoke('open_url', {url});
+	return invoke('open_url', { url });
+}
+
+export function os() {
+	return invoke<string>('os_type');
 }

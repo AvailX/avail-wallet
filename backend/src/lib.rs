@@ -6,7 +6,7 @@ pub mod services;
 use services::account::generation::create_seed_phrase_wallet;
 use services::account::generation::import_wallet;
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
-use services::account::utils::open_url;
+use services::account::utils::{open_url, os_type};
 use services::authentication::session::get_session;
 use services::local_storage::persistent_storage::{
     get_address_string, get_auth_type, get_backup_flag, get_language, get_last_sync, get_network,
@@ -70,6 +70,7 @@ pub fn run() {
             update_language,
             get_stored_tokens,
             open_url,
+            os_type,
             /* Authentication */
             get_session,
             get_auth_type,
