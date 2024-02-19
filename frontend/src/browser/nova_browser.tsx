@@ -52,7 +52,7 @@ const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', han
   const [warningAlert, setWarningAlert] = useState(false);
   const [infoAlert, setInfoAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-  const { startScan, endScan } = useScan();
+  const { startScan, endScan,scanInProgress} = useScan();
 
   const { walletConnectManager } = useWalletConnectManager();
 
@@ -96,10 +96,14 @@ const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', han
 
   const handleDisconnect = () => {
     walletConnectManager.close().then(() => {
-      setAlertMessage(t('browser.messages.success.disconnect'));
+      sessionStorage.setItem('connected', 'false');
+      setConnected(false);
+      setAlertMessage(t("browser.message.success.disconnect"));
       setSuccessAlert(true);
-    }).catch(error => {
-      setAlertMessage('Error disconnecting ' + error);
+    }).catch((error) => {
+      setConnected(false);
+      sessionStorage.setItem('connected', 'false');
+      setAlertMessage('Error disconnecting ');
       setErrorAlert(true);
     });
   };
@@ -163,13 +167,16 @@ const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', han
       startScan();
     });
 
-    const unlisten_wc_transaction_end = listen('wc_transaction_end', event => {
-      endScan();
-    });
-
+    const unlisten_wc_transaction_end = listen('wc_transaction_end', (event) => {
+      if (!scanInProgress){
+        endScan();
+      }
+    })
     return () => {
-      unlisten_connected.catch(() => { });
-      unlisten_disconnected.catch(() => { });
+       unlisten_connected.then(remove => remove());
+      unlisten_disconnected.then(remove => remove());
+      unlisten_wc_transaction_start.then(remove => remove());
+      unlisten_wc_transaction_end.then(remove => remove());
     };
   }, []);
 
@@ -233,10 +240,8 @@ const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', han
               boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.8)',
             },
           }}
-            onClick={() => {
-              connected ? handleDisconnect() : walletConnectManager.pair(wcURL);
-            }}
-          > {connected ? t('browser.message.success.disconnect') : t('browser.connect')}</Button>
+          onClick={() => { connected? handleDisconnect():handleConnected()}}
+          > {connected? t("browser.message.success.disconnect"):t("browser.connect")}</Button>
         </Toolbar>
       </AppBar>
       {url !== ''

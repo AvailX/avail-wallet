@@ -17,12 +17,16 @@ document.querySelector('#fee-switch').addEventListener('change', event => {
 });
 
 document.querySelector('.btn.approve').addEventListener('click', async () => {
-	const eventName = request.method + '-approved';
-	console.log(eventName);
-	await (request.method === 'create-request-event' ? emit(eventName, {message: request.approveResponse, feeOption}) : emit(eventName, {message: request.approveResponse}));
-
-	window.close();
-	console.log('approve clicked');
+    const eventName = request.method + '-approved';
+    console.log(eventName);
+    if (request.method === 'create-request-event') {
+        console.log('emitting!')
+        await emit(eventName, { message: request.approveResponse, feeOption: feeOption });
+    }else{
+    await emit(eventName, { message: request.approveResponse });
+    }
+    window.close();
+    console.log('approve clicked');
 });
 
 document.querySelector('.btn.reject').addEventListener('click', async () => {

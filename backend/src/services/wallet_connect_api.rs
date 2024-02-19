@@ -422,7 +422,7 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn get_records(request: GetRecordsRequest) -> AvailResult<GetRecordsResponse> {
+pub async fn get_records(request: GetRecordsRequest) -> AvailResult<GetRecordsResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet3 => match get_records_raw::<Testnet3>(request) {
@@ -596,7 +596,7 @@ pub fn decrypt_records_raw<N: Network>(ciphertext: Vec<String>) -> AvailResult<V
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn get_events(request: GetEventsRequest) -> AvailResult<GetEventsResponse> {
+pub async fn get_events(request: GetEventsRequest) -> AvailResult<GetEventsResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet3 => match get_events_raw::<Testnet3>(request) {
@@ -1133,8 +1133,8 @@ mod test {
         println!("Result: {:?}", res);
     }
 
-    #[test]
-    fn get_events_test() {
+    #[tokio::test]
+    async fn get_events_test() {
         println!(
             " <<<<<<<<<<<<<<< Testing get_events() fn in Wallet Connect Rust API >>>>>>>>>>>>>>>"
         );
@@ -1150,7 +1150,7 @@ mod test {
             page: None,
         };
 
-        let res = get_events(request).unwrap();
+        let res = get_events(request).await.unwrap();
 
         println!("Result: {:?}", res);
     }
