@@ -122,8 +122,9 @@ jobs:
             projectPath: backend
             distPath: frontend/dist
             # The tagName is alpha for develop, beta for staging and latest for release
+            includeDebug: ${{ github.ref_name == 'release' && false || true }}
             tagName: "v__VERSION__-${{ vars.TAGNAME }}"
-            releaseName: "Avail Wallet v__VERSION__-${{ vars.TAGNAME }}"
+            releaseName: "v__VERSION__-${{ vars.TAGNAME }}"
             # The release body is optional, but it's a good place to put release notes
             releaseBody: 'See the assets to download this version and install.'
             # Always create a draft release, so we can check the assets before publishing
