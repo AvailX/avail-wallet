@@ -123,6 +123,7 @@ jobs:
             distPath: frontend/dist
             # The tagName is alpha for develop, beta for staging and latest for release
             includeDebug: ${{ github.ref_name == 'release' && false || true }}
+            includeRelease: ${{ github.ref_name == 'release' && true || false }}
             tagName: "v__VERSION__-${{ vars.TAGNAME }}"
             releaseName: "v__VERSION__-${{ vars.TAGNAME }}"
             # The release body is optional, but it's a good place to put release notes
