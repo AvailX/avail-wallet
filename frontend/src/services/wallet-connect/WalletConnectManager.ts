@@ -1,16 +1,16 @@
 
 import { Core } from '@walletconnect/core'
-import { Verify, SignClientTypes } from '@walletconnect/types'
-import { Web3Wallet, IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet'
+import { JsonRpcError, JsonRpcResult, formatJsonRpcError } from '@walletconnect/jsonrpc-utils'
+import { SignClientTypes, Verify } from '@walletconnect/types'
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils'
-import { JsonRpcResult, JsonRpcError, formatJsonRpcError } from '@walletconnect/jsonrpc-utils'
+import { IWeb3Wallet, Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet'
 
 import { AleoWallet } from './AleoWallet'
 
 import { SessionInfo } from './SessionInfo'
 
-import { WebviewWindow } from '@tauri-apps/api/webview'
 import { emit } from '@tauri-apps/api/event'
+import { WebviewWindow } from '@tauri-apps/api/webviewWindow'
 
 import { DappSession, wcRequest } from './WCTypes'
 
@@ -103,7 +103,7 @@ export class WalletConnectManager {
             console.log("proposal", proposal)
             //TODO - Proposal.metadata is not being used it has data about the app we can display
             // metadata: { description: "example dapp", url: "",name:"",icons:["data:image/png;base64,...."] }
-            const metadata= proposal.params.proposer.metadata;
+            const metadata = proposal.params.proposer.metadata;
 
             {/* Approve/Reject Connection window -- START*/ }
             // Open the new window
@@ -117,7 +117,7 @@ export class WalletConnectManager {
 
             const wcRequest: wcRequest = {
                 method: "connect",
-                question: "Do you want to connect to "+metadata.name+" ?",
+                question: "Do you want to connect to " + metadata.name + " ?",
                 image_ref: "../wc-images/connect.svg",
                 approveResponse: "User approved wallet connect",
                 rejectResponse: "User rejected wallet connect",
@@ -152,45 +152,45 @@ export class WalletConnectManager {
 
                 SessionInfo.show(proposal, [aleo_wallet.chainName()])
 
-            const supportedNamespaces = {
-                // What the dApp requested...
-                proposal: proposal.params,
+                const supportedNamespaces = {
+                    // What the dApp requested...
+                    proposal: proposal.params,
 
-                // What we support...
-                supportedNamespaces: {
-                    aleo: {
-                        chains: [aleo_wallet.chainName()],
-                        methods: aleo_wallet.chainMethods(),
-                        events: aleo_wallet.chainEvent(),
-                        accounts: [`${aleo_wallet.chainName()}:${aleo_wallet.getAddress()}`]
+                    // What we support...
+                    supportedNamespaces: {
+                        aleo: {
+                            chains: [aleo_wallet.chainName()],
+                            methods: aleo_wallet.chainMethods(),
+                            events: aleo_wallet.chainEvent(),
+                            accounts: [`${aleo_wallet.chainName()}:${aleo_wallet.getAddress()}`]
+                        }
                     }
-                }
-            };
-            console.log('supportedNamespaces', supportedNamespaces)
-            const approvedNamespaces = buildApprovedNamespaces(supportedNamespaces)
+                };
+                console.log('supportedNamespaces', supportedNamespaces)
+                const approvedNamespaces = buildApprovedNamespaces(supportedNamespaces)
 
-            console.log("Approving session...")
-            const session = await theWallet.approveSession({
-                id: proposal.id,
-                relayProtocol: proposal.params.relays[0].protocol,
-                namespaces: approvedNamespaces
-            })
-            console.log("Approved session", session)
-            emit('connected', session)
+                console.log("Approving session...")
+                const session = await theWallet.approveSession({
+                    id: proposal.id,
+                    relayProtocol: proposal.params.relays[0].protocol,
+                    namespaces: approvedNamespaces
+                })
+                console.log("Approved session", session)
+                emit('connected', session)
 
-            this.currentRequestVerifyContext = proposal.verifyContext;
+                this.currentRequestVerifyContext = proposal.verifyContext;
 
-            // This value is present in the pairing URI
-            // wc:<pairingTopic>@....
-            this.pairingTopic = proposal.params.pairingTopic;
+                // This value is present in the pairing URI
+                // wc:<pairingTopic>@....
+                this.pairingTopic = proposal.params.pairingTopic;
 
-            // This value will stick throughout the session and will
-            // be present in session_request, session_delete events
-            this.sessionTopic = session.topic
-            console.log("Session topic", this.sessionTopic)
-            const dapp_session  = DappSession(metadata.name,metadata.description, metadata.url, metadata.icons[0]);
-            console.log("Storing dapp session",dapp_session);
-            sessionStorage.setItem(session.topic,JSON.stringify(dapp_session));
+                // This value will stick throughout the session and will
+                // be present in session_request, session_delete events
+                this.sessionTopic = session.topic
+                console.log("Session topic", this.sessionTopic)
+                const dapp_session = DappSession(metadata.name, metadata.description, metadata.url, metadata.icons[0]);
+                console.log("Storing dapp session", dapp_session);
+                sessionStorage.setItem(session.topic, JSON.stringify(dapp_session));
             });
 
 
@@ -319,8 +319,8 @@ export class WalletConnectManager {
         }*/
         if (this.sessionTopic) {
             console.log("Closing pairing...")
-            await this.theWallet?.disconnectSession({ topic: this.sessionTopic , reason: getSdkError('USER_DISCONNECTED')});
-           // await this.theWallet?.core.history.delete(this.sessionTopic);
+            await this.theWallet?.disconnectSession({ topic: this.sessionTopic, reason: getSdkError('USER_DISCONNECTED') });
+            // await this.theWallet?.core.history.delete(this.sessionTopic);
         }
         emit('disconnected', 'disconnected')
 
