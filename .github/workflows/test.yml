@@ -50,16 +50,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+      - run: npm install
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libsoup-3.0-dev libwebkit2gtk-4.1-dev patchelf javascriptcoregtk-4.1 build-essential curl wget file libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
-
-      - name: Install Tauri CLI
-        run:  |
-          cargo install tauri-cli --version "2.0.0-beta.1"
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -71,7 +69,4 @@ jobs:
           MAINNET_API_OBSCURA: ""
           DEVNET_API_OBSCURA: ""
         with:
-            tauriScript: cargo tauri
-            # Build for the ARM architecture on macOS
-            projectPath: backend
-            distPath: frontend/dist
+            distPath: dist

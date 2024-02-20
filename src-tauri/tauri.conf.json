@@ -2,10 +2,10 @@
   "productName": "Avail",
   "identifier": "com.avail.wallet",
   "build": {
-    "beforeDevCommand": "cd frontend ; npm i; npm run dev",
-    "beforeBuildCommand": "cd frontend ; npm i; npm run build",
+    "beforeDevCommand": "npm i && npm run dev",
+    "beforeBuildCommand": "npm i && npm run build",
     "devUrl": "http://localhost:1420",
-    "frontendDist": "../frontend/dist"
+    "frontendDist": "../dist"
   },
   "bundle": {
     "active": true,
