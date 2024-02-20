@@ -12,7 +12,6 @@ import { type Web3WalletTypes } from '@walletconnect/web3wallet';
 
 import { AvailError } from '../../types/errors';
 import * as interfaces from './WCTypes';
-import { AvailError } from '../../types/errors';
 import { emit } from '@tauri-apps/api/event';
 
 function checkWindow(reference: string) {
@@ -211,7 +210,7 @@ export class AleoWallet {
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.DecryptRequest
 
-        let request_identifier = "decrypt" + metadata?.name ;
+        let request_identifier = "decrypt" + metadata?.name;
 
         if (!checkExpired(request_identifier)) {
             return new Promise((resolve, reject) => {
@@ -716,21 +715,21 @@ export class AleoWallet {
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.GetRecordsRequest
 
-        let request_identifier = "getRecords" + metadata?.name + request.filter?.functionId + request.filter?.programIds ;
-        if (request){
-            if(request.filter){
+        let request_identifier = "getRecords" + metadata?.name + request.filter?.functionId + request.filter?.programIds;
+        if (request) {
+            if (request.filter) {
                 console.log("==> Request", request);
                 console.log("==> PID's", request.filter?.programIds);
-                if (request.filter.programIds === undefined){
+                if (request.filter.programIds === undefined) {
                     request.filter.programIds = [];
                 }
-                else if (request.filter.programIds.length === 0){
+                else if (request.filter.programIds.length === 0) {
                     request.filter.programIds = [];
                 }
-                else if(request.filter.programIds === null){
+                else if (request.filter.programIds === null) {
                     request.filter.programIds = [];
                 }
-                else if(request.filter.programIds.toLocaleString() === ""){
+                else if (request.filter.programIds.toLocaleString() === "") {
                     request.filter.programIds = [];
                 }
 

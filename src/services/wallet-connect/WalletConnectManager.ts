@@ -1,9 +1,5 @@
 
 import { Core } from '@walletconnect/core'
-import { Verify, SignClientTypes } from '@walletconnect/types'
-import { Web3Wallet, IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet'
-import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils'
-import { JsonRpcResult, JsonRpcError, formatJsonRpcError } from '@walletconnect/jsonrpc-utils'
 import { JsonRpcError, JsonRpcResult, formatJsonRpcError } from '@walletconnect/jsonrpc-utils'
 import { SignClientTypes, Verify } from '@walletconnect/types'
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils'
