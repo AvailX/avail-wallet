@@ -7,7 +7,20 @@ export async function get_nfts() {
 	// Get metadata for each nft, just fetch from nft_uris, they are https links
 	const nfts = await Promise.all(nft_uris.map(async uri => {
 		const metadata = await fetch(uri).then(async res => res.json());
-		return metadata as INft;
+		//the metadata is either an image or an INft object
+		if (metadata.image === undefined) {
+			return {
+				uri,
+				owner: '0x0',
+				creator: '0x0',
+				contract: '0x0',
+				token_id: 0,
+				created_at: new Date().toISOString(),
+				image: metadata
+			};
+		} else {
+			return metadata as INft;
+		}
 	}));
 
 	return nfts;
