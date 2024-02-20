@@ -1,10 +1,10 @@
 [package]
 name = "avail_wallet"
-version = "0.0.1"
+version = "0.0.2"
 description = "A Tauri App"
 authors = ["Avail"]
-license = ""
-repository = ""
+license = "Apache-2.0"
+repository = "https://github.com/availx/avail-wallet"
 edition = "2021"
 
 [lib]

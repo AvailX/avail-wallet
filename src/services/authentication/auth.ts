@@ -1,13 +1,11 @@
-import { invoke } from '@tauri-apps/api/core';
-import { os } from '../util/open';
-
-import { type NavigateFunction } from 'react-router-dom';
-import { type AvailError, AvailErrorType } from '../../types/errors';
-import { type CreateSessionResponse, type VerifySessionRequest } from '../../types/auth';
-
+import {invoke} from '@tauri-apps/api/core';
+import {type NavigateFunction} from 'react-router-dom';
+import {os} from '../util/open';
+import {type AvailError, AvailErrorType} from '../../types/errors';
+import {type CreateSessionResponse, type VerifySessionRequest} from '../../types/auth';
 
 export async function session_and_local_auth(password: string | undefined, navigate: NavigateFunction, setAlert: React.Dispatch<React.SetStateAction<boolean>>, setMessage: React.Dispatch<React.SetStateAction<string>>, entrypoint: boolean) {
-	const res = invoke<string>('get_session', { password });
+	const res = invoke<string>('get_session', {password});
 	return res;
 }
 
@@ -26,7 +24,7 @@ export function get_hash(password: string | undefined, navigate: NavigateFunctio
 }
 
 export function get_signature(request: CreateSessionResponse, password: string | undefined, navigate: NavigateFunction, setAlert: React.Dispatch<React.SetStateAction<boolean>>, setMessage: React.Dispatch<React.SetStateAction<string>>, entrypoint: boolean) {
-	invoke<VerifySessionRequest>('sign_hash', { request, password }).then(res => {
+	invoke<VerifySessionRequest>('sign_hash', {request, password}).then(res => {
 		session(res, navigate, setAlert, setMessage, entrypoint);
 	}).catch((error: AvailError) => {
 		if (error.external_msg === 'Login') {
@@ -45,7 +43,7 @@ export function get_signature(request: CreateSessionResponse, password: string |
 }
 
 export function session(request: VerifySessionRequest, navigate: NavigateFunction, setAlert: React.Dispatch<React.SetStateAction<boolean>>, setMessage: React.Dispatch<React.SetStateAction<string>>, entrypoint: boolean) {
-	invoke<string>('get_session_only', { request }).then(session_id => {
+	invoke<string>('get_session_only', {request}).then(session_id => {
 		console.log(session_id);
 		sessionStorage.setItem('session_id', session_id);
 		navigate('/home');
@@ -61,16 +59,16 @@ export function session(request: VerifySessionRequest, navigate: NavigateFunctio
 
 // TODO - Fix Delete
 export function delete_util(setSuccessAlert: React.Dispatch<React.SetStateAction<boolean>>, setErrorAlert: React.Dispatch<React.SetStateAction<boolean>>, setMessage: React.Dispatch<React.SetStateAction<string>>, navigate: NavigateFunction, password: string | undefined) {
-	invoke('delete_util', { password }).then(r => {
+	invoke('delete_util', {password}).then(r => {
 		setMessage('Account deleted successfully.');
 		setSuccessAlert(true);
 
 		navigate('/register');
-	}).catch(async (e) => {
-		let error = e;
+	}).catch(async error_ => {
+		let error = error_;
 		const os_type = await os();
 		if (os_type !== 'linux') {
-			error = JSON.parse(e) as AvailError;
+			error = JSON.parse(error_) as AvailError;
 		}
 
 		if (error.error_type === AvailErrorType.Unauthorized) {

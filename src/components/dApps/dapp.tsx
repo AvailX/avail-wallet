@@ -20,8 +20,8 @@ const DappView: React.FC<DappProperties> = ({dapp, onClick}) => (
 		<CardActionArea onClick={onClick}>
 			<CardContent sx={{textAlign: 'center'}}>
 				<img src={dapp.img} alt='Dapp Icon' style={{
-					width: '100px',
-					height: '100px',
+					width: '80px',
+					height: '80px',
 					margin: '0 auto',
 					display: 'block',
 				}} />

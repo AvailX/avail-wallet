@@ -58,9 +58,10 @@ const renderIcon = (index: number) => {
 			break;
 		}
 
-		case 5:
+		case 5: {
     	return <InsertPhotoIcon />;
     	break;
+		}
 
 		case 6: {
 			return <SupportAgentRoundedIcon />;
@@ -184,34 +185,45 @@ export default function SideMenu() {
 				break;
 			}
 
-      case 3:
-        navigate("/browser", { state: "https://faucet.puzzle.online" })
-        break;
+			case 3: {
+				navigate('/browser', {state: 'https://faucet.puzzle.online'});
+				break;
+			}
 
-      case 4:
-        navigate("/browser")
-        break;
+			case 4: {
+				navigate('/browser');
+				break;
+			}
 
-	  case 5:
-      	navigate("/nfts")
+	  case 5: {
+      	navigate('/nfts');
       	break;
-      case 6:
-        open_url("https://discord.gg/avail-1140618884764942386").then((res) => {
-          console.log(res);
-        }).catch((e) => {
-          console.log(e);
-        })
-        break;
-      case 7:
-        navigate("/settings")
-        break;
-      case 8:
-        setLogoutDialog(true);
-        break;
-      default:
-        break;
-    }
-  }
+	  }
+
+			case 6: {
+				open_url('https://discord.gg/avail-1140618884764942386').then(res => {
+					console.log(res);
+				}).catch(error => {
+					console.log(error);
+				});
+				break;
+			}
+
+			case 7: {
+				navigate('/settings');
+				break;
+			}
+
+			case 8: {
+				setLogoutDialog(true);
+				break;
+			}
+
+			default: {
+				break;
+			}
+		}
+	};
 
 	return (
 
@@ -220,7 +232,7 @@ export default function SideMenu() {
 				setLogoutDialog(false);
 			}} />
 			<List >
-				{['Home', 'Swap', 'Activity', 'Faucet', 'Browser','Nfts', 'Support'].map((text, index) => (
+				{['Home', 'Swap', 'Activity', 'Faucet', 'Browser', 'Nfts', 'Support'].map((text, index) => (
 					<ListItem key={text} disablePadding sx={{
 						display: 'block', color: '#fff', marginTop: (text == 'Home') ? '' : '20%', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
 						'&:hover': {
