@@ -3,6 +3,7 @@ pub mod helpers;
 pub mod models;
 pub mod services;
 
+use crate::services::record_handling::utils::get_all_nft_data;
 use services::account::generation::create_seed_phrase_wallet;
 use services::account::generation::import_wallet;
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
@@ -46,6 +47,7 @@ pub fn run() {
             app.handle()
                 .plugin(tauri_plugin_updater::Builder::new().build())?;
             // NOTE: Updater is only supported on desktop platforms
+            // app.listen("deep-link://new-url", move |event| deep_link(event, handle.clone()));
 
             Ok(())
         })
@@ -67,6 +69,7 @@ pub fn run() {
             get_backup_flag,
             update_backup_flag,
             get_network,
+            // get_all_nft_data,
             get_language,
             update_language,
             get_stored_tokens,
@@ -82,7 +85,7 @@ pub fn run() {
             /* Avail Services */
             get_avail_event,
             get_avail_events,
-            // get_all_nft_data,
+            get_all_nft_data,
             transfer,
             /* --Wallet Connect Api */
             get_event,

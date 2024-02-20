@@ -9,15 +9,23 @@
     "preview": "vite preview",
     "tauri": "tauri"
   },
+  "eslintConfig": {
+    "extends": [
+      "xo",
+      "xo-react"
+    ]
+  },
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.3",
     "@mui/material": "^5.14.3",
     "@mui/x-date-pickers": "^6.18.1",
+    "@tauri-apps/cli": "^2.0.0-beta.0",
     "@tauri-apps/plugin-deep-link": "^2.0.0-beta.0",
     "@tauri-apps/plugin-process": "^2.0.0-beta.0",
     "@tauri-apps/plugin-updater": "^2.0.0-beta.0",
+    "@walletconnect/jsonrpc-utils": "^1.0.8",
     "@walletconnect/web3wallet": "^1.10.1",
     "axios": "^1.5.1",
     "conf": "^12.0.0",
@@ -34,7 +42,6 @@
     "react-pdf": "^7.5.1",
     "react-qr-code": "^2.0.12",
     "react-router-dom": "^6.14.2",
-    "@tauri-apps/cli": "^2.0.0-beta.0",
     "react-spinners": "^0.13.8"
   },
   "devDependencies": {
@@ -47,9 +54,13 @@
     "@types/react-dom": "^18.0.6",
     "@types/react-i18next": "^8.1.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "eslint-config-xo-react": "^0.27.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "internal-ip": "^7.0.0",
     "typescript": "^4.9.5",
-    "vite": "^4.2.1"
+    "vite": "^4.2.1",
+    "xo": "^0.57.0"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",

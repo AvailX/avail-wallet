@@ -54,6 +54,7 @@ pub fn get_records<N: Network>(
 
     let step_size = 49;
 
+    let amount_to_scan = height.sub(last_sync);
     let latest_height = height;
 
     let last_sync_block = api_client.get_block(last_sync)?;
@@ -491,33 +492,40 @@ pub fn get_records<N: Network>(
                     ));
                 }
             };
-        }
 
-        let percentage = (((end_height - last_sync) as f32 / (latest_height - last_sync) as f32)
-            * 10000 as f32)
-            .round()
-            / 100.0;
+            let percentage =
+                (((height - last_sync) as f32 / amount_to_scan as f32) * 10000.0).round() / 100.0;
 
-        let percentage = if percentage > 100.0 {
-            100.0
-        } else {
-            percentage
-        };
-
-        println!("{}% of blocks scanned", percentage);
-
-        // update progress bar
-        if let Some(window) = window.clone() {
-            match window.emit("scan_progress", percentage) {
-                Ok(_) => {}
-                Err(e) => {
-                    return Err(AvailError::new(
-                        AvailErrorType::Internal,
-                        e.to_string(),
-                        "Error updating progress bar".to_string(),
-                    ));
-                }
+            let percentage = if percentage > 100.0 {
+                100.0
+            } else {
+                percentage
             };
+
+            // update progress bar
+            if let Some(window) = window.clone() {
+                match window.emit("scan_progress", percentage) {
+                    Ok(_) => {}
+                    Err(e) => {
+                        match handle_block_scan_failure::<N>(height) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    e.to_string(),
+                                    "Error syncing transaction".to_string(),
+                                ));
+                            }
+                        }
+
+                        return Err(AvailError::new(
+                            AvailErrorType::Internal,
+                            e.to_string(),
+                            "Error updating progress bar".to_string(),
+                        ));
+                    }
+                };
+            }
         }
 
         // Search in reverse order from the latest block to the earliest block
