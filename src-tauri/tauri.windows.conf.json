@@ -1,7 +1,7 @@
 {
   "build": {
-    "beforeDevCommand": "cd .\\frontend\\ & npm i & npm run dev",
-    "beforeBuildCommand": "cd .\\frontend\\ & npm i & npm run build",
-    "frontendDist": "..\\frontend\\dist"
+    "beforeDevCommand": "npm i & npm run dev",
+    "beforeBuildCommand": "npm i & npm run build",
+    "frontendDist": "..\\dist\\"
   }
 }
