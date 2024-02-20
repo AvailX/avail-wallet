@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as mui from '@mui/material';
+
 import Layout from './reusable/layout';
 import {useNavigate} from 'react-router-dom';
 import {listen} from '@tauri-apps/api/event';
@@ -111,12 +112,21 @@ function Home() {
 	const shouldRotate = transferState || scanInProgress || localScan;
 	const shouldRunEffect = React.useRef(true);
 
+	let rotation = mui.keyframes({
+		'0%': {
+			transform: 'rotate(0deg)',
+		},
+		'100%': {
+			transform: 'rotate(360deg)',
+		},
+	});
+
 	const RotatingSyncIcon = mui.styled(SyncIcon)(({theme}) => ({
 		color: '#00FFAA',
 		width: '40px',
 		height: '30px',
 		cursor: shouldRotate ? 'default' : 'pointer',
-		animation: shouldRotate ? '$rotate360 2s linear infinite' : 'none',
+		animation: shouldRotate ? `${rotation} 1s linear infinite` : 'none',
 	}));
 
 	const handleGetAssets = () => {
@@ -208,6 +218,7 @@ function Home() {
 			scan_blocks(res.block_height, setErrorAlert, setMessage).then(res => {
 				setSuccessAlert(true);
 				setMessage(t('home.messages.success.scan'));
+				setScanProgressPercent(0);
 				endScan();
 				setLocalScan(false);
 

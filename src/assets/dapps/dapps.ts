@@ -2,6 +2,7 @@ import shadowfi from './shadowfi.png';
 import staking from './staking.png';
 import ans from './ans.svg';
 import arcane from './arcane.svg';
+import a_logo from '../logo/a-icon.svg';
 
 export type Dapp = {
 	name: string;
@@ -12,6 +13,13 @@ export type Dapp = {
 };
 
 export const dapps: Dapp[] = [
+	{
+		name: 'Earn with Avail',
+		description: 'Complete our Quests every week to earn a Disruptor whitelist spot.',
+		url: 'https://avail.global/quests',
+		img: a_logo,
+		tags: ['earn','rewards'],
+	},
 	{
 		name: 'Arcane Finance',
 		description: 'Arcane Finance is a fully private non-custodial decentralized exchange enabling fully confidential DeFi on Aleo.',
