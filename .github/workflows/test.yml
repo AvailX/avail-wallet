@@ -42,6 +42,8 @@ jobs:
         with:
           workspaces: './backend -> target'
 
+      - run: npm install --package-lock-only
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
