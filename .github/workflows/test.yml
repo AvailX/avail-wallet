@@ -59,10 +59,13 @@ jobs:
           sudo apt-get install -y libsoup-3.0-dev libwebkit2gtk-4.1-dev patchelf javascriptcoregtk-4.1 build-essential curl wget file libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
 
       - name: Install Tauri CLI
-        run: cargo install tauri-cli --version "^2.0.0-beta.1"
+        run:  |
+          npm i @tauri-apps/cli@2.0.0-beta.1
 
       - uses: tauri-apps/tauri-action@v0
         env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY}}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD}}
           API: ${{ secrets.AVAIL_API_URL}}
           DEV_NODE_IP: ${{ secrets.DEV_NODE_IP}}
           TESTNET_API_OBSCURA: ${{ secrets.TESTNET_API_OBSCURA}}
@@ -70,7 +73,7 @@ jobs:
           DEVNET_API_OBSCURA: ""
         with:
             # Use the tauri-cli we installed earlier
-            tauriScript: cargo tauri
+            tauriScript: npm tauri
             # Build for the ARM architecture on macOS
             projectPath: backend
             distPath: frontend/dist
