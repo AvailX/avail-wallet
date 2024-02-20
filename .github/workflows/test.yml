@@ -60,7 +60,7 @@ jobs:
 
       - name: Install Tauri CLI
         run:  |
-          npm i @tauri-apps/cli@2.0.0-beta.1
+          cargo install tauri-cli --version "2.0.0-beta.2"
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -72,8 +72,7 @@ jobs:
           MAINNET_API_OBSCURA: ""
           DEVNET_API_OBSCURA: ""
         with:
-            # Use the tauri-cli we installed earlier
-            tauriScript: npm tauri
+            tauriScript: cargo tauri
             # Build for the ARM architecture on macOS
             projectPath: backend
             distPath: frontend/dist
