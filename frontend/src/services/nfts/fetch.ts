@@ -10,13 +10,14 @@ export async function get_nfts() {
 		//the metadata is either an image or an INft object
 		if (metadata.image === undefined) {
 			return {
-				uri,
-				owner: '0x0',
-				creator: '0x0',
-				contract: '0x0',
-				token_id: 0,
-				created_at: new Date().toISOString(),
-				image: metadata
+				name: '',
+				image: metadata,
+				attributes: [],
+				mintNumber: 0,
+				collectionLink: '',
+				collectionName: '',
+				collectionDescription: '',
+				sourceLink: ''
 			};
 		} else {
 			return metadata as INft;
