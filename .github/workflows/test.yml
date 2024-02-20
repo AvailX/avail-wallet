@@ -37,10 +37,6 @@ jobs:
       - name: Install the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - if: matrix.platform == 'macos_arm-latest'
-        name: Install ARM Rust target
-        run: rustup target add aarch64-apple-darwin
-
       - name: Initialize Rust cache
         uses: swatinem/rust-cache@v2
         with:
