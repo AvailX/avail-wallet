@@ -34,12 +34,12 @@ export async function handleGetTokens() {
 		if (balance_response.balances !== undefined) {
 			const token_balance = balance_response.balances[0];
 
-            //round to 3 decimal places
-            token_balance.private = Math.round((token_balance.private + Number.EPSILON) * 1000) / 1000;
-            token_balance.public = Math.round((token_balance.public + Number.EPSILON) * 1000) / 1000;
+			// Round to 3 decimal places
+			token_balance.private = Math.round((token_balance.private + Number.EPSILON) * 1000) / 1000;
+			token_balance.public = Math.round((token_balance.public + Number.EPSILON) * 1000) / 1000;
 
-            let token_total = token_balance.private + token_balance.public;
-            token_total = Math.round((token_total + Number.EPSILON) * 1000) / 1000;
+			let token_total = token_balance.private + token_balance.public;
+			token_total = Math.round((token_total + Number.EPSILON) * 1000) / 1000;
 
 			let symbol = parseTokenName(tokens[i]);
 			let image_reference;

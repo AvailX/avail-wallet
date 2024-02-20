@@ -1,14 +1,12 @@
 import * as React from 'react';
 import * as mui from '@mui/material';
 
-
-
 // Services
-import { useTranslation } from 'react-i18next';
-import { emit } from '@tauri-apps/api/event';
-import { transfer } from '../services/transfer/transfers';
-import { getTokenBalance } from '../services/states/utils';
-import { os } from '../services/util/open';
+import {useTranslation} from 'react-i18next';
+import {emit} from '@tauri-apps/api/event';
+import {transfer} from '../services/transfer/transfers';
+import {getTokenBalance} from '../services/states/utils';
+import {os} from '../services/util/open';
 
 // Components
 import TransferBox from '../components/transfer/transfer_box';
@@ -20,7 +18,7 @@ import TransferDialog from '../components/dialogs/transfer';
 // Images
 import aleo from '../assets/icons/tokens/aleo.svg';
 import usdt from '../assets/icons/tokens/usdt.svg';
-import { SmallText400 } from '../components/typography/typography';
+import {SmallText400} from '../components/typography/typography';
 
 // Alerts
 import {
@@ -28,12 +26,12 @@ import {
 } from '../components/snackbars/alerts';
 
 // Types
-import { type TransferRequest, TransferType } from '../types/transfer_props/tokens';
-import { type AvailError, AvailErrorType } from '../types/errors';
-import { getAuthType } from '../services/storage/persistent';
+import {type TransferRequest, TransferType} from '../types/transfer_props/tokens';
+import {type AvailError, AvailErrorType} from '../types/errors';
+import {getAuthType} from '../services/storage/persistent';
 
 // Context
-import { useScan } from '../context/ScanContext';
+import {useScan} from '../context/ScanContext';
 import Layout from './reusable/layout';
 
 // TODO - Get tokens
@@ -41,11 +39,7 @@ const tokens = [
 	{
 		symbol: 'ALEO',
 		image_url: aleo,
-	},
-	{
-		symbol: 'USDC',
-		image_url: usdt,
-	},
+	}
 ];
 
 const mockTransferRequest: TransferRequest = {
@@ -89,9 +83,9 @@ function Send() {
 	const [message, setMessage] = React.useState('');
 
 	// Scan states
-	const { scanInProgress, startScan, endScan } = useScan();
+	const {scanInProgress, startScan, endScan} = useScan();
 
-	const { t } = useTranslation();
+	const {t} = useTranslation();
 
 	const getAuth = async () => {
 		const auth = await getAuthType();
@@ -171,13 +165,13 @@ function Send() {
 			setSuccessAlert(true);
 
 			sessionStorage.setItem('transferState', 'false');
-		}).catch(async (e) => {
-			console.log('Error' + e);
-			let error = e;
+		}).catch(async error_ => {
+			console.log('Error' + error_);
+			let error = error_;
 			const os_type = await os();
 
 			if (os_type !== 'linux') {
-				error = JSON.parse(e) as AvailError;
+				error = JSON.parse(error_) as AvailError;
 			}
 
 			sessionStorage.setItem('transferState', 'false');
@@ -250,23 +244,23 @@ function Send() {
 						p: 3,
 					}}>
 
-						<mui.Box sx={{ width: '85%', alignSelf: 'center' }}>
+						<mui.Box sx={{width: '85%', alignSelf: 'center'}}>
 							<TransferBox tokens={tokens} token={token} amount={amount} setToken={setToken} setAmount={setAmount} />
 
 						</mui.Box>
 						{/* private balance */}
-						<mui.Box sx={{ display: 'flex', flexDirection: 'column', mt: '2%' }}>
+						<mui.Box sx={{display: 'flex', flexDirection: 'column', mt: '2%'}}>
 							<mui.Box sx={{
 								display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignSelf: 'center', width: '80%',
 							}}>
 								{/* private balance* and fee */}
-								<mui.Box sx={{ display: 'flex', flexDirection: 'row', width: '60%' }}>
-									<SmallText400 sx={{ color: '#fff', mr: '2%' }}>{t('send.private-balance')}</SmallText400>
-									<SmallText400 sx={{ color: '#fff' }}>{privateBalance}</SmallText400>
+								<mui.Box sx={{display: 'flex', flexDirection: 'row', width: '60%'}}>
+									<SmallText400 sx={{color: '#fff', mr: '2%'}}>{t('send.private-balance')}</SmallText400>
+									<SmallText400 sx={{color: '#fff'}}>{privateBalance}</SmallText400>
 								</mui.Box>
 								{/* TODO - Fetch fee from microservice. */}
-								<mui.Box sx={{ display: 'flex', flexDirection: 'row' }}>
-									<SmallText400 sx={{ color: '#fff' }}>{t('send.fee')}: 0.29</SmallText400>
+								<mui.Box sx={{display: 'flex', flexDirection: 'row'}}>
+									<SmallText400 sx={{color: '#fff'}}>{t('send.fee')}: 0.29</SmallText400>
 								</mui.Box>
 							</mui.Box>
 
@@ -274,8 +268,8 @@ function Send() {
 							<mui.Box sx={{
 								display: 'flex', flexDirection: 'row', alignSelf: 'center', width: '80%',
 							}}>
-								<SmallText400 sx={{ color: '#fff', mr: '2%' }}>{t('send.public-balance')}</SmallText400>
-								<SmallText400 sx={{ color: '#fff' }}>{publicBalance}</SmallText400>
+								<SmallText400 sx={{color: '#fff', mr: '2%'}}>{t('send.public-balance')}</SmallText400>
+								<SmallText400 sx={{color: '#fff'}}>{publicBalance}</SmallText400>
 							</mui.Box>
 
 						</mui.Box>
@@ -300,8 +294,8 @@ function Send() {
 									},
 								},
 							}}
-							inputProps={{ style: { color: '#fff', height: '10px' } }}
-							InputLabelProps={{ style: { color: '#fff' } }}
+							inputProps={{style: {color: '#fff', height: '10px'}}}
+							InputLabelProps={{style: {color: '#fff'}}}
 						/>
 
 						<mui.TextField
@@ -327,8 +321,8 @@ function Send() {
 								},
 								boxShadow: 'none',
 							}}
-							inputProps={{ style: { color: '#fff', height: '10px' } }}
-							InputLabelProps={{ style: { color: '#fff' } }}
+							inputProps={{style: {color: '#fff', height: '10px'}}}
+							InputLabelProps={{style: {color: '#fff'}}}
 						/>
 						<SettingsComponent onTransferFromToggle={value => {
 							setIsPrivateTransferFrom(value);
@@ -357,7 +351,7 @@ function Send() {
 									boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.8)',
 								},
 							}}>
-							<mui.Typography sx={{ fontSize: '1.2rem', color: '#000', fontWeight: 450 }}>
+							<mui.Typography sx={{fontSize: '1.2rem', color: '#000', fontWeight: 450}}>
 								{t('send.send')}
 							</mui.Typography>
 						</mui.Button>

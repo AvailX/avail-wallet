@@ -167,13 +167,13 @@ export const convertGetRecordsResponse = (response: GetBackendRecordsResponse): 
 
 export type RecordWithPlaintext = Record & {
 	plaintext: string;
-	data: Record
+	data: Record;
 };
 
 export type BackendRecordWithPlaintext = {
 	record: Record;
 	plaintext: string;
-	data: Record
+	data: Record;
 };
 
 // Function to convert from backend record to frontend record
