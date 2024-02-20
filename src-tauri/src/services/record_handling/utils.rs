@@ -306,6 +306,10 @@ pub fn get_record_type<N: Network>(
         return Ok(RecordTypeCommon::Tokens);
     } else if (nft_count >= 8 && nft_record_flag >= 2) {
         return Ok(RecordTypeCommon::NFT);
+    } else if (record_name.contains("nft") || record_name.contains("NFT")) {
+        return Ok(RecordTypeCommon::NFT);
+    } else if (record_name.contains("token") || record_name.contains("Token")) {
+        return Ok(RecordTypeCommon::Tokens);
     } else {
         return Ok(RecordTypeCommon::None);
     }
@@ -438,7 +442,7 @@ pub fn get_record_type_and_amount<N: Network>(
     view_key: ViewKey<N>,
 ) -> AvailResult<String> {
     if record.data().clone().is_empty() {
-        Ok("".to_string())
+        Ok("0u64".to_string())
     } else {
         let mut balance = "".to_string();
         for key in record.data().clone().into_keys() {
@@ -452,20 +456,16 @@ pub fn get_record_type_and_amount<N: Network>(
                     Some(bal) => Ok(bal),
                     None => Err(()),
                 };
-                let balance_f = match balance_entry.unwrap() {
-                    Entry::Private(Plaintext::Literal(Literal::<N>::U64(amount), _)) => {
-                        let balance_field = amount.to_be_bytes();
-                        balance = format!("{}u64", u64::from_be_bytes(balance_field).to_string());
-                    }
+                let balance_u64 = match balance_entry.unwrap() {
+                    Entry::Private(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    Entry::Public(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
+                    Entry::Constant(Plaintext::Literal(Literal::<N>::U64(amount), _)) => **amount,
                     Entry::Private(Plaintext::Literal(Literal::<N>::U128(amount), _)) => {
-                        let balance_field = amount.to_be_bytes();
-                        let bal_t = u128::from_be_bytes(balance_field);
-                        balance = format!("{}u64", u64::try_from(bal_t)?.to_string());
+                        **amount as u64
                     }
-                    _ => todo!(),
+                    _ => 0u64,
                 };
-                // let balance_field = balance_f.to_be_bytes();
-                // balance = format!("{}u64", u64::from_be_bytes(balance_field).to_string());
+                balance = format!("{}u64", balance_u64.to_string());
             }
         }
         Ok(balance)
@@ -581,6 +581,7 @@ pub fn get_all_nft_data() -> AvailResult<Vec<String>> {
     match SupportedNetworks::from_str(network.as_str())? {
         SupportedNetworks::Testnet3 => {
             let nft_data = get_all_nft_raw::<Testnet3>()?;
+            println!("===> NFT Data {:?}", nft_data);
             Ok(nft_data)
         }
         _ => Err(AvailError::new(
@@ -613,7 +614,6 @@ pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
             Err(e) => None,
         })
         .collect::<Vec<_>>();
-
     fn u128_to_string(u: u128) -> String {
         let mut temp_u128 = u;
         let mut bytes = vec![] as Vec<u8>;
@@ -632,28 +632,59 @@ pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
     let full_urls = plaintexts
         .iter()
         .filter_map(|record| {
-            let data1 = record
+            let check_if_ans = match record
                 .data()
                 .clone()
-                .get(&Identifier::<N>::from_str("data1").unwrap())
-                .cloned()?;
-
-            let data2 = record
-                .data()
-                .clone()
-                .get(&Identifier::<N>::from_str("data2").unwrap())
-                .cloned()?;
-
-            match (data1, data2) {
-                (
-                    Entry::Private(Plaintext::Literal(Literal::<N>::U128(data1), _)),
-                    Entry::Private(Plaintext::Literal(Literal::<N>::U128(data2), _)),
-                ) => {
-                    let data1 = u128_to_string(*data1);
-                    let data2 = u128_to_string(*data2);
-                    Some(format!("{}{}", data1, data2))
+                .get(&Identifier::<N>::from_str("data").unwrap())
+                .cloned()?
+            {
+                Entry::Private(Plaintext::Literal(Literal::<N>::Field(data), _)) => true,
+                _ => false,
+            };
+            if check_if_ans {
+                let data_field = record
+                    .data()
+                    .clone()
+                    .get(&Identifier::<N>::from_str("data").unwrap())
+                    .cloned()?
+                    .to_string();
+                if data_field.contains(".private") {
+                    let data_field = &data_field[..data_field.len() - 8];
+                    Some(format!(
+                        "https://testnet-api.aleonames.id/token/{}.svg",
+                        data_field
+                    ))
+                } else {
+                    println!("===> NFT Data Field {:?}", data_field);
+                    Some(format!(
+                        "https://testnet-api.aleonames.id/token/{}.svg",
+                        &data_field[..]
+                    ))
                 }
-                _ => None,
+            } else {
+                let data1 = record
+                    .data()
+                    .clone()
+                    .get(&Identifier::<N>::from_str("data1").unwrap())
+                    .cloned()?;
+
+                let data2 = record
+                    .data()
+                    .clone()
+                    .get(&Identifier::<N>::from_str("data2").unwrap())
+                    .cloned()?;
+
+                match (data1, data2) {
+                    (
+                        Entry::Private(Plaintext::Literal(Literal::<N>::U128(data1), _)),
+                        Entry::Private(Plaintext::Literal(Literal::<N>::U128(data2), _)),
+                    ) => {
+                        let data1 = u128_to_string(*data1);
+                        let data2 = u128_to_string(*data2);
+                        Some(format!("{}{}", data1, data2))
+                    }
+                    _ => None,
+                }
             }
         })
         .collect::<Vec<_>>();
@@ -1942,6 +1973,15 @@ mod test {
     // }
     // }
 
+    // fn string_to_u128(s: String) -> u128 {
+    //     let mut result = 0u128;
+    //     for c in s.chars() {
+    //         result <<= 8;
+    //         result |= c as u128;
+    //     }
+    //     result
+    // }
+
     // #[tokio::test]
     // async fn test_nft_record(){
     //    // ARRANGE
@@ -1949,12 +1989,16 @@ mod test {
     //     // ALEO INPUTS
     //     let program_id = "avail_nft_0.aleo";
     //     let nft_program = Program::<Testnet3>::from_str(AVAIL_NFT_TEST).unwrap();
+    //     let symbol_u128 = format!("{}u128", string_to_u128("AVL".to_string()));
+    //     let token_id_u128 = format!("{}u128", string_to_u128("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.f6s.com%2Fcompany%2Favail-avail.global&psig=AOvVaw2PqnSWdrMxspXoYbX1xHDG&ust=1708445613257000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCLCV84Dmt4QDFQAAAAAdAAAAABAE".to_string()));
+    //     // let token_id_obj = format!("{}")
+    //     let token_id_obj = format!("{{
+    //         data0: {},
+    //         data1: 0u128
+    //     }}", token_id_u128);
     //     let total = Value::<Testnet3>::try_from("10u128").unwrap();
-    //     let symbol = Value::<Testnet3>::try_from("19212u128").unwrap();
-    //     let token_id = Value::<Testnet3>::try_from("{
-    //         data1: 146324u128,
-    //         data2: 823446u128
-    //     }").unwrap();
+    //     let symbol = Value::<Testnet3>::try_from(symbol_u128).unwrap();
+    //     let token_id = Value::<Testnet3>::try_from(token_id_obj).unwrap();
     //     let base_uri = Value::<Testnet3>::try_from("{
     //         data0: 143324u128,
     //         data1: 883746u128,
@@ -1970,6 +2014,7 @@ mod test {
     //     // let record_NFT_mint = Value::<Testnet3>::Record(Record::<Testnet3,Plaintext<Testnet3>>::from_str(RECORD_NFT_MINT).unwrap());
     //     // let record_NFT_claim = Value::<Testnet3>::Record(Record::<Testnet3,Plaintext<Testnet3>>::from_str(RECORD_NFT_CLAIM).unwrap());
     //     // Program manager
+
     //     let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
     //     let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
     //     let fee = 10000u64;
@@ -2076,17 +2121,17 @@ mod test {
     //     }
 
     // }
-    // // fn get_nonce<N:Network>(txn: Transaction<N>, program_id: &str, api_client: AleoAPIClient<N>, vk: ViewKey<N> ) -> Metadata{
-    //     let latest_height = api_client.latest_height().unwrap();
-    //     for transition in txn.into_transitions(){
-    //         if transition.program_id().to_string() == program_id {
-    //             println!("----> Transition Found - {:?}", transition.id());
-    //             let res = transition_to_record_pointer(txn.id(), transition.clone(), latest_height, vk).unwrap();
-    //             let metadata = for record in res.iter(){
-    //                 return record.metadata;
-    //             }
-    //         }
-    //     }
-    //     return ();
+    // // // fn get_nonce<N:Network>(txn: Transaction<N>, program_id: &str, api_client: AleoAPIClient<N>, vk: ViewKey<N> ) -> Metadata{
+    // //     let latest_height = api_client.latest_height().unwrap();
+    // //     for transition in txn.into_transitions(){
+    // //         if transition.program_id().to_string() == program_id {
+    // //             println!("----> Transition Found - {:?}", transition.id());
+    // //             let res = transition_to_record_pointer(txn.id(), transition.clone(), latest_height, vk).unwrap();
+    // //             let metadata = for record in res.iter(){
+    // //                 return record.metadata;
+    // //             }
+    // //         }
+    // //     }
+    // //     return ();
     // }
 }

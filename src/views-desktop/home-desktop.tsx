@@ -4,7 +4,6 @@ import * as mui from "@mui/material";
 import Layout from "./reusable/layout";
 import { useNavigate } from "react-router-dom";
 
-
 import { listen } from "@tauri-apps/api/event";
 import '../styles/animations.css';
 
@@ -14,6 +13,7 @@ import { scan_messages } from "../services/scans/encrypted_messages";
 import { scan_blocks } from "../services/scans/blocks";
 import { sync_backup } from "../services/scans/backup";
 import { pre_install_inclusion_prover } from "../services/transfer/inclusion";
+
 import { os } from "../services/util/open";
 
 import { set_first_visit, get_first_visit, set_visit_session_flag, get_visit_session_flag } from "../services/storage/localStorage";
@@ -98,6 +98,7 @@ function Home() {
 
     {/* --Block Scan State-- */ }
     const { scanInProgress, startScan, endScan } = useScan();
+
     const [localScan, setLocalScan] = React.useState<boolean>(false);
     const [scanProgressPercent, setScanProgressPercent] = React.useState<number>(0);
 
@@ -246,14 +247,12 @@ function Home() {
         //to get the initial balance and transactions
         scan_messages().then(async (res) => {
             await handleBlockScan(res);
-
         }).catch(async (e) => {
             let error = e;
             const os_type = await os();
             if (os_type !== 'linux') {
                 error = JSON.parse(e) as AvailError;
             }
-
             console.log(error.error_type);
             if (error.error_type === AvailErrorType.Network) {
                 setMessage(t("home.messages.errors.network"));

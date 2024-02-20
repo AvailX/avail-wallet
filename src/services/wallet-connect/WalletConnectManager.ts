@@ -9,6 +9,7 @@ import { AleoWallet } from './AleoWallet'
 
 import { SessionInfo } from './SessionInfo'
 
+
 import { emit } from '@tauri-apps/api/event'
 import { WebviewWindow } from '@tauri-apps/api/webviewWindow'
 
@@ -71,6 +72,7 @@ export class WalletConnectManager {
             console.error('Failed to set WalletConnect clientId', error)
         }
 
+
         this.theWallet.on('session_proposal', this.onSessionProposal)
         this.theWallet.on('session_request', this.onSessionRequest)
         // this.theWallet.on('auth_request', this.onAuthRequest);
@@ -103,6 +105,7 @@ export class WalletConnectManager {
             console.log("proposal", proposal)
             //TODO - Proposal.metadata is not being used it has data about the app we can display
             // metadata: { description: "example dapp", url: "",name:"",icons:["data:image/png;base64,...."] }
+
             const metadata = proposal.params.proposer.metadata;
 
             {/* Approve/Reject Connection window -- START*/ }
@@ -117,6 +120,7 @@ export class WalletConnectManager {
 
             const wcRequest: wcRequest = {
                 method: "connect",
+
                 question: "Do you want to connect to " + metadata.name + " ?",
                 image_ref: "../wc-images/connect.svg",
                 approveResponse: "User approved wallet connect",
@@ -151,6 +155,7 @@ export class WalletConnectManager {
                 webview.close();
 
                 SessionInfo.show(proposal, [aleo_wallet.chainName()])
+
 
                 const supportedNamespaces = {
                     // What the dApp requested...
@@ -248,8 +253,6 @@ export class WalletConnectManager {
             const requestSession = this.theWallet.engine.signClient.session.get(requestEvent.topic)
             console.log("requestSession", requestSession)
 
-
-
             // set the verify context so it can be displayed in the projectInfoCard
             this.currentRequestVerifyContext = requestEvent.verifyContext;
 
@@ -331,6 +334,5 @@ export class WalletConnectManager {
         this.theWallet?.engine.signClient.events.off('session_ping', this.onSignClientPing)
         this.theWallet?.off('session_delete', this.onSessionDelete)
     }
-
 
 }

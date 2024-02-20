@@ -7,10 +7,12 @@ import {
     type JsonRpcError,
     type JsonRpcResult,
 } from '@walletconnect/jsonrpc-utils';
+
 import { type Web3WalletTypes } from '@walletconnect/web3wallet';
 
 import { AvailError } from '../../types/errors';
 import * as interfaces from './WCTypes';
+import { emit } from '@tauri-apps/api/event';
 
 function checkWindow(reference: string) {
     let windows = getAll();
@@ -87,6 +89,7 @@ export class AleoWallet {
 
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.GetBalancesRequest;
+
         let request_identifier = "getBalance" + metadata?.name + request.assetId;
 
         let asset_id = request.assetId;
@@ -151,6 +154,7 @@ export class AleoWallet {
                 webview.emit('wallet-connect-request', wcRequest);
                 console.log("Emitting wallet-connect-request")
             }, 3000);
+
 
             return new Promise(async (resolve, reject) => {
 
@@ -295,6 +299,7 @@ export class AleoWallet {
                 // Listen for the rejection event from the secondary window
                 const unlistenRejected = webview.once('decrypt-rejected', async (response) => {
                     const unlisten = await unlistenRejected;
+
                     unlisten();
                     console.log(response);
                     webview.close();
@@ -356,6 +361,7 @@ export class AleoWallet {
         setTimeout(() => {
             webview.emit('wallet-connect-request', wcRequest);
         }, 3000);
+
 
         return new Promise(async (resolve, reject) => {
             const unlistenApproved = webview.once('sign-approved', async (response) => {
@@ -510,6 +516,7 @@ export class AleoWallet {
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.GetEventRequest
 
+
         let request_identifier = "getEvent" + metadata?.name + request.id;
 
         if (!checkExpired(request_identifier)) {
@@ -597,6 +604,7 @@ export class AleoWallet {
 
                 const unlistenRejected = webview.once('get-event-rejected', async (response) => {
                     const unlisten = await unlistenRejected;
+
                     unlisten();
                     webview.close();
                     reject(formatJsonRpcResult(requestEvent.id, response));
@@ -620,6 +628,7 @@ export class AleoWallet {
                     reject(formatJsonRpcError(requestEvent.id, error.external_msg));
                 });
             });
+
         } else {
 
             const wcRequest: interfaces.wcRequest = {
@@ -712,12 +721,27 @@ export class AleoWallet {
         let request_identifier = "getRecords" + metadata?.name + request.filter?.functionId + request.filter?.programIds;
         if (request) {
             if (request.filter) {
+                console.log("==> Request", request);
+                console.log("==> PID's", request.filter?.programIds);
                 if (request.filter.programIds === undefined) {
                     request.filter.programIds = [];
                 }
+                else if (request.filter.programIds.length === 0) {
+                    request.filter.programIds = [];
+                }
+                else if (request.filter.programIds === null) {
+                    request.filter.programIds = [];
+                }
+                else if (request.filter.programIds.toLocaleString() === "") {
+                    request.filter.programIds = [];
+                }
+
+
+
             }
         }
-        console.log("p---------->rogramid", request.filter?.programIds);
+        console.log("PID's After empty value handling", request.filter?.programIds);
+
         if (!checkExpired(request_identifier)) {
             return new Promise((resolve, reject) => {
                 invoke<interfaces.GetBackendRecordsResponse>("get_records", { request: request }).then((response) => {
