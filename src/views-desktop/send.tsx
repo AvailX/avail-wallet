@@ -165,12 +165,11 @@ function Send() {
 		setMessage(t('send.info'));
 		setSuccessAlert(true);
 
-		startScan();
 		sessionStorage.setItem('transferState', 'true');
 		transfer(request, setErrorAlert, setMessage).then(res => {
 			setMessage(t('send.info'));
 			setSuccessAlert(true);
-			endScan();
+
 			sessionStorage.setItem('transferState', 'false');
 		}).catch(async (e) => {
 			console.log('Error' + e);
@@ -181,7 +180,6 @@ function Send() {
 				error = JSON.parse(e) as AvailError;
 			}
 
-			endScan();
 			sessionStorage.setItem('transferState', 'false');
 			if (error.error_type.toString() === 'Unauthorized') {
 				sessionStorage.setItem('transferState', 'false');

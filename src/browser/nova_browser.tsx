@@ -163,21 +163,9 @@ const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', han
       setConnected(false);
     });
 
-    const unlisten_wc_transaction_start = listen('wc_transaction_start', event => {
-      startScan();
-    });
-
-    const unlisten_wc_transaction_end = listen('wc_transaction_end', (event) => {
-      if (!scanInProgress){
-        endScan();
-      }
-    })
-
     return () => {
        unlisten_connected.then(remove => remove());
       unlisten_disconnected.then(remove => remove());
-      unlisten_wc_transaction_start.then(remove => remove());
-      unlisten_wc_transaction_end.then(remove => remove());
     };
   }, []);
 

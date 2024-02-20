@@ -17,12 +17,15 @@ import { emit } from '@tauri-apps/api/event';
 function checkWindow(reference: string) {
     let windows = getAll();
     let found = false;
+    if(windows.length !== 0){
     windows.forEach(win => {
-        if (win.window.label == reference) {
+        console.log("Window"+ win.toString())
+        if(win.label !== undefined){
+        if (win.label == reference) {
             console.log("Found Label", win.label)
             found = true;
-        }
-    })
+        }}
+    })}
     return found;
 }
 
@@ -131,8 +134,8 @@ export class AleoWallet {
                 webview = new WebviewWindow('walletConnect', {
                     url: 'wallet-connect-screens/wallet-connect.html',
                     title: "Avail Wallet Connect",
-                    width: 350,
-                    height: 600,
+                    width: 390,
+                    height: 680,
                     resizable: false,
                 });
 
@@ -248,8 +251,8 @@ export class AleoWallet {
                 webview = new WebviewWindow('walletConnect', {
                     url: 'wallet-connect-screens/wallet-connect.html',
                     title: "Avail Wallet Connect",
-                    width: 350,
-                    height: 600,
+                    width: 390,
+                    height: 680,
                     resizable: false,
                 });
 
@@ -337,8 +340,8 @@ export class AleoWallet {
             webview = new WebviewWindow('walletConnect', {
                 url: 'wallet-connect-screens/wallet-connect.html',
                 title: "Avail Wallet Connect",
-                width: 350,
-                height: 600,
+                width: 390,
+                height: 680,
                 resizable: false,
             });
 
@@ -430,7 +433,7 @@ export class AleoWallet {
         if (checkWindow('walletConnect')) {
 
             getAll().forEach(win => {
-                if (win.window.label == 'walletConnect') {
+                if (win.label == 'walletConnect') {
                     webview = win.window;
                     webview.destroy();
                 }
@@ -444,8 +447,8 @@ export class AleoWallet {
             webview = new WebviewWindow('walletConnect', {
                 url: 'wallet-connect-screens/wallet-connect.html',
                 title: "Avail Wallet Connect",
-                width: 350,
-                height: 600,
+                width: 390,
+                height: 680,
                 resizable: false,
             });
 
@@ -552,8 +555,8 @@ export class AleoWallet {
                 webview = new WebviewWindow('walletConnect', {
                     url: 'wallet-connect-screens/wallet-connect.html',
                     title: "Avail Wallet Connect",
-                    width: 350,
-                    height: 600,
+                    width: 390,
+                    height: 680,
                     resizable: false,
                 });
 
@@ -656,8 +659,8 @@ export class AleoWallet {
                 webview = new WebviewWindow('walletConnect', {
                     url: 'wallet-connect-screens/wallet-connect.html',
                     title: "Avail Wallet Connect",
-                    width: 350,
-                    height: 600,
+                    width: 390,
+                    height: 680,
                     resizable: false,
                 });
 
@@ -765,6 +768,7 @@ export class AleoWallet {
 
             let webview: Window;
 
+            console.log("Checking window");
             if (checkWindow('walletConnect')) {
 
                 getAll().forEach(win => {
@@ -778,8 +782,8 @@ export class AleoWallet {
                 webview = new WebviewWindow('walletConnect', {
                     url: 'wallet-connect-screens/wallet-connect.html',
                     title: "Avail Wallet Connect",
-                    width: 350,
-                    height: 600,
+                    width: 390,
+                    height: 680,
                     resizable: false,
                 });
 

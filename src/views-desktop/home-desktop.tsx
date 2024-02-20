@@ -37,7 +37,6 @@ import SyncIcon from '@mui/icons-material/Sync';
 //state functions
 import { getName } from "../services/states/utils";
 import { getAuth } from "../services/states/utils";
-import { getTotalBalance, getTokenBalance } from "../services/states/utils";
 import { getAddress } from "../services/states/utils";
 
 
@@ -147,7 +146,13 @@ function Home() {
             console.log(scanInProgress);
             console.log(event);
             console.log(event.payload);
-            setScanProgressPercent(event.payload as number);
+
+            let progress = event.payload as number;
+            if (progress !== 100) {
+                startScan();
+            }
+
+            setScanProgressPercent(progress);
         })
 
         const unlisten_tx = listen('tx_state_change', (event) => {
@@ -185,15 +190,11 @@ function Home() {
         })
         */
 
-        const unlisten_transfer = listen('transfer_off', async (event) => {
-            setTransferState(false);
-        })
 
         return () => {
             unlisten_scan.then(remove => remove());
             unlisten_tx.then(remove => remove());
             // unlisten_reauth.then(remove => remove());
-            unlisten_transfer.then(remove => remove());
         }
 
     }, [])
@@ -327,8 +328,9 @@ function Home() {
     }, [scanInProgress, startScan, endScan])
 
     const handleTransferCheck = () => {
-        let transfer_flag = sessionStorage.getItem("transfer_on");
-        if (transfer_flag === 'true') {
+        let wc_flag = sessionStorage.getItem("transfer_on");
+        let transfer_state = sessionStorage.getItem("transferState");
+        if (wc_flag === 'true' || transfer_state === 'true') {
             setTransferState(true);
         } else {
             setTransferState(false);

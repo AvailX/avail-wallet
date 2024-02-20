@@ -140,7 +140,7 @@ const AvailEventComponent: React.FC<{event: SuccinctAvailEvent; slideFunction: (
 						}
 					</mui.Typography>
 					<mui.Box sx={{
-						display: 'flex', flexDirection: 'row', alignItems: 'center', width: '120%',
+						display: 'flex', flexDirection: 'row', alignItems: 'center', width: '140%',
 					}}>
 						<mui.Typography variant='body2' color='grey'>
 							{formatDate(new Date(created))}

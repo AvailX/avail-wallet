@@ -48,11 +48,6 @@ const renderIcon = (index: number) => {
 			break;
 		}
 
-		/*
-  Case 3:
-    return <InsertPhotoIcon />;
-    break;
-    */
 		case 3: {
 			return <DropIcon />;
 			break;
@@ -63,17 +58,21 @@ const renderIcon = (index: number) => {
 			break;
 		}
 
-		case 5: {
+		case 5:
+    	return <InsertPhotoIcon />;
+    	break;
+
+		case 6: {
 			return <SupportAgentRoundedIcon />;
 			break;
 		}
 
-		case 6: {
+		case 7: {
 			return <SettingsRoundedIcon />;
 			break;
 		}
 
-		case 7: {
+		case 8: {
 			return <LogoutIcon />;
 			break;
 		}
@@ -185,28 +184,28 @@ export default function SideMenu() {
 				break;
 			}
 
-			/*
-    Case 3:
-      navigate("/nfts")
-      break;
-      */
       case 3:
         navigate("/browser", { state: "https://faucet.puzzle.online" })
         break;
+
       case 4:
         navigate("/browser")
         break;
-      case 5:
+
+	  case 5:
+      	navigate("/nfts")
+      	break;
+      case 6:
         open_url("https://discord.gg/avail-1140618884764942386").then((res) => {
           console.log(res);
         }).catch((e) => {
           console.log(e);
         })
         break;
-      case 6:
+      case 7:
         navigate("/settings")
         break;
-      case 7:
+      case 8:
         setLogoutDialog(true);
         break;
       default:
@@ -221,7 +220,7 @@ export default function SideMenu() {
 				setLogoutDialog(false);
 			}} />
 			<List >
-				{['Home', 'Swap', 'Activity', 'Faucet', 'Browser', 'Support'].map((text, index) => (
+				{['Home', 'Swap', 'Activity', 'Faucet', 'Browser','Nfts', 'Support'].map((text, index) => (
 					<ListItem key={text} disablePadding sx={{
 						display: 'block', color: '#fff', marginTop: (text == 'Home') ? '' : '20%', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
 						'&:hover': {
@@ -279,7 +278,7 @@ export default function SideMenu() {
 								},
 							}}
 							onClick={() => {
-								handleOnClick(index + 6);
+								handleOnClick(index + 7);
 							}}
 						>
 							<ListItemIcon
@@ -292,7 +291,7 @@ export default function SideMenu() {
 								}}
 
 							>
-								{renderIcon(index + 6)}
+								{renderIcon(index + 7)}
 							</ListItemIcon>
 							<ListItemText primary={text} sx={{opacity: open ? 1 : 0}} />
 						</ListItemButton>

@@ -489,6 +489,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-deep-link",
  "tauri-plugin-http",
+ "tauri-plugin-process",
  "tauri-plugin-updater",
  "tid-rs",
  "tiny-bip39",
@@ -1395,7 +1396,7 @@ version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "330c60081dcc4c72131f8eb70510f1ac07223e5d4163db481a04a0befcffa412"
 dependencies = [
- "libloading 0.7.4",
+ "libloading 0.8.1",
 ]
 
 [[package]]
@@ -5943,6 +5944,16 @@ dependencies = [
  "tauri-plugin-fs",
  "thiserror",
  "url",
+]
+
+[[package]]
+name = "tauri-plugin-process"
+version = "2.0.0-beta.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ec1754d6b08b7987b377e19e66372831b97212c8b977ddce6f654279a71c3414"
+dependencies = [
+ "tauri",
+ "tauri-plugin",
 ]
 
 [[package]]

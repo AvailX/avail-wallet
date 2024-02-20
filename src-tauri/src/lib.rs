@@ -40,6 +40,7 @@ use crate::services::wallet_connect_api::{
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_process::init())
         .setup(|app| {
             #[cfg(desktop)]
             app.handle()

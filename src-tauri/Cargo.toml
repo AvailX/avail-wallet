@@ -46,6 +46,7 @@ tauri = { version = "2.0.0-beta.1", features = [] }
 tauri-plugin-deep-link = "2.0.0-beta"
 tauri-plugin-http = { version = "2.0.0-beta", features = ["cookies"] }
 tauri-plugin-updater = { version = "2.0.0-beta.0", features = [] }
+tauri-plugin-process = "2.0.0-beta"
 tiny-bip39 = "1.0.0"
 tokio = { version = "1.29.1", features = ["full"] }
 ureq = { version = "2.7.1", features = ["json"] }
