@@ -6,7 +6,6 @@ node_modules/**
 dist/**
 build/**
 .cargo/config.toml
-package-lock.json
 
 # Logs
 logs
