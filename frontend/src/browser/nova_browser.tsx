@@ -172,6 +172,7 @@ const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', han
         endScan();
       }
     })
+    
     return () => {
        unlisten_connected.then(remove => remove());
       unlisten_disconnected.then(remove => remove());

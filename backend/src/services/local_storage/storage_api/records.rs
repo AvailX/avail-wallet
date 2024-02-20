@@ -287,6 +287,7 @@ pub fn update_record_spent_local_via_nonce<N: Network>(
                         Entry::Constant(Plaintext::Literal(Literal::<N>::U64(amount), _)) => {
                             **amount
                         }
+
                         Entry::Private(Plaintext::Literal(Literal::<N>::U128(amount), _)) => {
                             (**amount).try_into()?
                         }

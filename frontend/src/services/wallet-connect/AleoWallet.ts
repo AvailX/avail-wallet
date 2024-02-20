@@ -1,14 +1,16 @@
-import {type Web3WalletTypes} from '@walletconnect/web3wallet';
-import {type Window} from '@tauri-apps/api/window';
-import {WebviewWindow, getAll, getCurrent} from '@tauri-apps/api/webview';
-import {invoke} from '@tauri-apps/api/core';
+import { invoke } from '@tauri-apps/api/core';
+import { WebviewWindow, getAll } from '@tauri-apps/api/webviewWindow';
+import { type Window } from '@tauri-apps/api/window';
 import {
-	formatJsonRpcResult,
-	formatJsonRpcError,
-	type JsonRpcResult,
-	type JsonRpcError,
+    formatJsonRpcError,
+    formatJsonRpcResult,
+    type JsonRpcError,
+    type JsonRpcResult,
 } from '@walletconnect/jsonrpc-utils';
 
+import { type Web3WalletTypes } from '@walletconnect/web3wallet';
+
+import { AvailError } from '../../types/errors';
 import * as interfaces from './WCTypes';
 import { AvailError } from '../../types/errors';
 import { emit } from '@tauri-apps/api/event';
@@ -27,34 +29,34 @@ function checkWindow(reference: string) {
 
 //TODO - Switch to pairing topic or dapp name as key to sessionStorage entry
 function getDappMetadata(session_topic: string) {
-	const dapp_session_string = sessionStorage.getItem(session_topic);
-	if (dapp_session_string !== null) {
-		const dapp_session: interfaces.DappSession = JSON.parse(dapp_session_string) as interfaces.DappSession;
-		return dapp_session;
-	}
+    const dapp_session_string = sessionStorage.getItem(session_topic);
+    if (dapp_session_string !== null) {
+        const dapp_session: interfaces.DappSession = JSON.parse(dapp_session_string) as interfaces.DappSession;
+        return dapp_session;
+    }
 }
 
 function storeSession(unique_request_id: string) {
-	const expiry = new Date();
-	expiry.setHours(expiry.getHours() + 1);
+    const expiry = new Date();
+    expiry.setHours(expiry.getHours() + 1);
 
-	sessionStorage.setItem(unique_request_id, expiry.toISOString());
+    sessionStorage.setItem(unique_request_id, expiry.toISOString());
 }
 
 function checkExpired(unique_request_id: string) {
-	const expiry_string = sessionStorage.getItem(unique_request_id);
-	if (expiry_string !== null) {
-		const expiry = new Date(expiry_string);
-		const now = new Date();
-		const check = now > expiry;
-		if (check) {
-			sessionStorage.removeItem(unique_request_id);
-		}
+    const expiry_string = sessionStorage.getItem(unique_request_id);
+    if (expiry_string !== null) {
+        const expiry = new Date(expiry_string);
+        const now = new Date();
+        const check = now > expiry;
+        if (check) {
+            sessionStorage.removeItem(unique_request_id);
+        }
 
-		return check;
-	}
+        return check;
+    }
 
-	return true;
+    return true;
 }
 
 export class AleoWallet {
@@ -85,7 +87,8 @@ export class AleoWallet {
 
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.GetBalancesRequest;
-        let request_identifier = "getBalance" + metadata?.name + request.assetId ;
+
+        let request_identifier = "getBalance" + metadata?.name + request.assetId;
 
         let asset_id = request.assetId;
         if (asset_id == "credits" || asset_id == undefined) {
@@ -150,7 +153,8 @@ export class AleoWallet {
                 console.log("Emitting wallet-connect-request")
             }, 3000);
 
-            return new Promise( async(resolve, reject) => {
+
+            return new Promise(async (resolve, reject) => {
 
 
 
@@ -172,7 +176,7 @@ export class AleoWallet {
                 // Listen for the rejection event from the secondary window
                 const unlistenRejected = webview.once('balance-rejected', async (response) => {
                     const unlisten = await unlistenRejected;
-                unlisten();
+                    unlisten();
                     console.log('Balance share was rejected', response);
                     webview.close();
                     reject(formatJsonRpcError(requestEvent.id, "User rejected balance share"));
@@ -268,10 +272,10 @@ export class AleoWallet {
                 webview.emit('wallet-connect-request', wcRequest);
             }, 3000);
 
-            return new Promise( async(resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 const unlistenApproved = webview.once('decrypt-approved', async (response) => {
                     const unlisten = await unlistenApproved;
-                unlisten();
+                    unlisten();
                     webview.close();
                     storeSession(request_identifier);
 
@@ -293,7 +297,8 @@ export class AleoWallet {
                 // Listen for the rejection event from the secondary window
                 const unlistenRejected = webview.once('decrypt-rejected', async (response) => {
                     const unlisten = await unlistenRejected;
-                unlisten();
+
+                    unlisten();
                     console.log(response);
                     webview.close();
                     reject(formatJsonRpcResult(requestEvent.id, response));
@@ -355,7 +360,8 @@ export class AleoWallet {
             webview.emit('wallet-connect-request', wcRequest);
         }, 3000);
 
-        return new Promise( async(resolve, reject) => {
+
+        return new Promise(async (resolve, reject) => {
             const unlistenApproved = webview.once('sign-approved', async (response) => {
                 const unlisten = await unlistenApproved;
                 unlisten();
@@ -451,55 +457,56 @@ export class AleoWallet {
 
             webview.once('tauri://error', function (e) {
                 console.error(e);
-                if (e){
+                if (e) {
                     webview.destroy();
                     return formatJsonRpcError(requestEvent.id, "ERROR CREATING WINDOW");
                 }
             });
 
-        setTimeout(async() => {
-           await webview.emit('wallet-connect-request', wcRequest);
-        }, 2700);
+            setTimeout(async () => {
+                await webview.emit('wallet-connect-request', wcRequest);
+            }, 2700);
 
-        let stopper = true;
-        return new Promise(async (resolve, reject) => {
-          await webview.once('create-request-event-approved', async (response) => {
-                webview.destroy();
-                if(stopper){
-                stopper = false;
-                sessionStorage.setItem("transfer_on", "true");
+            let stopper = true;
+            return new Promise(async (resolve, reject) => {
+                await webview.once('create-request-event-approved', async (response) => {
+                    webview.destroy();
+                    if (stopper) {
+                        stopper = false;
+                        sessionStorage.setItem("transfer_on", "true");
 
-                let payload_obj = JSON.stringify(response.payload);
-                let fee_op = JSON.parse(payload_obj).feeOption;
+                        let payload_obj = JSON.stringify(response.payload);
+                        let fee_op = JSON.parse(payload_obj).feeOption;
 
-                console.log("--EXECUTION CALLED--")
+                        console.log("--EXECUTION CALLED--")
 
-                try {
-                    console.log(request);
-                    invoke<interfaces.CreateEventResponse>("request_create_event", { request: request, fee_private: fee_op }).then((response) => {
-                        sessionStorage.setItem("transfer_on", "false");
-                        resolve(formatJsonRpcResult(requestEvent.id, response));
+                        try {
+                            console.log(request);
+                            invoke<interfaces.CreateEventResponse>("request_create_event", { request: request, fee_private: fee_op }).then((response) => {
+                                sessionStorage.setItem("transfer_on", "false");
+                                resolve(formatJsonRpcResult(requestEvent.id, response));
 
-                    }).catch((error: AvailError) => {
-                        sessionStorage.setItem("transfer_on", "false");
-                        reject(formatJsonRpcError(requestEvent.id, error.external_msg));
+                            }).catch((error: AvailError) => {
+                                sessionStorage.setItem("transfer_on", "false");
+                                reject(formatJsonRpcError(requestEvent.id, error.external_msg));
 
-                    });
+                            });
 
-                } catch (error: any) {
-                    sessionStorage.setItem("transfer_on", "false");
-                    reject(formatJsonRpcError(requestEvent.id, error.message))
-                }}
+                        } catch (error: any) {
+                            sessionStorage.setItem("transfer_on", "false");
+                            reject(formatJsonRpcError(requestEvent.id, error.message))
+                        }
+                    }
+                });
+
+
+                await webview.once('create-request-event-rejected', async (response) => {
+                    webview.destroy();
+                    reject(formatJsonRpcResult(requestEvent.id, response));
+                });
+
             });
-
-
-            await webview.once('create-request-event-rejected', async (response) => {
-                webview.destroy();
-                reject(formatJsonRpcResult(requestEvent.id, response));
-            });
-
-        });
-    }
+        }
 
     }
 
@@ -507,7 +514,8 @@ export class AleoWallet {
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.GetEventRequest
 
-        let request_identifier = "getEvent" + metadata?.name + request.id ;
+
+        let request_identifier = "getEvent" + metadata?.name + request.id;
 
         if (!checkExpired(request_identifier)) {
             return new Promise((resolve, reject) => {
@@ -569,10 +577,10 @@ export class AleoWallet {
                 console.log("Emitting wallet-connect-request")
             }, 3000);
 
-            return new Promise( async(resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 const unlistenApproved = webview.once('get-event-approved', async (response) => {
                     const unlisten = await unlistenApproved;
-                unlisten();
+                    unlisten();
                     webview.close();
                     storeSession(request_identifier);
 
@@ -594,7 +602,8 @@ export class AleoWallet {
 
                 const unlistenRejected = webview.once('get-event-rejected', async (response) => {
                     const unlisten = await unlistenRejected;
-                unlisten();
+
+                    unlisten();
                     webview.close();
                     reject(formatJsonRpcResult(requestEvent.id, response));
                 });
@@ -606,7 +615,7 @@ export class AleoWallet {
         let metadata = getDappMetadata(requestEvent.topic);
         let request = requestEvent.params.request.params as interfaces.GetEventsRequest
 
-        let request_identifier = "getEvents" + metadata?.name+request.filter?.functionId+ request.filter?.programId ;
+        let request_identifier = "getEvents" + metadata?.name + request.filter?.functionId + request.filter?.programId;
 
         if (!checkExpired(request_identifier)) {
             return new Promise((resolve, reject) => {
@@ -617,91 +626,91 @@ export class AleoWallet {
                     reject(formatJsonRpcError(requestEvent.id, error.external_msg));
                 });
             });
-        }else{
 
-        const wcRequest: interfaces.wcRequest = {
-            method: "get-events",
-            question: metadata?.name + " wants you to share your transaction history",
-            image_ref: "../wc-images/transactions.svg",
-            approveResponse: "User approved get events.",
-            rejectResponse: "User rejected get events.",
-            program_id: request.filter?.programId,
-            function_id: request.filter?.functionId,
-            type: request.filter?.type,
-            dapp_img : metadata?.img,
-            dapp_url : metadata?.url,
-        }
-
-        let webview: Window;
-
-        if (checkWindow('walletConnect')) {
-
-            getAll().forEach(win => {
-                if (win.label == 'walletConnect') {
-                    webview = win.window;
-                }
-            });
         } else {
 
-            // Open the new window
-            webview = new WebviewWindow('walletConnect', {
-                url: 'wallet-connect-screens/wallet-connect.html',
-                title: "Avail Wallet Connect",
-                width: 350,
-                height: 600,
-                resizable: false,
-            });
-
-            webview.once('tauri://created', async function () {
-                console.log('Window created');
+            const wcRequest: interfaces.wcRequest = {
+                method: "get-events",
+                question: metadata?.name + " wants you to share your transaction history",
+                image_ref: "../wc-images/transactions.svg",
+                approveResponse: "User approved get events.",
+                rejectResponse: "User rejected get events.",
+                program_id: request.filter?.programId,
+                function_id: request.filter?.functionId,
+                type: request.filter?.type,
+                dapp_img: metadata?.img,
+                dapp_url: metadata?.url,
             }
 
-            );
+            let webview: Window;
 
-            webview.once('tauri://error', function (e) {
-                console.log('Window creation error');
-                console.error(e);
-                // Handle window creation error
-            });
+            if (checkWindow('walletConnect')) {
 
-        }
+                getAll().forEach(win => {
+                    if (win.label == 'walletConnect') {
+                        webview = win.window;
+                    }
+                });
+            } else {
 
-        setTimeout(() => {
-            webview.emit('wallet-connect-request', wcRequest);
-            console.log("Emitting wallet-connect-request")
-        }, 3000);
+                // Open the new window
+                webview = new WebviewWindow('walletConnect', {
+                    url: 'wallet-connect-screens/wallet-connect.html',
+                    title: "Avail Wallet Connect",
+                    width: 350,
+                    height: 600,
+                    resizable: false,
+                });
 
-        return new Promise( async(resolve, reject) => {
-            const unlistenApproved = webview.once('get-events-approved', async (response) => {
-                const unlisten = await unlistenApproved;
-                unlisten();
-                webview.close();
-                storeSession(request_identifier);
-
-                try {
-                    invoke<interfaces.GetEventsResponse>("get_events", { request: request }).then((response) => {
-                        resolve(formatJsonRpcResult(requestEvent.id, response));
-                    }).catch((error: AvailError) => {
-                        console.error(error);
-                        reject(formatJsonRpcError(requestEvent.id, error.external_msg));
-                    });
-
-                } catch (error: any) {
-                    console.error(error)
-                    reject(formatJsonRpcError(requestEvent.id, error.message))
+                webview.once('tauri://created', async function () {
+                    console.log('Window created');
                 }
-            })
 
-            const unlistenRejected = webview.once('get-events-rejected', async (response) => {
-                const unlisten = await unlistenRejected;
-                unlisten();
-                webview.close();
-                reject(formatJsonRpcResult(requestEvent.id, response));
+                );
+
+                webview.once('tauri://error', function (e) {
+                    console.log('Window creation error');
+                    console.error(e);
+                    // Handle window creation error
+                });
+
+            }
+
+            setTimeout(() => {
+                webview.emit('wallet-connect-request', wcRequest);
+                console.log("Emitting wallet-connect-request")
+            }, 3000);
+
+            return new Promise(async (resolve, reject) => {
+                const unlistenApproved = webview.once('get-events-approved', async (response) => {
+                    const unlisten = await unlistenApproved;
+                    unlisten();
+                    webview.close();
+                    storeSession(request_identifier);
+
+                    try {
+                        invoke<interfaces.GetEventsResponse>("get_events", { request: request }).then((response) => {
+                            resolve(formatJsonRpcResult(requestEvent.id, response));
+                        }).catch((error: AvailError) => {
+                            console.error(error);
+                            reject(formatJsonRpcError(requestEvent.id, error.external_msg));
+                        });
+
+                    } catch (error: any) {
+                        console.error(error)
+                        reject(formatJsonRpcError(requestEvent.id, error.message))
+                    }
+                })
+
+                const unlistenRejected = webview.once('get-events-rejected', async (response) => {
+                    const unlisten = await unlistenRejected;
+                    unlisten();
+                    webview.close();
+                    reject(formatJsonRpcResult(requestEvent.id, response));
+                });
             });
-        });
         }
     }
-
 
     private async handleGetRecords(requestEvent: Web3WalletTypes.SessionRequest): Promise<JsonRpcResult | JsonRpcError> {
         let metadata = getDappMetadata(requestEvent.topic);
@@ -730,6 +739,7 @@ export class AleoWallet {
             }
         }
         console.log("PID's After empty value handling", request.filter?.programIds);
+
         if (!checkExpired(request_identifier)) {
             return new Promise((resolve, reject) => {
                 invoke<interfaces.GetBackendRecordsResponse>("get_records", { request: request }).then((response) => {
@@ -740,91 +750,91 @@ export class AleoWallet {
                     reject(formatJsonRpcError(requestEvent.id, error.external_msg));
                 });
             });
-        }else{
-        const wcRequest: interfaces.wcRequest = {
-            method: "get-records",
-            question: metadata?.name + " wants you to share your records",
-            image_ref: "../wc-images/transactions.svg",
-            approveResponse: "User approved get records.",
-            rejectResponse: "User rejected get records.",
-            program_ids: request.filter?.programIds,
-            function_id: request.filter?.functionId,
-            type: request.filter?.type,
-            dapp_img: metadata?.img,
-            dapp_url: metadata?.url,
-        }
-
-        let webview: Window;
-
-        if (checkWindow('walletConnect')) {
-
-            getAll().forEach(win => {
-                if (win.label == 'walletConnect') {
-                    webview = win.window;
-                }
-            });
         } else {
-
-            // Open the new window
-            webview = new WebviewWindow('walletConnect', {
-                url: 'wallet-connect-screens/wallet-connect.html',
-                title: "Avail Wallet Connect",
-                width: 350,
-                height: 600,
-                resizable: false,
-            });
-
-            webview.once('tauri://created', async function () {
-                console.log('Window created');
+            const wcRequest: interfaces.wcRequest = {
+                method: "get-records",
+                question: metadata?.name + " wants you to share your records",
+                image_ref: "../wc-images/transactions.svg",
+                approveResponse: "User approved get records.",
+                rejectResponse: "User rejected get records.",
+                program_ids: request.filter?.programIds,
+                function_id: request.filter?.functionId,
+                type: request.filter?.type,
+                dapp_img: metadata?.img,
+                dapp_url: metadata?.url,
             }
 
-            );
+            let webview: Window;
 
-            webview.once('tauri://error', function (e) {
-                console.log('Window creation error');
-                console.error(e);
-                // Handle window creation error
-            });
+            if (checkWindow('walletConnect')) {
 
-        }
+                getAll().forEach(win => {
+                    if (win.label == 'walletConnect') {
+                        webview = win.window;
+                    }
+                });
+            } else {
 
-        setTimeout(() => {
-            webview.emit('wallet-connect-request', wcRequest);
-            console.log("Emitting wallet-connect-request")
-        }, 3000);
+                // Open the new window
+                webview = new WebviewWindow('walletConnect', {
+                    url: 'wallet-connect-screens/wallet-connect.html',
+                    title: "Avail Wallet Connect",
+                    width: 350,
+                    height: 600,
+                    resizable: false,
+                });
 
-        return new Promise( async(resolve, reject) => {
-            const unlistenApproved = webview.once('get-records-approved', async (response) => {
-                const unlisten = await unlistenApproved;
-                unlisten();
-                webview.close();
-                storeSession(request_identifier);
-
-                try {
-                    console.log("===> INSIDE getRecords()", request, "......\n", request.filter?.programIds);
-                    invoke<interfaces.GetBackendRecordsResponse>("get_records", { request: request }).then((response) => {
-                        let res = interfaces.convertGetRecordsResponse(response);
-                        resolve(formatJsonRpcResult(requestEvent.id, res));
-                    }).catch((error: AvailError) => {
-                        console.error(error);
-                        reject(formatJsonRpcError(requestEvent.id, error.external_msg));
-                    });
-
-                } catch (error: any) {
-                    console.error(error)
-                    reject(formatJsonRpcError(requestEvent.id, error.message))
+                webview.once('tauri://created', async function () {
+                    console.log('Window created');
                 }
-            })
 
-            const unlistenRejected = webview.once('get-records-rejected', async (response) => {
-                const unlisten = await unlistenRejected;
-                unlisten();
-                webview.close();
-                reject(formatJsonRpcResult(requestEvent.id, response));
+                );
+
+                webview.once('tauri://error', function (e) {
+                    console.log('Window creation error');
+                    console.error(e);
+                    // Handle window creation error
+                });
+
+            }
+
+            setTimeout(() => {
+                webview.emit('wallet-connect-request', wcRequest);
+                console.log("Emitting wallet-connect-request")
+            }, 3000);
+
+            return new Promise(async (resolve, reject) => {
+                const unlistenApproved = webview.once('get-records-approved', async (response) => {
+                    const unlisten = await unlistenApproved;
+                    unlisten();
+                    webview.close();
+                    storeSession(request_identifier);
+
+                    try {
+                        console.log("===================> INSIDE GETRECORDS");
+                        invoke<interfaces.GetBackendRecordsResponse>("get_records", { request: request }).then((response) => {
+                            let res = interfaces.convertGetRecordsResponse(response);
+                            resolve(formatJsonRpcResult(requestEvent.id, res));
+                        }).catch((error: AvailError) => {
+                            console.error(error);
+                            reject(formatJsonRpcError(requestEvent.id, error.external_msg));
+                        });
+
+                    } catch (error: any) {
+                        console.error(error)
+                        reject(formatJsonRpcError(requestEvent.id, error.message))
+                    }
+                })
+
+                const unlistenRejected = webview.once('get-records-rejected', async (response) => {
+                    const unlisten = await unlistenRejected;
+                    unlisten();
+                    webview.close();
+                    reject(formatJsonRpcResult(requestEvent.id, response));
+                });
             });
-        });
+        }
     }
-}
 
 
     // Handles any method calls from the DApp

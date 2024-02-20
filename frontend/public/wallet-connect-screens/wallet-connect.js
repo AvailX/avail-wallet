@@ -25,6 +25,7 @@ document.querySelector('.btn.approve').addEventListener('click', async () => {
     }else{
     await emit(eventName, { message: request.approveResponse });
     }
+
     window.close();
     console.log('approve clicked');
 });
