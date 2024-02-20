@@ -25,7 +25,7 @@ function Entrypoint() {
 
 	React.useEffect(() => {
 		if (shouldRunEffect.current) {
-			update().then(() => { }).catch((e) => {
+			update().then(() => { console.log("Restart the app!") }).catch((e) => {
 				console.log(e);
 			});
 
