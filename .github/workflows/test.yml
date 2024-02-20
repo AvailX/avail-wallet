@@ -71,4 +71,5 @@ jobs:
           MAINNET_API_OBSCURA: ""
           DEVNET_API_OBSCURA: ""
         with:
-            distPath: dist
+          distPath: dist
+          tauriScript: cargo tauri
