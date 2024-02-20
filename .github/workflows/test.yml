@@ -40,9 +40,7 @@ jobs:
       - name: Initialize Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './backend -> target'
-
-      - run: npm install --package-lock-only
+          workspaces: './src-tauri -> target'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
