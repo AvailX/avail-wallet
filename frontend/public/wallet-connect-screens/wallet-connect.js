@@ -76,6 +76,7 @@ function updateUIswitchCase(data) {
 		}
 
 		case 'create-request-event': {
+			document.querySelector('#scrollable-container').style.paddingTop = '35px';
 			if (data.program_id) {
 				document.querySelector('#program').style.display = 'block';
 				document.querySelector('#program-input').style.display = 'block';
