@@ -16,6 +16,8 @@ import a_logo from '../assets/logo/a-icon.svg';
 import { type AvailError, AvailErrorType } from '../types/errors';
 import Layout from './reusable/layout';
 
+import update from '../services/util/updater';
+
 function Entrypoint() {
 	const navigate = useNavigate();
 	const shouldRunEffect = React.useRef(true);
@@ -24,6 +26,10 @@ function Entrypoint() {
 
 	React.useEffect(() => {
 		if (shouldRunEffect.current) {
+			update().then(() => { }).catch((e) => {
+				console.log(e);
+			});
+
 			setTimeout(() => {
 				/* -- Local + Session Auth -- */
 				session_and_local_auth(undefined, navigate, setAlert, setAlertMessage, true).then(res => { }).catch(async (e) => {
