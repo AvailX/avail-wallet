@@ -1,3 +1,4 @@
+
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 
@@ -10,3 +11,4 @@ async function update() {
 }
 
 export default update;
+

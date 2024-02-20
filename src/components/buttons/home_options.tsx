@@ -8,8 +8,8 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
-import { alpha } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import {alpha} from '@mui/material';
+import {useNavigate} from 'react-router-dom';
 
 const HomeOptions = () => {
 	const [anchorElement, setAnchorElement] = React.useState<undefined | HTMLElement>(undefined);
@@ -37,8 +37,8 @@ const HomeOptions = () => {
 				sx={{
 					backgroundColor: alpha('#3A3A3A', 0.4), width: '35%', borderRadius: '30px', minHeight: '50px', display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textTransform: 'none',
 				}}>
-				<mui.Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-					<mui.Typography sx={{ fontSize: '1.1rem', color: '#ff', fontWeight: 500 }}>
+				<mui.Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+					<mui.Typography sx={{fontSize: '1.1rem', color: '#ff', fontWeight: 500}}>
 						Send
 					</mui.Typography>
 					<ArrowUpwardIcon sx={{
@@ -52,8 +52,8 @@ const HomeOptions = () => {
 				sx={{
 					backgroundColor: alpha('#3A3A3A', 0.4), width: '40%', borderRadius: '30px', minHeight: '50px', display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textTransform: 'none',
 				}}>
-				<mui.Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-					<mui.Typography sx={{ fontSize: '1.1rem', color: '#ff', fontWeight: 500 }}>
+				<mui.Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+					<mui.Typography sx={{fontSize: '1.1rem', color: '#ff', fontWeight: 500}}>
 						Receive
 					</mui.Typography>
 					<ArrowDownwardIcon sx={{
@@ -68,7 +68,7 @@ const HomeOptions = () => {
 				sx={{
 					backgroundColor: alpha('#3A3A3A', 0.4), width: '10%', borderRadius: '90px', minHeight: '50px', display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', textTransform: 'none',
 				}}>
-				<MoreHorizIcon sx={{ color: '#fff', width: '26px', height: '26px' }} />
+				<MoreHorizIcon sx={{color: '#fff', width: '26px', height: '26px'}} />
 			</mui.Button>
 			<mui.Menu
 				anchorEl={anchorElement}
@@ -102,8 +102,8 @@ const HomeOptions = () => {
 						},
 					},
 				}}
-				transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-				anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+				transformOrigin={{horizontal: 'right', vertical: 'top'}}
+				anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
 			>
 				<mui.MenuItem onClick={() => {
 					navigate('/contracts');

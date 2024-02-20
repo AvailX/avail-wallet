@@ -1,5 +1,5 @@
-import { onOpenUrl } from "@tauri-apps/plugin-deep-link";
+import {onOpenUrl} from '@tauri-apps/plugin-deep-link';
 
-await onOpenUrl((urls) => {
-  console.log('deep link:', urls);
+await onOpenUrl(urls => {
+	console.log('deep link:', urls);
 });

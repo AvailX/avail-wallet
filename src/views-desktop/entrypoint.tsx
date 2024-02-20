@@ -1,19 +1,18 @@
 import * as React from 'react';
 import * as mui from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { os } from '../services/util/open';
-
+import {useNavigate} from 'react-router-dom';
+import {os} from '../services/util/open';
 
 // Components
 
 // services
-import { session_and_local_auth } from '../services/authentication/auth';
+import {session_and_local_auth} from '../services/authentication/auth';
 
 // Images
 import a_logo from '../assets/logo/a-icon.svg';
 
 // Types
-import { type AvailError, AvailErrorType } from '../types/errors';
+import {type AvailError, AvailErrorType} from '../types/errors';
 import Layout from './reusable/layout';
 
 import update from '../services/util/updater';
@@ -32,14 +31,15 @@ function Entrypoint() {
 
 			setTimeout(() => {
 				/* -- Local + Session Auth -- */
-				session_and_local_auth(undefined, navigate, setAlert, setAlertMessage, true).then(res => { }).catch(async (e) => {
-					console.log(e);
+				session_and_local_auth(undefined, navigate, setAlert, setAlertMessage, true).then(res => {}).catch(async error_ => {
+					console.log(error_);
 
-					let error = e;
+					let error = error_;
 					const os_type = await os();
 					if (os_type !== 'linux') {
-						error = JSON.parse(e) as AvailError;
+						error = JSON.parse(error_) as AvailError;
 					}
+
 					if (error.error_type === AvailErrorType.Network) {
 						// TODO - Desktop login
 					}
@@ -60,7 +60,7 @@ function Entrypoint() {
 			<mui.Box sx={{
 				display: 'flex', alignItems: 'center', alignContent: 'center', height: '100vh', justifyContent: 'center',
 			}}>
-				<img src={a_logo} style={{ width: '12%', alignSelf: 'center' }} />
+				<img src={a_logo} style={{width: '12%', alignSelf: 'center'}} />
 			</mui.Box>
 		</Layout>
 	);
