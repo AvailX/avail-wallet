@@ -102,8 +102,7 @@ jobs:
       - name: Prepare EULA
         run: |
           if [ "${{ runner.os }}" = "Windows" ]; then
-            echo ${{ secrets.AVAIL_WALLET_EULA_B64 }} | powershell -Command "[Convert]::FromBase64String((Get-Content -Raw stdin)) | Set-Content -Encoding Byte EULA.rtf"
-            echo ${{ secrets.AVAIL_WALLET_EULA_TXT_B64 }} | powershell -Command "[Convert]::FromBase64String((Get-Content -Raw stdin)) | Set-Content -Encoding Byte EULA.txt"
+              [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("${{ secrets.AVAIL_WALLET_EULA_B64 }}") | Out-File .\EULA.rtf)
           else
             echo -n "${{ secrets.AVAIL_WALLET_EULA_B64 }}" | base64 -d > EULA.rtf
             echo -n "${{ secrets.AVAIL_WALLET_EULA_TXT_B64 }}" | base64 -d > EULA.txt
