@@ -128,7 +128,7 @@ jobs:
         with:
           tauriScript: cargo tauri
           # This is required for Apple ARM chips and license bundling
-          args: "${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64-apple-darwin' || '' }} --config \"{\"bundle\":\"licenseFile\":\"${{ matrix.platform == 'windows' && '.\\EULA.rtf' || 'EULA.txt' }}\"}\""
+          args: "${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64-apple-darwin' || '' }} --config \"{ \"bundle\": { \"licenseFile\": \"${{ matrix.platform == 'windows' && 'EULA.rtf' || 'EULA.txt' }}\" } }"
           distPath: dist
           # The tagName is alpha for develop, beta for staging and latest for release
           includeDebug: ${{ github.ref_name == 'release' && false || true }}
