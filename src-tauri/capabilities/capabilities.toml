@@ -1,7 +1,6 @@
-"$schema" = ".\\schema\\desktop-schema.json"
+"$schema" = "./schemas/desktop-schema.toml"
 identifier = "main-capability"
 description = "Capability for the main window"
-platforms = ["windows"]
 windows = ["main", "walletConnect"]
 permissions = [
     "path:default",
