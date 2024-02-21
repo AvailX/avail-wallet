@@ -16,7 +16,8 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": "all"
+    "targets": "all",
+    "licenseFile": "../EULA.txt"
   },
   "plugins": {
     "updater": {

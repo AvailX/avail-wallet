@@ -1,0 +1,288 @@
+# AVAIL END USER LICENCE AGREEMENT s
+
+This End User Licence Agreement ("the EULA" or "the Agreement") is a
+legally binding agreement between you ("the Licensee"), an individual
+customer or entity, and Avail ("Avail" or "the Licensor"), the company,
+and the author of Avail Wallet ("the Software"), which may include
+associated media, printed materials, and online or electronic
+documentation. This Agreement is a legally binding contract that
+includes terms that limit your legal rights and Licensors' liability to
+you, and shall govern all access to and use of this Software. You hereby
+agree, without limitation or alteration, to all the terms and conditions
+contained herein.
+
+**BY INSTALLING, COPYING, OR OTHERWISE USING THE SOFTWARE, THE LICENSEE
+AGREES TO BE BOUND BY THE TERMS AND CONDITIONS OUTLINED IN THIS EULA.
+HOWEVER, IF THE LICENSEE DOES NOT AGREE TO THE TERMS AND CONDITIONS
+OUTLINED IN THIS EULA, THE SAID LICENSEE MAY NOT DOWNLOAD, INSTALL, OR
+USE THE SOFTWARE.**
+
+## 1. GRANT OF LICENCE
+
+1.1 Subject to the terms of this EULA, Avail hereby grants to the
+Licensee, a royalty-free, revocable, limited, non-exclusive licence
+during the term of this EULA to possess and to use a copy of the
+Software. The Software is being distributed by Avail. The Licensee is
+not allowed to make a charge for distributing this Software, either for
+profit or merely to recover media and distribution costs.
+
+## 2. DESCRIPTION OF RIGHTS AND RESTRICTIONS
+
+2.1 **INSTALLATION AND USE.** The Licensee may install and use the
+Software on a shared computer or device, or concurrently on different
+computers and devices, solely for the Licensee's use within the
+Licensee's business or personal use.
+
+2.2 **REPRODUCTION AND DISTRIBUTION.** The Licensee may not duplicate or
+re-distribute copies of the Software, without the Licensor's express
+written permission.
+
+2.3 **RESTRICTIONS.** The Licensee may not:
+
+-   Use the Software for any purpose other than personal and
+    non-commercial purposes;
+-   Use the Software for any illegal or unlawful purpose;
+-   Gather factual content or any other portion of the Software by any
+    automated means, including but not limited to database scraping or
+    screen scraping;
+-   Reverse engineer, decompile, or disassemble Software, or have any
+    third party to do so;
+-   Sublicense, assign, sell, rent, lease, loan, convey, or transfer to
+    any third party, in whole or in part, any of the rights granted to
+    it therein, without limitation, any such rights granted in the
+    Software, or the Software itself;
+-   Adapt, modify, or otherwise change the Software, have any third
+    party to do so; or
+-   Breach any of the provisions of Avail's Acceptable Use Policy.
+
+## 3. OWNERSHIP AND RETENTION OF INTELLECTUAL PROPERTY
+
+3.1 This Agreement is a licence to use, and not a contract of sale for,
+the Software. All title, ownership, and Intellectual Property Rights in
+and to the Software are retained by the Licensor. Except as expressly
+provided herein, no licence or right, express or implied, is granted to
+the Licensee by Avail for any intellectual property of Avail and its
+Licensors.
+
+3.2 The Licensee shall not use either the name of the Licensor, or the
+name of the Software licensed under this Agreement for any commercial
+purpose or in any advertising, promotional or public statement without
+the prior, written consent of the Licensor, which consent shall be at
+the Licensor's sole discretion.
+
+3.3 The Licensee shall not modify, remove, or delete any copyright
+notice of the Licensor contained in the Software, including any copy
+thereof.
+
+## 4. WARRANTIES AND DISCLAIMER
+
+4.1 NEITHER THE LICENSOR, NOR ANY OF ITS AFFILIATES, OFFICERS,
+DIRECTORS, MANAGERS, EMPLOYEES, AGENTS, OR SHAREHOLDERS MAKE ANY
+WARRANTY WHATSOEVER WITH RESPECT TO THE SOFTWARE. THE SOFTWARE IS
+PROVIDED ON A TALE QUALE BASIS, AND THERE ARE NO WARRANTIES, EXPRESS OR
+IMPLIED, INCLUDING, BUT NOT LIMITED TO, ANY AND ALL IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF: (I) FITNESS FOR
+PARTICULAR PURPOSE OR EFFORT TO ACHIEVE PURPOSE; (II) QUALITY AND
+ACCURACY; (III) NON-INFRINGEMENT; (IV) TITLE; AND/OR (V) ANY TYPE
+ARISING FROM COURSE OF PERFORMANCE, COURSE OF DEALING OR USAGE OF TRADE.
+THE ENTIRE RISK ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE
+REMAINS AT ALL TIMES WITH THE LICENSEE.
+
+4.2 IN NO EVENT SHALL THE LICENSOR, NOR ANY OF ITS AFFILIATES, OFFICERS,
+DIRECTORS, MANAGERS, EMPLOYEES, AGENTS, OR SHAREHOLDERS BE LIABLE FOR
+INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR EXEMPLARY DAMAGES,
+WHETHER UNDER ANY TORT, CONTRACT, NEGLIGENCE, STRICT LIABILITY, OR OTHER
+LEGAL OR EQUITABLE THEORY WHATSOEVER, INCLUDING WITHOUT LIMITATION,
+DAMAGES FOR LOSS OF PROFITS, INTELLECTUAL PROPERTY INFRINGEMENT, PRICE
+DEPRECIATION, LEGAL OR REGULATORY ENFORCEMENT, BUSINESS INTERRUPTION,
+LOSS OF BUSINESS INFORMATION, AND THE LIKE, ARISING OUT OF THIS
+AGREEMENT, EVEN IF THE LICENSOR HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.
+
+4.3 THE FOREGOING DOES NOT AFFECT ANY WARRANTIES THAT CANNOT BE EXCLUDED
+OR LIMITED UNDER APPLICABLE LAW.
+
+4.4 The Licensor does not give any advice or recommendation regarding
+digital assets, including, but not limited to, the suitability and/or
+appropriateness of, and investment strategies for, the purchase of the
+digital assets for financial investment purposes. The Licensee is solely
+responsible for determining the nature, potential value, suitability,
+and appropriateness of the Licensee's involvement with the sales of the
+digital assets and any related use thereof for any purpose.
+
+4.5 The Licensee is solely responsible for determining the nature,
+potential value, suitability, and appropriateness of the risks related
+to digital assets for itself. The Licensee is involving itself in the
+sale, transfer, and use of digital assets as contemplated in this
+Agreement at its own risk; however, the Licensee also acknowledges that
+this brief statement does not disclose all of the risks associated with
+digital assets. The Licensor will not be responsible for any
+communication failures, disruptions, errors, distortions or delays the
+Licensee may experience when using digital assets and/or engaging in the
+sale or other use thereof, however caused.
+
+## 5. LIMITATION OF LIABILITY AND INDEMNIFICATION
+
+5.1 The Licensee shall be solely responsible for, and shall indemnify,
+defend, and hold the Licensor free and harmless from all damages,
+liabilities, charges, and expenses (including reasonable legal fees)
+from all claims, lawsuits, or other proceedings arising out of or
+relating to:
+
+i.  The Licensee' use of the Software in a manner not permitted by this
+    Agreement, not permitted by the Licensor, or not in conformance with
+    the Licensor written requirements;
+ii. The acts or omissions of the Licensee, its employees, and agents and
+    all persons or entities who have access through the Licensee to the
+    Software; or
+iii. An infringement of any right resulting in any way from the use of
+     the Licensed Software with other software or materials not licensed
+     to the Licensee by or not approved by the Licensor.
+
+5.2 The Licensor shall have no liability to the Licensee or any
+assignee, transferee, or sublicensee of Licensee for any claim of
+infringement that is based upon any combination of the Licensed Software
+with software not supplied by or authorised by the Licensor if such
+claim would have been avoided but for such combination; or any
+modifications to the Licensed Software approved by Licensor.
+
+5.3 The Licensee shall monitor the Software and ensure that it is used
+only in compliance with the terms of this Agreement. The Licensee shall
+be responsible and liable for any and all non-compliance with this
+Agreement by the Licensee or by any person or entity who obtains access
+to the Software through the Licensee.
+
+## 6. TERMINATION
+
+6.1 The Licensor may terminate this Agreement and the licence granted to
+Licensee upon the occurrence of any of the following events:
+
+i.  The Licensee fails to pay the Licensor any fee, charge, tax, or
+    other reimbursement when due and the failure to pay is not cured
+    within ten (10) days of the Licensee' receipt of the Licensor's
+    written notice thereof;
+ii. The Licensee transfers title to or possession of the Software
+    without the Licensor's prior written consent;
+iii. The Licensee breaches any material obligation of the Licensee under
+     this Agreement and such breach is not cured within three (3) days
+     of the Licensee' receipt of written notice thereof from the
+     Licensor;
+iv. The Licensor determines, at its sole discretion, that the Licensee's
+    use of the Software results, or could reasonably be expected to
+    result in a breach of this Agreement;
+v.  The Licensee commits any act or omits any material details related
+    to the Software or this EULA resulting in fraud, material
+    dishonesty, theft, embezzlement, conversion or misappropriation of
+    funds or property (including any violation or any attempted
+    violation of any securities laws); or
+vi. For any other reason at the Licensor's sole discretion.
+
+6.2 Provided that the Licensee is not in default under this Agreement,
+the Agreement may be terminated by the Licensee by giving Licensor
+thirty (30) days prior written notice of termination. Any such
+termination by the Licensee shall be without refund of any License Fee,
+Service Fee, or any other amount paid or then due and payable to the
+Licensor.
+
+6.3 In the event of any termination of this Agreement:
+
+i.  The Licensee shall cease all further use of the Software, or any
+    portion thereof, in all forms and on all media and computer memory,
+    and the Licensee shall immediately destroy all Copies of the
+    Software, including backup and archival copies, and provide
+    satisfactory evidence of such destruction to Licensor within
+    ten (10) days following termination;
+ii. The Licensee shall pay all outstanding fees and amounts owed to the
+    Licensor as of the date of termination; and
+iii. Where such termination is the result of a breach or threatened
+     breach of this Agreement by the Licensee, the Licensor may apply
+     for any remedies available to it by law against the breach or
+     threatened breach.
+
+6.4 The Licensee acknowledges and agrees that the failure to perform its
+duties under this Agreement may cause the Licensor to suffer irreparable
+injury for which the Licensor may not have an adequate remedy available
+at law. Accordingly, the Licensor may seek to obtain injunctive or other
+equitable relief to prevent or curtail any breach of this Agreement,
+whether such breach is threatened or actual, without posting a bond or
+security, in addition to and without prejudice to such other rights and
+remedies, that may be available under this Agreement or under any
+applicable law.
+
+6.5 The Licensee acknowledges and agrees that any disclosure of the
+Software to a third party in violation of the terms of this Agreement
+constitutes a material, incurable breach of this Agreement and shall
+result in the automatic termination of this Agreement and the immediate
+termination of all licences granted to the Licensee by this Agreement.
+The Licensee further agrees that it shall be strictly liable for all
+damages to the Licensor that result from any disclosure of the Software
+to any third party.
+
+6.6 The rights and remedies of Licensor in this Clause 6 shall be
+cumulative and in addition to all other rights and remedies available at
+law and in equity.
+
+6.7 The provisions of this Agreement which by their sense and context
+should survive any termination or expiration of this Agreement,
+including without limitation Clauses 3, 4, 5, 6, 7, and 8 of this
+Agreement, shall survive termination of this Agreement and shall remain
+binding on the Parties.
+
+## 7. GOVERNING LAW AND JURISDICTION
+
+7.1 The interpretation, validity and performance of this Agreement shall
+be governed in accordance with the Laws of Malta and the Courts of Malta
+shall have exclusive jurisdiction over this Agreement. The Licensee
+hereby consents to the exclusive personal jurisdiction of such courts,
+and waives any objection in any such action based on improper venue,
+inconvenient forum or similar grounds.
+
+7.2 The Parties agree that any and all disputes arising out of or in
+connection with this Agreement, the use of Avail's Software, or its
+services will be resolved exclusively by means of individual
+arbitration. The Parties agree that such disputes will be governed by
+the Malta Arbitration Act (Chapter 387 of the Laws of Malta), and shall
+be referred to the Malta Arbitration Centre and its arbitral tribunals.
+The Parties hereby waive their right to normal recourse to the Courts of
+Law. This Clause shall survive the termination of this Agreement.
+
+7.3 Notwithstanding the provisions of Clause 7.2, the Parties both
+retain the right to seek injunctive or other equitable relief from the
+Maltese Courts of Law in order to prevent or enjoin the infringement or
+misappropriation of either Party's respective IP rights.
+
+7.4 The Parties agree that any claims brought against each other will be
+brought in their own individual capacity, and not as a member of a class
+of claimants in any legal action. If this provision is found to be
+unenforceable, Clauses 7.2 and 7.3 shall also be null and void.
+
+## 8. SEVERABILITY AND WAIVER
+
+8.1 With the exception of Clause 7.4, if any provision of this Agreement
+is held invalid or unenforceable under any applicable law, such
+invalidity or unenforceability will not affect any other provision of
+this Agreement that can be given effect without the invalid or
+unenforceable provision, and this Agreement shall be construed as if
+said invalid or unenforceable provision had not been contained herein.
+
+8.2 No waiver of any provision of this Agreement shall be effective
+unless made in writing and signed by the waiving Party, nor shall any
+such waiver, if made, constitute a waiver of any subsequent breach of
+the same or of any other provision of this Agreement. The failure to
+exercise any right provided in this Agreement shall not be a waiver of
+prior or subsequent rights.
+
+## 9. ENTIRE AGREEMENT, ACKNOWLEDGEMENT, AND AMENDMENT
+
+9.1 This Agreement constitutes the entire agreement between the Licensor
+and the Licensee, and all other parties involved. It supersedes all
+prior agreements of the parties, whether written or oral, express or
+implied, statement, condition, representation, or warranty.
+
+9.2 **BY CLICKING THE BUTTON INDICATING ACCEPTANCE AS STATED BELOW, OR
+BY INSTALLING THE SOFTWARE, THE LICENSEE ACKNOWLEDGES THAT THEY HAVE
+READ THIS AGREEMENT, UNDERSTOOD IT, AND AGREE TO BE BOUND BY ITS TERMS
+AND CONDITIONS.**
+
+9.3 NO AMENDMENT TO THIS AGREEMENT SHALL BE EFFECTIVE UNLESS SIGNED BY A
+DULY AUTHORISED REPRESENTATIVE OF AVAIL.
