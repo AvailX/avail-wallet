@@ -1,4 +1,3 @@
-"$schema" = "./schemas/desktop-schema.toml"
 identifier = "main-capability"
 description = "Capability for the main window"
 windows = ["main", "walletConnect"]
