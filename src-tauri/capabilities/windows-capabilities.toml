@@ -1,0 +1,24 @@
+"$schema" = ".\\schema\\desktop-schema.toml"
+identifier = "main-capability"
+description = "Capability for the main window"
+platforms = ["windows"]
+windows = ["main", "walletConnect"]
+permissions = [
+    "path:default",
+    "event:default",
+    "event:allow-listen",
+    "window:default",
+    "window:allow-create",
+    "window:allow-close",
+    "updater:allow-check",
+    "updater:default",
+    "process:allow-restart",
+    "window:allow-set-title",
+    "window:allow-destroy",
+    "webview:allow-create-webview-window",
+    "webview:default",
+    "app:default",
+    "resources:default",
+    "menu:default",
+    "tray:default",
+]

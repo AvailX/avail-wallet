@@ -1,6 +1,7 @@
 "$schema" = "./schemas/desktop-schema.toml"
 identifier = "main-capability"
 description = "Capability for the main window"
+platform = ["linux", "macOS"]
 windows = ["main", "walletConnect"]
 permissions = [
   "path:default",
