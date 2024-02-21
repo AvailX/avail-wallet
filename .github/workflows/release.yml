@@ -99,28 +99,15 @@ jobs:
           crate: tauri-cli
           version: "2.0.0-beta.1"
 
-      - name: Prepare EULA
+      - name: Prepare EULA (Unix)
+        if: matrix.platform != 'windows-latest'
         run: |
-          if [ "${{ runner.os }}" = "Windows" ]; then
-              [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("${{ secrets.AVAIL_WALLET_EULA_B64 }}") | Out-File .\EULA.rtf)
-          else
-            echo -n "${{ secrets.AVAIL_WALLET_EULA_B64 }}" | base64 -d > EULA.rtf
             echo -n "${{ secrets.AVAIL_WALLET_EULA_TXT_B64 }}" | base64 -d > EULA.txt
-          fi
-        shell: bash
 
-      - name: Determine args value
-        id: determine_args
+      - name: Prepare EULA (Windows)
+        if: matrix.platform == 'windows-latest'
         run: |
-          if [[ "${{ matrix.platform }}" == "macos_arm-latest" ]]; then
-            echo "::set-output name=args_value::--target aarch64-apple-darwin --config '{\"bundle\": {\"licenseFile\": \"EULA.txt\"}}'"
-          elif [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-            echo "::set-output name=args_value::--config '{\"bundle\": {\"licenseFile\": \"EULA.rtf\"}}'"
-          else
-            echo "::set-output name=args_value::--config '{\"bundle\": {\"licenseFile\": \"EULA.txt\"}}'"
-          fi
-        shell: bash
-
+          [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("${{ secrets.AVAIL_WALLET_EULA_B64 }}") | Out-File .\EULA.rtf)
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -141,7 +128,7 @@ jobs:
         with:
           tauriScript: cargo tauri
           # This is required for Apple ARM chips and license bundling
-          args: ${{ steps.determine_args.outputs.args_value }}
+          args: "${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64-apple-darwin' || '' }} --config \"{ 'bundle': 'licenseFile': ${{ matrix.platform == 'windows' && 'EULA.rtf' || 'EULA.txt' }} }\" "
           distPath: dist
           # The tagName is alpha for develop, beta for staging and latest for release
           includeDebug: ${{ github.ref_name == 'release' && false || true }}
