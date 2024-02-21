@@ -3,8 +3,5 @@
     "beforeDevCommand": "npm i & npm run dev",
     "beforeBuildCommand": "npm i & npm run build",
     "frontendDist": "..\\dist\\"
-  },
-  "bundle":{
-    "licenseFile": "..\\EULA.rtf\\"
   }
 }
