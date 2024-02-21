@@ -99,6 +99,11 @@ jobs:
           crate: tauri-cli
           version: "2.0.0-beta.1"
 
+      - name: Prepare EULA
+        run: |
+          echo -n "${{ secrets.AVAIL_WALLET_EULA_B64 }}" | base64 -d > EULA.rtf
+          echo -n "${{ secrets.AVAIL_WALLET_EULA_TXT_B64 }}" | base64 -d > EULA.txt
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -116,17 +121,18 @@ jobs:
           MAINNET_API_OBSCURA: ""
           DEVNET_API_OBSCURA: ""
         with:
-            tauriScript: cargo tauri
-            args: ${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64-apple-darwin' || '' }} # This is required for Apple ARM chips
-            distPath: dist
-            # The tagName is alpha for develop, beta for staging and latest for release
-            includeDebug: ${{ github.ref_name == 'release' && false || true }}
-            includeRelease: ${{ github.ref_name == 'release' && true || false }}
-            tagName: "v__VERSION__-${{ vars.TAGNAME }}"
-            releaseName: "v__VERSION__-${{ vars.TAGNAME }}"
-            # The release body is optional, but it's a good place to put release notes
-            releaseBody: 'See the assets to download this version and install.'
-            # Always create a draft release, so we can check the assets before publishing
-            releaseDraft: true
-            # Only publish the release if the branch is release
-            prerelease: ${{ github.ref_name == 'release' && false || true }}
+          tauriScript: cargo tauri
+          # This is required for Apple ARM chips and license bundling
+          args: "${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64-apple-darwin' || '' }} --config \"{ 'bundle': 'licenseFile': ${{ matrix.platform == 'windows' && 'EULA.rtf' || 'EULA.txt' }} }\" "
+          distPath: dist
+          # The tagName is alpha for develop, beta for staging and latest for release
+          includeDebug: ${{ github.ref_name == 'release' && false || true }}
+          includeRelease: ${{ github.ref_name == 'release' && true || false }}
+          tagName: "v__VERSION__-${{ vars.TAGNAME }}"
+          releaseName: "v__VERSION__-${{ vars.TAGNAME }}"
+          # The release body is optional, but it's a good place to put release notes
+          releaseBody: 'See the assets to download this version and install.'
+          # Always create a draft release, so we can check the assets before publishing
+          releaseDraft: true
+          # Only publish the release if the branch is release
+          prerelease: ${{ github.ref_name == 'release' && false || true }}

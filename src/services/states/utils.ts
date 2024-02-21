@@ -1,18 +1,18 @@
 // Notifications
-import {NotificationProps} from '../../types/notification';
+import { NotificationProps } from '../../types/notification';
 
 // Username
-import {getUsername} from '../storage/persistent';
-import {get_address} from '../storage/persistent';
+import { getUsername } from '../storage/persistent';
+import { get_address } from '../storage/persistent';
 
 // Auth
-import {getAuthType} from '../storage/persistent';
+import { getAuthType } from '../storage/persistent';
 
 // Balance
-import {get_balance, get_total_balance} from '../tokens/get_balance';
-import {type GetBalancesRequest} from '../wallet-connect/WCTypes';
+import { get_balance, get_total_balance } from '../tokens/get_balance';
+import { type GetBalancesRequest } from '../wallet-connect/WCTypes';
 
-{/* --Get Username-- */}
+{/* --Get Username-- */ }
 export const getName = async (setUsername: React.Dispatch<React.SetStateAction<string>>) => {
 	const username = await getUsername();
 	if (username == '#0') {
@@ -23,13 +23,13 @@ export const getName = async (setUsername: React.Dispatch<React.SetStateAction<s
 	setUsername(username);
 };
 
-{/* --Get Address-- */}
+{/* --Get Address-- */ }
 export const getAddress = async (setAddress: React.Dispatch<React.SetStateAction<string>>) => {
 	const address = await get_address();
 	setAddress(address);
 };
 
-{/* --Get Initial-- */}
+{/* --Get Initial-- */ }
 export const getInitial = async (setInitial: React.Dispatch<React.SetStateAction<string | undefined>>) => {
 	const username = await getUsername();
 
@@ -42,13 +42,13 @@ export const getInitial = async (setInitial: React.Dispatch<React.SetStateAction
 	setInitial(initial);
 };
 
-{/* --Get Authentication Type-- */}
+{/* --Get Authentication Type-- */ }
 export const getAuth = async (setBiometric: React.Dispatch<React.SetStateAction<string>>) => {
 	const auth = await getAuthType();
 	setBiometric(auth);
 };
 
-{/* --Get Wallet Balance-- */}
+{/* --Get Wallet Balance-- */ }
 export const getTokenBalance = async (asset_id: string) => {
 	console.log('ASSSSSE ID', asset_id);
 	const request: GetBalancesRequest = {
