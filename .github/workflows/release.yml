@@ -101,8 +101,27 @@ jobs:
 
       - name: Prepare EULA
         run: |
-          echo -n "${{ secrets.AVAIL_WALLET_EULA_B64 }}" | base64 -d > EULA.rtf
-          echo -n "${{ secrets.AVAIL_WALLET_EULA_TXT_B64 }}" | base64 -d > EULA.txt
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            echo ${{ secrets.AVAIL_WALLET_EULA_B64 }} | powershell -Command "[Convert]::FromBase64String((Get-Content -Raw stdin)) | Set-Content -Encoding Byte EULA.rtf"
+            echo ${{ secrets.AVAIL_WALLET_EULA_TXT_B64 }} | powershell -Command "[Convert]::FromBase64String((Get-Content -Raw stdin)) | Set-Content -Encoding Byte EULA.txt"
+          else
+            echo -n "${{ secrets.AVAIL_WALLET_EULA_B64 }}" | base64 -d > EULA.rtf
+            echo -n "${{ secrets.AVAIL_WALLET_EULA_TXT_B64 }}" | base64 -d > EULA.txt
+          fi
+        shell: bash
+
+      - name: Determine args value
+        id: determine_args
+        run: |
+          if [[ "${{ matrix.platform }}" == "macos_arm-latest" ]]; then
+            echo "::set-output name=args_value::--target aarch64-apple-darwin --config '{\"bundle\": {\"licenseFile\": \"EULA.txt\"}}'"
+          elif [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+            echo "::set-output name=args_value::--config '{\"bundle\": {\"licenseFile\": \"EULA.rtf\"}}'"
+          else
+            echo "::set-output name=args_value::--config '{\"bundle\": {\"licenseFile\": \"EULA.txt\"}}'"
+          fi
+        shell: bash
+
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -123,7 +142,7 @@ jobs:
         with:
           tauriScript: cargo tauri
           # This is required for Apple ARM chips and license bundling
-          args: ${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64-apple-darwin' || '' }}
+          args: ${{ steps.determine_args.outputs.args_value }}
           distPath: dist
           # The tagName is alpha for develop, beta for staging and latest for release
           includeDebug: ${{ github.ref_name == 'release' && false || true }}
