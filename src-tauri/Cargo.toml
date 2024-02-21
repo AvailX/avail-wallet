@@ -1,6 +1,6 @@
 [package]
 name = "avail_wallet"
-version = "0.0.2"
+version = "0.0.1"
 description = "A Tauri App"
 authors = ["Avail"]
 license = "Apache-2.0"
@@ -15,7 +15,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-utils = "=2.0.0-beta.1"
-tauri-build = "=2.0.0-beta.1"
+tauri-build = { version = "=2.0.0-beta.1", features = [] }
 
 
 [dependencies]
