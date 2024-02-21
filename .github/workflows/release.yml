@@ -107,7 +107,7 @@ jobs:
       - name: Prepare EULA (Windows)
         if: matrix.platform == 'windows-latest'
         run: |
-          [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("${{ secrets.AVAIL_WALLET_EULA_B64 }}") | Out-File .\EULA.rtf)
+          ([System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("${{ secrets.AVAIL_WALLET_EULA_B64 }}")) | Out-File .\EULA.rtf)
 
       - name: Prepare args
         id: prepare_args
