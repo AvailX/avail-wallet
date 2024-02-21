@@ -1,4 +1,4 @@
-"$schema" = "./schemas/desktop-schema.toml"
+"$schema" = "./schemas/desktop-schema.json"
 identifier = "main-capability"
 description = "Capability for the main window"
 platform = ["linux", "macOS"]

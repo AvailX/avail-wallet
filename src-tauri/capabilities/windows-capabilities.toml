@@ -1,4 +1,4 @@
-"$schema" = ".\\schema\\desktop-schema.toml"
+"$schema" = ".\\schema\\desktop-schema.json"
 identifier = "main-capability"
 description = "Capability for the main window"
 platforms = ["windows"]
