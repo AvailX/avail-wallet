@@ -84,7 +84,6 @@ const Recovery = () => {
 		if (seed.split(' ').length === 12 || seed.split(' ').length === 15 || seed.split(' ').length === 18 || seed.split(' ').length === 21 || seed.split(' ').length === 24) {
 			setIsSecureAccountVisible(true);
 			setSeedNotice(false);
-			setDateNotice(true);
 		} else {
 			setSeedNotice(false);
 			setMessage('Invalid Seed Phrase');
@@ -140,10 +139,6 @@ const Recovery = () => {
 		}
 	};
 
-	const handleRecovery = () => {
-
-	};
-
 	return (
 		<Layout>
 			<InfoAlert infoAlert={info} setInfoAlert={setInfo} message={message}/>
@@ -197,7 +192,7 @@ const Recovery = () => {
 				</>
 			)}
 
-			{/* --Date Time Picker-- */}
+			{/* --Date Time Picker--
 			{isSecureAccountVisible && !chooseDate &&
 			<mui.Box
 			sx={{
@@ -224,9 +219,10 @@ const Recovery = () => {
 			</SecureButton>
 			</mui.Box>
 			}
+			*/}
 
 			{/* --Account Details-- */}
-			{isSecureAccountVisible && chooseDate && (
+			{isSecureAccountVisible && (
 				<mui.Box
 					sx={{
 						position: 'fixed',
