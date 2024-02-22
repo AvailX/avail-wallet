@@ -47,6 +47,7 @@ pub fn run() {
             app.handle()
                 .plugin(tauri_plugin_updater::Builder::new().build())?;
             // NOTE: Updater is only supported on desktop platforms
+            // app.listen("deep-link://new-url", move |event| deep_link(event, handle.clone()));
 
             Ok(())
         })
@@ -68,6 +69,7 @@ pub fn run() {
             get_backup_flag,
             update_backup_flag,
             get_network,
+            // get_all_nft_data,
             get_language,
             update_language,
             get_stored_tokens,
