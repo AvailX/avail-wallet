@@ -186,7 +186,7 @@ function Register() {
 						id='password'
 						label={t('signup.password')}
 						onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-							setPassword(event.target.value);
+							handlePasswordChange(event);
 						}}
 						value={password}
 						type={passwordHidden ? 'password' : ''}
@@ -212,7 +212,7 @@ function Register() {
 						id='confirmPassword'
 						label={t('signup.confirmPassword')}
 						onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-							setConfirmPassword(event.target.value);
+							handleConfirmPasswordChange(event);
 						}}
 						value={confirmPassword}
 						color='primary'

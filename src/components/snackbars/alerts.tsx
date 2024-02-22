@@ -98,9 +98,9 @@ export const WarningAlert: React.FC<WarningAlertProperties> = ({warningAlert, me
 );
 
 export const InfoAlert: React.FC<InfoAlertProperties> = ({infoAlert, message, setInfoAlert}) => (
-	<Snackbar open={infoAlert} autoHideDuration={6000} onClose={() => {
+	<Snackbar open={infoAlert}  onClose={() => {
 		handleCloseInfo(setInfoAlert);
-	}} anchorOrigin={{vertical: 'top', horizontal: 'center'}}>
+	}} anchorOrigin={{vertical: 'top', horizontal: 'center'}} sx={{width:'60%'}}>
 		<div>
 			<Alert severity='info' action={
 				<IconButton
