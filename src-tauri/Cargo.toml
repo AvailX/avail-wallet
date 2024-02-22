@@ -1,6 +1,6 @@
 [package]
 name = "avail_wallet"
-version = "0.0.1"
+version = "0.0.2"
 description = "A Tauri App"
 authors = ["Avail"]
 license = "Apache-2.0"

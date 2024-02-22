@@ -1,3 +1,4 @@
+use chrono::{DateTime, Local};
 use snarkvm::prelude::{Testnet3, ToBytes};
 
 use crate::{
@@ -68,6 +69,8 @@ pub async fn recover_wallet_from_seed_phrase(
     };
 
     let _v_key = avail_wallet.view_key.to_bytes_le()?;
+
+    //let mut last_sync = 0u32;
 
     initial_user_preferences(
         access_type,

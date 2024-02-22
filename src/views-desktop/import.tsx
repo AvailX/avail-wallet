@@ -22,11 +22,11 @@ import { Dayjs } from 'dayjs';
 
 // Images
 import full_logo from '../assets/logo/full-logo.svg';
-import { ArrowBack } from '@mui/icons-material';
 
 // Services
-import {checkBiometrics} from '../services/authentication/register';
-import {recover} from '../services/recovery/phrase';
+import {import_wallet} from '../services/authentication/register';
+import {delete_local_for_recovery} from '../services/recovery/phrase';
+import bs58 from 'bs58';
 
 // Typography
 import {
@@ -37,6 +37,7 @@ import {
 
 // Images
 import a_logo from '../assets/logo/a-icon.svg';
+import { ArrowBack } from '@mui/icons-material';
 
 // Alerts
 import {SuccessAlert, ErrorAlert,InfoAlert} from '../components/snackbars/alerts';
@@ -45,10 +46,11 @@ import {SuccessAlert, ErrorAlert,InfoAlert} from '../components/snackbars/alerts
 import {Languages} from '../types/languages';
 import Layout from './reusable/layout';
 
-const Recovery = () => {
+const Import = () => {
 	const md = mui.useMediaQuery('(min-width:1000px)');
 	const lg = mui.useMediaQuery('(min-width:1200px)');
 
+    const [username, setUsername] = React.useState<string | undefined>();
 	const [password, setPassword] = React.useState<string>('');
 	const [passwordHidden, setPasswordHidden] = React.useState<boolean>(true);
 	const [confirmPassword, setConfirmPassword] = React.useState<string>('');
@@ -65,7 +67,7 @@ const Recovery = () => {
 	const [error, setError] = React.useState(false);
 	const [success, setSuccess] = React.useState(false);
 	const [info, setInfo] = React.useState(false);
-	const [seedNotice,setSeedNotice] = React.useState(true);
+	const [keyNotice,setKeyNotice] = React.useState(true);
 	const [dateNotice,setDateNotice] = React.useState(false);
 	const [message, setMessage] = React.useState('');
 
@@ -75,23 +77,48 @@ const Recovery = () => {
 	// BiometricAvail is to check if user can use biometrics
 	const [biometricAvail, setBiometricAvail] = React.useState<boolean>(false);
 	const [biometric, setBiometric] = React.useState<boolean>(false);
-	const [seed, setSeed] = React.useState<string>('');
+	const [key, setKey] = React.useState<string>('');
 	const [language, setLanguage] = React.useState<Languages>(Languages.English);
 
 	const navigate = useNavigate();
 
+
+    function validatePrivateKey(pk: string) {
+        if (pk.length !== 59) {
+            setMessage('Invalid private key length');
+            setError(true);
+           return false;
+        }
+
+        if (pk.substring(0, 12) !== "APrivateKey1") {
+            setMessage('Invalid private key prefix');
+            setError(true);
+            return false;
+        }
+
+        const base58 = pk.substring(12);
+        try {
+            const base58res = bs58.decode(base58);
+        } catch (error) {
+            setMessage('Invalid private key');
+            setError(true);
+            return false;
+        }
+
+        // If everything is ok, return true to indicate success
+        return true;
+    }
+
 	const handleOrdering = () => {
-		//check if seed is 12 || 15 || 18 || 21 || 24 words
-		if (seed.split(' ').length === 12 || seed.split(' ').length === 15 || seed.split(' ').length === 18 || seed.split(' ').length === 21 || seed.split(' ').length === 24) {
+		//check if privateKey is valid
+		if (validatePrivateKey(key)) {
 			setIsSecureAccountVisible(true);
-			setSeedNotice(false);
+			setKeyNotice(false);
 		} else {
-			setSeedNotice(false);
-			setMessage('Invalid Seed Phrase');
-			setError(true);
+			setKeyNotice(false);
 
 			setTimeout(() => {
-				setSeedNotice(true);
+				setKeyNotice(true);
 			}, 5500);
 		}
 
@@ -147,10 +174,10 @@ const Recovery = () => {
 			<ErrorAlert errorAlert={error} setErrorAlert={setError} message={message}/>
 
 			{/*-- Seed Info Notice --*/}
-			<mui.Snackbar open={seedNotice}  anchorOrigin={{vertical: 'top', horizontal: 'center'}} sx={{width:'60%'}}>
+			<mui.Snackbar open={keyNotice}  anchorOrigin={{vertical: 'top', horizontal: 'center'}} sx={{width:'60%'}}>
 			<div>
 			<mui.Alert severity='info'>
-			Notice: If you already have an account this action will destroy it. Secret phrases from other wallets might not work and generate a different account. Use the import page to import accounts from other wallets :)
+			 Notice:  If you already have an account this action will destroy it. This will create an Avail Wallet from the private key you're importing. The wallet will scan the entire blockchain for your transactions and records.
 			</mui.Alert>
 			</div>
 			</mui.Snackbar>
@@ -176,10 +203,10 @@ const Recovery = () => {
 					</mui.Box>
 
 					<WhiteHueTextField
-						placeholder='Input your secret recovery phrase..'
-						value={seed}
+						placeholder='Input the private key your are importing..'
+						value={key}
 						onChange={e => {
-							setSeed(e.target.value);
+							setKey(e.target.value);
 						}}
 						sx={{
 							width: '70%', alignSelf: 'center', padding: '5%', mt: '10%', mb: '10%',
@@ -187,7 +214,7 @@ const Recovery = () => {
 						InputProps={{sx: {height: '100px', fontSize: '1.3rem', wordWrap: 'break-word'}}}
 					/>
 
-					<CTAButton text={t('recover.recover')} onClick={() => {
+					<CTAButton text="Import" onClick={() => {
 						handleOrdering();
 					}} width='25%' />
 				</>
@@ -242,7 +269,7 @@ const Recovery = () => {
 					<mui.Box sx={{
 						display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '80%', alignSelf: 'center',
 					}}>
-						 <mui.Button
+                        <mui.Button
                             variant='contained'
                             onClick={() => {
                                 setIsSecureAccountVisible(false);
@@ -264,6 +291,19 @@ const Recovery = () => {
 						<Title2Text sx={{color: '#00FFAA', mt: '10%'}}>Secure your Account</Title2Text >
 						<LanguageSelector language={language} setLanguage={setLanguage}/>
 					</mui.Box>
+
+                    <WhiteHueTextField
+						id='username'
+						label={t('signup.username')}
+						onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+							setUsername(event.target.value);
+						}}
+						value={username}
+						inputProps={{style: {color: '#fff'}}}
+						InputLabelProps={{style: {color: '#fff'}}}
+						sx={{width: md ? '55%' : '65%', marginTop: md ? '2%' : '3%'}}
+					/>
+
 					<WhiteHueTextField
 						id='password'
 						label='Password'
@@ -274,7 +314,7 @@ const Recovery = () => {
 						type= {passwordHidden ? 'password' : ''}
 						inputProps={{style: {color: '#fff'}}}
 						InputLabelProps={{style: {color: '#fff'}}}
-						sx={{width: md ? '55%' : '65%', marginTop: md ? '6%' : '3%'}}
+						sx={{width: md ? '55%' : '65%', marginTop: md ? '2%' : '3%'}}
 						InputProps={{
 							endAdornment: (
 								<mui.InputAdornment position='end'>
@@ -318,7 +358,23 @@ const Recovery = () => {
 					/>
 					{/* Additional components or buttons can be added here */}
 					<SecureButton onClick={() => {
-						recover(seed, password, biometric, language, navigate, setSuccess, setError, setMessage);
+                        delete_local_for_recovery(password).then(() => {
+						import_wallet(username,password, false,key, language).then((res)=>{
+                            setMessage("Successfully imported wallet");
+                            setSuccess(true);
+                            navigate('/home');
+                        }).catch((err)=>{
+                            console.log(err);
+                            setMessage("Error importing wallet");
+                            setError(true);
+                            //refresh the page
+                            window.location.reload();
+                        });}).catch((err)=>{
+                            console.log(err);
+                            setMessage("Error importing wallet");
+                            setError(true);
+                            window.location.reload();
+                        });
 					}}
 					sx={{marginTop: '5%'}}
 					endIcon={<ArrowForward style={{color: '#FFF'}} />}
@@ -337,4 +393,4 @@ const Recovery = () => {
 	);
 };
 
-export default Recovery;
+export default Import;

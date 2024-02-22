@@ -150,7 +150,7 @@ function Register() {
 					height: '100vh', width: '50%', backgroundImage: `linear-gradient(to right, transparent, #111111),url(${loginimage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center',
 				}} />
 
-				<mui.Grid xs={6} sx={{marginTop: lg ? '7%' : (md ? '5.5%' : '3%'), ml: lg ? '7%' : (md ? '5%' : '7%')}}>
+				<mui.Grid xs={6} sx={{marginTop: lg ? '4%' : (md ? '2%' : '2%'), ml: lg ? '7%' : (md ? '5%' : '7%')}}>
 					<mui.Box sx={{
 						display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
 					}}>
@@ -186,7 +186,7 @@ function Register() {
 						id='password'
 						label={t('signup.password')}
 						onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-							setPassword(event.target.value);
+							handlePasswordChange(event);
 						}}
 						value={password}
 						type={passwordHidden ? 'password' : ''}
@@ -212,7 +212,7 @@ function Register() {
 						id='confirmPassword'
 						label={t('signup.confirmPassword')}
 						onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-							setConfirmPassword(event.target.value);
+							handleConfirmPasswordChange(event);
 						}}
 						value={confirmPassword}
 						color='primary'
@@ -284,6 +284,20 @@ function Register() {
 							navigate('/recovery');
 						}}>
 							<BodyText sx={{fontWeight: '700', wordWrap: 'break-word', textTransform: 'none'}}>{t('signup.recover')}</BodyText>
+						</mui.Button>
+					</mui.Box>
+					<mui.Box sx={{
+						display: 'flex', flexDirection: 'row', marginTop: '5%', width: md ? '75%' : '85%', alignItems: 'center', justifyContent: 'space-between',
+					}}>
+						<mui.Typography sx={{
+							color: '#a3a3a3', fontSize: 18, fontWeight: '700', wordWrap: 'break-word', alignContent: 'end',
+						}}>Want to import an account ?</mui.Typography>
+						<mui.Button sx={{
+							display: 'flex', width: '123px', height: '35px', borderRadius: 9, background: '#3E3E3E', color: '#FFFFFF', '&:hover': {background: '#00FFAA', color: '#000'},
+						}} onClick={() => {
+							navigate('/import');
+						}}>
+							<BodyText sx={{fontWeight: '700', wordWrap: 'break-word', textTransform: 'none'}}>Import</BodyText>
 						</mui.Button>
 					</mui.Box>
 

@@ -118,7 +118,7 @@ pub async fn import_wallet(
         access_type,
         username,
         tag,
-        false,
+        true,
         backup,
         avail_wallet.address.to_string(),
         language,
@@ -152,8 +152,6 @@ pub async fn import_wallet(
     PASS.set_pass_session(&password)?;
 
     get_session_after_creation(&avail_wallet.private_key).await?;
-
-    get_and_store_all_data().await?;
 
     Ok(storage)
 }

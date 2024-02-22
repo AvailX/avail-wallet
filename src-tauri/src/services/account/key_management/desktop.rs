@@ -139,6 +139,9 @@ pub fn delete_key<N: Network>(password: &str) -> AvailResult<String> {
     let v_entry = Entry::new("com.avail.wallet.v", "avl-v")?;
     v_entry.delete_password()?;
 
+    let s_entry = Entry::new("com.avail.wallet.phrase", "avl-s")?;
+    s_entry.delete_password()?;
+
     Ok("Key Deleted".to_string())
 }
 

@@ -90,7 +90,9 @@ const Browser: React.FC<BrowserProperties> = ({initialUrl, theme = 'light', hand
 			setUrl(inputUrl);
 			setShowMenu(false);
 
-			sessionStorage.setItem('activeUrl', inputUrl);
+			if (inputUrl !== 'https://faucet.puzzle.online') {
+				sessionStorage.setItem('activeUrl', inputUrl);
+			}
 		}
 	};
 
@@ -139,7 +141,9 @@ const Browser: React.FC<BrowserProperties> = ({initialUrl, theme = 'light', hand
 		const iframe = document.querySelector('iframe');
 		if (iframe) {
 			iframe.src = url;
-			sessionStorage.setItem('activeUrl', url);
+			if (url !== 'https://faucet.puzzle.online') {
+				sessionStorage.setItem('activeUrl', url);
+			}
 		}
 	};
 
@@ -147,7 +151,7 @@ const Browser: React.FC<BrowserProperties> = ({initialUrl, theme = 'light', hand
 		// Check for active url in session storage
 		const activeUrl = sessionStorage.getItem('activeUrl');
 		console.log('activeUrl', activeUrl);
-		if (activeUrl) {
+		if (activeUrl && activeUrl !== 'https://faucet.puzzle.online') {
 			setUrl(activeUrl);
 			setInputUrl(activeUrl);
 		}

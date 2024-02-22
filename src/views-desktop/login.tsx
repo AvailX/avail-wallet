@@ -159,6 +159,21 @@ function Login() {
 							<BodyText sx={{fontWeight: '700', wordWrap: 'break-word', textTransform: 'none'}}>{t('login.recover')}</BodyText>
 						</mui.Button>
 					</mui.Box>
+					<mui.Box sx={{
+						display: 'flex', flexDirection: 'row', marginTop: '4%', width: lg ? '70%' : (md ? '80%' : '90%'), alignItems: 'center', justifyContent: 'space-between',
+					}}>
+						<mui.Typography sx={{
+							color: '#a3a3a3', fontSize: 18, fontWeight: '700', wordWrap: 'break-word', alignContent: 'end',
+						}}>Want to import an account ?</mui.Typography>
+						<mui.Button sx={{
+							display: 'flex', width: '123px', height: '35px', borderRadius: 9, background: '#3E3E3E', color: '#FFFFFF', '&:hover': {background: '#00FFAA', color: '#000'},
+						}} onClick={() => {
+							navigate('/import');
+						}}>
+							<BodyText sx={{fontWeight: '700', wordWrap: 'break-word', textTransform: 'none'}}>Import</BodyText>
+						</mui.Button>
+					</mui.Box>
+
 				</mui.Grid>
 			</mui.Box>
 		</Layout>
