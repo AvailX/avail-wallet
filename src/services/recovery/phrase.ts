@@ -28,6 +28,7 @@ export async function recover(phrase: string, password: string, authType: boolea
 
 			setMessage("Recovery Failed: "+error.external_msg);
 			setErrorAlert(true);
+
 		});
 	}).catch(async(error_) => {
 		let error = error_;
@@ -39,6 +40,7 @@ export async function recover(phrase: string, password: string, authType: boolea
 
 		setMessage(error.external_msg);
 		setErrorAlert(true);
+
 	});
 }
 

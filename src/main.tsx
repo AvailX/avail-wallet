@@ -23,6 +23,7 @@ import Nfts from './views-desktop/nft';
 import PrivacyPolicy from './views-desktop/privacy-policy';
 import TermsAndConditions from './views-desktop/terms-and-conditions';
 import Oops from './views-desktop/oops';
+import Import from './views-desktop/import';
 
 // global font styles
 import './index.css';
@@ -61,6 +62,7 @@ const router = createBrowserRouter([
 	{path: '/nfts', element: <Nfts />},
 	{path: '/privacy-policy', element: <PrivacyPolicy />},
 	{path: '/terms-of-service', element: <TermsAndConditions />},
+	{path: '/import', element: <Import />},
 ]);
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(
