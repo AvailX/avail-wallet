@@ -30,10 +30,11 @@ const BrowserView: React.FC = () => {
 		console.log('Location State ' + location.state);
 		if (location.state !== undefined) {
 			const state = location.state as string;
-			setUrl(state);
-			setActiveUrl(state);
+
 		} else if (activeUrl !== '') {
-			setUrl(activeUrl);
+			if (activeUrl !== "https://faucet.puzzle.online") {
+				setUrl(activeUrl);
+			}
 		}
 	}
 

@@ -50,7 +50,7 @@ const Import = () => {
 	const md = mui.useMediaQuery('(min-width:1000px)');
 	const lg = mui.useMediaQuery('(min-width:1200px)');
 
-    const [username, setUsername] = React.useState<string>('');
+    const [username, setUsername] = React.useState<string | undefined>();
 	const [password, setPassword] = React.useState<string>('');
 	const [passwordHidden, setPasswordHidden] = React.useState<boolean>(true);
 	const [confirmPassword, setConfirmPassword] = React.useState<string>('');

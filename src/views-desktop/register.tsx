@@ -150,7 +150,7 @@ function Register() {
 					height: '100vh', width: '50%', backgroundImage: `linear-gradient(to right, transparent, #111111),url(${loginimage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center',
 				}} />
 
-				<mui.Grid xs={6} sx={{marginTop: lg ? '7%' : (md ? '5.5%' : '3%'), ml: lg ? '7%' : (md ? '5%' : '7%')}}>
+				<mui.Grid xs={6} sx={{marginTop: lg ? '4%' : (md ? '2%' : '2%'), ml: lg ? '7%' : (md ? '5%' : '7%')}}>
 					<mui.Box sx={{
 						display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
 					}}>

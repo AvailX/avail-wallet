@@ -42,7 +42,7 @@ export async function register_seed_phrase(setErrorAlert: React.Dispatch<React.S
 	}));
 }
 
-export async function import_wallet(username: string, password: string, authType: boolean, private_key: string, language: Languages) {
+export async function import_wallet(username: string | undefined, password: string, authType: boolean, private_key: string, language: Languages) {
 	const response: string = await invoke<string>('import_wallet', {
 		username, password, access_type: authType, private_key, backup: false, language,
 	});
