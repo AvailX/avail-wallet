@@ -1,15 +1,15 @@
 
-import {Core} from '@walletconnect/core';
-import {type JsonRpcError, type JsonRpcResult, formatJsonRpcError} from '@walletconnect/jsonrpc-utils';
-import {type SignClientTypes, type Verify} from '@walletconnect/types';
-import {buildApprovedNamespaces, getSdkError} from '@walletconnect/utils';
-import {type IWeb3Wallet, Web3Wallet, type Web3WalletTypes} from '@walletconnect/web3wallet';
-import {emit} from '@tauri-apps/api/event';
-import {WebviewWindow} from '@tauri-apps/api/webviewWindow';
-import {get_address} from '../storage/persistent';
-import {AleoWallet} from './AleoWallet';
-import {SessionInfo} from './SessionInfo';
-import {DappSession, type wcRequest} from './WCTypes';
+import { Core } from '@walletconnect/core';
+import { JsonRpcError, JsonRpcResult, formatJsonRpcError } from '@walletconnect/jsonrpc-utils';
+import { SignClientTypes, Verify } from '@walletconnect/types';
+import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
+import { IWeb3Wallet, Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
+import { emit } from '@tauri-apps/api/event';
+import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { get_address } from '../storage/persistent';
+import { AleoWallet } from './AleoWallet';
+import { SessionInfo } from './SessionInfo';
+import { DappSession, wcRequest } from './WCTypes';
 
 type PingEventData = Omit<SignClientTypes.BaseEventArgs, 'params'>;
 
@@ -242,7 +242,7 @@ export class WalletConnectManager {
 			console.log(`Handling request for ${chainId} | ${request_method}...`);
 
 			let response: JsonRpcResult | JsonRpcError
-                = formatJsonRpcError(requestEvent.id, `Chain unsupported ${chainId}`);
+				= formatJsonRpcError(requestEvent.id, `Chain unsupported ${chainId}`);
 
 			if (chainId === this.aleo_wallet.chainName()) {
 				response = await this.aleo_wallet.invokeMethod(requestEvent);
@@ -251,12 +251,12 @@ export class WalletConnectManager {
 			}
 
 			console.log('Responding with...', response);
-			await this.theWallet.respondSessionRequest({topic, response});
+			await this.theWallet.respondSessionRequest({ topic, response });
 		} catch (error) {
 			console.log('Failed', (error as Error).message);
 			const topic = requestEvent.topic;
 			console.log('============>>>> Request event', requestEvent);
-			await this.theWallet?.respondSessionRequest({topic, response: formatJsonRpcError(requestEvent.id, (error as Error).message)});
+			await this.theWallet?.respondSessionRequest({ topic, response: formatJsonRpcError(requestEvent.id, (error as Error).message) });
 		} finally {
 			console.log();
 			console.log('  <<< session_request event <<<');
@@ -285,19 +285,19 @@ export class WalletConnectManager {
 		}
 
 		console.log('Pairing with...', uri);
-		await this.theWallet?.pair({uri});
+		await this.theWallet?.pair({ uri });
 	}
 
 	async close() {
 		/*
-        If (this.pairingTopic) {
-            console.log("Closing pairing...")
-            await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
-            await this.theWallet?.core.history.delete(this.pairingTopic);
-        } */
+		If (this.pairingTopic) {
+			console.log("Closing pairing...")
+			await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
+			await this.theWallet?.core.history.delete(this.pairingTopic);
+		} */
 		if (this.sessionTopic) {
 			console.log('Closing pairing...');
-			await this.theWallet?.disconnectSession({topic: this.sessionTopic, reason: getSdkError('USER_DISCONNECTED')});
+			await this.theWallet?.disconnectSession({ topic: this.sessionTopic, reason: getSdkError('USER_DISCONNECTED') });
 			// Await this.theWallet?.core.history.delete(this.sessionTopic);
 		}
 

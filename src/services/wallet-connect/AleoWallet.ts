@@ -1,15 +1,15 @@
-import {invoke} from '@tauri-apps/api/core';
-import {WebviewWindow, getAll} from '@tauri-apps/api/webviewWindow';
-import {type Window} from '@tauri-apps/api/window';
+import { invoke } from '@tauri-apps/api/core';
+import { WebviewWindow, getAll } from '@tauri-apps/api/webviewWindow';
+import { type Window } from '@tauri-apps/api/window';
 import {
 	formatJsonRpcError,
 	formatJsonRpcResult,
 	type JsonRpcError,
 	type JsonRpcResult,
 } from '@walletconnect/jsonrpc-utils';
-import {type Web3WalletTypes} from '@walletconnect/web3wallet';
-import {emit} from '@tauri-apps/api/event';
-import {type AvailError} from '../../types/errors';
+import { type Web3WalletTypes } from '@walletconnect/web3wallet';
+import { emit } from '@tauri-apps/api/event';
+import { type AvailError } from '../../types/errors';
 import * as interfaces from './WCTypes';
 
 function checkWindow(reference: string) {
@@ -97,7 +97,7 @@ export class AleoWallet {
 
 		if (!checkExpired(request_identifier)) {
 			return new Promise((resolve, reject) => {
-				invoke<interfaces.GetBalancesResponse>('get_balance', {request}).then(response => {
+				invoke<interfaces.GetBalancesResponse>('get_balance', { request }).then(response => {
 					resolve(formatJsonRpcResult(requestEvent.id, response));
 				}).catch((error: AvailError) => {
 					console.error(error);
@@ -159,7 +159,7 @@ export class AleoWallet {
 				webview.close();
 				storeSession(request_identifier);
 
-				invoke<interfaces.GetBalancesResponse>('get_balance', {request}).then(response => {
+				invoke<interfaces.GetBalancesResponse>('get_balance', { request }).then(response => {
 					resolve(formatJsonRpcResult(requestEvent.id, response));
 				}).catch((error: AvailError) => {
 					console.error(error);
@@ -205,7 +205,7 @@ export class AleoWallet {
 
 		if (!checkExpired(request_identifier)) {
 			return new Promise((resolve, reject) => {
-				invoke<interfaces.DecryptResponse>('decrypt_records', {request}).then(response => {
+				invoke<interfaces.DecryptResponse>('decrypt_records', { request }).then(response => {
 					resolve(formatJsonRpcResult(requestEvent.id, response));
 				}).catch((error: AvailError) => {
 					console.error(error);
@@ -266,7 +266,7 @@ export class AleoWallet {
 				storeSession(request_identifier);
 
 				try {
-					invoke<interfaces.DecryptResponse>('decrypt_records', {request}).then(response => {
+					invoke<interfaces.DecryptResponse>('decrypt_records', { request }).then(response => {
 						resolve(formatJsonRpcResult(requestEvent.id, response));
 					}).catch((error: AvailError) => {
 						console.error(error);
@@ -343,7 +343,7 @@ export class AleoWallet {
 				unlisten();
 				webview.close();
 				try {
-					invoke<interfaces.SignatureResponse>('sign', {request}).then(response => {
+					invoke<interfaces.SignatureResponse>('sign', { request }).then(response => {
 						resolve(formatJsonRpcResult(requestEvent.id, response));
 					}).catch((error: AvailError) => {
 						reject(formatJsonRpcError(requestEvent.id, error.external_msg));
@@ -452,7 +452,7 @@ export class AleoWallet {
 
 					try {
 						console.log(request);
-						invoke<interfaces.CreateEventResponse>('request_create_event', {request, fee_private: fee_op}).then(response => {
+						invoke<interfaces.CreateEventResponse>('request_create_event', { request, fee_private: fee_op }).then(response => {
 							sessionStorage.setItem('transfer_on', 'false');
 							resolve(formatJsonRpcResult(requestEvent.id, response));
 						}).catch((error: AvailError) => {
@@ -481,7 +481,7 @@ export class AleoWallet {
 
 		if (!checkExpired(request_identifier)) {
 			return new Promise((resolve, reject) => {
-				invoke<interfaces.GetEventResponse>('get_event', {request}).then(response => {
+				invoke<interfaces.GetEventResponse>('get_event', { request }).then(response => {
 					resolve(formatJsonRpcResult(requestEvent.id, response));
 				}).catch((error: AvailError) => {
 					console.error(error);
@@ -544,7 +544,7 @@ export class AleoWallet {
 				storeSession(request_identifier);
 
 				try {
-					invoke<interfaces.GetEventResponse>('get_event', {request}).then(response => {
+					invoke<interfaces.GetEventResponse>('get_event', { request }).then(response => {
 						resolve(formatJsonRpcResult(requestEvent.id, response));
 					}).catch((error: AvailError) => {
 						console.error(error);
@@ -574,7 +574,7 @@ export class AleoWallet {
 
 		if (!checkExpired(request_identifier)) {
 			return new Promise((resolve, reject) => {
-				invoke<interfaces.GetEventsResponse>('get_events', {request}).then(response => {
+				invoke<interfaces.GetEventsResponse>('get_events', { request }).then(response => {
 					resolve(formatJsonRpcResult(requestEvent.id, response));
 				}).catch((error: AvailError) => {
 					console.error(error);
@@ -640,7 +640,7 @@ export class AleoWallet {
 				storeSession(request_identifier);
 
 				try {
-					invoke<interfaces.GetEventsResponse>('get_events', {request}).then(response => {
+					invoke<interfaces.GetEventsResponse>('get_events', { request }).then(response => {
 						resolve(formatJsonRpcResult(requestEvent.id, response));
 					}).catch((error: AvailError) => {
 						console.error(error);
@@ -684,7 +684,7 @@ export class AleoWallet {
 
 		if (!checkExpired(request_identifier)) {
 			return new Promise((resolve, reject) => {
-				invoke<interfaces.GetBackendRecordsResponse>('get_records', {request}).then(response => {
+				invoke<interfaces.GetBackendRecordsResponse>('get_records', { request }).then(response => {
 					const res = interfaces.convertGetRecordsResponse(response);
 					resolve(formatJsonRpcResult(requestEvent.id, res));
 				}).catch((error: AvailError) => {
@@ -753,7 +753,7 @@ export class AleoWallet {
 
 				try {
 					console.log('===================> INSIDE GETRECORDS');
-					invoke<interfaces.GetBackendRecordsResponse>('get_records', {request}).then(response => {
+					invoke<interfaces.GetBackendRecordsResponse>('get_records', { request }).then(response => {
 						const res = interfaces.convertGetRecordsResponse(response);
 						resolve(formatJsonRpcResult(requestEvent.id, res));
 					}).catch((error: AvailError) => {
