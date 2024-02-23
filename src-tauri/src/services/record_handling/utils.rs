@@ -595,8 +595,9 @@ pub fn get_all_nft_data() -> AvailResult<Vec<String>> {
 pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
     let nft_encrypted_data =
         get_encrypted_data_by_flavour(EncryptedDataTypeCommon::Record).unwrap();
-    let v_key = VIEWSESSION.get_instance::<N>().unwrap();
 
+    let v_key = VIEWSESSION.get_instance::<N>().unwrap();
+    let api_client = setup_client::<N>()?;
     let records = nft_encrypted_data
         .iter()
         .map(|x| {
@@ -605,7 +606,11 @@ pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
             block
         })
         .collect::<Vec<AvailRecord<N>>>();
-
+    let program_ids = records
+        .iter()
+        .filter(|record| record.metadata.record_type == RecordTypeCommon::NFT)
+        .map(|record| record.metadata.program_id.clone())
+        .collect::<Vec<String>>();
     let plaintexts: Vec<Record<N, Plaintext<N>>> = records
         .iter()
         .filter(|&record| record.metadata.record_type == RecordTypeCommon::NFT) // NFT Records
@@ -624,14 +629,63 @@ pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
             temp_u128 >>= 8;
         }
 
-        bytes.reverse();
-
-        String::from_utf8(bytes).unwrap()
+        String::from_utf8_lossy(&bytes).to_string()
     }
-
+    let mut count = 0;
     let full_urls = plaintexts
         .iter()
         .filter_map(|record| {
+            println!("===> PROGRAM ID {:?}", program_ids[count]);
+            println!(
+                "===> BASE {:?}",
+                api_client
+                    .get_mapping_value(program_ids[count].clone(), "general_settings", "3u8")
+                    .unwrap()
+                    .to_string()
+                    .replace("u128", "")
+            );
+            let base_uri_0 = u128_to_string(
+                u128::from_str(
+                    &api_client
+                        .get_mapping_value(program_ids[count].clone(), "general_settings", "3u8")
+                        .unwrap()
+                        .to_string()
+                        .replace("u128", ""),
+                )
+                .unwrap(),
+            );
+            let base_uri_1 = u128_to_string(
+                u128::from_str(
+                    &api_client
+                        .get_mapping_value(program_ids[count].clone(), "general_settings", "4u8")
+                        .unwrap()
+                        .to_string()
+                        .replace("u128", ""),
+                )
+                .unwrap(),
+            );
+            let base_uri_2 = u128_to_string(
+                u128::from_str(
+                    &api_client
+                        .get_mapping_value(program_ids[count].clone(), "general_settings", "5u8")
+                        .unwrap()
+                        .to_string()
+                        .replace("u128", ""),
+                )
+                .unwrap(),
+            );
+            let base_uri_3 = u128_to_string(
+                u128::from_str(
+                    &api_client
+                        .get_mapping_value(program_ids[count].clone(), "general_settings", "6u8")
+                        .unwrap()
+                        .to_string()
+                        .replace("u128", ""),
+                )
+                .unwrap(),
+            );
+            let base_uri = format!("{}{}{}{}", base_uri_0, base_uri_1, base_uri_2, base_uri_3);
+            count = count + 1;
             let check_if_ans = match record
                 .data()
                 .clone()
@@ -650,16 +704,10 @@ pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
                     .to_string();
                 if data_field.contains(".private") {
                     let data_field = &data_field[..data_field.len() - 8];
-                    Some(format!(
-                        "https://testnet-api.aleonames.id/token/{}.svg",
-                        data_field
-                    ))
+                    Some(format!("{}{}", base_uri, data_field))
                 } else {
                     println!("===> NFT Data Field {:?}", data_field);
-                    Some(format!(
-                        "https://testnet-api.aleonames.id/token/{}.svg",
-                        &data_field[..]
-                    ))
+                    Some(format!("{}{}", base_uri, &data_field[..]))
                 }
             } else {
                 let data1 = record
@@ -673,7 +721,6 @@ pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
                     .clone()
                     .get(&Identifier::<N>::from_str("data2").unwrap())
                     .cloned()?;
-
                 match (data1, data2) {
                     (
                         Entry::Private(Plaintext::Literal(Literal::<N>::U128(data1), _)),
@@ -681,7 +728,7 @@ pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
                     ) => {
                         let data1 = u128_to_string(*data1);
                         let data2 = u128_to_string(*data2);
-                        Some(format!("{}{}", data1, data2))
+                        Some(format!("{}{}{}", base_uri, data1, data2))
                     }
                     _ => None,
                 }
@@ -1855,9 +1902,59 @@ mod test {
     use snarkvm::prelude::Testnet3;
     #[tokio::test]
     async fn test_get_all_nft_data() {
+        // AViewKey1cbThXosaWwor5t5F87m22K1hSRA4BWL5HrsNxRik15Rq
         let res = get_all_nft_data().unwrap();
+        // let str0 = u128_to_string(340282366920938463463374607431768211455u128);
+        // let str1 = u128_to_string(340282366920938463463374607431768211455u128);
+        // let str2 = u128_to_string(5459521u128);
+        // let str3 = u128_to_string(60419623520418866384139602471830189160u128);
+        // let str4 = u128_to_string(133468932882108420321626207034102345825u128);
+        // let str5 = u128_to_string(13350705778619439u128);
+        // let str6 = u128_to_string(0u128);
+        // let str7 = u128_to_string(129967232274961287173788227149222870785u128);
+
+        // println!("res\n {:?}\n {:?} \n {:?} \n {:?}, \n{:?}, \n {:?}, \n {:?}", str1, str2, str3, str4, str5, str6, str7);
+        // println!(":{:?}",format!("{:x}", 5459521u128));
+        // println!(":{:?}",format!("{:x}", 60419623520418866384139602471830189160u128));
+        // println!(":{:?}",format!("{:x}", 133468932882108420321626207034102345825u128));
+        // println!(":{:?}",format!("{:x}", 60419623520418866384139602471830189160u128));
         println!("res\n {:?}", res);
     }
+    fn u128_to_string(u: u128) -> String {
+        let mut temp_u128 = u;
+        let mut bytes = vec![] as Vec<u8>;
+
+        while temp_u128 > 0u128 {
+            let byte = (temp_u128 & 0xff) as u8;
+            bytes.push(byte);
+            temp_u128 >>= 8;
+        }
+
+        // bytes.reverse();
+
+        String::from_utf8_lossy(&bytes).to_string()
+        // Convert u128 to an array of bytes in little-endian or big-endian
+        // let mut bytes: Vec<u8> = Vec::new();
+        // let mut temp_big_int = big_int_value;
+
+        // while temp_big_int > 0 {
+        //     let byte_value = (temp_big_int & 255) as u8;
+        //     bytes.push(byte_value);
+        //     temp_big_int = temp_big_int >> 8;
+        // }
+
+        // // Since bytes are pushed in a reverse order, they need to be reversed to represent the original number correctly
+
+        // // Convert bytes to string
+        // // If you want a human-readable hexadecimal string
+        // let hex_string = bytes.iter().map(|byte| format!("{:02x}", byte)).collect::<String>();
+
+        // // If you want a string representation of the bytes separated by commas
+        // // let bytes_string = bytes.iter().map(|byte| byte.to_string()).collect::<Vec<String>>().join(",");
+
+        // hex_string
+    }
+
     // #[tokio::test]
     // async fn test_token_record() {
     //     let mut api_client = setup_client::<Testnet3>().unwrap();
