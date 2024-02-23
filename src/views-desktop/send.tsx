@@ -28,7 +28,6 @@ import {
 // Types
 import {type TransferRequest, TransferType} from '../types/transfer_props/tokens';
 import {type AvailError, AvailErrorType} from '../types/errors';
-import {getAuthType} from '../services/storage/persistent';
 
 // Context
 import {useScan} from '../context/ScanContext';
@@ -86,15 +85,6 @@ function Send() {
 	const {scanInProgress, startScan, endScan} = useScan();
 
 	const {t} = useTranslation();
-
-	const getAuth = async () => {
-		const auth = await getAuthType();
-		if (auth === 'true') {
-			setBiometric(true);
-		} else {
-			setBiometric(false);
-		}
-	};
 
 	const handleTransfer = async () => {
 		let transferType: TransferType;
@@ -187,14 +177,6 @@ function Send() {
 	};
 
 	const shouldRunEffect = React.useRef(true);
-	/* Check Biometry */
-	React.useEffect(() => {
-		if (!shouldRunEffect.current) {
-			return;
-		}
-
-		getAuth();
-	}, []);
 
 	React.useEffect(() => {
 		let asset_id = token;

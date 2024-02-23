@@ -22,7 +22,6 @@ import SyncIcon from '@mui/icons-material/Sync';
 
 //state functions
 import { getName } from "../services/states/utils";
-import { getAuth } from "../services/states/utils";
 import { getAddress } from "../services/states/utils";
 
 
@@ -309,10 +308,6 @@ function Home() {
 			}
 
 			setLoading(true);
-			getAuth(setBiometric)
-				.catch(error => {
-					console.log(error);
-				});
 
 			getName(setUsername)
 				.catch(error => {
