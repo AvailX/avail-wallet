@@ -30,6 +30,10 @@ use services::record_handling::{
     sync::{blocks_sync, sync_backup, txs_sync},
     transfer::{pre_install_inclusion_prover, transfer},
 };
+use tauri_plugin_deep_link::DeepLinkExt;
+// use tauri_plugin_deep_link::listen;
+// use tauri_plugin_deep_link::DeepLinkExt;
+
 // wallet connect services
 use crate::services::wallet_connect_api::{
     decrypt_records, get_avail_event, get_avail_events, get_balance, get_event, get_events,
@@ -44,11 +48,15 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .setup(|app| {
             #[cfg(desktop)]
+            let handle = app.handle().clone();
             app.handle()
                 .plugin(tauri_plugin_updater::Builder::new().build())?;
             // NOTE: Updater is only supported on desktop platforms
-            // app.listen("deep-link://new-url", move |event| deep_link(event, handle.clone()));
-
+            app.listen("avail://", move |event| {
+                deep_link_print(event, handle.clone())
+            });
+            // Remove the on_scheme method call
+            println!("Deep link: {:?}", app.deep_link().get_current());
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -103,4 +111,8 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+fn deep_link_print(event: tauri::Event, handle: tauri::AppHandle) {
+    let uri = event.payload().to_string();
+    println!("Deep link: {}", uri);
 }
