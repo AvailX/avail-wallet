@@ -1,5 +1,5 @@
 
-import {type Web3WalletTypes} from '@walletconnect/web3wallet';
+import { type Web3WalletTypes } from '@walletconnect/web3wallet';
 
 export class SessionInfo {
 	static chainlist: string[] = [];

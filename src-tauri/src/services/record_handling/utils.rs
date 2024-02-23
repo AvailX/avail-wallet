@@ -1,4 +1,5 @@
 use avail_common::models::encrypted_data::EncryptedDataTypeCommon;
+use avail_common::models::traits::encryptable::EncryptedStruct;
 use chrono::{DateTime, Local};
 use snarkvm::circuit::Aleo;
 use snarkvm::console::network::Testnet3;
@@ -592,58 +593,55 @@ pub fn get_all_nft_data() -> AvailResult<Vec<String>> {
     }
 }
 
+fn u128_to_string(u: u128) -> String {
+    let mut temp_u128 = u;
+    let mut bytes = vec![] as Vec<u8>;
+
+    while temp_u128 > 0u128 {
+        let byte = (temp_u128 & 0xff) as u8;
+        bytes.push(byte);
+        temp_u128 >>= 8;
+    }
+
+    String::from_utf8_lossy(&bytes).to_string()
+}
+
 pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
-    let nft_encrypted_data =
-        get_encrypted_data_by_flavour(EncryptedDataTypeCommon::Record).unwrap();
+    let encrypted_records = get_encrypted_data_by_flavour(EncryptedDataTypeCommon::Record)?;
 
     let v_key = VIEWSESSION.get_instance::<N>().unwrap();
     let api_client = setup_client::<N>()?;
-    let records = nft_encrypted_data
+
+    let avail_records = encrypted_records
         .iter()
-        .map(|x| {
-            let encrypted_data = x.to_enrypted_struct::<N>().unwrap();
-            let block: AvailRecord<N> = encrypted_data.decrypt(v_key).unwrap();
-            block
+        .filter_map(
+            |encrypted_record: &EncryptedData| -> Option<EncryptedStruct<N>> {
+                encrypted_record.to_enrypted_struct::<N>().ok()
+            },
+        )
+        .filter_map(|encrypted_record_struct: EncryptedStruct<N>| {
+            encrypted_record_struct
+                .decrypt::<AvailRecord<N>>(v_key)
+                .ok()
         })
-        .collect::<Vec<AvailRecord<N>>>();
-    let program_ids = records
+        .collect::<Vec<_>>();
+
+    let program_ids = avail_records
         .iter()
         .filter(|record| record.metadata.record_type == RecordTypeCommon::NFT)
         .map(|record| record.metadata.program_id.clone())
         .collect::<Vec<String>>();
-    let plaintexts: Vec<Record<N, Plaintext<N>>> = records
+
+    let plaintexts = avail_records
         .iter()
         .filter(|&record| record.metadata.record_type == RecordTypeCommon::NFT) // NFT Records
-        .filter_map(|record: &AvailRecord<N>| match record.to_record() {
-            Ok(record) => Some(record),
-            Err(e) => None,
-        })
+        .filter_map(|record: &AvailRecord<N>| record.to_record().ok())
         .collect::<Vec<_>>();
-    fn u128_to_string(u: u128) -> String {
-        let mut temp_u128 = u;
-        let mut bytes = vec![] as Vec<u8>;
 
-        while temp_u128 > 0u128 {
-            let byte = (temp_u128 & 0xff) as u8;
-            bytes.push(byte);
-            temp_u128 >>= 8;
-        }
-
-        String::from_utf8_lossy(&bytes).to_string()
-    }
     let mut count = 0;
     let full_urls = plaintexts
         .iter()
         .filter_map(|record| {
-            println!("===> PROGRAM ID {:?}", program_ids[count]);
-            println!(
-                "===> BASE {:?}",
-                api_client
-                    .get_mapping_value(program_ids[count].clone(), "general_settings", "3u8")
-                    .unwrap()
-                    .to_string()
-                    .replace("u128", "")
-            );
             let base_uri_0 = u128_to_string(
                 u128::from_str(
                     &api_client
@@ -684,8 +682,11 @@ pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
                 )
                 .unwrap(),
             );
+
             let base_uri = format!("{}{}{}{}", base_uri_0, base_uri_1, base_uri_2, base_uri_3);
+
             count = count + 1;
+
             let check_if_ans = match record
                 .data()
                 .clone()
@@ -702,13 +703,15 @@ pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
                     .get(&Identifier::<N>::from_str("data").unwrap())
                     .cloned()?
                     .to_string();
-                if data_field.contains(".private") {
-                    let data_field = &data_field[..data_field.len() - 8];
-                    Some(format!("{}{}", base_uri, data_field))
-                } else {
-                    println!("===> NFT Data Field {:?}", data_field);
-                    Some(format!("{}{}", base_uri, &data_field[..]))
-                }
+
+                Some(format!(
+                    "{}{}",
+                    base_uri,
+                    match data_field.contains(".private") {
+                        true => &data_field[..data_field.len() - 8],
+                        false => &data_field[..],
+                    }
+                ))
             } else {
                 let data1 = record
                     .data()
@@ -750,12 +753,12 @@ fn parse_with_suffix(input: &str) -> Result<u64, std::num::ParseIntError> {
 pub fn get_public_token_balance<N: Network>(asset_id: &str) -> AvailResult<f64> {
     let address = get_address_string()?;
     let record_name = format!("{}.record", asset_id);
-    // let program_id = format!("{}.aleo", asset_id);
     let mut program_id = get_program_id_for_token(&record_name)?;
-    if (program_id == "") {
+
+    if program_id.is_empty() {
         program_id = format!("{}.aleo", asset_id);
     }
-    println!("===> PROGRAM ID FOR FETCH {:?}", program_id);
+
     let api_client = setup_client::<N>()?;
 
     let credits_mapping = match api_client.get_mapping_value(program_id, "account", &address) {
@@ -768,22 +771,16 @@ pub fn get_public_token_balance<N: Network>(asset_id: &str) -> AvailResult<f64> 
 
     let pub_balance = parse_with_suffix(&credits_mapping.to_string())? as f64;
 
-    println!("pub_balance: {:?}", pub_balance);
-
     Ok(pub_balance / 1000000.0)
 }
 
 /// Get private balance for any ARC20 token
 pub fn get_private_token_balance<N: Network>(asset_id: &str) -> AvailResult<f64> {
-    let address = get_address_string()?;
     let record_name = format!("{}.record", asset_id);
-    let program_id = format!("{}.aleo", asset_id);
-    println!("===> Asset ID in get_private_balance() {:?}", asset_id);
 
     let vk = VIEWSESSION.get_instance::<N>()?;
     let balance = get_balance(&record_name, vk)?;
 
-    println!("balance: {:?}", balance);
     let balance_trimmed = balance.trim_end_matches("u64");
 
     Ok(balance_trimmed.parse::<u64>()? as f64 / 1000000.0)
@@ -1930,305 +1927,6 @@ mod test {
             temp_u128 >>= 8;
         }
 
-        // bytes.reverse();
-
         String::from_utf8_lossy(&bytes).to_string()
-        // Convert u128 to an array of bytes in little-endian or big-endian
-        // let mut bytes: Vec<u8> = Vec::new();
-        // let mut temp_big_int = big_int_value;
-
-        // while temp_big_int > 0 {
-        //     let byte_value = (temp_big_int & 255) as u8;
-        //     bytes.push(byte_value);
-        //     temp_big_int = temp_big_int >> 8;
-        // }
-
-        // // Since bytes are pushed in a reverse order, they need to be reversed to represent the original number correctly
-
-        // // Convert bytes to string
-        // // If you want a human-readable hexadecimal string
-        // let hex_string = bytes.iter().map(|byte| format!("{:02x}", byte)).collect::<String>();
-
-        // // If you want a string representation of the bytes separated by commas
-        // // let bytes_string = bytes.iter().map(|byte| byte.to_string()).collect::<Vec<String>>().join(",");
-
-        // hex_string
     }
-
-    // #[tokio::test]
-    // async fn test_token_record() {
-    //     let mut api_client = setup_client::<Testnet3>().unwrap();
-    //     let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-    //     let pk_3 = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
-    //     let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
-    //     let vk_3 = ViewKey::<Testnet3>::try_from(pk_3).unwrap();
-    //     let fee = 10000u64;
-    //     let program_id = "token_avl_4.aleo";
-    //     // INPUTS
-    //     let address_to_mint = Value::<Testnet3>::try_from(TESTNET3_ADDRESS).unwrap();
-    //     let amt_input = Value::<Testnet3>::try_from("100u64").unwrap();
-    //     let transfer_amt = Value::<Testnet3>::try_from("1u64").unwrap();
-    //     let fee = 10000u64;
-
-    //     // let token_program = Program::<Testnet3>::from_str(TOKEN_PROGRAM).unwrap();
-    //     let token_mint_program = Program::<Testnet3>::from_str(TOKEN_MINT).unwrap();
-    //     let mut program_manager =
-    //         ProgramManager::<Testnet3>::new(Some(pk), None, Some(api_client.clone()), None)
-    //             .unwrap();
-    //     let mut program_manager_3 =
-    //         ProgramManager::<Testnet3>::new(Some(pk_3), None, Some(api_client.clone()), None)
-    //             .unwrap();
-    //     // program_manager.add_program(&token_program);
-    //     program_manager.add_program(&token_mint_program);
-    //     program_manager_3.add_program(&token_mint_program);
-
-    // STEP - 0     DEPLOY PROGRAM (DONT NEED TO DEPLOY AGAIN)
-    // let deployement_id = program_manager.deploy_program("token_avl_4.aleo", 10000u64, None, None).unwrap();
-    // println!("----> Program Deployed - {:?}", deployement_id);
-    // let mint_program: Result<ProgramCore<Testnet3, Instruction<Testnet3>, Command<Testnet3>>, snarkvm::prelude::Error> = api_client.get_program("token_avl.aleo");
-
-    // STEP - 1     MINT ****ONLY FOR TESTING PURPOSES****
-    // let inputs =  vec![address_to_mint.clone(), amt_input.clone()];
-    // let mint_tokens = program_manager.execute_program(program_id, "mint_public", inputs.iter(), fee, None, None).unwrap().to_string();
-    // println!("----> Tokens Minted - {:?}", mint_tokens);
-
-    // let mint_txn = api_client.get_transaction(<Testnet3 as Network>::TransactionID::from_str("at17hlupnq8nutyzvdccj5smhf6s8u7yzplwjf38xzqgl93486r3c8s9mrhuc").unwrap()).unwrap();
-    // println!("----> Mint Tokens TXN - {:?}", mint_txn);
-
-    // STEP - 2    QUERY MAPPING TO VERIFY
-    // let mapping_op = program_manager.get_mapping_value(program_id, "account", TESTNET3_ADDRESS).unwrap();
-    // println!("----> Mapping Value - {:?}", mapping_op);
-
-    // STEP - 4    PREPARE TOKEN RECORD BY USING transfer_public_to_private() fn
-    // let inputs =  vec![address_to_mint.clone(), transfer_amt.clone()];
-    // let token_record = program_manager_3.execute_program(program_id, "transfer_public_to_private", inputs.iter(),fee, None, None).unwrap().to_string();
-    // let record_txn = api_client.get_transaction(<Testnet3 as Network>::TransactionID::from_str(&token_record).unwrap()).unwrap();
-
-    // println!("----> Token Record TXN - {:?}", record_txn);
-
-    // let record_txn_id = <Testnet3 as Network>::TransactionID::from_str("at18r5vumc27swqw0vtm9gp4la0cwg8nxk4njm49sp2dj7anp596c9qgaz66w").unwrap();
-    // let record_txn = api_client.get_transaction(<Testnet3 as Network>::TransactionID::from_str("at18r5vumc27swqw0vtm9gp4la0cwg8nxk4njm49sp2dj7anp596c9qgaz66w").unwrap()).unwrap();
-    // // println!("----> Token Record TXN - {:?}", record_txn);
-    // let mut latest_height = api_client.latest_height().unwrap();
-    // for transition in record_txn.clone().into_transitions(){
-    //     println!("INN");
-    //     if transition.program_id().to_string() == program_id {
-    //         println!("OKK");
-    //         let record_pointer_token = transition_to_record_pointer::<Testnet3>(record_txn.clone().id(), transition.clone(), latest_height, vk_3).unwrap();
-
-    //         println!("----> Token Record - {:?}", record_pointer_token);
-    //     }
-    // }
-
-    // STEP - 4    QUERY LOCAL STORAGE TO VERIFY
-    //     let mapping_op = program_manager
-    //         .get_mapping_value(program_id, "account", TESTNET3_ADDRESS)
-    //         .unwrap();
-    //     println!("----> Mapping Value - {:?}", mapping_op);
-    //     let local_db_value = get_balance("token_avl_4.record", vk_3).unwrap();
-    //     println!("----> Local DB Value - {:?}", local_db_value);
-    // }
-
-    // #[test]
-    // fn test_get_private_balance() {
-    //     let _res = get_private_token_balance::<Testnet3>("credits").unwrap();
-
-    //     println!("res: {:?}", _res);
-    // }
-
-    // #[test]
-    // fn get_public_balance() {
-    //     get_public_token_balance::<Testnet3>("credits").unwrap();
-    // }
-
-    // #[tokio::test]
-    // async fn test_estimate_fee() {
-
-    //     let program_id = "credits.aleo";
-    //     let function_id = "transfer_public";
-
-    //     let inputs = vec![
-    //         // Value::<Testnet3>::try_from(TESTNET_ADDRESS).unwrap(),
-    //         Value::<Testnet3>::try_from(TESTNET3_ADDRESS).unwrap(),
-    //         Value::<Testnet3>::try_from("10000u64").unwrap(),
-    //         // Value::<Testnet3>::try_from("true").unwrap()
-    //     ];
-
-    //     //let inputs = vec![];
-
-    //     let api_client = setup_client::<Testnet3>().unwrap();
-
-    //     let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-    //     let program_manager =
-    //         ProgramManager::<Testnet3>::new(Some(pk), None, Some(api_client), None).unwrap();
-    //     let start = Instant::now();
-    //     let res =
-    //         estimate_fee::<Testnet3, AleoV0>(program_id, function_id, inputs, program_manager)
-    //             .await.unwrap();
-    //     println!("ELAPSED TIME: {:?}",start.elapsed());
-    //     println!("res: {:?}", res);
-    // }
-    // }
-
-    // fn string_to_u128(s: String) -> u128 {
-    //     let mut result = 0u128;
-    //     for c in s.chars() {
-    //         result <<= 8;
-    //         result |= c as u128;
-    //     }
-    //     result
-    // }
-
-    // #[tokio::test]
-    // async fn test_nft_record(){
-    //    // ARRANGE
-    //    let mut api_client = setup_client::<Testnet3>().unwrap();
-    //     // ALEO INPUTS
-    //     let program_id = "avail_nft_0.aleo";
-    //     let nft_program = Program::<Testnet3>::from_str(AVAIL_NFT_TEST).unwrap();
-    //     let symbol_u128 = format!("{}u128", string_to_u128("AVL".to_string()));
-    //     let token_id_u128 = format!("{}u128", string_to_u128("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.f6s.com%2Fcompany%2Favail-avail.global&psig=AOvVaw2PqnSWdrMxspXoYbX1xHDG&ust=1708445613257000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCLCV84Dmt4QDFQAAAAAdAAAAABAE".to_string()));
-    //     // let token_id_obj = format!("{}")
-    //     let token_id_obj = format!("{{
-    //         data0: {},
-    //         data1: 0u128
-    //     }}", token_id_u128);
-    //     let total = Value::<Testnet3>::try_from("10u128").unwrap();
-    //     let symbol = Value::<Testnet3>::try_from(symbol_u128).unwrap();
-    //     let token_id = Value::<Testnet3>::try_from(token_id_obj).unwrap();
-    //     let base_uri = Value::<Testnet3>::try_from("{
-    //         data0: 143324u128,
-    //         data1: 883746u128,
-    //         data2: 993843u128,
-    //         data3: 932838u128
-    //     }").unwrap();
-    //     let edition = Value::<Testnet3>::try_from("0scalar").unwrap();
-    //     let owner = Value::<Testnet3>::try_from(TESTNET_ADDRESS).unwrap();
-    //     let amount = Value::<Testnet3>::try_from("3u8").unwrap();
-    //     let settings = Value::<Testnet3>::try_from("3u32").unwrap();
-    //     let block = Value::<Testnet3>::try_from("64400u32").unwrap(); //UPDATE ASPER VALUE
-    //     let hiding_nonce = Value::<Testnet3>::try_from("1234scalar").unwrap();
-    //     // let record_NFT_mint = Value::<Testnet3>::Record(Record::<Testnet3,Plaintext<Testnet3>>::from_str(RECORD_NFT_MINT).unwrap());
-    //     // let record_NFT_claim = Value::<Testnet3>::Record(Record::<Testnet3,Plaintext<Testnet3>>::from_str(RECORD_NFT_CLAIM).unwrap());
-    //     // Program manager
-
-    //     let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-    //     let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
-    //     let fee = 10000u64;
-    //     let mut program_manager =
-    //         ProgramManager::<Testnet3>::new(Some(pk), None, Some(api_client.clone()), None).unwrap();
-    //     program_manager.add_program(&nft_program);
-    //     // ACT
-    //     // ============================== DOCUMENTATION FOR TESTING ==============================
-    //     // STEP - 0     DEPLOY PROGRAM (DONT NEED TO DEPLOY AGAIN)
-    //     // let deployement_id = program_manager.deploy_program(program_id, 10000u64, None, None).unwrap();
-    //     // println!("----> Program Deployed - {:?}", deployement_id);
-
-    //     let program = program_manager.get_program(program_id).unwrap();
-
-    //     // ALEO FUNCTIONS EXECUTION FLOW STARTS HERE
-    //     // Comment out steps that you finish executing
-    //     // STEP - 1     initialize_collection()
-    //     // let init_inputs = vec![total.clone(), symbol.clone(), base_uri.clone()];
-    //     // let init_txn_id = program_manager.execute_program(program_id, "initialize_collection", init_inputs.iter(), 10000u64, None, None).unwrap().to_string();
-    //     // println!("----> Initialised a NFT Collection (TXN-ID) - {:?}", init_txn_id);
-
-    //     // // STEP - 2     add_nft()
-    //     // let add_nft_inputs = vec![token_id.clone(), edition.clone()];
-    //     // let add_nft_txn_id = program_manager.execute_program(program_id, "add_nft", add_nft_inputs.iter(), fee, None, None).unwrap().to_string();
-    //     // println!("----> Added a NFT to the Collection (TXN-ID) - {:?}", add_nft_txn_id);
-
-    //     // // Get the txn_id from the output and get_transaction() using the output
-    //     // // STEP - 3     add_minter()
-    //     // let add_minter_inputs = vec![owner.clone(), amount.clone()];
-    //     // let add_minter_txn_id = program_manager.execute_program(program_id, "add_minter", add_minter_inputs.iter(), fee, None, None).unwrap().to_string();
-    //     // println!("----> Added a Minter to the Collection (TXN-ID) - {:?}", add_nft_txn_id);
-    //     // sleep(Duration::from_secs(20)).await;
-    //     // println!("Waited 20 secs for the TXN to Broadcast ");
-    //     let add_minter_txn = api_client.get_transaction(<Testnet3 as Network>::TransactionID::from_str("at1uete9wa8w993ndy6e0hsynvap0yfpzru82ps5tm3hx6g908p3upsf8kl8s").unwrap()).unwrap();//(<Testnet3 as Network>::TransactionID::from_str(&add_minter_txn_id).unwrap()).unwrap();
-    //     println!("----> Minter TXN owner for checking - {:?}", add_minter_txn.owner());
-    //     // let record_pointer_NFT_mint =
-    //     let mut nonce = "".to_string();
-    //     let mut commitment = "".to_string();
-    //     let mut latest_height = api_client.latest_height().unwrap();
-    //     for transition in add_minter_txn.clone().into_transitions(){
-    //         if transition.program_id().to_string() == program_id {
-    //             let record_pointer_NFT_mint = transition_to_record_pointer(add_minter_txn.clone().id(), transition.clone(), latest_height, vk).unwrap();
-    //             // STEP - 4     set_mint_block()
-    //             for record in record_pointer_NFT_mint{
-    //                 let mint_block = format!("{}u32",record.pointer.block_height);
-    //                 let mint_block_inputs = vec![Value::<Testnet3>::try_from(mint_block.to_string()).unwrap()];
-    //                 // let block_txn_id = program_manager.execute_program(program_id, "set_mint_block", mint_block_inputs.iter(), fee, None, None).unwrap().to_string();
-    //                 // println!("----> Updated block number (TXN-ID) - {:?}", block_txn_id);
-
-    //                 nonce = record.metadata.nonce;
-    //                 commitment = record.pointer.commitment;
-
-    //             }
-    //         }
-    //     }
-    //     // SETUP NFT_MINT RECORD
-    //     let NFT_mint_record = format!("{}{}{}", RECORD_NFT_MINT, nonce, ".public }");
-    //     println!("----> NFT_mint.record created and stored - {:?}", NFT_mint_record);
-    //     // STEP - 5     update_toggle_settings()
-    //     let settings_inputs = vec![settings.clone()];
-    //     // let settings_txn_id = program_manager.execute_program(program_id, "update_toggle_settings", settings_inputs.iter(), fee, None, None).unwrap().to_string();
-    //     // println!("----> Updated settings to allow minting without whitelisting (TXN-ID) - {:?}", settings_txn_id);
-
-    //     // STEP - 6     open_mint()
-    //     // let open_mint_inputs = vec![hiding_nonce.clone()];
-    //     // let open_mint_txn_id = program_manager.execute_program(program_id, "open_mint", open_mint_inputs.iter(), fee, None, None).unwrap().to_string();
-    //     // println!("----> Open Mint function invoked (TXN-ID) - {:?}", open_mint_txn_id);
-    //     let open_mint_txn = api_client.get_transaction(<Testnet3 as Network>::TransactionID::from_str("at1xj60pnlgzg0tc5ntm2n02vll93uq4xtretadjzea343h2qgl8gzq4m0yuk").unwrap()).unwrap();
-    //     let mut claim_nonce = "".to_string();
-    //     let mut claim = "0field";
-    //     let mut latest_height = api_client.latest_height().unwrap();
-    //     for transition in open_mint_txn.clone().into_transitions(){
-    //         if transition.program_id().to_string() == program_id {
-    //             let record_pointer_NFT_claim = transition_to_record_pointer(add_minter_txn.clone().id(), transition.clone(), latest_height, vk).unwrap();
-    //             for record in record_pointer_NFT_claim{
-    //                 claim_nonce = record.metadata.nonce;
-    //             }
-    //             let ops = &transition.outputs()[1];
-    //             println!("----> Claim value fetch sucessful - {:?}", ops);
-    //         }
-    //     }
-    //     // SETUP NFT_CLAIM RECORD
-    //     let NFT_claim_record = format!("{}{}{}", RECORD_NFT_CLAIM, claim_nonce, ".public }");
-    //     println!("----> NFT_claim.record created and stored - {:?}", NFT_claim_record);
-
-    //     // STEP - 7     mint()
-    //     let mint_inputs = vec![Value::<Testnet3>::Record(Record::<Testnet3, Plaintext<Testnet3>>::from_str(&NFT_mint_record.clone()).unwrap()) ,hiding_nonce.clone()];
-    //     let mint_txn_id = program_manager.execute_program(program_id, "mint", mint_inputs.iter(), fee, None, None).unwrap().to_string();
-    //     println!("----> Mint function invoked (TXN-ID) - {:?}", mint_txn_id);
-
-    //     // STEP - 8     claim_nft()
-    //     let nft_inputs = vec![Value::<Testnet3>::Record(Record::<Testnet3, Plaintext<Testnet3>>::from_str(&NFT_claim_record.clone()).unwrap()) ,token_id.clone(), edition.clone()];
-    //     let nft_txn_id = program_manager.execute_program(program_id, "claim_nft", nft_inputs.iter(), fee, None, None).unwrap().to_string();
-    //     println!("----> NFT Claimed (TXN-ID) - {:?}", nft_txn_id);
-
-    //     // // FINAL STEP - SEND THE TRANSITION TO FUNCTION TO GET RECORD TYPE
-    //     let nft_txn = api_client.get_transaction(<Testnet3 as Network>::TransactionID::from_str("at1ya42tgdqawkkwf5t8ezuez954j3lgpv92xqhlcc0eajfnzrwlc9qhgve9y").unwrap()).unwrap();
-    //     for transition in nft_txn.clone().into_transitions(){
-    //         if transition.program_id().to_string() == program_id {
-    //             let record_pointer_NFT = transition_to_record_pointer(add_minter_txn.clone().id(), transition.clone(), latest_height, vk).unwrap();
-
-    //             println!("----> NFT Fetched sucessfully - {:?}", record_pointer_NFT);
-    //         }
-    //     }
-
-    // }
-    // // // fn get_nonce<N:Network>(txn: Transaction<N>, program_id: &str, api_client: AleoAPIClient<N>, vk: ViewKey<N> ) -> Metadata{
-    // //     let latest_height = api_client.latest_height().unwrap();
-    // //     for transition in txn.into_transitions(){
-    // //         if transition.program_id().to_string() == program_id {
-    // //             println!("----> Transition Found - {:?}", transition.id());
-    // //             let res = transition_to_record_pointer(txn.id(), transition.clone(), latest_height, vk).unwrap();
-    // //             let metadata = for record in res.iter(){
-    // //                 return record.metadata;
-    // //             }
-    // //         }
-    // //     }
-    // //     return ();
-    // }
 }

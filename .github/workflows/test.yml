@@ -2,7 +2,7 @@ name: Tauri Build
 
 on:
   pull_request:
-    branches: [ develop, staging, release ]
+    branches: [ queue, develop, staging, release ]
 
 # This workflow will build your tauri app without uploading it anywhere.
 
@@ -71,5 +71,6 @@ jobs:
           MAINNET_API_OBSCURA: ""
           DEVNET_API_OBSCURA: ""
         with:
+          args: --debug
           distPath: dist
           tauriScript: cargo tauri
