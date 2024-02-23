@@ -2,7 +2,7 @@ name: Tauri Build
 
 on:
   pull_request:
-    branches: [ develop, staging, release ]
+    branches: [ queue, develop, staging, release ]
 
 # This workflow will build your tauri app without uploading it anywhere.
 
