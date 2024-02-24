@@ -14,8 +14,8 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-utils = "=2.0.0-beta.1"
-tauri-build = { version = "=2.0.0-beta.1", features = [] }
+tauri-utils = "2.0.0-beta.4"
+tauri-build = { version = "2.0.0-beta.4", features = [] }
 
 
 [dependencies]
@@ -43,11 +43,11 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 snarkvm = { version = "0.16.17", features = [] }
 ssss = "0.2.0"
-tauri = { version = "2.0.0-beta.1", features = [] }
-tauri-plugin-deep-link = "2.0.0-beta"
-tauri-plugin-http = { version = "2.0.0-beta", features = ["cookies"] }
-tauri-plugin-updater = { version = "2.0.0-beta.0", features = [] }
-tauri-plugin-process = "2.0.0-beta"
+tauri = { version = "2.0.0-beta.6", features = [] }
+tauri-plugin-deep-link = "2.0.0-beta.1"
+tauri-plugin-http = { version = "2.0.0-beta.1", features = ["cookies"] }
+tauri-plugin-updater = { version = "2.0.0-beta.1", features = [] }
+tauri-plugin-process = "2.0.0-beta.1"
 tiny-bip39 = "1.0.0"
 tokio = { version = "1.29.1", features = ["full"] }
 ureq = { version = "2.7.1", features = ["json"] }
@@ -72,20 +72,6 @@ opt-level = 3
 lto = "thin"
 incremental = true
 
-[profile.bench]
-opt-level = 3
-debug = false
-rpath = false
-lto = "thin"
-incremental = true
-debug-assertions = false
-
-[profile.dev]
-opt-level = 2
-lto = "thin"
-incremental = true
-
-[profile.test]
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
