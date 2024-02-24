@@ -26,13 +26,13 @@ export const ALEO_EVENTS = [
 export type wcRequest = {
 	method: string;
 	question: string;
-	image_ref: string;
+	imageRef: string;
 	approveResponse: string;
 	rejectResponse: string;
 	// Dapp metadata
 	description?: string;
-	dapp_img?: string;
-	dapp_url?: string;
+	dappImage?: string;
+	dappUrl?: string;
 	// Possible parameters
 	fee?: string;
 	asset_id?: string;
@@ -143,7 +143,7 @@ export type GetBackendRecordsResponse = {
 // Function to convert from backend getRecords response to frontend getRecords response
 export const convertGetRecordsResponse = (response: GetBackendRecordsResponse): GetRecordsResponse => {
 	console.log('================> RECORDS RESPONSE PT', response.records);
-	const records = response.records;
+	const {records} = response;
 	const convertedRecords: RecordWithPlaintext[] | undefined = [];
 	if (records) {
 		{
@@ -200,19 +200,18 @@ export type Record = { // From @puzzlehq/types
 	serialNumber?: string;
 };
 
-{/* --Events-- */ }
-
+/** Type for Avail Events
+ * - Avail Events are events that have been broadcasted to the network and are awaiting confirmation
+ */
 export type AvailEvent = {
 	_id: string;
 	type: EventType;
 	owner: string;
-
 	status: AvailEventStatus;
 	created: Date;
 	broadcast?: Date;
 	broadcast_height?: number;
 	settled?: Date;
-
 	network: Network;
 	transactionId?: string;
 	programId?: string;
@@ -235,13 +234,11 @@ export type Event = {
 	_id: string;
 	type: EventType;
 	owner: string;
-
 	status: EventStatus;
 	created: Date;
 	broadcast?: Date;
 	broadcast_height?: number;
 	settled?: Date;
-
 	network: Network;
 	transactionId?: string;
 	programId?: string;

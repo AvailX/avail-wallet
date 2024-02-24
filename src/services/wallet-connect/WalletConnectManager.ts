@@ -93,9 +93,9 @@ export class WalletConnectManager {
 			// TODO - Proposal.metadata is not being used it has data about the app we can display
 			// metadata: { description: "example dapp", url: "",name:"",icons:["data:image/png;base64,...."] }
 
-			const metadata = proposal.params.proposer.metadata;
+			const {metadata} = proposal.params.proposer;
 
-			{/* Approve/Reject Connection window -- START */ }
+			/* Approve/Reject Connection window -- START */
 			// Open the new window
 			const webview = new WebviewWindow('walletConnect', {
 				url: 'wallet-connect-screens/wallet-connect.html',
@@ -109,12 +109,12 @@ export class WalletConnectManager {
 				method: 'connect',
 
 				question: 'Do you want to connect to ' + metadata.name + ' ?',
-				image_ref: '../wc-images/connect.svg',
+				imageRef: '../wc-images/connect.svg',
 				approveResponse: 'User approved wallet connect',
 				rejectResponse: 'User rejected wallet connect',
 				description: metadata.description,
-				dapp_url: metadata.url,
-				dapp_img: metadata.icons[0],
+				dappUrl: metadata.url,
+				dappImage: metadata.icons[0],
 			};
 
 			webview.once('tauri://created', () => {
@@ -132,8 +132,8 @@ export class WalletConnectManager {
 				// Handle window creation error
 			});
 
-			const aleo_wallet = this.aleo_wallet;
-			const theWallet = this.theWallet;
+			const {aleo_wallet} = this;
+			const {theWallet} = this;
 
 			await webview.once('connect-approved', async response => {
 				console.log('Wallet connect was approved', response);
@@ -228,7 +228,7 @@ export class WalletConnectManager {
 
 			console.log('request', requestEvent);
 
-			const topic = requestEvent.topic;
+			const {topic} = requestEvent;
 			const requestSession = this.theWallet.engine.signClient.session.get(requestEvent.topic);
 			console.log('requestSession', requestSession);
 
@@ -236,10 +236,10 @@ export class WalletConnectManager {
 			this.currentRequestVerifyContext = requestEvent.verifyContext;
 
 			// Call information chain | method
-			const chainId = requestEvent.params.chainId;
+			const {chainId} = requestEvent.params;
 
-			const request_method = requestEvent.params.request.method;
-			console.log(`Handling request for ${chainId} | ${request_method}...`);
+			const requestMethod = requestEvent.params.request.method;
+			console.log(`Handling request for ${chainId} | ${requestMethod}...`);
 
 			let response: JsonRpcResult | JsonRpcError
                 = formatJsonRpcError(requestEvent.id, `Chain unsupported ${chainId}`);
@@ -254,7 +254,7 @@ export class WalletConnectManager {
 			await this.theWallet.respondSessionRequest({topic, response});
 		} catch (error) {
 			console.log('Failed', (error as Error).message);
-			const topic = requestEvent.topic;
+			const {topic} = requestEvent;
 			console.log('============>>>> Request event', requestEvent);
 			await this.theWallet?.respondSessionRequest({topic, response: formatJsonRpcError(requestEvent.id, (error as Error).message)});
 		} finally {
