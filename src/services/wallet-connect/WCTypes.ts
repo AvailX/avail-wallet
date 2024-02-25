@@ -1,29 +1,41 @@
-export const ALEO_CHAIN = 'aleo:1';
+export const aleoChain = 'aleo:1';
 
-export const ALEO_METHODS = {
+export enum AleoMethod {
+	ALEO_GETBALANCE = 'getBalance',
+	ALEO_DISCONNECT = 'disconnect',
+	ALEO_GETACCOUNT = 'getSelectedAccount',
+	ALEO_DECRYPT = 'decrypt',
+	ALEO_SIGN = 'requestSignature',
+	ALEO_GET_RECORDS = 'getRecords',
+	ALEO_CREATE_EVENT = 'requestCreateEvent',
+	ALEO_GET_EVENT = 'getEvent',
+	ALEO_GET_EVENTS = 'getEvents',
+	ALEO_CREATE_STATE = 'createSharedState', // Not for now
+	ALEO_IMPORT_STATE = 'importSharedState', // Not for now
+}
 
-	ALEO_DISCONNECT: 'disconnect',
+export enum AleoEvents {
+	chainChanged = 'chainChanged',
+	accountSelected = 'accountSelected',
+	selectedAccountSynced = 'selectedAccountSynced',
+	sharedAccountSynced = 'sharedAccountSynced',
+}
 
-	ALEO_GETBALANCE: 'getBalance',
-	ALEO_GETACCOUNT: 'getSelectedAccount',
-	ALEO_DECRYPT: 'decrypt',
-	ALEO_SIGN: 'requestSignature',
-	ALEO_GET_RECORDS: 'getRecords',
-	ALEO_CREATE_EVENT: 'requestCreateEvent',
-	ALEO_GET_EVENT: 'getEvent',
-	ALEO_GET_EVENTS: 'getEvents',
-	ALEO_CREATE_STATE: 'createSharedState', // Not for now
-	ALEO_IMPORT_STATE: 'importSharedState', // Not for now
+export type AleoMethodRequest = {
+	[AleoMethod.ALEO_GETBALANCE]: GetBalancesRequest;
+	[AleoMethod.ALEO_GETACCOUNT]: any;
+	[AleoMethod.ALEO_DECRYPT]: DecryptRequest;
+	[AleoMethod.ALEO_SIGN]: SignatureRequest;
+	[AleoMethod.ALEO_DISCONNECT]: any;
+	[AleoMethod.ALEO_GET_RECORDS]: GetRecordsRequest;
+	[AleoMethod.ALEO_CREATE_EVENT]: CreateEventRequest;
+	[AleoMethod.ALEO_GET_EVENT]: GetEventRequest;
+	[AleoMethod.ALEO_GET_EVENTS]: GetEventsRequest;
+	[AleoMethod.ALEO_CREATE_STATE]: any;
+	[AleoMethod.ALEO_IMPORT_STATE]: ImportSharedStateRequest;
 };
 
-export const ALEO_EVENTS = [
-	'chainChanged',
-	'accountSelected',
-	'selectedAccountSynced',
-	'sharedAccountSynced',
-];
-
-export type wcRequest = {
+export type WalletConnectRequest = {
 	method: string;
 	question: string;
 	imageRef: string;
@@ -36,9 +48,9 @@ export type wcRequest = {
 	// Possible parameters
 	fee?: string;
 	asset_id?: string;
-	program_id?: string;
+	programId?: string;
 	program_ids?: string[];
-	function_id?: string;
+	functionId?: string;
 	inputs?: string[];
 	ciphertexts?: string[];
 	type?: string;
@@ -46,14 +58,14 @@ export type wcRequest = {
 };
 
 // Stores dapp metadata to display to user
-export type DappSession = {
+export type DAppSession = {
 	name: string;
 	description: string;
 	url: string;
 	img: string;
 };
 
-export const DappSession = (name: string, description: string, url: string, img: string): DappSession => ({
+export const dappSession = (name: string, description: string, url: string, img: string): DappSession => ({
 	name,
 	description,
 	url,
@@ -61,7 +73,6 @@ export const DappSession = (name: string, description: string, url: string, img:
 });
 
 export type RequestSession = {
-
 	method: string;
 	request: string;
 	expiry: Date;
@@ -105,7 +116,7 @@ export const shortenAddress = (address: string) => {
 	)}`;
 };
 
-{/* --Sign-- */ }
+/* --Sign-- */
 export type SignatureRequest = {
 	message: string;
 	address?: string;
@@ -116,7 +127,7 @@ export type SignatureResponse = {
 	error?: string;
 };
 
-{/* --GetRecords-- */ }
+/* --GetRecords-- */
 export type GetRecordsRequest = {
 	address?: string;
 	filter?: RecordsFilter;
@@ -140,22 +151,14 @@ export type GetBackendRecordsResponse = {
 	error?: string;
 };
 
-// Function to convert from backend getRecords response to frontend getRecords response
 export const convertGetRecordsResponse = (response: GetBackendRecordsResponse): GetRecordsResponse => {
-	console.log('================> RECORDS RESPONSE PT', response.records);
 	const {records} = response;
 	const convertedRecords: RecordWithPlaintext[] | undefined = [];
+
 	if (records) {
-		{
-			for (const record of records) {
-				console.log('================> PLAINTEXT CHECK', record?.plaintext);
-				if (record.plaintext !== undefined) {
-					convertedRecords?.push(convertRecord(record));
-					console.log('================> CONVERTED RECORD', convertRecord(record));
-					console.log('================> PLAINTEXT', record?.plaintext);
-				}
-			}
-		}
+		records.forEach(record => {
+			convertedRecords?.push(convertRecord(record));
+		});
 	}
 
 	return {
@@ -177,14 +180,11 @@ export type BackendRecordWithPlaintext = {
 };
 
 // Function to convert from backend record to frontend record
-export const convertRecord = (record: BackendRecordWithPlaintext): RecordWithPlaintext => {
-	console.log('================> PLAINTEXT', record?.plaintext);
-	return {
-		...record.record,
-		plaintext: record?.plaintext,
-		data: record?.data,
-	};
-};
+export const convertRecord = (record: BackendRecordWithPlaintext): RecordWithPlaintext => ({
+	...record.record,
+	plaintext: record?.plaintext,
+	data: record?.data,
+});
 
 export type Record = { // From @puzzlehq/types
 	_id: string;
@@ -349,7 +349,6 @@ export type GetAvailEventResponse = {
 	error?: string;
 };
 
-{/* --Decrypt-- */ }
 export type DecryptRequest = {
 	ciphertexts: string[];
 };
@@ -360,7 +359,7 @@ export type DecryptResponse = {
 };
 
 // Not Implemented
-{/* --Shared State-- */ }
+/* --Shared State-- */
 export type CreateSharedStateResponse = {
 	data?: {
 		seed: string;

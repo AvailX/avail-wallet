@@ -1,23 +1,23 @@
 
-import {Core} from '@walletconnect/core';
-import {type JsonRpcError, type JsonRpcResult, formatJsonRpcError} from '@walletconnect/jsonrpc-utils';
-import {type SignClientTypes, type Verify} from '@walletconnect/types';
-import {buildApprovedNamespaces, getSdkError} from '@walletconnect/utils';
-import {type IWeb3Wallet, Web3Wallet, type Web3WalletTypes} from '@walletconnect/web3wallet';
 import {emit} from '@tauri-apps/api/event';
 import {WebviewWindow} from '@tauri-apps/api/webviewWindow';
+import {Core} from '@walletconnect/core';
+import {formatJsonRpcError, type JsonRpcError, type JsonRpcResult} from '@walletconnect/jsonrpc-utils';
+import {type SignClientTypes, type Verify} from '@walletconnect/types';
+import {buildApprovedNamespaces, getSdkError} from '@walletconnect/utils';
+import {Web3Wallet, type IWeb3Wallet, type Web3WalletTypes} from '@walletconnect/web3wallet';
 import {get_address} from '../storage/persistent';
 import {AleoWallet} from './AleoWallet';
 import {SessionInfo} from './SessionInfo';
-import {DappSession, type wcRequest} from './WCTypes';
+import {dappSession, type WalletConnectRequest} from './WCTypes';
 
 type PingEventData = Omit<SignClientTypes.BaseEventArgs, 'params'>;
 
 export class WalletConnectManager {
 	theWallet?: IWeb3Wallet;
-	projectID: string;
-	relayerURL: string;
-	aleo_wallet?: AleoWallet;
+	projectId: string;
+	relayerUrl: string;
+	aleoWallet?: AleoWallet;
 	clientId?: string;
 
 	currentRequestVerifyContext?: Verify.Context;
@@ -25,8 +25,8 @@ export class WalletConnectManager {
 	sessionTopic?: string;
 
 	constructor() {
-		this.projectID = '9d41eeacbfa8659cce91de12a8bf1806';
-		this.relayerURL = 'wss://relay.walletconnect.com';
+		this.projectId = '9d41eeacbfa8659cce91de12a8bf1806';
+		this.relayerUrl = 'wss://relay.walletconnect.com';
 		this.onSessionProposal = this.onSessionProposal.bind(this);
 		this.onSessionDelete = this.onSessionDelete.bind(this);
 		this.onSessionRequest = this.onSessionRequest.bind(this);
@@ -37,11 +37,11 @@ export class WalletConnectManager {
 	async setup() {
 		const address = await get_address();
 		const wallet = new AleoWallet(address);
-		this.aleo_wallet = wallet;
+		this.aleoWallet = wallet;
 
 		const core = new Core({
-			projectId: this.projectID,
-			relayUrl: this.relayerURL,
+			projectId: this.projectId,
+			relayUrl: this.relayerUrl,
 		});
 
 		this.theWallet = await Web3Wallet.init({
@@ -68,6 +68,40 @@ export class WalletConnectManager {
 		this.theWallet.on('session_delete', this.onSessionDelete);
 	}
 
+	async pair(uri: string) {
+		await this.setup();
+		if (!this.theWallet) {
+			console.log('Wallet is null call setup()');
+			return;
+		}
+
+		console.log('Pairing with...', uri);
+		await this.theWallet?.pair({uri});
+	}
+
+	async close() {
+		/*
+        If (this.pairingTopic) {
+            console.log("Closing pairing...")
+            await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
+            await this.theWallet?.core.history.delete(this.pairingTopic);
+        } */
+		if (this.sessionTopic) {
+			console.log('Closing pairing...');
+			await this.theWallet?.disconnectSession({topic: this.sessionTopic, reason: getSdkError('USER_DISCONNECTED')});
+			// Await this.theWallet?.core.history.delete(this.sessionTopic);
+		}
+
+		await emit('disconnected', 'disconnected');
+
+		console.log('Closing event handling...');
+		this.theWallet?.off('session_proposal', this.onSessionProposal);
+		this.theWallet?.off('session_request', this.onSessionRequest);
+		// This.theWallet?.off('auth_request', this.onAuthRequest)
+		this.theWallet?.engine.signClient.events.off('session_ping', this.onSignClientPing);
+		this.theWallet?.off('session_delete', this.onSessionDelete);
+	}
+
 	// DApp sent us a session proposal
 	//  id - is the dApp id submitting the proposal
 	//  params - includes details of what the dApp is expecting.
@@ -79,7 +113,7 @@ export class WalletConnectManager {
 		console.log();
 
 		try {
-			if (!this.theWallet || !this.aleo_wallet) {
+			if (!this.theWallet || !this.aleoWallet) {
 				console.log('Wallet is null! Call setup()');
 				return;
 			}
@@ -105,7 +139,7 @@ export class WalletConnectManager {
 				resizable: false,
 			});
 
-			const wcRequest: wcRequest = {
+			const wcRequest: WalletConnectRequest = {
 				method: 'connect',
 
 				question: 'Do you want to connect to ' + metadata.name + ' ?',
@@ -117,29 +151,23 @@ export class WalletConnectManager {
 				dappImage: metadata.icons[0],
 			};
 
-			webview.once('tauri://created', () => {
+			await webview.once('tauri://created', () => {
 				console.log('Window created');
 
-				setTimeout(() => {
-					emit('wallet-connect-request', wcRequest);
+				setTimeout(async () => {
+					await emit('wallet-connect-request', wcRequest);
 					console.log('Emitting wallet-connect-request');
 				}, 3000);
 			});
 
-			webview.once('tauri://error', e => {
-				console.log('Window creation error');
-				console.error(e);
-				// Handle window creation error
-			});
-
-			const {aleo_wallet} = this;
+			const {aleoWallet} = this;
 			const {theWallet} = this;
 
 			await webview.once('connect-approved', async response => {
 				console.log('Wallet connect was approved', response);
-				webview.close();
+				await webview.destroy();
 
-				SessionInfo.show(proposal, [aleo_wallet.chainName()]);
+				SessionInfo.show(proposal, [aleoWallet.chainName()]);
 
 				const supportedNamespaces = {
 					// What the dApp requested...
@@ -148,10 +176,10 @@ export class WalletConnectManager {
 					// What we support...
 					supportedNamespaces: {
 						aleo: {
-							chains: [aleo_wallet.chainName()],
-							methods: aleo_wallet.chainMethods(),
-							events: aleo_wallet.chainEvent(),
-							accounts: [`${aleo_wallet.chainName()}:${aleo_wallet.getAddress()}`],
+							chains: [aleoWallet.chainName()],
+							methods: aleoWallet.chainMethods(),
+							events: aleoWallet.chainEvents(),
+							accounts: [`${aleoWallet.chainName()}:${aleoWallet.getAddress()}`],
 						},
 					},
 				};
@@ -165,7 +193,7 @@ export class WalletConnectManager {
 					namespaces: approvedNamespaces,
 				});
 				console.log('Approved session', session);
-				emit('connected', session);
+				await emit('connected', session);
 
 				this.currentRequestVerifyContext = proposal.verifyContext;
 
@@ -177,20 +205,20 @@ export class WalletConnectManager {
 				// be present in session_request, session_delete events
 				this.sessionTopic = session.topic;
 				console.log('Session topic', this.sessionTopic);
-				const dapp_session = DappSession(metadata.name, metadata.description, metadata.url, metadata.icons[0]);
-				console.log('Storing dapp session', dapp_session);
-				sessionStorage.setItem(session.topic, JSON.stringify(dapp_session));
+				const dappSess = dappSession(metadata.name, metadata.description, metadata.url, metadata.icons[0]);
+				console.log('Storing dapp session', dappSess);
+				sessionStorage.setItem(session.topic, JSON.stringify(dappSess));
 			});
 
 			// Listen for the rejection event from the secondary window
 			await webview.once('connect-rejected', async response => {
 				// Handle the rejection logic here
 				console.log('Wallet connect was rejected', response);
-				webview.close();
+				await webview.close();
 				throw new Error('User Rejected');
 			});
 
-			{/* Approve/Reject Connection window -- END */ }
+			/* Approve/Reject Connection window -- END */
 		} catch (error) {
 			console.log('Rejecting session...');
 			await this.theWallet?.rejectSession({
@@ -209,14 +237,8 @@ export class WalletConnectManager {
 	}
 
 	private async onSessionRequest(requestEvent: Web3WalletTypes.SessionRequest) {
-		console.log();
-		console.log();
-		console.log('  ============================= ');
-		console.log('  >>> session_request event >>>');
-		console.log();
-
 		try {
-			if (!this.theWallet || !this.aleo_wallet) {
+			if (!this.theWallet || !this.aleoWallet) {
 				console.log('Wallet is null! Call setup()');
 				return;
 			}
@@ -244,8 +266,8 @@ export class WalletConnectManager {
 			let response: JsonRpcResult | JsonRpcError
                 = formatJsonRpcError(requestEvent.id, `Chain unsupported ${chainId}`);
 
-			if (chainId === this.aleo_wallet.chainName()) {
-				response = await this.aleo_wallet.invokeMethod(requestEvent);
+			if (chainId === this.aleoWallet.chainName()) {
+				response = await this.aleoWallet.invokeMethod(requestEvent);
 			} else {
 				console.log(`Chain unsupported ${chainId}`);
 			}
@@ -268,46 +290,12 @@ export class WalletConnectManager {
 	private async onSessionDelete(data: Web3WalletTypes.SessionDelete) {
 		console.log('Event: session_delete received');
 		console.log(data);
-		this.close();
-		emit('disconnected', 'disconnected');
+		await this.close();
+		await emit('disconnected', 'disconnected');
 	}
 
 	private onSignClientPing(data: PingEventData) {
 		console.log('Event: session_ping received');
 		console.log(data);
-	}
-
-	async pair(uri: string) {
-		await this.setup();
-		if (!this.theWallet) {
-			console.log('Wallet is null call setup()');
-			return;
-		}
-
-		console.log('Pairing with...', uri);
-		await this.theWallet?.pair({uri});
-	}
-
-	async close() {
-		/*
-        If (this.pairingTopic) {
-            console.log("Closing pairing...")
-            await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
-            await this.theWallet?.core.history.delete(this.pairingTopic);
-        } */
-		if (this.sessionTopic) {
-			console.log('Closing pairing...');
-			await this.theWallet?.disconnectSession({topic: this.sessionTopic, reason: getSdkError('USER_DISCONNECTED')});
-			// Await this.theWallet?.core.history.delete(this.sessionTopic);
-		}
-
-		emit('disconnected', 'disconnected');
-
-		console.log('Closing event handling...');
-		this.theWallet?.off('session_proposal', this.onSessionProposal);
-		this.theWallet?.off('session_request', this.onSessionRequest);
-		// This.theWallet?.off('auth_request', this.onAuthRequest)
-		this.theWallet?.engine.signClient.events.off('session_ping', this.onSignClientPing);
-		this.theWallet?.off('session_delete', this.onSessionDelete);
 	}
 }
