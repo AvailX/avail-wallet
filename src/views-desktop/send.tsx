@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as mui from '@mui/material';
+import {useNavigate} from 'react-router-dom';
 
 // Services
 import {useTranslation} from 'react-i18next';
@@ -84,6 +85,7 @@ function Send() {
 
 	// Scan states
 	const {scanInProgress, startScan, endScan} = useScan();
+	const navigate = useNavigate();
 
 	const {t} = useTranslation();
 
@@ -334,6 +336,7 @@ function Send() {
 						<mui.Button
 							onClick={() => {
 								handleTransfer();
+								navigate('/activity');
 							}}
 							variant='contained'
 							autoCapitalize='false'
