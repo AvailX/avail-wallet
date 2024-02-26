@@ -86,12 +86,17 @@ const Browser: React.FC<BrowserProperties> = ({initialUrl, theme = 'light', hand
 	const handleInputSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		if (inputUrl && inputUrl !== url && inputUrl !== '') {
+
+			let url_modified = inputUrl;
+			if (!inputUrl.startsWith('https://') && !inputUrl.startsWith('http://')) {
+				url_modified = 'https://' + inputUrl;
+			}
 			setPreviousUrls([...previousUrls, url || '']);
-			setUrl(inputUrl);
+			setUrl(url_modified);
 			setShowMenu(false);
 
-			if (inputUrl !== 'https://faucet.puzzle.online') {
-				sessionStorage.setItem('activeUrl', inputUrl);
+			if (url_modified !== 'https://faucet.puzzle.online') {
+				sessionStorage.setItem('activeUrl', url_modified);
 			}
 		}
 	};
