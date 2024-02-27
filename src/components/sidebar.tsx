@@ -7,7 +7,7 @@ import {
 
 // material ui components
 import MuiDrawer from '@mui/material/Drawer';
-import MuiAppBar, {type AppBarProps as MuiAppBarProperties} from '@mui/material/AppBar';
+import MuiAppBar, { type AppBarProps as MuiAppBarProperties } from '@mui/material/AppBar';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
@@ -25,16 +25,16 @@ import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import LanguageIcon from '@mui/icons-material/Language';
 import DropIcon from '@mui/icons-material/WaterDrop';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import a_logo from '../assets/logo/a-icon.svg';
-import {open_url} from '../services/util/open';
+import { open_url } from '../services/util/open';
 import LogoutDialog from './dialogs/logout';
 
 const drawerWidth = 240;
 const renderIcon = (index: number) => {
 	switch (index) {
 		case 0: {
-			return <img src={a_logo} alt='aleo logo' style={{width: '40px', height: '40px', marginTop: '2%'}} />;
+			return <img src={a_logo} alt='aleo logo' style={{ width: '40px', height: '40px', marginTop: '2%' }} />;
 			break;
 		}
 
@@ -59,8 +59,8 @@ const renderIcon = (index: number) => {
 		}
 
 		case 5: {
-    	return <InsertPhotoIcon />;
-    	break;
+			return <InsertPhotoIcon />;
+			break;
 		}
 
 		case 6: {
@@ -114,7 +114,7 @@ type AppBarProperties = {
 const AppBar = styled(MuiAppBar, {
 
 	shouldForwardProp: property => property !== 'open',
-})<AppBarProperties>(({theme, open}) => ({
+})<AppBarProperties>(({ theme, open }) => ({
 	zIndex: theme.zIndex.drawer + 1,
 	transition: theme.transitions.create(['width', 'margin'], {
 		easing: theme.transitions.easing.sharp,
@@ -131,8 +131,8 @@ const AppBar = styled(MuiAppBar, {
 	}),
 }));
 
-const Drawer = styled(MuiDrawer, {shouldForwardProp: property => property !== 'open'})(
-	({theme, open}) => ({
+const Drawer = styled(MuiDrawer, { shouldForwardProp: property => property !== 'open' })(
+	({ theme, open }) => ({
 		width: drawerWidth,
 		flexShrink: 0,
 		whiteSpace: 'nowrap',
@@ -186,7 +186,7 @@ export default function SideMenu() {
 			}
 
 			case 3: {
-				navigate('/browser', {state: 'https://faucet.puzzle.online'});
+				navigate('/faucet', { state: 'https://faucet.puzzle.online' });
 				break;
 			}
 
@@ -195,10 +195,10 @@ export default function SideMenu() {
 				break;
 			}
 
-	  case 5: {
-      	navigate('/nfts');
-      	break;
-	  }
+			case 5: {
+				navigate('/nfts');
+				break;
+			}
 
 			case 6: {
 				open_url('https://discord.gg/avail-1140618884764942386').then(res => {
@@ -266,7 +266,7 @@ export default function SideMenu() {
 							>
 								{renderIcon(index)}
 							</ListItemIcon>
-							<ListItemText primary={text} sx={{opacity: open ? 1 : 0}} />
+							<ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
 						</ListItemButton>
 					</ListItem>
 				))}
@@ -305,7 +305,7 @@ export default function SideMenu() {
 							>
 								{renderIcon(index + 7)}
 							</ListItemIcon>
-							<ListItemText primary={text} sx={{opacity: open ? 1 : 0}} />
+							<ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
 						</ListItemButton>
 					</ListItem>
 				))}
