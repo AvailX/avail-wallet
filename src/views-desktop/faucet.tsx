@@ -11,14 +11,9 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { styled } from '@mui/material/styles';
 import MiniDrawer from '../components/sidebar';
-import ReAuthDialog from '../components/dialogs/reauth';
 // global state
 import { useTranslation } from 'react-i18next';
 import { useWalletConnectManager } from '../context/WalletConnect';
-import DappView from '../components/dApps/dapp';
-import { Title2Text } from '../components/typography/typography';
-import { dapps } from '../assets/dapps/dapps';
-import { useScan } from '../context/ScanContext';
 
 // Alerts
 import {
@@ -26,19 +21,6 @@ import {
 } from '../components/snackbars/alerts';
 import Layout from './reusable/layout';
 
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.common.white,
-    marginLeft: 0,
-    width: '60%',
-}));
-
-type BrowserProperties = {
-    initialUrl?: string;
-    theme?: 'dark' | 'light';
-    handleDappSelection: (url: string) => void;
-};
 
 const Faucet: React.FC = () => {
     const [url, setUrl] = useState<string | undefined>("https://faucet.puzzle.online" || '');
@@ -134,19 +116,6 @@ const Faucet: React.FC = () => {
         }
     };
 
-    const handleDappSelect = (url: string) => {
-        setInputUrl(url);
-        setUrl(url);
-        setShowMenu(false);
-
-        const iframe = document.querySelector('iframe');
-        if (iframe) {
-            iframe.src = url;
-            if (url !== 'https://faucet.puzzle.online') {
-                sessionStorage.setItem('activeUrl', url);
-            }
-        }
-    };
 
     React.useEffect(() => {
         // Check for active url in session storage
