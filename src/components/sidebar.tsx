@@ -29,6 +29,8 @@ import { useNavigate } from 'react-router-dom';
 import a_logo from '../assets/logo/a-icon.svg';
 import { open_url } from '../services/util/open';
 import LogoutDialog from './dialogs/logout';
+import Tooltip from '@mui/material/Tooltip';
+import { SmallText } from './typography/typography';
 
 const drawerWidth = 240;
 const renderIcon = (index: number) => {
@@ -90,7 +92,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
 		easing: theme.transitions.easing.sharp,
 		duration: theme.transitions.duration.enteringScreen,
 	}),
-	color: '#111111',
+	backgroundColor: '#000000',
 	overflowX: 'hidden',
 });
 
@@ -100,7 +102,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
 		duration: theme.transitions.duration.leavingScreen,
 	}),
 	overflowX: 'hidden',
-	backgroundColor: '#111111',
+	backgroundColor: '#000000',
 	width: `calc(${theme.spacing(7)} + 1px)`,
 	[theme.breakpoints.up('sm')]: {
 		width: `calc(${theme.spacing(8)} + 1px)`,
@@ -123,7 +125,7 @@ const AppBar = styled(MuiAppBar, {
 	...(open && {
 		marginLeft: drawerWidth,
 		width: `calc(100% - ${drawerWidth}px)`,
-		backgroundColor: '#111111',
+		backgroundColor: '#000000',
 		transition: theme.transitions.create(['width', 'margin'], {
 			easing: theme.transitions.easing.sharp,
 			duration: theme.transitions.duration.enteringScreen,
@@ -136,7 +138,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: property => property !== '
 		width: drawerWidth,
 		flexShrink: 0,
 		whiteSpace: 'nowrap',
-		color: '#111111',
+		color: '#000000',
 		margin: 0,
 		padding: 0,
 		boxSizing: 'border-box',
@@ -156,6 +158,7 @@ export default function SideMenu() {
 	const [open, setOpen] = React.useState(false);
 	const [height, setHeight] = React.useState(window.innerHeight);
 	const [logoutDialog, setLogoutDialog] = React.useState(false);
+	const [hover, setHover] = React.useState(false);
 
 	const navigate = useNavigate();
 
@@ -231,8 +234,8 @@ export default function SideMenu() {
 			<LogoutDialog isOpen={logoutDialog} onRequestClose={() => {
 				setLogoutDialog(false);
 			}} />
-			<List >
-				{['Home', 'Swap', 'Activity', 'Faucet', 'Browser', 'Nfts', 'Support'].map((text, index) => (
+			<List onMouseEnter={() => { setOpen(true); setHover(true) }} onMouseLeave={() => { setOpen(false); setHover(false) }} >
+				{['Home', 'Send', 'Activity', 'Faucet', 'Browser', 'Nfts', 'Support', 'Settings', 'Logout'].map((text, index) => (
 					<ListItem key={text} disablePadding sx={{
 						display: 'block', color: '#fff', marginTop: (text == 'Home') ? '' : '20%', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
 						'&:hover': {
@@ -266,52 +269,36 @@ export default function SideMenu() {
 							>
 								{renderIcon(index)}
 							</ListItemIcon>
-							<ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-						</ListItemButton>
-					</ListItem>
+							<Popup text={text} isVisible={hover} />
+						</ListItemButton >
+
+					</ListItem >
+
 				))}
-				{/*  <Box sx={{ mt: lg ? `${height / 2.5}px` : md ? `${height / 4}px` : `${height / 4}px` }} /> */}
-				{['Settings', 'Logout'].map((text, index) => (
-					<ListItem key={text} disablePadding sx={{
-						display: 'block', color: '#111111', marginTop: '20%', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
-						'&:hover': {
-							transform: 'translateY(-4px)',
-							color: '#00FFAA',
-						},
-					}}>
-						<ListItemButton
-							sx={{
-								minHeight: 48,
-								justifyContent: open ? 'initial' : 'center',
-								px: 2.5,
-								color: '#fff',
-								'&:hover': {
-									color: '#00FFAA',
-								},
-							}}
-							onClick={() => {
-								handleOnClick(index + 7);
-							}}
-						>
-							<ListItemIcon
-								sx={{
-									minWidth: 0,
-									mr: open ? 3 : 'auto',
-									justifyContent: 'center',
-									marginTop: '3%',
-									color: 'inherit',
-								}}
+			</List >
 
-							>
-								{renderIcon(index + 7)}
-							</ListItemIcon>
-							<ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-						</ListItemButton>
-					</ListItem>
-				))}
+		</Drawer >
+	);
+}
 
-			</List>
-
-		</Drawer>
+function Popup({ text, isVisible }: { text: string, isVisible: boolean }) {
+	return (
+		<div
+			style={{
+				visibility: isVisible ? 'visible' : 'hidden',
+				position: 'absolute',
+				zIndex: 1,
+				backgroundColor: '#00000060',
+				border: '1px solid #00000080',
+				padding: '10px',
+				marginLeft: '50px',
+				fontFamily: `DM Sans, thin`,
+				opacity: 0.8,
+				borderRadius: '5px',
+				marginTop: '18px'
+			}}
+		>
+			{text}
+		</div>
 	);
 }
