@@ -7,15 +7,15 @@ import * as mui from '@mui/material';
 import ArrowForward from '@mui/icons-material/ArrowForward';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import {useNavigate} from 'react-router-dom';
-import {useTranslation} from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import WhiteHueTextField from '../components/textfields/white-hue';
 import SignUpButton from '../components/buttons/sign-up-button';
 import LanguageSelector from '../components/select/language';
-import SeedLengthSelector, {type Length} from '../components/select/seed_length';
+import SeedLengthSelector, { type Length } from '../components/select/seed_length';
 
 // Typography
-import {TitleText, SmallText, BodyText} from '../components/typography/typography';
+import { TitleText, SmallText, BodyText } from '../components/typography/typography';
 
 // Alerts
 import {
@@ -29,10 +29,10 @@ import loginimage from '../assets/images/backgrounds/sign-up-bg.jpeg';
 // Icons
 
 // Types
-import {type AvailError} from '../types/errors';
-import {Languages} from '../types/languages';
-import {delete_key} from '../services/keychain/keychain';
-import {register, checkBiometrics, register_seed_phrase} from '../services/authentication/register';
+import { type AvailError } from '../types/errors';
+import { Languages } from '../types/languages';
+import { delete_key } from '../services/keychain/keychain';
+import { register, checkBiometrics, register_seed_phrase } from '../services/authentication/register';
 import Layout from './reusable/layout';
 
 function Register() {
@@ -41,7 +41,7 @@ function Register() {
 	const [confirmPassword, setConfirmPassword] = React.useState('');
 
 	const [language, setLanguage] = React.useState(Languages.English);
-	const [length, setLength] = React.useState<Length>({label: '12 Words', value: 12});
+	const [length, setLength] = React.useState<Length>({ label: '12 Words', value: 12 });
 
 	const [passwordHidden, setPasswordHidden] = React.useState(true);
 	const [confirmPasswordHidden, setConfirmPasswordHidden] = React.useState(true);
@@ -61,7 +61,7 @@ function Register() {
 	const [confirmPasswordError, setConfirmPasswordError] = React.useState('');
 
 	const navigate = useNavigate();
-	const {t} = useTranslation();
+	const { t } = useTranslation();
 
 	function validatePassword(password: string): string {
 		if (password.length < 12) {
@@ -124,7 +124,7 @@ function Register() {
 				console.log(response);
 
 				setTimeout(() => {
-					navigate('/seed', {state: {seed: seed_array}});
+					navigate('/seed', { state: { seed: seed_array } });
 				}, 800);
 			}
 		}).catch((error: AvailError) => {
@@ -144,21 +144,21 @@ function Register() {
 			<InfoAlert infoAlert={info} message={message} setInfoAlert={setInfo} />
 			<SuccessAlert successAlert={success} message={message} setSuccessAlert={setSuccess} />
 
-			<mui.Box sx={{display: 'flex', flexDirection: 'row', width: '100%'}}>
+			<mui.Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
 
 				<mui.Box sx={{
 					height: '100vh', width: '50%', backgroundImage: `linear-gradient(to right, transparent, #111111),url(${loginimage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center',
 				}} />
 
-				<mui.Grid xs={6} sx={{marginTop: lg ? '4%' : (md ? '2%' : '2%'), ml: lg ? '7%' : (md ? '5%' : '7%')}}>
+				<mui.Grid xs={6} sx={{ marginTop: lg ? '4%' : (md ? '2%' : '2%'), ml: lg ? '7%' : (md ? '5%' : '7%') }}>
 					<mui.Box sx={{
 						display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
 					}}>
-						<img src={full_logo} style={{width: '40%', height: 'auto', marginLeft: '-20px'}} />
+						<img src={full_logo} style={{ width: '40%', height: 'auto', marginLeft: '-20px' }} />
 
-						<mui.Box sx={{display: 'flex', flexDirection: 'column'}}>
-							<LanguageSelector language={language} setLanguage={setLanguage} sx={{alignSelf: 'flex-end', mr: '5%'}} />
-							<SeedLengthSelector chosenLength={length} setChosenLength={setLength} sx={{alignSelf: 'flex-end', mr: '5%', mt: '8%'}} />
+						<mui.Box sx={{ display: 'flex', flexDirection: 'column' }}>
+							<LanguageSelector language={language} setLanguage={setLanguage} sx={{ alignSelf: 'flex-end', mr: '5%' }} />
+							<SeedLengthSelector chosenLength={length} setChosenLength={setLength} sx={{ alignSelf: 'flex-end', mr: '5%', mt: '8%' }} />
 						</mui.Box>
 
 					</mui.Box>
@@ -166,8 +166,8 @@ function Register() {
 					<mui.Box sx={{
 						display: 'flex', flexDirection: 'row', width: '90%', mt: '-20px',
 					}}>
-						<TitleText sx={{color: '#FFF'}} >{t('signup.tagline.part1')}</TitleText>
-						<TitleText sx={{ml: '2.5%', color: '#00FFAA'}}> {t('signup.tagline.part2')} </TitleText>
+						<TitleText sx={{ color: '#FFF' }} >{t('signup.tagline.part1')}</TitleText>
+						<TitleText sx={{ ml: '2.5%', color: '#00FFAA' }}> {t('signup.tagline.part2')} </TitleText>
 					</mui.Box>
 
 					<WhiteHueTextField
@@ -177,9 +177,9 @@ function Register() {
 							setUsername(event.target.value);
 						}}
 						value={username}
-						inputProps={{style: {color: '#fff'}}}
-						InputLabelProps={{style: {color: '#fff'}}}
-						sx={{width: md ? '75%' : '85%', marginTop: md ? '6%' : '3%'}}
+						inputProps={{ style: { color: '#fff' } }}
+						InputLabelProps={{ style: { color: '#fff' } }}
+						sx={{ width: md ? '75%' : '85%', marginTop: md ? '6%' : '3%' }}
 					/>
 
 					<WhiteHueTextField
@@ -190,15 +190,15 @@ function Register() {
 						}}
 						value={password}
 						type={passwordHidden ? 'password' : ''}
-						inputProps={{style: {color: '#fff'}}}
-						InputLabelProps={{style: {color: '#fff'}}}
-						sx={{width: md ? '75%' : '85%', marginTop: md ? '6%' : '3%'}}
+						inputProps={{ style: { color: '#fff' } }}
+						InputLabelProps={{ style: { color: '#fff' } }}
+						sx={{ width: md ? '75%' : '85%', marginTop: md ? '6%' : '3%' }}
 						InputProps={{
 							endAdornment: (
 								<mui.InputAdornment position='end'>
-									{passwordHidden ? <VisibilityOffIcon style={{color: '#FFF', cursor: 'pointer'}} onClick={() => {
+									{passwordHidden ? <VisibilityOffIcon style={{ color: '#FFF', cursor: 'pointer' }} onClick={() => {
 										setPasswordHidden(false);
-									}} /> : <VisibilityIcon style={{color: '#FFF'}} onClick={() => {
+									}} /> : <VisibilityIcon style={{ color: '#FFF' }} onClick={() => {
 										setPasswordHidden(true);
 									}} />}
 								</mui.InputAdornment>
@@ -217,15 +217,15 @@ function Register() {
 						value={confirmPassword}
 						color='primary'
 						type={confirmPasswordHidden ? 'password' : ''}
-						inputProps={{style: {color: '#fff'}}}
-						InputLabelProps={{style: {color: '#fff'}}}
-						sx={{width: md ? '75%' : '85%', marginTop: md ? '6%' : '3%'}}
+						inputProps={{ style: { color: '#fff' } }}
+						InputLabelProps={{ style: { color: '#fff' } }}
+						sx={{ width: md ? '75%' : '85%', marginTop: md ? '6%' : '3%' }}
 						InputProps={{
 							endAdornment: (
 								<mui.InputAdornment position='end'>
-									{confirmPasswordHidden ? <VisibilityOffIcon style={{color: '#FFF', cursor: 'pointer'}} onClick={() => {
+									{confirmPasswordHidden ? <VisibilityOffIcon style={{ color: '#FFF', cursor: 'pointer' }} onClick={() => {
 										setConfirmPasswordHidden(false);
-									}} /> : <VisibilityIcon style={{color: '#FFF'}} onClick={() => {
+									}} /> : <VisibilityIcon style={{ color: '#FFF' }} onClick={() => {
 										setConfirmPasswordHidden(true);
 									}} />}
 								</mui.InputAdornment>
@@ -239,8 +239,8 @@ function Register() {
 						color: '#a3a3a3', fontSize: 12, marginTop: '1%',
 						fontWeight: '700', alignContent: 'end',
 					}}>
-            Password must be at least 12 characters long,
-            and contain  at least <br /> a digit and a symbol.
+						Password must be at least 12 characters long,
+						and contain  at least <br /> a digit and a symbol.
 					</mui.Typography>
 
 					<SignUpButton onClick={() => {
@@ -248,17 +248,17 @@ function Register() {
 						// Register(username, password, biometric, navigate);
 						// navigate('/home-desktop')
 					}}
-					sx={{marginTop: '5%'}}
-					endIcon={<ArrowForward style={{color: '#FFF'}} />}
+						sx={{ marginTop: '5%' }}
+						endIcon={<ArrowForward style={{ color: '#FFF' }} />}
 					>
-						<mui.Typography sx={{fontSize: '1.2rem', fontWeight: 700}}>
+						<mui.Typography sx={{ fontSize: '1.2rem', fontWeight: 700 }}>
 							{t('signup.CTAButton')}
 						</mui.Typography>
 					</SignUpButton>
-					<mui.Box sx={{display: 'flex', flexDirection: 'row', marginTop: '3%'}}>
-						<mui.Typography sx={{color: '#a3a3a3', fontSize: 12, fontWeight: '700'}}> {t('signup.terms.part1')}</mui.Typography>
+					<mui.Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '3%' }}>
+						<mui.Typography sx={{ color: '#a3a3a3', fontSize: 12, fontWeight: '700' }}> {t('signup.terms.part1')}</mui.Typography>
 						<mui.Typography sx={{
-							color: '#a3a3a3', fontSize: 12, fontWeight: '700', ml: '0.7%', '&:hover': {color: '#00FFAA', cursor: 'pointer'},
+							color: '#a3a3a3', fontSize: 12, fontWeight: '700', ml: '0.7%', '&:hover': { color: '#00FFAA', cursor: 'pointer' },
 						}} onClick={() => {
 							navigate('/terms-of-service');
 						}}> {t('signup.terms.part2')}</mui.Typography>
@@ -266,7 +266,7 @@ function Register() {
 							color: '#a3a3a3', fontSize: 12, fontWeight: '700', ml: '0.7%',
 						}}> {t('signup.terms.part3')}</mui.Typography>
 						<mui.Typography sx={{
-							color: '#a3a3a3', fontSize: 12, fontWeight: '700', ml: '0.7%', '&:hover': {color: '#00FFAA', cursor: 'pointer'},
+							color: '#a3a3a3', fontSize: 12, fontWeight: '700', ml: '0.7%', '&:hover': { color: '#00FFAA', cursor: 'pointer' },
 						}} onClick={() => {
 							navigate('/privacy-policy');
 						}}>{t('signup.terms.part4')}</mui.Typography>
@@ -279,11 +279,11 @@ function Register() {
 							color: '#a3a3a3', fontSize: 18, fontWeight: '700', wordWrap: 'break-word', alignContent: 'end',
 						}}>{t('signup.access')}</mui.Typography>
 						<mui.Button sx={{
-							display: 'flex', width: '123px', height: '35px', borderRadius: 9, background: '#3E3E3E', color: '#FFFFFF', '&:hover': {background: '#00FFAA', color: '#000'},
+							display: 'flex', width: '123px', height: '35px', borderRadius: 9, background: '#3E3E3E', color: '#FFFFFF', '&:hover': { background: '#00FFAA', color: '#000' },
 						}} onClick={() => {
 							navigate('/recovery');
 						}}>
-							<BodyText sx={{fontWeight: '700', wordWrap: 'break-word', textTransform: 'none'}}>{t('signup.recover')}</BodyText>
+							<BodyText sx={{ fontWeight: '700', wordWrap: 'break-word', textTransform: 'none' }}>{t('signup.recover')}</BodyText>
 						</mui.Button>
 					</mui.Box>
 					<mui.Box sx={{
@@ -293,11 +293,11 @@ function Register() {
 							color: '#a3a3a3', fontSize: 18, fontWeight: '700', wordWrap: 'break-word', alignContent: 'end',
 						}}>Want to import an account ?</mui.Typography>
 						<mui.Button sx={{
-							display: 'flex', width: '123px', height: '35px', borderRadius: 9, background: '#3E3E3E', color: '#FFFFFF', '&:hover': {background: '#00FFAA', color: '#000'},
+							display: 'flex', width: '123px', height: '35px', borderRadius: 9, background: '#3E3E3E', color: '#FFFFFF', '&:hover': { background: '#00FFAA', color: '#000' },
 						}} onClick={() => {
 							navigate('/import');
 						}}>
-							<BodyText sx={{fontWeight: '700', wordWrap: 'break-word', textTransform: 'none'}}>Import</BodyText>
+							<BodyText sx={{ fontWeight: '700', wordWrap: 'break-word', textTransform: 'none' }}>Import</BodyText>
 						</mui.Button>
 					</mui.Box>
 
