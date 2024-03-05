@@ -7,7 +7,7 @@ import {
 
 // material ui components
 import MuiDrawer from '@mui/material/Drawer';
-import MuiAppBar, {type AppBarProps as MuiAppBarProperties} from '@mui/material/AppBar';
+import MuiAppBar, { type AppBarProps as MuiAppBarProperties } from '@mui/material/AppBar';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
@@ -25,16 +25,18 @@ import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import LanguageIcon from '@mui/icons-material/Language';
 import DropIcon from '@mui/icons-material/WaterDrop';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import a_logo from '../assets/logo/a-icon.svg';
-import {open_url} from '../services/util/open';
+import { open_url } from '../services/util/open';
 import LogoutDialog from './dialogs/logout';
+import Tooltip from '@mui/material/Tooltip';
+import { SmallText } from './typography/typography';
 
 const drawerWidth = 240;
 const renderIcon = (index: number) => {
 	switch (index) {
 		case 0: {
-			return <img src={a_logo} alt='aleo logo' style={{width: '40px', height: '40px', marginTop: '2%'}} />;
+			return <img src={a_logo} alt='aleo logo' style={{ width: '40px', height: '40px', marginTop: '2%' }} />;
 			break;
 		}
 
@@ -59,8 +61,8 @@ const renderIcon = (index: number) => {
 		}
 
 		case 5: {
-    	return <InsertPhotoIcon />;
-    	break;
+			return <InsertPhotoIcon />;
+			break;
 		}
 
 		case 6: {
@@ -86,15 +88,17 @@ const renderIcon = (index: number) => {
 
 const openedMixin = (theme: Theme): CSSObject => ({
 	width: drawerWidth,
+	height: '100%',
 	transition: theme.transitions.create('width', {
 		easing: theme.transitions.easing.sharp,
 		duration: theme.transitions.duration.enteringScreen,
 	}),
-	color: '#111111',
+	backgroundColor: '#111111',
 	overflowX: 'hidden',
 });
 
 const closedMixin = (theme: Theme): CSSObject => ({
+	height: '100%',
 	transition: theme.transitions.create('width', {
 		easing: theme.transitions.easing.sharp,
 		duration: theme.transitions.duration.leavingScreen,
@@ -114,7 +118,7 @@ type AppBarProperties = {
 const AppBar = styled(MuiAppBar, {
 
 	shouldForwardProp: property => property !== 'open',
-})<AppBarProperties>(({theme, open}) => ({
+})<AppBarProperties>(({ theme, open }) => ({
 	zIndex: theme.zIndex.drawer + 1,
 	transition: theme.transitions.create(['width', 'margin'], {
 		easing: theme.transitions.easing.sharp,
@@ -131,12 +135,12 @@ const AppBar = styled(MuiAppBar, {
 	}),
 }));
 
-const Drawer = styled(MuiDrawer, {shouldForwardProp: property => property !== 'open'})(
-	({theme, open}) => ({
+const Drawer = styled(MuiDrawer, { shouldForwardProp: property => property !== 'open' })(
+	({ theme, open }) => ({
 		width: drawerWidth,
 		flexShrink: 0,
 		whiteSpace: 'nowrap',
-		color: '#111111',
+		color: '#000000',
 		margin: 0,
 		padding: 0,
 		boxSizing: 'border-box',
@@ -156,6 +160,7 @@ export default function SideMenu() {
 	const [open, setOpen] = React.useState(false);
 	const [height, setHeight] = React.useState(window.innerHeight);
 	const [logoutDialog, setLogoutDialog] = React.useState(false);
+	const [hover, setHover] = React.useState(false);
 
 	const navigate = useNavigate();
 
@@ -186,7 +191,7 @@ export default function SideMenu() {
 			}
 
 			case 3: {
-				navigate('/browser', {state: 'https://faucet.puzzle.online'});
+				navigate('/faucet', { state: 'https://faucet.puzzle.online' });
 				break;
 			}
 
@@ -195,10 +200,10 @@ export default function SideMenu() {
 				break;
 			}
 
-	  case 5: {
-      	navigate('/nfts');
-      	break;
-	  }
+			case 5: {
+				navigate('/nfts');
+				break;
+			}
 
 			case 6: {
 				open_url('https://discord.gg/avail-1140618884764942386').then(res => {
@@ -231,10 +236,10 @@ export default function SideMenu() {
 			<LogoutDialog isOpen={logoutDialog} onRequestClose={() => {
 				setLogoutDialog(false);
 			}} />
-			<List >
-				{['Home', 'Swap', 'Activity', 'Faucet', 'Browser', 'Nfts', 'Support'].map((text, index) => (
+			<List onMouseEnter={() => { setOpen(true); setHover(true) }} onMouseLeave={() => { setOpen(false); setHover(false) }} >
+				{['Home', 'Send', 'Activity', 'Faucet', 'Browser', 'Nfts', 'Support', 'Settings', 'Logout'].map((text, index) => (
 					<ListItem key={text} disablePadding sx={{
-						display: 'block', color: '#fff', marginTop: (text == 'Home') ? '' : '20%', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
+						display: 'block', color: '#fff', marginTop: (text == 'Home') ? '' : '10%', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
 						'&:hover': {
 							transform: (text == 'Home') ? '' : 'translateY(-4px)',
 							color: '#00FFAA',
@@ -266,52 +271,35 @@ export default function SideMenu() {
 							>
 								{renderIcon(index)}
 							</ListItemIcon>
-							<ListItemText primary={text} sx={{opacity: open ? 1 : 0}} />
-						</ListItemButton>
-					</ListItem>
+							<Popup text={text} isVisible={hover} />
+						</ListItemButton >
+
+					</ListItem >
+
 				))}
-				{/*  <Box sx={{ mt: lg ? `${height / 2.5}px` : md ? `${height / 4}px` : `${height / 4}px` }} /> */}
-				{['Settings', 'Logout'].map((text, index) => (
-					<ListItem key={text} disablePadding sx={{
-						display: 'block', color: '#111111', marginTop: '20%', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
-						'&:hover': {
-							transform: 'translateY(-4px)',
-							color: '#00FFAA',
-						},
-					}}>
-						<ListItemButton
-							sx={{
-								minHeight: 48,
-								justifyContent: open ? 'initial' : 'center',
-								px: 2.5,
-								color: '#fff',
-								'&:hover': {
-									color: '#00FFAA',
-								},
-							}}
-							onClick={() => {
-								handleOnClick(index + 7);
-							}}
-						>
-							<ListItemIcon
-								sx={{
-									minWidth: 0,
-									mr: open ? 3 : 'auto',
-									justifyContent: 'center',
-									marginTop: '3%',
-									color: 'inherit',
-								}}
+			</List >
 
-							>
-								{renderIcon(index + 7)}
-							</ListItemIcon>
-							<ListItemText primary={text} sx={{opacity: open ? 1 : 0}} />
-						</ListItemButton>
-					</ListItem>
-				))}
+		</Drawer >
+	);
+}
 
-			</List>
-
-		</Drawer>
+function Popup({ text, isVisible }: { text: string, isVisible: boolean }) {
+	return (
+		<div
+			style={{
+				visibility: isVisible ? 'visible' : 'hidden',
+				position: 'absolute',
+				zIndex: 1,
+				backgroundColor: '#111111',
+				padding: '10px',
+				marginLeft: '50px',
+				fontFamily: `DM Sans, thin`,
+				opacity: 0.8,
+				borderRadius: '5px',
+				marginTop: '18px'
+			}}
+		>
+			{text}
+		</div>
 	);
 }
