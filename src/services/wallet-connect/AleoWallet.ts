@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-promise-reject-errors */
 import {invoke} from '@tauri-apps/api/core';
-import {once} from '@tauri-apps/api/event';
+import {once, type Event} from '@tauri-apps/api/event';
 import {type WebviewOptions} from '@tauri-apps/api/webview';
 import {getAll, WebviewWindow} from '@tauri-apps/api/webviewWindow';
 import {type Window, type WindowOptions} from '@tauri-apps/api/window';
@@ -13,7 +13,9 @@ import {
 import {type Web3WalletTypes} from '@walletconnect/web3wallet';
 import {type AvailError} from '../../types/errors';
 import {
-	aleoChain, AleoEvents, AleoMethod,
+	aleoChain,
+	AleoEvents,
+	AleoMethod,
 	type CreateEventResponse,
 	EventType,
 	shortenAddress,
@@ -37,7 +39,7 @@ function checkWindow(reference: string) {
  * Get the window object from the window list
  * @param windowLabel - The window label
  * @returns The WebviewWindow object
-  */
+ */
 function getWindow(windowLabel: string): WebviewWindow | undefined {
 	return getAll().find(win => win.label === windowLabel);
 }
@@ -48,7 +50,11 @@ function getWindow(windowLabel: string): WebviewWindow | undefined {
  * @param options - The window options
  * @returns The WebviewWindow object
  */
-function getWindowOrCreate(windowLabel: string, options?: Omit<WebviewOptions, 'x' | 'y' | 'width' | 'height'> & WindowOptions): WebviewWindow {
+function getWindowOrCreate(
+	windowLabel: string,
+	options?: Omit<WebviewOptions, 'x' | 'y' | 'width' | 'height'> &
+	WindowOptions,
+): WebviewWindow {
 	const window = getWindow(windowLabel);
 	if (window) {
 		return window;
@@ -64,7 +70,12 @@ function getWindowOrCreate(windowLabel: string, options?: Omit<WebviewOptions, '
  * @param payload The payload to emit
  * @param seconds The number of seconds to wait before emitting the event
  */
-function emitAfterSeconds(window: WebviewWindow, event: string, payload: any, seconds: number) {
+function emitAfterSeconds(
+	window: WebviewWindow,
+	event: string,
+	payload: any,
+	seconds: number,
+) {
 	setTimeout(async () => {
 		await window.emit(event, payload);
 	}, seconds * 1000);
@@ -80,7 +91,9 @@ function getDappMetadata(session_topic: string): DAppSession | undefined {
 	const dappSessionString = sessionStorage.getItem(session_topic);
 
 	if (dappSessionString) {
-		const dappSession: DAppSession = JSON.parse(dappSessionString) as DAppSession;
+		const dappSession: DAppSession = JSON.parse(
+			dappSessionString,
+		) as DAppSession;
 		return dappSession;
 	}
 }
@@ -128,7 +141,18 @@ function checkNotExpired(unique_request_id: string) {
 	return false;
 }
 
-async function createWalletConnectDialog(dialogConfig: {onApprove: () => Promise<JsonRpcResult | JsonRpcError>; onReject: () => Promise<JsonRpcResult | JsonRpcError>; approveEventString: string; rejectEventString: string; requestType: AleoMethod; requestIdentifier: string; requestEvent: Web3WalletTypes.SessionRequest}, wcRequest: WalletConnectRequest): Promise<JsonRpcResult | JsonRpcError> {
+export async function createWalletConnectDialog(
+	dialogConfig: {
+		onApprove: (response: Event<unknown>) => Promise<JsonRpcResult | JsonRpcError | void>;
+		onReject: (response: Event<unknown>) => Promise<JsonRpcResult | JsonRpcError | void>;
+		approveEventString: string;
+		rejectEventString: string;
+		requestType: AleoMethod;
+		requestIdentifier: string;
+		requestEvent?: Web3WalletTypes.SessionRequest;
+	},
+	wcRequest: WalletConnectRequest,
+): Promise<JsonRpcResult | JsonRpcError | void> {
 	return new Promise((resolve, reject) => {
 		const webview = getWindowOrCreate('walletConnect', {
 			url: 'wallet-connect-screens/wallet-connect.html',
@@ -141,45 +165,42 @@ async function createWalletConnectDialog(dialogConfig: {onApprove: () => Promise
 		emitAfterSeconds(webview, 'wallet-connect-request', wcRequest, 3);
 
 		// Register approve listener
-		once(dialogConfig.approveEventString, async () => {
+		once(dialogConfig.approveEventString, async response => {
 			storeSession(dialogConfig.requestIdentifier);
 			await webview.window.destroy();
-			dialogConfig.onApprove().then(response => {
-				resolve(response);
-			}).catch(response => {
-				reject(response);
+			dialogConfig
+				.onApprove(response)
+				.then(response => {
+					resolve(response);
+				})
+				.catch(response => {
+					reject(response);
+				});
+		})
+			.then(() => {
+				console.log('Approve listener registered');
+			})
+			.catch((error: any) => {
+				console.error(error);
 			});
-		}).then(() => {
-			console.log('Approve listener registered');
-		}).catch((error: any) => {
-			console.error(error);
-		});
 
 		// Register reject listener
 		once(dialogConfig.rejectEventString, async response => {
 			await webview.window.destroy();
-			dialogConfig.onReject().then(response => {
-				resolve(response);
-			}).catch(response => {
-				reject(response);
-			});
-		}).then(() => {
-			console.log('Reject listener registered');
-		}).catch((error: any) => {
-			console.error(error);
-		});
-
-		once(
-			dialogConfig.rejectEventString,
-			async response => {
-				await webview.window.destroy();
-				reject(formatJsonRpcResult(dialogConfig.requestEvent.id, response));
-			})
+			dialogConfig
+				.onReject(response)
+				.then(response => {
+					resolve(response);
+				})
+				.catch(response => {
+					reject(response);
+				});
+		})
 			.then(() => {
 				console.log('Reject listener registered');
 			})
 			.catch((error: any) => {
-				console.log('Error registering reject listener');
+				console.error(error);
 			});
 	});
 }
@@ -196,14 +217,17 @@ export class AleoWallet {
 	}
 
 	chainName(): string {
+		console.log('AleoChain', aleoChain);
 		return aleoChain;
 	}
 
 	chainMethods(): string[] {
+		console.log('AleoMethod', Object.keys(AleoMethod));
 		return Object.keys(AleoMethod);
 	}
 
 	chainEvents(): string[] {
+		console.log('AleoEvents', Object.keys(AleoEvents));
 		return Object.keys(AleoEvents);
 	}
 
@@ -265,7 +289,8 @@ export class AleoWallet {
 		const metadata = getDappMetadata(requestEvent.topic);
 		const request = requestEvent.params.request.params as GetBalancesRequest;
 
-		const requestIdentifier = 'getBalance' + (metadata?.name ?? '') + request.assetId;
+		const requestIdentifier
+      = 'getBalance' + (metadata?.name ?? '') + request.assetId;
 
 		let {assetId} = request;
 		if (assetId === 'credits' || assetId === undefined) {
@@ -280,7 +305,14 @@ export class AleoWallet {
 					})
 					.catch((error: AvailError) => {
 						console.error(error);
-						reject(new Error(formatJsonRpcError(requestEvent.id, error.external_msg).error.data));
+						reject(
+							new Error(
+								formatJsonRpcError(
+									requestEvent.id,
+									error.external_msg,
+								).error.data,
+							),
+						);
 					});
 			});
 		}
@@ -300,10 +332,13 @@ export class AleoWallet {
 		return createWalletConnectDialog(
 			{
 				async onApprove() {
-					const response = await invoke<GetBalancesResponse>('get_balance', {request});
+					const response = await invoke<GetBalancesResponse>('get_balance', {
+						request,
+					});
 					return formatJsonRpcResult(requestEvent.id, response);
 				},
-				onReject: async () => formatJsonRpcError(requestEvent.id, 'User rejected balance share'),
+				onReject: async () =>
+					formatJsonRpcError(requestEvent.id, 'User rejected balance share'),
 				approveEventString: 'balance-approved',
 				rejectEventString: 'balance-rejected',
 				requestType: AleoMethod.ALEO_GETBALANCE,
@@ -311,7 +346,6 @@ export class AleoWallet {
 				requestEvent,
 			},
 			wcRequest,
-
 		);
 	}
 
@@ -329,7 +363,6 @@ export class AleoWallet {
 					shortenedAddress: shortenAddress(aleoAddress),
 				},
 			};
-
 			return formatJsonRpcResult(requestEvent.id, response);
 		} catch (error: any) {
 			return formatJsonRpcError(requestEvent.id, error.message as string);
@@ -340,8 +373,7 @@ export class AleoWallet {
 		requestEvent: Web3WalletTypes.SessionRequest,
 	): Promise<JsonRpcResult | JsonRpcError> {
 		const metadata = getDappMetadata(requestEvent.topic);
-		const request = requestEvent.params.request
-			.params as DecryptRequest;
+		const request = requestEvent.params.request.params as DecryptRequest;
 
 		const requestIdentifier = 'decrypt' + (metadata?.name ?? '');
 
@@ -363,7 +395,9 @@ export class AleoWallet {
 
 		const wcRequest: WalletConnectRequest = {
 			method: 'decrypt',
-			question: (metadata?.name ?? 'Someone?') + ' wants you to decrypt and share these records',
+			question:
+        (metadata?.name ?? 'Someone?')
+        + ' wants you to decrypt and share these records',
 			imageRef: '../wc-images/decrypt.svg',
 			approveResponse: 'User approved decryption.',
 			rejectResponse: 'User rejected decryption.',
@@ -375,7 +409,8 @@ export class AleoWallet {
 		return createWalletConnectDialog(
 			{
 				onApprove: action,
-				onReject: async () => formatJsonRpcError(requestEvent.id, 'User rejected decryption'),
+				onReject: async () =>
+					formatJsonRpcError(requestEvent.id, 'User rejected decryption'),
 				approveEventString: 'decrypt-approved',
 				rejectEventString: 'decrypt-rejected',
 				requestType: AleoMethod.ALEO_DECRYPT,
@@ -390,12 +425,12 @@ export class AleoWallet {
 		requestEvent: Web3WalletTypes.SessionRequest,
 	): Promise<JsonRpcResult | JsonRpcError> {
 		const metadata = getDappMetadata(requestEvent.topic);
-		const request = requestEvent.params.request
-			.params as SignatureRequest;
+		const request = requestEvent.params.request.params as SignatureRequest;
 
 		const wcRequest: WalletConnectRequest = {
 			method: 'sign',
-			question: (metadata?.name ?? 'Someone?') + ' wants you to sign this message',
+			question:
+        (metadata?.name ?? 'Someone?') + ' wants you to sign this message',
 			imageRef: '../wc-images/sign.svg',
 			approveResponse: 'User approved signature.',
 			rejectResponse: 'User rejected signature.',
@@ -419,7 +454,8 @@ export class AleoWallet {
 		return createWalletConnectDialog(
 			{
 				onApprove: action,
-				onReject: async () => formatJsonRpcError(requestEvent.id, 'User rejected signature'),
+				onReject: async () =>
+					formatJsonRpcError(requestEvent.id, 'User rejected signature'),
 				approveEventString: 'sign-approved',
 				rejectEventString: 'sign-rejected',
 				requestType: AleoMethod.ALEO_SIGN,
@@ -435,23 +471,32 @@ export class AleoWallet {
 		requestEvent: Web3WalletTypes.SessionRequest,
 	): Promise<JsonRpcResult | JsonRpcError> {
 		const metadata = getDappMetadata(requestEvent.topic);
-		const request = requestEvent.params.request
-			.params as CreateEventRequest;
+		const request = requestEvent.params.request.params as CreateEventRequest;
 		console.log('===========> Request full', request);
 		// TODO - User fee privacy choice
 		const wcRequest: WalletConnectRequest = {
 			method: 'create-request-event',
-			question: (metadata?.name ?? 'Someone?') + ' wants to ' + (request.type === EventType.Deploy ? 'deploy' : 'execute')
-				+ ' a program',
+			question:
+        (metadata?.name ?? 'Someone?')
+        + ' wants to '
+        + (request.type === EventType.Deploy ? 'deploy' : 'execute')
+        + ' a program',
 			imageRef: '../wc-images/deploy.svg',
-			approveResponse: 'User approved ' + (request.type === EventType.Deploy ? 'deployment' : 'execution') + ' event.',
-			rejectResponse: 'User rejected ' + (request.type === EventType.Deploy ? 'deployment' : 'execution') + ' event.',
+			approveResponse:
+        'User approved '
+        + (request.type === EventType.Deploy ? 'deployment' : 'execution')
+        + ' event.',
+			rejectResponse:
+        'User rejected '
+        + (request.type === EventType.Deploy ? 'deployment' : 'execution')
+        + ' event.',
 			fee: request.fee.toString(),
 			programId: request.programId,
 			dappImage: metadata?.img,
 			dappUrl: metadata?.url,
 			inputs: request.type === EventType.Deploy ? undefined : request.inputs,
-			functionId: request.type === EventType.Deploy ? undefined : request.functionId,
+			functionId:
+        request.type === EventType.Deploy ? undefined : request.functionId,
 		};
 
 		return createWalletConnectDialog(
@@ -470,11 +515,18 @@ export class AleoWallet {
 							});
 					});
 				},
-				onReject: async () => formatJsonRpcError(requestEvent.id, 'User rejected ' + (request.type === EventType.Deploy ? 'deployment' : 'execution') + ' event'),
+				onReject: async () =>
+					formatJsonRpcError(
+						requestEvent.id,
+						'User rejected '
+              + (request.type === EventType.Deploy ? 'deployment' : 'execution')
+              + ' event',
+					),
 				approveEventString: 'create-request-event-approved',
 				rejectEventString: 'create-request-event-rejected',
 				requestType: AleoMethod.ALEO_CREATE_EVENT,
-				requestIdentifier: 'createRequestEvent' + (metadata?.name ?? '') + request.programId,
+				requestIdentifier:
+          'createRequestEvent' + (metadata?.name ?? '') + request.programId,
 				requestEvent,
 			},
 			wcRequest,
@@ -633,10 +685,10 @@ export class AleoWallet {
 			.params as interfaces.GetEventsRequest;
 
 		const request_identifier
-			= 'getEvents'
-			+ metadata?.name
-			+ request.filter?.functionId
-			+ request.filter?.programId;
+      = 'getEvents'
+      + metadata?.name
+      + request.filter?.functionId
+      + request.filter?.programId;
 
 		if (!checkExpired(request_identifier)) {
 			return new Promise((resolve, reject) => {
@@ -743,10 +795,10 @@ export class AleoWallet {
 			.params as interfaces.GetRecordsRequest;
 
 		const request_identifier
-			= 'getRecords'
-			+ metadata?.name
-			+ request.filter?.functionId
-			+ request.filter?.programIds;
+      = 'getRecords'
+      + metadata?.name
+      + request.filter?.functionId
+      + request.filter?.programIds;
 		if (request?.filter) {
 			console.log('==> Request', request);
 			console.log('==> PID\'s', request.filter?.programIds);

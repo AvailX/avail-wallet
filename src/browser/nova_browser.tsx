@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, { ReactEventHandler, useState } from 'react';
 
 // Tauri tools
-import {listen} from '@tauri-apps/api/event';
+import { listen } from '@tauri-apps/api/event';
 
 // Styles
 import {
@@ -9,22 +9,23 @@ import {
 } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import {styled} from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
 // global state
-import {useTranslation} from 'react-i18next';
-import {useWalletConnectManager} from '../context/WalletConnect';
+import { useTranslation } from 'react-i18next';
+import { useWalletConnectManager } from '../context/WalletConnect';
 import DappView from '../components/dApps/dapp';
-import {Title2Text} from '../components/typography/typography';
-import {dapps} from '../assets/dapps/dapps';
-import {useScan} from '../context/ScanContext';
+import { Title2Text } from '../components/typography/typography';
+import { dapps } from '../assets/dapps/dapps';
+import { useScan } from '../context/ScanContext';
 
 // Alerts
 import {
 	ErrorAlert, SuccessAlert, WarningAlert, InfoAlert,
 } from '../components/snackbars/alerts';
+import { open_url } from '../services/util/open';
 
-const Search = styled('div')(({theme}) => ({
+const Search = styled('div')(({ theme }) => ({
 	position: 'relative',
 	borderRadius: theme.shape.borderRadius,
 	backgroundColor: theme.palette.common.white,
@@ -38,7 +39,7 @@ type BrowserProperties = {
 	handleDappSelection: (url: string) => void;
 };
 
-const Browser: React.FC<BrowserProperties> = ({initialUrl, theme = 'light', handleDappSelection}) => {
+const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', handleDappSelection }) => {
 	const [url, setUrl] = useState<string | undefined>(initialUrl || '');
 	const [inputUrl, setInputUrl] = useState(url);
 	const [previousUrls, setPreviousUrls] = useState<string[]>([]);
@@ -52,11 +53,11 @@ const Browser: React.FC<BrowserProperties> = ({initialUrl, theme = 'light', hand
 	const [warningAlert, setWarningAlert] = useState(false);
 	const [infoAlert, setInfoAlert] = useState(false);
 	const [alertMessage, setAlertMessage] = useState('');
-	const {startScan, endScan, scanInProgress} = useScan();
+	const { startScan, endScan, scanInProgress } = useScan();
 
-	const {walletConnectManager} = useWalletConnectManager();
+	const { walletConnectManager } = useWalletConnectManager();
 
-	const {t} = useTranslation();
+	const { t } = useTranslation();
 
 	const handleConnected = () => {
 		walletConnectManager.pair(wcURL).catch(() => {
@@ -133,6 +134,19 @@ const Browser: React.FC<BrowserProperties> = ({initialUrl, theme = 'light', hand
 		}
 	};
 
+	function handleUrlChangeInIframe(): ReactEventHandler<HTMLIFrameElement> {
+		return (event) => {
+			// if url starts with avail:// open in native app
+			console.log('rip')
+			const iframe = event.target as HTMLIFrameElement;
+			const url = iframe.contentWindow?.location.href;
+			if (url && url.startsWith('avail://')) {
+				event.preventDefault();
+				open_url(url);
+			}
+		};
+	}
+
 	const handleDappSelect = (url: string) => {
 		setInputUrl(url);
 		setUrl(url);
@@ -178,10 +192,10 @@ const Browser: React.FC<BrowserProperties> = ({initialUrl, theme = 'light', hand
 	}, []);
 
 	return (
-		<Box sx={{ml: '5%', height: '94vh', width: '94%'}}>
+		<Box sx={{ ml: '5%', height: '94vh', width: '94%' }}>
 			<ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={alertMessage} />
 			<SuccessAlert successAlert={successAlert} setSuccessAlert={setSuccessAlert} message={alertMessage} />
-			<AppBar position='static' sx={{bgcolor: '#111111'}} >
+			<AppBar position='static' sx={{ bgcolor: '#111111' }} >
 				<Toolbar variant='dense'>
 					<IconButton edge='start' color='inherit' aria-label='back' onClick={handleBack}>
 						<ArrowBackIosNewIcon />
@@ -198,15 +212,15 @@ const Browser: React.FC<BrowserProperties> = ({initialUrl, theme = 'light', hand
 							onSubmit={handleInputSubmit}
 						>
 							<InputBase
-								sx={{ml: 1, flex: 1}}
+								sx={{ ml: 1, flex: 1 }}
 								placeholder={t('browser.enter') + ' URL'}
-								inputProps={{'aria-label': 'enter url'}}
+								inputProps={{ 'aria-label': 'enter url' }}
 								value={inputUrl}
 								onChange={handleInputChange}
 							/>
 						</Paper>
 					</Search>
-					<Box sx={{width: '30%', ml: '2%'}}>
+					<Box sx={{ width: '30%', ml: '2%' }}>
 						<Paper
 							component='form'
 							sx={{
@@ -215,9 +229,9 @@ const Browser: React.FC<BrowserProperties> = ({initialUrl, theme = 'light', hand
 							onSubmit={handleInputSubmit}
 						>
 							<InputBase
-								sx={{ml: 1, flex: 1}}
+								sx={{ ml: 1, flex: 1 }}
 								placeholder={t('browser.enter') + ' Wallet Connect Link'}
-								inputProps={{'aria-label': 'enter url'}}
+								inputProps={{ 'aria-label': 'enter url' }}
 								value={wcURL}
 								onChange={handleInputWcURL}
 							/>
@@ -237,41 +251,55 @@ const Browser: React.FC<BrowserProperties> = ({initialUrl, theme = 'light', hand
 							boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.8)',
 						},
 					}}
-					onClick={() => {
-						connected ? handleDisconnect() : handleConnected();
-					}}
+						onClick={() => {
+							connected ? handleDisconnect() : handleConnected();
+						}}
 					> {connected ? t('browser.message.success.disconnect') : t('browser.connect')}</Button>
 				</Toolbar>
 			</AppBar>
 			{url !== ''
-        && <iframe
-        	src={url}
-        	title='Browser'
-        	width='100%'
-        	height='100%'
-        	loading='lazy'
-        	allowFullScreen
-        />
+				&& <iframe
+					src={url}
+					title='Browser'
+					width='100%'
+					height='100%'
+					loading='lazy'
+					allowFullScreen
+					onLoad={(event) => {
+						console.log('loaded url zutt' + url);
+						const iframe = event.target as HTMLIFrameElement;
+
+						const doc = iframe.contentDocument || iframe.contentWindow?.document;
+						if (!doc) return;
+
+						// Add event listener to iframe
+						doc.addEventListener('error', (event) => {
+							console.error('iframe error', event);
+						});
+
+
+					}}
+				/>
 			}
 			{url === ''
-        && <Box sx={{
-        	display: 'flex', flexDirection: 'column', p: '20px', ml: '2%',
-        }}>
-        	<Title2Text sx={{color: '#fff'}}> {t('browser.title')} </Title2Text>
-        	<Typography variant='body1' sx={{color: '#a3a3a3'}}>
-        		{t('browser.subtitle')}
-        	</Typography>
-        	<Grid container spacing={2} sx={{marginTop: '20px'}}>
-        		{dapps.map((dapp, index) => (
-        			<Grid item xs={12} md={4} key={index}>
-        				<DappView dapp={dapp} onClick={() => {
-        					handleDappSelect(dapp.url); handleDappSelection(dapp.url);
-        				}} />
-        			</Grid>
-        		))}
-        	</Grid>
+				&& <Box sx={{
+					display: 'flex', flexDirection: 'column', p: '20px', ml: '2%',
+				}}>
+					<Title2Text sx={{ color: '#fff' }}> {t('browser.title')} </Title2Text>
+					<Typography variant='body1' sx={{ color: '#a3a3a3' }}>
+						{t('browser.subtitle')}
+					</Typography>
+					<Grid container spacing={2} sx={{ marginTop: '20px' }}>
+						{dapps.map((dapp, index) => (
+							<Grid item xs={12} md={4} key={index}>
+								<DappView dapp={dapp} onClick={() => {
+									handleDappSelect(dapp.url); handleDappSelection(dapp.url);
+								}} />
+							</Grid>
+						))}
+					</Grid>
 
-        </Box>
+				</Box>
 			}
 		</Box>
 	);

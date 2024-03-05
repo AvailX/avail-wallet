@@ -65,7 +65,12 @@ export type DAppSession = {
 	img: string;
 };
 
-export const dappSession = (name: string, description: string, url: string, img: string): DappSession => ({
+export const dappSession = (
+	name: string,
+	description: string,
+	url: string,
+	img: string,
+): DappSession => ({
 	name,
 	description,
 	url,
@@ -151,7 +156,9 @@ export type GetBackendRecordsResponse = {
 	error?: string;
 };
 
-export const convertGetRecordsResponse = (response: GetBackendRecordsResponse): GetRecordsResponse => {
+export const convertGetRecordsResponse = (
+	response: GetBackendRecordsResponse,
+): GetRecordsResponse => {
 	const {records} = response;
 	const convertedRecords: RecordWithPlaintext[] | undefined = [];
 
@@ -180,13 +187,16 @@ export type BackendRecordWithPlaintext = {
 };
 
 // Function to convert from backend record to frontend record
-export const convertRecord = (record: BackendRecordWithPlaintext): RecordWithPlaintext => ({
+export const convertRecord = (
+	record: BackendRecordWithPlaintext,
+): RecordWithPlaintext => ({
 	...record.record,
 	plaintext: record?.plaintext,
 	data: record?.data,
 });
 
-export type Record = { // From @puzzlehq/types
+export type Record = {
+	// From @puzzlehq/types
 	_id: string;
 	eventId: string;
 	height: number;
@@ -385,27 +395,38 @@ export const testEvents: AvailEvent[] = [
 	{
 		_id: '1',
 		type: EventType.Receive,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(Date.now() - 24 * 60 * 60 * 1000),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '20000000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '20000000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'20000000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['300000u64', 'recordajbvajnvjnavjen'],
@@ -423,27 +444,33 @@ export const testEvents: AvailEvent[] = [
 	{
 		_id: '2',
 		type: EventType.Execute,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'avail_disruptors.aleo',
 		functionId: 'mint_private',
 		inputs: ['record1zkp7a76879868433b38qy83692835b3193'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'avail_disruptors.aleo',
 				functionId: 'mint_private',
 				inputs: ['record1zkp7a76879868433b38qy83692835b3193'],
-				outputs: ['{owner: aleo1zkp731567351bjbh13,amount: 100u64, data:{ bytes1: 0x001010210102011010021010101, bytes2: 0x001010210102011010021010101}}'],
+				outputs: [
+					'{owner: aleo1zkp731567351bjbh13,amount: 100u64, data:{ bytes1: 0x001010210102011010021010101, bytes2: 0x001010210102011010021010101}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
@@ -463,27 +490,38 @@ export const testCreditsEvents: AvailEvent[] = [
 	{
 		_id: '2',
 		type: EventType.Send,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'10000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
@@ -501,27 +539,38 @@ export const testCreditsEvents: AvailEvent[] = [
 	{
 		_id: '2',
 		type: EventType.Send,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'10000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
@@ -539,27 +588,38 @@ export const testCreditsEvents: AvailEvent[] = [
 	{
 		_id: '2',
 		type: EventType.Send,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'10000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
@@ -577,27 +637,38 @@ export const testCreditsEvents: AvailEvent[] = [
 	{
 		_id: '2',
 		type: EventType.Send,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'10000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
@@ -618,27 +689,38 @@ export const testCreditsEvents2: AvailEvent[] = [
 	{
 		_id: '1',
 		type: EventType.Send,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(Date.now() - 24 * 60 * 60 * 1000),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'10000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],

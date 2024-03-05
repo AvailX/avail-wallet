@@ -1,5 +1,5 @@
 
-import {emit} from '@tauri-apps/api/event';
+import {emit, once} from '@tauri-apps/api/event';
 import {WebviewWindow} from '@tauri-apps/api/webviewWindow';
 import {Core} from '@walletconnect/core';
 import {formatJsonRpcError, type JsonRpcError, type JsonRpcResult} from '@walletconnect/jsonrpc-utils';
@@ -141,7 +141,6 @@ export class WalletConnectManager {
 
 			const wcRequest: WalletConnectRequest = {
 				method: 'connect',
-
 				question: 'Do you want to connect to ' + metadata.name + ' ?',
 				imageRef: '../wc-images/connect.svg',
 				approveResponse: 'User approved wallet connect',
@@ -160,12 +159,10 @@ export class WalletConnectManager {
 				}, 3000);
 			});
 
-			const {aleoWallet} = this;
-			const {theWallet} = this;
+			const {aleoWallet, theWallet} = this;
 
-			await webview.once('connect-approved', async response => {
+			await once('connect-approved', async response => {
 				console.log('Wallet connect was approved', response);
-				await webview.destroy();
 
 				SessionInfo.show(proposal, [aleoWallet.chainName()]);
 
@@ -193,6 +190,7 @@ export class WalletConnectManager {
 					namespaces: approvedNamespaces,
 				});
 				console.log('Approved session', session);
+
 				await emit('connected', session);
 
 				this.currentRequestVerifyContext = proposal.verifyContext;
@@ -205,9 +203,13 @@ export class WalletConnectManager {
 				// be present in session_request, session_delete events
 				this.sessionTopic = session.topic;
 				console.log('Session topic', this.sessionTopic);
+
 				const dappSess = dappSession(metadata.name, metadata.description, metadata.url, metadata.icons[0]);
+
 				console.log('Storing dapp session', dappSess);
 				sessionStorage.setItem(session.topic, JSON.stringify(dappSess));
+
+				await webview.destroy();
 			});
 
 			// Listen for the rejection event from the secondary window
