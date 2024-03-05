@@ -88,21 +88,23 @@ const renderIcon = (index: number) => {
 
 const openedMixin = (theme: Theme): CSSObject => ({
 	width: drawerWidth,
+	height: '100%',
 	transition: theme.transitions.create('width', {
 		easing: theme.transitions.easing.sharp,
 		duration: theme.transitions.duration.enteringScreen,
 	}),
-	backgroundColor: '#000000',
+	backgroundColor: '#111111',
 	overflowX: 'hidden',
 });
 
 const closedMixin = (theme: Theme): CSSObject => ({
+	height: '100%',
 	transition: theme.transitions.create('width', {
 		easing: theme.transitions.easing.sharp,
 		duration: theme.transitions.duration.leavingScreen,
 	}),
 	overflowX: 'hidden',
-	backgroundColor: '#000000',
+	backgroundColor: '#111111',
 	width: `calc(${theme.spacing(7)} + 1px)`,
 	[theme.breakpoints.up('sm')]: {
 		width: `calc(${theme.spacing(8)} + 1px)`,
@@ -125,7 +127,7 @@ const AppBar = styled(MuiAppBar, {
 	...(open && {
 		marginLeft: drawerWidth,
 		width: `calc(100% - ${drawerWidth}px)`,
-		backgroundColor: '#000000',
+		backgroundColor: '#111111',
 		transition: theme.transitions.create(['width', 'margin'], {
 			easing: theme.transitions.easing.sharp,
 			duration: theme.transitions.duration.enteringScreen,
@@ -237,7 +239,7 @@ export default function SideMenu() {
 			<List onMouseEnter={() => { setOpen(true); setHover(true) }} onMouseLeave={() => { setOpen(false); setHover(false) }} >
 				{['Home', 'Send', 'Activity', 'Faucet', 'Browser', 'Nfts', 'Support', 'Settings', 'Logout'].map((text, index) => (
 					<ListItem key={text} disablePadding sx={{
-						display: 'block', color: '#fff', marginTop: (text == 'Home') ? '' : '20%', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
+						display: 'block', color: '#fff', marginTop: (text == 'Home') ? '' : '10%', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
 						'&:hover': {
 							transform: (text == 'Home') ? '' : 'translateY(-4px)',
 							color: '#00FFAA',
@@ -288,8 +290,7 @@ function Popup({ text, isVisible }: { text: string, isVisible: boolean }) {
 				visibility: isVisible ? 'visible' : 'hidden',
 				position: 'absolute',
 				zIndex: 1,
-				backgroundColor: '#00000060',
-				border: '1px solid #00000080',
+				backgroundColor: '#111111',
 				padding: '10px',
 				marginLeft: '50px',
 				fontFamily: `DM Sans, thin`,
