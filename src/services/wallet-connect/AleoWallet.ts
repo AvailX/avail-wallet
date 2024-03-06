@@ -167,7 +167,7 @@ export async function createWalletConnectDialog(
 		// Register approve listener
 		once(dialogConfig.approveEventString, async response => {
 			storeSession(dialogConfig.requestIdentifier);
-			await webview.window.destroy();
+			await webview.destroy();
 			dialogConfig
 				.onApprove(response)
 				.then(response => {
@@ -186,7 +186,7 @@ export async function createWalletConnectDialog(
 
 		// Register reject listener
 		once(dialogConfig.rejectEventString, async response => {
-			await webview.window.destroy();
+			await webview.destroy();
 			dialogConfig
 				.onReject(response)
 				.then(response => {
@@ -223,7 +223,7 @@ export class AleoWallet {
 
 	chainMethods(): string[] {
 		console.log('AleoMethod', Object.keys(AleoMethod));
-		return Object.keys(AleoMethod);
+		return Object.values(AleoMethod);
 	}
 
 	chainEvents(): string[] {
@@ -237,10 +237,7 @@ export class AleoWallet {
 	): Promise<JsonRpcResult | JsonRpcError> {
 		const requestMethod = requestEvent.params.request.method;
 
-		// Get enum from string
-		const method = AleoMethod[requestMethod as keyof typeof AleoMethod];
-
-		switch (method) {
+		switch (requestMethod) {
 			case AleoMethod.ALEO_GETBALANCE: {
 				return this.handleBalanceRequest(requestEvent);
 			}
@@ -640,7 +637,7 @@ export class AleoWallet {
 		}, 3000);
 
 		return new Promise(async (resolve, reject) => {
-			const unlistenApproved = webview.once(
+			const unlistenApproved = once(
 				'get-event-approved',
 				async response => {
 					const unlisten = await unlistenApproved;
@@ -664,7 +661,7 @@ export class AleoWallet {
 				},
 			);
 
-			const unlistenRejected = webview.once(
+			const unlistenRejected = once(
 				'get-event-rejected',
 				async response => {
 					const unlisten = await unlistenRejected;
@@ -751,7 +748,7 @@ export class AleoWallet {
 		}, 3000);
 
 		return new Promise(async (resolve, reject) => {
-			const unlistenApproved = webview.once(
+			const unlistenApproved = once(
 				'get-events-approved',
 				async response => {
 					const unlisten = await unlistenApproved;
@@ -775,7 +772,7 @@ export class AleoWallet {
 				},
 			);
 
-			const unlistenRejected = webview.once(
+			const unlistenRejected = once(
 				'get-events-rejected',
 				async response => {
 					const unlisten = await unlistenRejected;
@@ -878,7 +875,7 @@ export class AleoWallet {
 		}, 3000);
 
 		return new Promise(async (resolve, reject) => {
-			const unlistenApproved = webview.once(
+			const unlistenApproved = once(
 				'get-records-approved',
 				async response => {
 					const unlisten = await unlistenApproved;
@@ -906,7 +903,7 @@ export class AleoWallet {
 				},
 			);
 
-			const unlistenRejected = webview.once(
+			const unlistenRejected = once(
 				'get-records-rejected',
 				async response => {
 					const unlisten = await unlistenRejected;

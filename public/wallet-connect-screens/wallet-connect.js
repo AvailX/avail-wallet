@@ -53,8 +53,8 @@ function updateUIswitchCase(data) {
 	document.querySelector('#img_src').style.display = 'block';
 	document.querySelector('#question').innerText = data.question;
 	document.querySelector('#question').style.marginTop = '12px';
-	document.querySelector('#img_src').src = data.dapp_img;
-	document.querySelector('#url').innerText = data.dapp_url;
+	document.querySelector('#img_src').src = data.dappImage;
+	document.querySelector('#url').innerText = data.dappUrl;
 	document.querySelector('#scrollable-container').style.display = 'flex';
 
 	switch (data.method) {

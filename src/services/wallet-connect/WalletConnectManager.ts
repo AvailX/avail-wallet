@@ -213,7 +213,7 @@ export class WalletConnectManager {
 			});
 
 			// Listen for the rejection event from the secondary window
-			await webview.once('connect-rejected', async response => {
+			await once('connect-rejected', async response => {
 				// Handle the rejection logic here
 				console.log('Wallet connect was rejected', response);
 				await webview.close();
