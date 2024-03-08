@@ -30,6 +30,8 @@ import {
 	type SignatureResponse,
 	type WalletConnectRequest,
 } from './WCTypes';
+import * as interfaces from './WCTypes';
+
 
 function checkWindow(reference: string) {
 	return getAll().some(win => win.label === reference);
@@ -143,7 +145,7 @@ function checkNotExpired(unique_request_id: string) {
 
 export async function createWalletConnectDialog(
 	dialogConfig: {
-		onApprove: (response: Event<unknown>) => Promise<JsonRpcResult | JsonRpcError | void>;
+		onApprove: (response: Event<unknown>, webview: WebviewWindow) => Promise<JsonRpcResult | JsonRpcError | void>;
 		onReject: (response: Event<unknown>) => Promise<JsonRpcResult | JsonRpcError | void>;
 		approveEventString: string;
 		rejectEventString: string;
@@ -167,10 +169,11 @@ export async function createWalletConnectDialog(
 		// Register approve listener
 		once(dialogConfig.approveEventString, async response => {
 			storeSession(dialogConfig.requestIdentifier);
-			await webview.destroy();
+			console.log('Approve listener triggered');
 			dialogConfig
-				.onApprove(response)
-				.then(response => {
+				.onApprove(response, webview)
+				.then(async response => {
+					await webview.destroy();
 					resolve(response);
 				})
 				.catch(response => {
@@ -498,11 +501,17 @@ export class AleoWallet {
 
 		return createWalletConnectDialog(
 			{
-				async onApprove() {
+				async onApprove(response, webview) {
+					console.log('Before Destroy');
+					await webview.destroy();
 					return new Promise((resolve, reject) => {
+						console.log('Response', response);
+						const payloadObject = JSON.stringify(response.payload);
+						const feeOption = JSON.parse(payloadObject).feeOption;
+						console.log('Fee Option', feeOption);
 						invoke<CreateEventResponse>('request_create_event', {
 							request,
-							fee_private: request.feeOption,
+							fee_private: feeOption,
 						})
 							.then(response => {
 								resolve(formatJsonRpcResult(requestEvent.id, response));
