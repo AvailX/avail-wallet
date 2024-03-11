@@ -26,7 +26,6 @@ document.querySelector('.btn.approve').addEventListener('click', async () => {
 		await emit(eventName, {message: request.approveResponse});
 	}
 
-	window.close();
 	console.log('approve clicked');
 });
 
@@ -35,8 +34,6 @@ document.querySelector('.btn.reject').addEventListener('click', async () => {
 	console.log(eventName);
 	await emit(eventName, {message: request.rejectResponse});
 	console.log('reject clicked');
-
-	window.close();
 });
 
 function updateUIswitchCase(data) {

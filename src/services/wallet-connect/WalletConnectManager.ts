@@ -92,7 +92,7 @@ export class WalletConnectManager {
 			// Await this.theWallet?.core.history.delete(this.sessionTopic);
 		}
 
-		await emit('disconnected', 'disconnected');
+		await emitTo('main','disconnected', 'disconnected');
 
 		console.log('Closing event handling...');
 		this.theWallet?.off('session_proposal', this.onSessionProposal);
@@ -132,7 +132,7 @@ export class WalletConnectManager {
 			/* Approve/Reject Connection window -- START */
 			// Open the new window
 			const webview = new WebviewWindow('wallet-connect', {
-				url: '../../../public/wallet-connect-screens/wallet-connect.html',
+				url: 'wallet-connect-screens/wallet-connect.html',
 				title: 'Avail Wallet Connect',
 				width: 350,
 				height: 600,
@@ -153,7 +153,8 @@ export class WalletConnectManager {
 			await webview.once('tauri://created', () => {
 				console.log('Window created');
 
-				console.log('Window ',webview.window);
+				console.log('Webview ', webview);
+
 				setTimeout(async () => {
 					await emitTo('wallet-connect','wallet-connect-request', wcRequest);
 					console.log('Emitting wallet-connect-request');
@@ -192,7 +193,7 @@ export class WalletConnectManager {
 				});
 				console.log('Approved session', session);
 
-				await emit('connected', session);
+				await emitTo('main','connected', session);
 
 				this.currentRequestVerifyContext = proposal.verifyContext;
 
@@ -296,7 +297,7 @@ export class WalletConnectManager {
 		console.log('Event: session_delete received');
 		console.log(data);
 		await this.close();
-		await emit('disconnected', 'disconnected');
+		await emitTo('main','disconnected', 'disconnected');
 	}
 
 	private onSignClientPing(data: PingEventData) {
