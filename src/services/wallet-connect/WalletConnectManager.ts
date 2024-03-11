@@ -1,5 +1,5 @@
 
-import {emit, once,emitTo} from '@tauri-apps/api/event';
+import {emit, once, emitTo} from '@tauri-apps/api/event';
 import {WebviewWindow} from '@tauri-apps/api/webviewWindow';
 import {Core} from '@walletconnect/core';
 import {formatJsonRpcError, type JsonRpcError, type JsonRpcResult} from '@walletconnect/jsonrpc-utils';
@@ -92,7 +92,7 @@ export class WalletConnectManager {
 			// Await this.theWallet?.core.history.delete(this.sessionTopic);
 		}
 
-		await emitTo('main','disconnected', 'disconnected');
+		await emitTo('main', 'disconnected', 'disconnected');
 
 		console.log('Closing event handling...');
 		this.theWallet?.off('session_proposal', this.onSessionProposal);
@@ -156,7 +156,7 @@ export class WalletConnectManager {
 				console.log('Webview ', webview);
 
 				setTimeout(async () => {
-					await emitTo('wallet-connect','wallet-connect-request', wcRequest);
+					await emitTo('wallet-connect', 'wallet-connect-request', wcRequest);
 					console.log('Emitting wallet-connect-request');
 				}, 3000);
 			});
@@ -193,7 +193,7 @@ export class WalletConnectManager {
 				});
 				console.log('Approved session', session);
 
-				await emitTo('main','connected', session);
+				await emitTo('main', 'connected', session);
 
 				this.currentRequestVerifyContext = proposal.verifyContext;
 
@@ -211,9 +211,7 @@ export class WalletConnectManager {
 				console.log('Storing dapp session', dappSess);
 				sessionStorage.setItem(session.topic, JSON.stringify(dappSess));
 
-				
-
-				await webview.window.destroy();
+				await webview.destroy();
 			});
 
 			// Listen for the rejection event from the secondary window
@@ -297,7 +295,7 @@ export class WalletConnectManager {
 		console.log('Event: session_delete received');
 		console.log(data);
 		await this.close();
-		await emitTo('main','disconnected', 'disconnected');
+		await emitTo('main', 'disconnected', 'disconnected');
 	}
 
 	private onSignClientPing(data: PingEventData) {
