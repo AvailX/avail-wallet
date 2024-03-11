@@ -1,5 +1,5 @@
 
-import {emit, once} from '@tauri-apps/api/event';
+import {emit, once,emitTo} from '@tauri-apps/api/event';
 import {WebviewWindow} from '@tauri-apps/api/webviewWindow';
 import {Core} from '@walletconnect/core';
 import {formatJsonRpcError, type JsonRpcError, type JsonRpcResult} from '@walletconnect/jsonrpc-utils';
@@ -131,8 +131,8 @@ export class WalletConnectManager {
 
 			/* Approve/Reject Connection window -- START */
 			// Open the new window
-			const webview = new WebviewWindow('walletConnect', {
-				url: 'wallet-connect-screens/wallet-connect.html',
+			const webview = new WebviewWindow('wallet-connect', {
+				url: '../../../public/wallet-connect-screens/wallet-connect.html',
 				title: 'Avail Wallet Connect',
 				width: 350,
 				height: 600,
@@ -153,8 +153,9 @@ export class WalletConnectManager {
 			await webview.once('tauri://created', () => {
 				console.log('Window created');
 
+				console.log('Window ',webview.window);
 				setTimeout(async () => {
-					await emit('wallet-connect-request', wcRequest);
+					await emitTo('wallet-connect','wallet-connect-request', wcRequest);
 					console.log('Emitting wallet-connect-request');
 				}, 3000);
 			});
@@ -209,14 +210,16 @@ export class WalletConnectManager {
 				console.log('Storing dapp session', dappSess);
 				sessionStorage.setItem(session.topic, JSON.stringify(dappSess));
 
-				await webview.destroy();
+				
+
+				await webview.window.destroy();
 			});
 
 			// Listen for the rejection event from the secondary window
 			await once('connect-rejected', async response => {
 				// Handle the rejection logic here
 				console.log('Wallet connect was rejected', response);
-				await webview.close();
+				await webview.destroy();
 				throw new Error('User Rejected');
 			});
 

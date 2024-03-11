@@ -80,13 +80,13 @@ function updateUIswitchCase(data) {
 			if (data.program_id) {
 				document.querySelector('#program').style.display = 'block';
 				document.querySelector('#program-input').style.display = 'block';
-				document.querySelector('#program-input').innerText = data.program_id;
+				document.querySelector('#program-input').innerText = data.programId;
 			}
 
 			if (data.function_id) {
 				document.querySelector('#function_id').style.display = 'block';
 				document.querySelector('#function-input').style.display = 'block';
-				document.querySelector('#function-input').innerText = data.function_id;
+				document.querySelector('#function-input').innerText = data.functionId;
 			}
 
 			document.querySelector('#fee').style.display = 'block';
@@ -103,13 +103,13 @@ function updateUIswitchCase(data) {
 			if (data.program_id) {
 				document.querySelector('#program').style.display = 'block';
 				document.querySelector('#program-input').style.display = 'block';
-				document.querySelector('#program-input').innerText = data.program_id;
+				document.querySelector('#program-input').innerText = data.programId;
 			}
 
 			if (data.function_id) {
 				document.querySelector('#function_id').style.display = 'block';
 				document.querySelector('#function-input').style.display = 'block';
-				document.querySelector('#function-input').innerText = data.function_id;
+				document.querySelector('#function-input').innerText = data.functionId;
 			}
 
 			if (data.type) {
@@ -134,7 +134,7 @@ function updateUIswitchCase(data) {
 			if (data.function_id) {
 				document.querySelector('#function_id').style.display = 'block';
 				document.querySelector('#function-input').style.display = 'block';
-				document.querySelector('#function-input').innerText = data.function_id;
+				document.querySelector('#function-input').innerText = data.functionId;
 			}
 
 			if (data.type) {

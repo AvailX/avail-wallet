@@ -279,6 +279,8 @@ const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', han
 
 
 					}}
+					allow="clipboard-read; clipboard-write"
+					
 				/>
 			}
 			{url === ''

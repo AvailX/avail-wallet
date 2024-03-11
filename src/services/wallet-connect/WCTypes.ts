@@ -70,7 +70,7 @@ export const dappSession = (
 	description: string,
 	url: string,
 	img: string,
-): DappSession => ({
+): DAppSession => ({
 	name,
 	description,
 	url,
