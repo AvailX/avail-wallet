@@ -1,14 +1,17 @@
 import * as React from 'react';
 import * as mui from '@mui/material';
-import {useNavigate} from 'react-router-dom';
-import {useTranslation} from 'react-i18next';
-import {emit} from '@tauri-apps/api/event';
-import {os} from '../../services/util/open';
-import {transfer} from '../../services/transfer/transfers';
-import {ErrorAlert, SuccessAlert} from '../snackbars/alerts';
-import {type TransferRequest} from '../../types/transfer_props/tokens';
-import {type AvailError} from '../../types/errors';
-import {useScan} from '../../context/ScanContext';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { emit } from '@tauri-apps/api/event';
+import { os } from '../../services/util/open';
+import { transfer } from '../../services/transfer/transfers';
+import { ErrorAlert, SuccessAlert } from '../snackbars/alerts';
+import { type TransferRequest } from '../../types/transfer_props/tokens';
+import { type AvailError } from '../../types/errors';
+import { useScan } from '../../context/ScanContext';
+// Components
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 type DeleteDialogProperties = {
 	isOpen: boolean;
@@ -17,19 +20,21 @@ type DeleteDialogProperties = {
 };
 
 // This is used in case of auth session timeout
-const TransferDialog: React.FC<DeleteDialogProperties> = ({isOpen, onRequestClose, request}) => {
+const TransferDialog: React.FC<DeleteDialogProperties> = ({ isOpen, onRequestClose, request }) => {
 	const [password, setPassword] = React.useState('');
 
 	// Alert states
 	const [success, setSuccess] = React.useState<boolean>(false);
 	const [errorAlert, setErrorAlert] = React.useState(false);
 	const [message, setMessage] = React.useState('');
+	const [passwordHidden, setPasswordHidden] = React.useState(true);
+
 
 	// Scan states
-	const {scanInProgress, startScan, endScan} = useScan();
+	const { scanInProgress, startScan, endScan } = useScan();
 
 	const navigate = useNavigate();
-	const {t} = useTranslation();
+	const { t } = useTranslation();
 
 	const handleConfirmClick = () => {
 		if (request.asset_id === 'ALEO') {
@@ -68,14 +73,14 @@ const TransferDialog: React.FC<DeleteDialogProperties> = ({isOpen, onRequestClos
 	};
 
 	const textFieldStyle = {
-		input: {color: 'white'},
-		label: {color: 'gray'},
-		'& label.Mui-focused': {color: '#00FFAA'},
-		'& .MuiInput-underline:after': {borderBottomColor: '#00FFAA'},
+		input: { color: 'white' },
+		label: { color: 'gray' },
+		'& label.Mui-focused': { color: '#00FFAA' },
+		'& .MuiInput-underline:after': { borderBottomColor: '#00FFAA' },
 		'& .MuiOutlinedInput-root': {
-			'& fieldset': {borderColor: 'gray'},
-			'&:hover fieldset': {borderColor: 'white'},
-			'&.Mui-focused fieldset': {borderColor: '#00FFAA'},
+			'& fieldset': { borderColor: 'gray' },
+			'&:hover fieldset': { borderColor: 'white' },
+			'&.Mui-focused fieldset': { borderColor: '#00FFAA' },
 		},
 	};
 
@@ -90,24 +95,35 @@ const TransferDialog: React.FC<DeleteDialogProperties> = ({isOpen, onRequestClos
 		<>
 			<ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={message} />
 			<SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message} />
-			<mui.Dialog open={isOpen} onClose={onRequestClose} PaperProps={{sx: dialogStyle}}>
+			<mui.Dialog open={isOpen} onClose={onRequestClose} PaperProps={{ sx: dialogStyle }}>
 				<mui.DialogTitle>{t('dialogs.transfer.title')}</mui.DialogTitle>
 				<mui.DialogContent>
-					<mui.DialogContentText sx={{color: '#B2B2B2'}}>
+					<mui.DialogContentText sx={{ color: '#B2B2B2' }}>
 						{/* Enable translation here */}
 						By confirming the transaction, you will be sending {request.amount / 1_000_000} {request.asset_id} to {request.recipient}.
 					</mui.DialogContentText>
 					<mui.TextField
 						autoFocus
 						margin='dense'
-						type='password'
+						type={passwordHidden ? 'password' : ''}
 						label='Password'
 						fullWidth
 						value={password}
 						onChange={e => {
 							setPassword(e.target.value);
 						}}
-						sx={{mt: '8%', ...textFieldStyle}}
+						sx={{ mt: '8%', ...textFieldStyle }}
+						InputProps={{
+							endAdornment: (
+								<mui.InputAdornment position='end'>
+									{passwordHidden ? <VisibilityOffIcon style={{ color: '#FFF', cursor: 'pointer' }} onClick={() => {
+										setPasswordHidden(false);
+									}} /> : <VisibilityIcon style={{ color: '#FFF' }} onClick={() => {
+										setPasswordHidden(true);
+									}} />}
+								</mui.InputAdornment>
+							),
+						}}
 					/>
 				</mui.DialogContent>
 				<mui.DialogActions>

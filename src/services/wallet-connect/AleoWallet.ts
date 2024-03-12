@@ -36,10 +36,8 @@ import {
 	type GetRecordsRequest,
 	type GetRecordsResponse,
 	type GetBackendRecordsResponse,
-	convertGetRecordsResponse
+	convertGetRecordsResponse,
 } from './WCTypes';
-
-
 
 function checkWindow(reference: string) {
 	return getAll().some(win => win.label === reference);
@@ -182,17 +180,14 @@ export async function createWalletConnectDialog(
 				.onApprove(response, webview)
 				.then(async response => {
 					await webview.destroy();
-					
-					//if error is a TypeError, then continue with the resolve
-					if ( response !== undefined) {
+
+					if (response !== undefined) {
 						resolve(response);
 						console.log('Approve listener resolved');
 					}
 				})
 				.catch(response => {
-					
 					reject(response);
-					
 				});
 		})
 			.then(() => {
@@ -208,8 +203,8 @@ export async function createWalletConnectDialog(
 			dialogConfig
 				.onReject(response)
 				.then(response => {
-					if(response !== undefined) {
-					resolve(response);
+					if (response !== undefined) {
+						resolve(response);
 					}
 				})
 				.catch(response => {
@@ -257,7 +252,7 @@ export class AleoWallet {
 	): Promise<JsonRpcResult | JsonRpcError> {
 		const requestMethod = requestEvent.params.request.method;
 
-		switch (requestMethod) {
+		switch (requestMethod as AleoMethod) {
 			case AleoMethod.ALEO_GETBALANCE: {
 				return this.handleBalanceRequest(requestEvent);
 			}
@@ -519,14 +514,14 @@ export class AleoWallet {
 		return createWalletConnectDialog(
 			{
 				async onApprove(response, webview) {
-				
 					await webview.destroy();
-					
+
 					return new Promise((resolve, reject) => {
 						console.log('Response', response);
 						const payloadObject = JSON.stringify(response.payload);
 						const feeOption = JSON.parse(payloadObject).feeOption;
 						console.log('Fee Option', feeOption);
+
 						invoke<CreateEventResponse>('request_create_event', {
 							request,
 							fee_private: feeOption,
@@ -555,8 +550,6 @@ export class AleoWallet {
 			},
 			wcRequest,
 		);
-
-		
 	}
 
 	private async handleGetEvent(
@@ -595,7 +588,7 @@ export class AleoWallet {
 
 		if (checkWindow('wallet-connect')) {
 			for (const win of getAll()) {
-				if (win.label == 'wallet-connect') {
+				if (win.label === 'wallet-connect') {
 					webview = win;
 				}
 			}
@@ -609,20 +602,19 @@ export class AleoWallet {
 				resizable: false,
 			});
 
-			webview.once('tauri://created', async () => {
+			const unlistenCreated = await webview.once('tauri://created', async () => {
 				console.log('Window created');
 			});
 
-			webview.once('tauri://error', e => {
+			const unlistenError = await webview.once('tauri://error', e => {
 				console.log('Window creation error');
 				console.error(e);
 				// Handle window creation error
 			});
-
 		}
 
-		setTimeout(() => {
-			webview.emit('wallet-connect-request', wcRequest);
+		setTimeout(async () => {
+			await webview.emit('wallet-connect-request', wcRequest);
 			console.log('Emitting wallet-connect-request');
 		}, 3000);
 
@@ -632,7 +624,7 @@ export class AleoWallet {
 				async response => {
 					const unlisten = await unlistenApproved;
 					unlisten();
-					webview.close();
+					await webview.close();
 					storeSession(request_identifier);
 
 					try {
@@ -657,7 +649,7 @@ export class AleoWallet {
 					const unlisten = await unlistenRejected;
 
 					unlisten();
-					webview.close();
+					await webview.close();
 					reject(formatJsonRpcResult(requestEvent.id, response));
 				},
 			);
@@ -707,7 +699,7 @@ export class AleoWallet {
 
 		if (checkWindow('wallet-connect')) {
 			for (const win of getAll()) {
-				if (win.label == 'wallet-connect') {
+				if (win.label === 'wallet-connect') {
 					webview = win;
 				}
 			}
@@ -721,20 +713,19 @@ export class AleoWallet {
 				resizable: false,
 			});
 
-			webview.once('tauri://created', async () => {
+			await webview.once('tauri://created', async () => {
 				console.log('Window created');
 			});
 
-			webview.once('tauri://error', e => {
+			await webview.once('tauri://error', e => {
 				console.log('Window creation error');
 				console.error(e);
 				// Handle window creation error
 			});
-
 		}
 
-		setTimeout(() => {
-			webview.emit('wallet-connect-request', wcRequest);
+		setTimeout(async () => {
+			await webview.emit('wallet-connect-request', wcRequest);
 			console.log('Emitting wallet-connect-request');
 		}, 3000);
 
@@ -744,7 +735,8 @@ export class AleoWallet {
 				async response => {
 					const unlisten = await unlistenApproved;
 					unlisten();
-					webview.close();
+
+					await webview.close();
 					storeSession(request_identifier);
 
 					try {
@@ -768,7 +760,7 @@ export class AleoWallet {
 				async response => {
 					const unlisten = await unlistenRejected;
 					unlisten();
-					webview.close();
+					await webview.close();
 					reject(formatJsonRpcResult(requestEvent.id, response));
 				},
 			);
@@ -817,7 +809,7 @@ export class AleoWallet {
 			});
 		}
 
-		const wcRequest:WalletConnectRequest = {
+		const wcRequest: WalletConnectRequest = {
 			method: 'get-records',
 			question: metadata?.name + ' wants you to share your records',
 			imageRef: '../wc-images/transactions.svg',
@@ -835,13 +827,13 @@ export class AleoWallet {
 		console.log('Checking window');
 		if (checkWindow('wallet-connect')) {
 			for (const win of getAll()) {
-				if (win.label == 'wallet-connect') {
+				if (win.label === 'wallet-connect') {
 					webview = win;
 				}
 			}
 		} else {
 			// Open the new window
-			 webview = new WebviewWindow('wallet-connect', {
+	    	webview = new WebviewWindow('wallet-connect', {
 				url: 'wallet-connect-screens/wallet-connect.html',
 				title: 'Avail Wallet Connect',
 				width: 390,
@@ -849,20 +841,19 @@ export class AleoWallet {
 				resizable: false,
 			});
 
-			webview.once('tauri://created', async () => {
+			await webview.once('tauri://created', async () => {
 				console.log('Window created');
 			});
 
-			webview.once('tauri://error', e => {
+			await webview.once('tauri://error', e => {
 				console.log('Window creation error');
 				console.error(e);
 				// Handle window creation error
 			});
-
 		}
 
-		setTimeout(() => {
-			webview.emit('wallet-connect-request', wcRequest);
+		setTimeout(async () => {
+			await webview.emit('wallet-connect-request', wcRequest);
 			console.log('Emitting wallet-connect-request');
 		}, 3000);
 
@@ -872,7 +863,7 @@ export class AleoWallet {
 				async response => {
 					const unlisten = await unlistenApproved;
 					unlisten();
-					webview.close();
+					await webview.close();
 					storeSession(request_identifier);
 
 					try {
@@ -900,7 +891,7 @@ export class AleoWallet {
 				async response => {
 					const unlisten = await unlistenRejected;
 					unlisten();
-					webview.close();
+					await webview.close();
 					reject(formatJsonRpcResult(requestEvent.id, response));
 				},
 			);

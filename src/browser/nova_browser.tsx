@@ -87,12 +87,17 @@ const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', han
 	const handleInputSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		if (inputUrl && inputUrl !== url && inputUrl !== '') {
+
+			let url_modified = inputUrl;
+			if (!inputUrl.startsWith('https://') && !inputUrl.startsWith('http://')) {
+				url_modified = 'https://' + inputUrl;
+			}
 			setPreviousUrls([...previousUrls, url || '']);
-			setUrl(inputUrl);
+			setUrl(url_modified);
 			setShowMenu(false);
 
-			if (inputUrl !== 'https://faucet.puzzle.online') {
-				sessionStorage.setItem('activeUrl', inputUrl);
+			if (url_modified !== 'https://faucet.puzzle.online') {
+				sessionStorage.setItem('activeUrl', url_modified);
 			}
 		}
 	};
@@ -192,7 +197,7 @@ const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', han
 	}, []);
 
 	return (
-		<Box sx={{ ml: '5%', height: '94vh', width: '94%' }}>
+		<Box sx={{ ml: '5%', height: url === '' ? '100%' : '94vh', width: '94%' }}>
 			<ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={alertMessage} />
 			<SuccessAlert successAlert={successAlert} setSuccessAlert={setSuccessAlert} message={alertMessage} />
 			<AppBar position='static' sx={{ bgcolor: '#111111' }} >
@@ -280,7 +285,7 @@ const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', han
 
 					}}
 					allow="clipboard-read; clipboard-write"
-					
+
 				/>
 			}
 			{url === ''
@@ -291,7 +296,7 @@ const Browser: React.FC<BrowserProperties> = ({ initialUrl, theme = 'light', han
 					<Typography variant='body1' sx={{ color: '#a3a3a3' }}>
 						{t('browser.subtitle')}
 					</Typography>
-					<Grid container spacing={2} sx={{ marginTop: '20px' }}>
+					<Grid container spacing={2} sx={{ marginTop: '20px',alignItems: 'center'}}>
 						{dapps.map((dapp, index) => (
 							<Grid item xs={12} md={4} key={index}>
 								<DappView dapp={dapp} onClick={() => {

@@ -69,26 +69,28 @@ export class WalletConnectManager {
 	}
 
 	async pair(uri: string) {
+		console.log('Pairing with...', uri);
 		await this.setup();
+		console.log('Setup with...', uri);
 		if (!this.theWallet) {
 			console.log('Wallet is null call setup()');
 			return;
 		}
 
 		console.log('Pairing with...', uri);
-		await this.theWallet?.pair({uri});
+		await this.theWallet?.pair({ uri });
 	}
 
 	async close() {
 		/*
-        If (this.pairingTopic) {
-            console.log("Closing pairing...")
-            await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
-            await this.theWallet?.core.history.delete(this.pairingTopic);
-        } */
+		If (this.pairingTopic) {
+			console.log("Closing pairing...")
+			await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
+			await this.theWallet?.core.history.delete(this.pairingTopic);
+		} */
 		if (this.sessionTopic) {
 			console.log('Closing pairing...');
-			await this.theWallet?.disconnectSession({topic: this.sessionTopic, reason: getSdkError('USER_DISCONNECTED')});
+			await this.theWallet?.disconnectSession({ topic: this.sessionTopic, reason: getSdkError('USER_DISCONNECTED') });
 			// Await this.theWallet?.core.history.delete(this.sessionTopic);
 		}
 

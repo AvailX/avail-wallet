@@ -3,6 +3,8 @@ import staking from './staking.png';
 import ans from './ans.svg';
 import arcane from './arcane.svg';
 import a_logo from '../logo/a-icon.svg';
+import alpha from './alpha.png';
+import payper from './payper.webp';
 
 export type Dapp = {
 	name: string;
@@ -18,14 +20,14 @@ export const dapps: Dapp[] = [
 		description: 'Complete our Quests every week to earn a Disruptor whitelist spot.',
 		url: 'https://avail.global/quests',
 		img: a_logo,
-		tags: ['earn','rewards'],
+		tags: ['earn', 'rewards'],
 	},
 	{
 		name: 'Arcane Finance',
 		description: 'Arcane Finance is a fully private non-custodial decentralized exchange enabling fully confidential DeFi on Aleo.',
-		url: 'https://dev.arcane.finance',
+		url: 'https://app.arcane.finance',
 		img: arcane,
-		tags: ['finance'],
+		tags: ['finance', 'swap'],
 	},
 	{
 		name: 'Staking.xyz',
@@ -47,5 +49,19 @@ export const dapps: Dapp[] = [
 		url: 'https://app.shadowfi.xyz/',
 		img: shadowfi,
 		tags: ['finance'],
+	},
+	{
+		name: 'AlphaSwap',
+		description: 'AlphaSwap (previously AleoSwap) offers private, secure, and smooth trading experience on the Aleo blockchain.',
+		url: 'https://app.alphaswap.pro/assets/tokens',
+		img: alpha,
+		tags: ['finance', 'swap'],
+	},
+	{
+		name: 'Payper',
+		description: 'PayPer is a digital currency based on zero knowledge proofs, allowing infinite scalability and full privacy.',
+		url: 'https://app.payper.fi/',
+		img: payper,
+		tags: ['finance', 'swap'],
 	},
 ];

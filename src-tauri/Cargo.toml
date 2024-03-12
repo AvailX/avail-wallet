@@ -1,7 +1,7 @@
 [package]
 name = "avail_wallet"
 version = "0.0.4"
-description = "A Tauri App"
+description = "Frictionless control of your money and data."
 authors = ["Avail"]
 license = "Apache-2.0"
 repository = "https://github.com/availx/avail-wallet"
@@ -82,6 +82,10 @@ lto = "thin"
 incremental = true
 debug-assertions = false
 
+[profile.dev]
+opt-level = 2
+lto = "thin"
+incremental = true
 
 [profile.test]
 

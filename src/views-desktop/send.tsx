@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as mui from '@mui/material';
+import {useNavigate} from 'react-router-dom';
 
 // Services
 import {useTranslation} from 'react-i18next';
@@ -84,6 +85,7 @@ function Send() {
 
 	// Scan states
 	const {scanInProgress, startScan, endScan} = useScan();
+	const navigate = useNavigate();
 
 	const {t} = useTranslation();
 
@@ -158,6 +160,10 @@ function Send() {
 
 		setMessage(t('send.info'));
 		setSuccessAlert(true);
+
+		setTimeout(() => {
+			navigate('/home');
+		}, 2000);
 
 		sessionStorage.setItem('transferState', 'true');
 		transfer(request, setErrorAlert, setMessage).then(res => {
@@ -332,8 +338,8 @@ function Send() {
 							setIsPrivateFee(value);
 						}} />
 						<mui.Button
-							onClick={() => {
-								handleTransfer();
+							onClick={async() => {
+								await handleTransfer();
 							}}
 							variant='contained'
 							autoCapitalize='false'
