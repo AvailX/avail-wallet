@@ -72,12 +72,12 @@ function Verify() {
 		// Remove whitespaces from the words
 		if (inputWords) {
 			for (const [index, word] of inputWords.entries()) {
-				inputWords[index] = word.trim();
+				inputWords[index] = word.trim().toLowerCase();
 			}
 		}
 
 		for (const [index, word] of originalWords.entries()) {
-			originalWords[index] = word.trim();
+			originalWords[index] = word.trim().toLowerCase();
 		}
 
 		console.log(inputWords);
@@ -143,6 +143,7 @@ function Verify() {
 								updatedWords[index].input = e.target.value;
 								setHiddenWords(updatedWords);
 							}}
+							autoCapitalize='none'
 						/>
 					</mui.Grid>
 				) : (
@@ -177,6 +178,7 @@ function Verify() {
 			<CTAButton text={t('verify.verify')} onClick={() => {
 				handleVerify();
 			}} width='25%' />
+			<mui.Box sx={{mb: '3%'}}/>
 		</Layout>
 	);
 }

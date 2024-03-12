@@ -13,6 +13,7 @@ import CTAButton from '../components/buttons/cta';
 import WhiteHueTextField from '../components/textfields/white-hue';
 import SecureButton from '../components/buttons/secure-button';
 import LanguageSelector from '../components/select/language';
+import NewAccountDialog from '../components/dialogs/new_account';
 
 // Mui Date Components
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -77,6 +78,8 @@ const Recovery = () => {
 	const [biometric, setBiometric] = React.useState<boolean>(false);
 	const [seed, setSeed] = React.useState<string>('');
 	const [language, setLanguage] = React.useState<Languages>(Languages.English);
+
+	const [newAccount, setNewAccount] = React.useState(false);
 
 	const navigate = useNavigate();
 
@@ -145,6 +148,7 @@ const Recovery = () => {
 			<InfoAlert infoAlert={info} setInfoAlert={setInfo} message={message}/>
 			<SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message}/>
 			<ErrorAlert errorAlert={error} setErrorAlert={setError} message={message}/>
+			<NewAccountDialog isOpen={newAccount} onRequestClose={() => {setNewAccount(false)}}/>
 
 			{/*-- Seed Info Notice --*/}
 			<mui.Snackbar open={seedNotice}  anchorOrigin={{vertical: 'top', horizontal: 'center'}} sx={{width:'60%'}}>
@@ -190,6 +194,20 @@ const Recovery = () => {
 					<CTAButton text={t('recover.recover')} onClick={() => {
 						handleOrdering();
 					}} width='25%' />
+					<mui.Box sx={{
+						display: 'flex', flexDirection: 'row', marginTop: '5%', width: '90%', alignItems: 'center', justifyContent: 'flex-end', alignSelf: 'center', mt: '5%',
+					}}>
+						<mui.Typography sx={{
+							color: '#a3a3a3', fontSize: 18, fontWeight: '700', wordWrap: 'break-word', alignContent: 'end',
+						}}>Create a New Account</mui.Typography>
+						<mui.Button sx={{
+							display: 'flex', width: '123px', height: '35px', borderRadius: 9, background: '#3E3E3E', color: '#FFFFFF', '&:hover': { background: '#00FFAA', color: '#000' },ml:'3%'
+						}} onClick={() => {
+							setNewAccount(true);
+						}}>
+							<BodyText sx={{ fontWeight: '700', wordWrap: 'break-word', textTransform: 'none' }}>Own it</BodyText>
+						</mui.Button>
+					</mui.Box>
 				</>
 			)}
 

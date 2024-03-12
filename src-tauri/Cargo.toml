@@ -82,11 +82,6 @@ lto = "thin"
 incremental = true
 debug-assertions = false
 
-[profile.dev]
-opt-level = 2
-lto = "thin"
-incremental = true
-
 [profile.test]
 
 
