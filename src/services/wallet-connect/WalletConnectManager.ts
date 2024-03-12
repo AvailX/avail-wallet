@@ -1,6 +1,7 @@
 
 import {emit, once, emitTo} from '@tauri-apps/api/event';
 import {WebviewWindow} from '@tauri-apps/api/webviewWindow';
+import { getAll } from '@tauri-apps/api/window';
 import {Core} from '@walletconnect/core';
 import {formatJsonRpcError, type JsonRpcError, type JsonRpcResult} from '@walletconnect/jsonrpc-utils';
 import {type SignClientTypes, type Verify} from '@walletconnect/types';
@@ -130,6 +131,8 @@ export class WalletConnectManager {
 			// metadata: { description: "example dapp", url: "",name:"",icons:["data:image/png;base64,...."] }
 
 			const {metadata} = proposal.params.proposer;
+
+			console.log('Windows -> ',getAll());
 
 			/* Approve/Reject Connection window -- START */
 			// Open the new window

@@ -624,7 +624,7 @@ export class AleoWallet {
 				async response => {
 					const unlisten = await unlistenApproved;
 					unlisten();
-					await webview.close();
+					await webview.destroy();
 					storeSession(request_identifier);
 
 					try {
@@ -649,7 +649,7 @@ export class AleoWallet {
 					const unlisten = await unlistenRejected;
 
 					unlisten();
-					await webview.close();
+					await webview.destroy();
 					reject(formatJsonRpcResult(requestEvent.id, response));
 				},
 			);
@@ -736,7 +736,7 @@ export class AleoWallet {
 					const unlisten = await unlistenApproved;
 					unlisten();
 
-					await webview.close();
+					await webview.destroy();
 					storeSession(request_identifier);
 
 					try {
@@ -760,7 +760,7 @@ export class AleoWallet {
 				async response => {
 					const unlisten = await unlistenRejected;
 					unlisten();
-					await webview.close();
+					await webview.destroy();
 					reject(formatJsonRpcResult(requestEvent.id, response));
 				},
 			);
@@ -863,7 +863,7 @@ export class AleoWallet {
 				async response => {
 					const unlisten = await unlistenApproved;
 					unlisten();
-					await webview.close();
+					await webview.destroy();
 					storeSession(request_identifier);
 
 					try {
@@ -891,7 +891,7 @@ export class AleoWallet {
 				async response => {
 					const unlisten = await unlistenRejected;
 					unlisten();
-					await webview.close();
+					await webview.destroy();
 					reject(formatJsonRpcResult(requestEvent.id, response));
 				},
 			);
