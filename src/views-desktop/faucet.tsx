@@ -203,6 +203,7 @@ const Faucet: React.FC = () => {
                         height='100%'
                         loading='lazy'
                         allowFullScreen
+                        allow="clipboard-read; clipboard-write"
                     />
                 }
             </Box>

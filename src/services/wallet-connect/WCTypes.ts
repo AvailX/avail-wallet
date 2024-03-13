@@ -1,44 +1,56 @@
-export const ALEO_CHAIN = 'aleo:1';
+export const aleoChain = 'aleo:1';
 
-export const ALEO_METHODS = {
+export enum AleoMethod {
+	ALEO_GETBALANCE = 'getBalance',
+	ALEO_DISCONNECT = 'disconnect',
+	ALEO_GETACCOUNT = 'getSelectedAccount',
+	ALEO_DECRYPT = 'decrypt',
+	ALEO_SIGN = 'requestSignature',
+	ALEO_GET_RECORDS = 'getRecords',
+	ALEO_CREATE_EVENT = 'requestCreateEvent',
+	ALEO_GET_EVENT = 'getEvent',
+	ALEO_GET_EVENTS = 'getEvents',
+	ALEO_CREATE_STATE = 'createSharedState', // Not for now
+	ALEO_IMPORT_STATE = 'importSharedState', // Not for now
+}
 
-	ALEO_DISCONNECT: 'disconnect',
+export enum AleoEvents {
+	chainChanged = 'chainChanged',
+	accountSelected = 'accountSelected',
+	selectedAccountSynced = 'selectedAccountSynced',
+	sharedAccountSynced = 'sharedAccountSynced',
+}
 
-	ALEO_GETBALANCE: 'getBalance',
-	ALEO_GETACCOUNT: 'getSelectedAccount',
-	ALEO_DECRYPT: 'decrypt',
-	ALEO_SIGN: 'requestSignature',
-	ALEO_GET_RECORDS: 'getRecords',
-	ALEO_CREATE_EVENT: 'requestCreateEvent',
-	ALEO_GET_EVENT: 'getEvent',
-	ALEO_GET_EVENTS: 'getEvents',
-	ALEO_CREATE_STATE: 'createSharedState', // Not for now
-	ALEO_IMPORT_STATE: 'importSharedState', // Not for now
+export type AleoMethodRequest = {
+	[AleoMethod.ALEO_GETBALANCE]: GetBalancesRequest;
+	[AleoMethod.ALEO_GETACCOUNT]: any;
+	[AleoMethod.ALEO_DECRYPT]: DecryptRequest;
+	[AleoMethod.ALEO_SIGN]: SignatureRequest;
+	[AleoMethod.ALEO_DISCONNECT]: any;
+	[AleoMethod.ALEO_GET_RECORDS]: GetRecordsRequest;
+	[AleoMethod.ALEO_CREATE_EVENT]: CreateEventRequest;
+	[AleoMethod.ALEO_GET_EVENT]: GetEventRequest;
+	[AleoMethod.ALEO_GET_EVENTS]: GetEventsRequest;
+	[AleoMethod.ALEO_CREATE_STATE]: any;
+	[AleoMethod.ALEO_IMPORT_STATE]: ImportSharedStateRequest;
 };
 
-export const ALEO_EVENTS = [
-	'chainChanged',
-	'accountSelected',
-	'selectedAccountSynced',
-	'sharedAccountSynced',
-];
-
-export type wcRequest = {
+export type WalletConnectRequest = {
 	method: string;
 	question: string;
-	image_ref: string;
+	imageRef: string;
 	approveResponse: string;
 	rejectResponse: string;
 	// Dapp metadata
 	description?: string;
-	dapp_img?: string;
-	dapp_url?: string;
+	dappImage?: string;
+	dappUrl?: string;
 	// Possible parameters
 	fee?: string;
 	asset_id?: string;
-	program_id?: string;
+	programId?: string;
 	program_ids?: string[];
-	function_id?: string;
+	functionId?: string;
 	inputs?: string[];
 	ciphertexts?: string[];
 	type?: string;
@@ -46,14 +58,19 @@ export type wcRequest = {
 };
 
 // Stores dapp metadata to display to user
-export type DappSession = {
+export type DAppSession = {
 	name: string;
 	description: string;
 	url: string;
 	img: string;
 };
 
-export const DappSession = (name: string, description: string, url: string, img: string): DappSession => ({
+export const dappSession = (
+	name: string,
+	description: string,
+	url: string,
+	img: string,
+): DAppSession => ({
 	name,
 	description,
 	url,
@@ -61,7 +78,6 @@ export const DappSession = (name: string, description: string, url: string, img:
 });
 
 export type RequestSession = {
-
 	method: string;
 	request: string;
 	expiry: Date;
@@ -105,7 +121,7 @@ export const shortenAddress = (address: string) => {
 	)}`;
 };
 
-{/* --Sign-- */ }
+/* --Sign-- */
 export type SignatureRequest = {
 	message: string;
 	address?: string;
@@ -116,7 +132,7 @@ export type SignatureResponse = {
 	error?: string;
 };
 
-{/* --GetRecords-- */ }
+/* --GetRecords-- */
 export type GetRecordsRequest = {
 	address?: string;
 	filter?: RecordsFilter;
@@ -140,22 +156,16 @@ export type GetBackendRecordsResponse = {
 	error?: string;
 };
 
-// Function to convert from backend getRecords response to frontend getRecords response
-export const convertGetRecordsResponse = (response: GetBackendRecordsResponse): GetRecordsResponse => {
-	console.log('================> RECORDS RESPONSE PT', response.records);
-	const records = response.records;
+export const convertGetRecordsResponse = (
+	response: GetBackendRecordsResponse,
+): GetRecordsResponse => {
+	const {records} = response;
 	const convertedRecords: RecordWithPlaintext[] | undefined = [];
+
 	if (records) {
-		{
-			for (const record of records) {
-				console.log('================> PLAINTEXT CHECK', record?.plaintext);
-				if (record.plaintext !== undefined) {
-					convertedRecords?.push(convertRecord(record));
-					console.log('================> CONVERTED RECORD', convertRecord(record));
-					console.log('================> PLAINTEXT', record?.plaintext);
-				}
-			}
-		}
+		records.forEach(record => {
+			convertedRecords?.push(convertRecord(record));
+		});
 	}
 
 	return {
@@ -177,16 +187,16 @@ export type BackendRecordWithPlaintext = {
 };
 
 // Function to convert from backend record to frontend record
-export const convertRecord = (record: BackendRecordWithPlaintext): RecordWithPlaintext => {
-	console.log('================> PLAINTEXT', record?.plaintext);
-	return {
-		...record.record,
-		plaintext: record?.plaintext,
-		data: record?.data,
-	};
-};
+export const convertRecord = (
+	record: BackendRecordWithPlaintext,
+): RecordWithPlaintext => ({
+	...record.record,
+	plaintext: record?.plaintext,
+	data: record?.data,
+});
 
-export type Record = { // From @puzzlehq/types
+export type Record = {
+	// From @puzzlehq/types
 	_id: string;
 	eventId: string;
 	height: number;
@@ -200,19 +210,18 @@ export type Record = { // From @puzzlehq/types
 	serialNumber?: string;
 };
 
-{/* --Events-- */ }
-
+/** Type for Avail Events
+ * - Avail Events are events that have been broadcasted to the network and are awaiting confirmation
+ */
 export type AvailEvent = {
 	_id: string;
 	type: EventType;
 	owner: string;
-
 	status: AvailEventStatus;
 	created: Date;
 	broadcast?: Date;
 	broadcast_height?: number;
 	settled?: Date;
-
 	network: Network;
 	transactionId?: string;
 	programId?: string;
@@ -235,13 +244,11 @@ export type Event = {
 	_id: string;
 	type: EventType;
 	owner: string;
-
 	status: EventStatus;
 	created: Date;
 	broadcast?: Date;
 	broadcast_height?: number;
 	settled?: Date;
-
 	network: Network;
 	transactionId?: string;
 	programId?: string;
@@ -352,7 +359,6 @@ export type GetAvailEventResponse = {
 	error?: string;
 };
 
-{/* --Decrypt-- */ }
 export type DecryptRequest = {
 	ciphertexts: string[];
 };
@@ -363,7 +369,7 @@ export type DecryptResponse = {
 };
 
 // Not Implemented
-{/* --Shared State-- */ }
+/* --Shared State-- */
 export type CreateSharedStateResponse = {
 	data?: {
 		seed: string;
@@ -389,27 +395,38 @@ export const testEvents: AvailEvent[] = [
 	{
 		_id: '1',
 		type: EventType.Receive,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(Date.now() - 24 * 60 * 60 * 1000),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '20000000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '20000000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'20000000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['300000u64', 'recordajbvajnvjnavjen'],
@@ -427,27 +444,33 @@ export const testEvents: AvailEvent[] = [
 	{
 		_id: '2',
 		type: EventType.Execute,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'avail_disruptors.aleo',
 		functionId: 'mint_private',
 		inputs: ['record1zkp7a76879868433b38qy83692835b3193'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'avail_disruptors.aleo',
 				functionId: 'mint_private',
 				inputs: ['record1zkp7a76879868433b38qy83692835b3193'],
-				outputs: ['{owner: aleo1zkp731567351bjbh13,amount: 100u64, data:{ bytes1: 0x001010210102011010021010101, bytes2: 0x001010210102011010021010101}}'],
+				outputs: [
+					'{owner: aleo1zkp731567351bjbh13,amount: 100u64, data:{ bytes1: 0x001010210102011010021010101, bytes2: 0x001010210102011010021010101}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
@@ -467,27 +490,38 @@ export const testCreditsEvents: AvailEvent[] = [
 	{
 		_id: '2',
 		type: EventType.Send,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'10000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
@@ -505,27 +539,38 @@ export const testCreditsEvents: AvailEvent[] = [
 	{
 		_id: '2',
 		type: EventType.Send,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'10000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
@@ -543,27 +588,38 @@ export const testCreditsEvents: AvailEvent[] = [
 	{
 		_id: '2',
 		type: EventType.Send,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'10000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
@@ -581,27 +637,38 @@ export const testCreditsEvents: AvailEvent[] = [
 	{
 		_id: '2',
 		type: EventType.Send,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'10000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],
@@ -622,27 +689,38 @@ export const testCreditsEvents2: AvailEvent[] = [
 	{
 		_id: '1',
 		type: EventType.Send,
-		owner: 'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+		owner:
+      'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
 		status: AvailEventStatus.Confirmed,
 		created: new Date(Date.now() - 24 * 60 * 60 * 1000),
 		broadcast: new Date(),
 		settled: new Date(),
 		network: Network.AleoTestnet,
-		transactionId: 'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
+		transactionId:
+      'at13wfnwclps34fhy58hpxskv0z027kzqjklwhy9fecntrhnmlpauqq7n0y8q',
 		programId: 'credits.aleo',
 		functionId: 'transfer_private',
 		inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64'],
 		transitions: [
 			{
-				transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+				transitionId:
+          'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 				programId: 'credits.aleo',
 				functionId: 'transfer_private',
-				inputs: ['aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9', '10000u64', 'recordajbvajnvjnavjen'],
-				outputs: ['recordzkp1cakjuvnaodvmsocipjhernjavva..', '{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}'],
+				inputs: [
+					'aleo1q0w3s2x5y4z6u8t7r9p0o2i3u4y5t6r7e8w9',
+					'10000u64',
+					'recordajbvajnvjnavjen',
+				],
+				outputs: [
+					'recordzkp1cakjuvnaodvmsocipjhernjavva..',
+					'{owner: aleozkp1ausajvbjav... ,amount: 9994u64,data: {}}',
+				],
 			},
 		],
 		fee_transition: {
-			transitionId: 'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
+			transitionId:
+        'au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran',
 			programId: 'credits.aleo',
 			functionId: 'fee_private',
 			inputs: ['10000u64', 'recordajbvajnvjnavjen'],

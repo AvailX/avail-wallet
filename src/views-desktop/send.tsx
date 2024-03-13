@@ -161,6 +161,10 @@ function Send() {
 		setMessage(t('send.info'));
 		setSuccessAlert(true);
 
+		setTimeout(() => {
+			navigate('/home');
+		}, 2000);
+
 		sessionStorage.setItem('transferState', 'true');
 		transfer(request, setErrorAlert, setMessage).then(res => {
 			setMessage(t('send.info'));
@@ -334,9 +338,8 @@ function Send() {
 							setIsPrivateFee(value);
 						}} />
 						<mui.Button
-							onClick={() => {
-								handleTransfer();
-								navigate('/activity');
+							onClick={async() => {
+								await handleTransfer();
 							}}
 							variant='contained'
 							autoCapitalize='false'

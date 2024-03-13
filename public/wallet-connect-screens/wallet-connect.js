@@ -26,7 +26,6 @@ document.querySelector('.btn.approve').addEventListener('click', async () => {
 		await emit(eventName, {message: request.approveResponse});
 	}
 
-	window.close();
 	console.log('approve clicked');
 });
 
@@ -35,8 +34,6 @@ document.querySelector('.btn.reject').addEventListener('click', async () => {
 	console.log(eventName);
 	await emit(eventName, {message: request.rejectResponse});
 	console.log('reject clicked');
-
-	window.close();
 });
 
 function updateUIswitchCase(data) {
@@ -53,8 +50,8 @@ function updateUIswitchCase(data) {
 	document.querySelector('#img_src').style.display = 'block';
 	document.querySelector('#question').innerText = data.question;
 	document.querySelector('#question').style.marginTop = '12px';
-	document.querySelector('#img_src').src = data.dapp_img;
-	document.querySelector('#url').innerText = data.dapp_url;
+	document.querySelector('#img_src').src = data.dappImage;
+	document.querySelector('#url').innerText = data.dappUrl;
 	document.querySelector('#scrollable-container').style.display = 'flex';
 
 	switch (data.method) {
@@ -80,13 +77,13 @@ function updateUIswitchCase(data) {
 			if (data.program_id) {
 				document.querySelector('#program').style.display = 'block';
 				document.querySelector('#program-input').style.display = 'block';
-				document.querySelector('#program-input').innerText = data.program_id;
+				document.querySelector('#program-input').innerText = data.programId;
 			}
 
 			if (data.function_id) {
 				document.querySelector('#function_id').style.display = 'block';
 				document.querySelector('#function-input').style.display = 'block';
-				document.querySelector('#function-input').innerText = data.function_id;
+				document.querySelector('#function-input').innerText = data.functionId;
 			}
 
 			document.querySelector('#fee').style.display = 'block';
@@ -103,13 +100,13 @@ function updateUIswitchCase(data) {
 			if (data.program_id) {
 				document.querySelector('#program').style.display = 'block';
 				document.querySelector('#program-input').style.display = 'block';
-				document.querySelector('#program-input').innerText = data.program_id;
+				document.querySelector('#program-input').innerText = data.programId;
 			}
 
 			if (data.function_id) {
 				document.querySelector('#function_id').style.display = 'block';
 				document.querySelector('#function-input').style.display = 'block';
-				document.querySelector('#function-input').innerText = data.function_id;
+				document.querySelector('#function-input').innerText = data.functionId;
 			}
 
 			if (data.type) {
@@ -134,7 +131,7 @@ function updateUIswitchCase(data) {
 			if (data.function_id) {
 				document.querySelector('#function_id').style.display = 'block';
 				document.querySelector('#function-input').style.display = 'block';
-				document.querySelector('#function-input').innerText = data.function_id;
+				document.querySelector('#function-input').innerText = data.functionId;
 			}
 
 			if (data.type) {

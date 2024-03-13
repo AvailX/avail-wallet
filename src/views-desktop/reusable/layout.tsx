@@ -6,7 +6,7 @@ type LayoutWrapperProperties = {
 	children: React.ReactNode;
 };
 
-const Layout: React.FC<LayoutWrapperProperties> = ({children}) => (
+const Layout: React.FC<LayoutWrapperProperties> = ({ children }) => (
 	<div>
 		{/* <MiniDrawer></MiniDrawer> */}
 

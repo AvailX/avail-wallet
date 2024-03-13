@@ -2,29 +2,30 @@ import * as React from 'react';
 import * as mui from '@mui/material';
 
 // Components
-import {useNavigate, useLocation} from 'react-router-dom';
-import {useTranslation} from 'react-i18next';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import CTAButton from '../components/buttons/cta';
 import WhiteHueTextField from '../components/textfields/white-hue';
 
 // Typography
-import {Title2Text, SubtitleText, BodyText} from '../components/typography/typography';
+import { Title2Text, SubtitleText, BodyText } from '../components/typography/typography';
 
 // Images
 import a_logo from '../assets/logo/a-icon.svg';
 
 // Alerts
-import {SuccessAlert, ErrorAlert} from '../components/snackbars/alerts';
+import { SuccessAlert, ErrorAlert } from '../components/snackbars/alerts';
 
 // Hooks
 
 import Layout from './reusable/layout';
+import BackButton from 'src/components/buttons/back';
 
 function Verify() {
 	const seed = useLocation().state.seed as string[];
 	const navigate = useNavigate();
 
-	const {t} = useTranslation();
+	const { t } = useTranslation();
 
 	const [error, setError] = React.useState(false);
 	const [success, setSuccess] = React.useState(false);
@@ -71,12 +72,12 @@ function Verify() {
 		// Remove whitespaces from the words
 		if (inputWords) {
 			for (const [index, word] of inputWords.entries()) {
-				inputWords[index] = word.trim();
+				inputWords[index] = word.trim().toLowerCase();
 			}
 		}
 
 		for (const [index, word] of originalWords.entries()) {
-			originalWords[index] = word.trim();
+			originalWords[index] = word.trim().toLowerCase();
 		}
 
 		console.log(inputWords);
@@ -104,14 +105,20 @@ function Verify() {
 	return (
 		<Layout>
 			<ErrorAlert message={message} errorAlert={error} setErrorAlert={setError} />
-			<SuccessAlert message={message} successAlert={success} setSuccessAlert={setSuccess}/>
+			<SuccessAlert message={message} successAlert={success} setSuccessAlert={setSuccess} />
 			<img src={a_logo} alt='aleo logo' style={{
 				width: '60px', height: '60px', marginTop: '20px', marginLeft: '20px', cursor: 'pointer',
 			}} onClick={() => {
 				window.history.back();
-			}}/>
-			<mui.Box sx={{width: '85%', alignSelf: 'center'}}>
-				<Title2Text sx={{color: '#FFF'}}>{t('verify.title')}</Title2Text>
+			}} />
+			<mui.Typography sx={{
+				color: '#a3a3a3', fontSize: 10, marginTop: '1%', marginLeft: '20px',
+				fontWeight: '700', alignContent: 'end',
+			}}>
+				Click the Avail <br /> logo to go back
+			</mui.Typography>
+			<mui.Box sx={{ width: '85%', alignSelf: 'center' }}>
+				<Title2Text sx={{ color: '#FFF' }}>{t('verify.title')}</Title2Text>
 			</mui.Box>
 			<mui.Grid container spacing={1} sx={{
 				marginTop: '25px', alignSelf: 'center', bgcolor: '#1E1D1D', borderRadius: '10px', width: '85%', padding: '5%', justifyContent: 'center', mb: '2%', alignItems: 'center', position: 'relative',
@@ -136,6 +143,7 @@ function Verify() {
 								updatedWords[index].input = e.target.value;
 								setHiddenWords(updatedWords);
 							}}
+							autoCapitalize='none'
 						/>
 					</mui.Grid>
 				) : (
@@ -169,7 +177,8 @@ function Verify() {
 			</mui.Grid>
 			<CTAButton text={t('verify.verify')} onClick={() => {
 				handleVerify();
-			}} width='25%'/>
+			}} width='25%' />
+			<mui.Box sx={{mb: '3%'}}/>
 		</Layout>
 	);
 }

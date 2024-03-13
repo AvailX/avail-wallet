@@ -30,6 +30,7 @@ use services::record_handling::{
     sync::{blocks_sync, sync_backup, txs_sync},
     transfer::{pre_install_inclusion_prover, transfer},
 };
+use tauri::Manager;
 use tauri_plugin_deep_link::DeepLinkExt;
 // wallet connect services
 use crate::services::wallet_connect_api::{
@@ -37,6 +38,10 @@ use crate::services::wallet_connect_api::{
     get_records, get_succinct_avail_event, get_succinct_avail_events, request_create_event, sign,
     verify,
 };
+#[derive(Clone, serde::Deserialize, serde::Serialize)]
+struct DeepLinkPayload {
+    uri: String,
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -111,6 +116,7 @@ pub fn run() {
 }
 fn deep_link_print(event: tauri::Event, handle: tauri::AppHandle) {
     let uri = event.payload().to_string();
-    println!("Deep link Printed: {}", uri);
-    log::info!("Deep link Printed: {}", uri);
+    handle
+        .emit("deep-link-wc", DeepLinkPayload { uri })
+        .unwrap();
 }

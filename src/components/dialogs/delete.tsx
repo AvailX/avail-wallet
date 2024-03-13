@@ -1,25 +1,29 @@
 import * as React from 'react';
 import * as mui from '@mui/material';
-import {useNavigate} from 'react-router-dom';
-import {useTranslation} from 'react-i18next';
-import {delete_util} from '../../services/authentication/auth';
-import {ErrorAlert, SuccessAlert} from '../snackbars/alerts';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { delete_util } from '../../services/authentication/auth';
+import { ErrorAlert, SuccessAlert } from '../snackbars/alerts';
+// Components
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 type DeleteDialogProperties = {
 	isOpen: boolean;
 	onRequestClose: () => void;
 };
 
-const DeleteDialog: React.FC<DeleteDialogProperties> = ({isOpen, onRequestClose}) => {
+const DeleteDialog: React.FC<DeleteDialogProperties> = ({ isOpen, onRequestClose }) => {
 	const [password, setPassword] = React.useState('');
 
 	// Alert states
 	const [success, setSuccess] = React.useState<boolean>(false);
 	const [errorAlert, setErrorAlert] = React.useState(false);
 	const [message, setMessage] = React.useState('');
+	const [passwordHidden, setPasswordHidden] = React.useState(true);
 
 	const navigate = useNavigate();
-	const {t} = useTranslation();
+	const { t } = useTranslation();
 
 	const handleConfirmClick = () => {
 		delete_util(setSuccess, setErrorAlert, setMessage, navigate, password);
@@ -31,14 +35,14 @@ const DeleteDialog: React.FC<DeleteDialogProperties> = ({isOpen, onRequestClose}
 	};
 
 	const textFieldStyle = {
-		input: {color: 'white'},
-		label: {color: 'gray'},
-		'& label.Mui-focused': {color: '#00FFAA'},
-		'& .MuiInput-underline:after': {borderBottomColor: '#00FFAA'},
+		input: { color: 'white' },
+		label: { color: 'gray' },
+		'& label.Mui-focused': { color: '#00FFAA' },
+		'& .MuiInput-underline:after': { borderBottomColor: '#00FFAA' },
 		'& .MuiOutlinedInput-root': {
-			'& fieldset': {borderColor: 'gray'},
-			'&:hover fieldset': {borderColor: 'white'},
-			'&.Mui-focused fieldset': {borderColor: '#00FFAA'},
+			'& fieldset': { borderColor: 'gray' },
+			'&:hover fieldset': { borderColor: 'white' },
+			'&.Mui-focused fieldset': { borderColor: '#00FFAA' },
 		},
 	};
 
@@ -51,25 +55,36 @@ const DeleteDialog: React.FC<DeleteDialogProperties> = ({isOpen, onRequestClose}
 
 	return (
 		<>
-			<ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={message}/>
-			<SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message}/>
-			<mui.Dialog open={isOpen} onClose={onRequestClose} PaperProps={{sx: dialogStyle}}>
+			<ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={message} />
+			<SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message} />
+			<mui.Dialog open={isOpen} onClose={onRequestClose} PaperProps={{ sx: dialogStyle }}>
 				<mui.DialogTitle>{t('dialogs.delete.title')}</mui.DialogTitle>
 				<mui.DialogContent>
-					<mui.DialogContentText sx={{color: '#a3a3a3'}}>
+					<mui.DialogContentText sx={{ color: '#a3a3a3' }}>
 						{t('dialogs.delete.description')}
 					</mui.DialogContentText>
 					<mui.TextField
 						autoFocus
 						margin='dense'
-						type='password'
+						type={passwordHidden ? 'password' : ''}
 						label='Password'
 						fullWidth
 						value={password}
 						onChange={e => {
 							setPassword(e.target.value);
 						}}
-						sx={{mt: '8%', ...textFieldStyle}}
+						sx={{ mt: '8%', ...textFieldStyle }}
+						InputProps={{
+							endAdornment: (
+								<mui.InputAdornment position='end'>
+									{passwordHidden ? <VisibilityOffIcon style={{ color: '#FFF', cursor: 'pointer' }} onClick={() => {
+										setPasswordHidden(false);
+									}} /> : <VisibilityIcon style={{ color: '#FFF' }} onClick={() => {
+										setPasswordHidden(true);
+									}} />}
+								</mui.InputAdornment>
+							),
+						}}
 					/>
 				</mui.DialogContent>
 				<mui.DialogActions>
