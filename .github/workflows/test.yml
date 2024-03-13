@@ -59,7 +59,7 @@ jobs:
         uses: baptiste0928/cargo-install@v3
         with:
           crate: tauri-cli
-          version: "2.0.0-beta.1"
+          version: "2.0.0-beta.9"
 
       - uses: tauri-apps/tauri-action@v0
         env:

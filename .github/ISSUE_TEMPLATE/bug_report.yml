@@ -41,6 +41,9 @@ body:
       description: What version of our software are you running?
       options:
         - v0.0.1-alpha
+        - v0.0.2-alpha
+        - v0.0.3-alpha
+        - v0.0.4-alpha
       default: 0
     validations:
       required: true
