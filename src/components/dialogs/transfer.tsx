@@ -47,6 +47,7 @@ const TransferDialog: React.FC<DeleteDialogProperties> = ({ isOpen, onRequestClo
 
 		sessionStorage.setItem('transferState', 'true');
 		transfer(request, setErrorAlert, setMessage).then(() => {
+			// navigate('/home');
 			sessionStorage.setItem('transferState', 'false');
 		}).catch(async error_ => {
 			console.log(error_);

@@ -157,19 +157,15 @@ function Send() {
 			password: undefined,
 			fee: 297_000,
 		};
-
+		console.log('//////----> SuccessOut');
 		setMessage(t('send.info'));
 		setSuccessAlert(true);
-
-		setTimeout(() => {
-			navigate('/home');
-		}, 2000);
-
 		sessionStorage.setItem('transferState', 'true');
-		transfer(request, setErrorAlert, setMessage).then(res => {
+		await transfer(request, setErrorAlert, setMessage).then(res => {
 			setMessage(t('send.info'));
+			navigate('/home');
+			console.log('/////////////////////////SuccessIn');
 			setSuccessAlert(true);
-
 			sessionStorage.setItem('transferState', 'false');
 		}).catch(async error_ => {
 			console.log('Error' + error_);
@@ -338,8 +334,14 @@ function Send() {
 							setIsPrivateFee(value);
 						}} />
 						<mui.Button
-							onClick={async() => {
+							onClick={async () => {
 								await handleTransfer();
+								// .then(() => {
+								// 	console.log('=====? FFS');
+								// 	navigate('/home');
+								// }).catch(() => {
+								// 	console.log('Error');
+								// });
 							}}
 							variant='contained'
 							autoCapitalize='false'
