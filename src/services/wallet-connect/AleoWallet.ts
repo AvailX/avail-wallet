@@ -163,7 +163,7 @@ export async function createWalletConnectDialog(
 ): Promise<JsonRpcResult | JsonRpcError> {
 	return new Promise((resolve, reject) => {
 		const webview = getWindowOrCreate('wallet-connect', {
-			url: '../../../public/wallet-connect-screens/wallet-connect.html',
+			url: 'wallet-connect-screens/wallet-connect.html',
 			title: 'Avail Wallet Connect',
 			width: 390,
 			height: 680,
