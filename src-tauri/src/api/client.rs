@@ -25,13 +25,17 @@ pub fn get_rm_client_with_session(
             ))
         }
     };
+    println!(" ===> session at api client: {}", session);
 
     let cookie_value = format!("{}={}", cookie_name, session);
+    println!(" ===> cookie_value: {}", cookie_value);
     let url = format!("{}/encrypted_data/{}", api, path);
-
+    // let url = format!("http://localhost:8000/encrypted_data/{}", path);
+    println!(" ===> url: {}", url);
     let request = client
         .request(method, url)
         .header(reqwest::header::COOKIE, cookie_value);
+    println!(" ===> request: {:?}", request);
     Ok(request)
 }
 

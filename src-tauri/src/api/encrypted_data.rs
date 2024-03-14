@@ -256,6 +256,7 @@ pub async fn get_data_count() -> AvailResult<i64> {
             "Your session has expired, please authenticate again.".to_string(),
         ))
     } else {
+        println!("{:?}", res);
         Err(AvailError::new(
             AvailErrorType::External,
             "Error getting encrypted data count".to_string(),
