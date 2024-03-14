@@ -51,10 +51,12 @@ pub fn validate_address(address: &str) -> AvailResult<bool> {
 
 pub fn validate_address_bool(address: &str) -> bool {
     if address.len() != 63 {
+        println!("Invalid address with length {} != 63", address.len());
         return false;
     }
 
     if &address[0..5] != "aleo1" {
+        println!("Invalid address starting with {}", &address[0..5]);
         return false;
     }
 
@@ -62,7 +64,10 @@ pub fn validate_address_bool(address: &str) -> bool {
 
     match _bech32_res {
         Ok(_) => true,
-        Err(_) => false,
+        Err(e) => {
+            println!("Invalid bech32 address: {}", e);
+            false
+        }
     }
 }
 

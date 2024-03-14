@@ -206,6 +206,19 @@ async fn transfer_private_util<N: Network>(
         update_record_spent_local::<N>(&fee_id, true)?;
     }
 
+    if let Some(window) = window.clone() {
+        match window.emit("tx_in_progress_notification", "") {
+            Ok(_) => {}
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    "Error emitting tx_in_progress_notification event".to_string(),
+                    "Error emitting tx notification event".to_string(),
+                ));
+            }
+        };
+    };
+
     let transaction_id = match program_manager.transfer(
         amount,
         fee,
@@ -359,6 +372,19 @@ async fn transfer_public_to_private_util<N: Network>(
         update_record_spent_local::<N>(&fee_id, true)?;
     }
 
+    if let Some(window) = window.clone() {
+        match window.emit("tx_in_progress_notification", "") {
+            Ok(_) => {}
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    "Error emitting tx_in_progress_notification event".to_string(),
+                    "Error emitting tx notification event".to_string(),
+                ));
+            }
+        };
+    };
+
     let transaction_id = match program_manager.transfer(
         amount.to_owned(),
         fee.to_owned(),
@@ -508,6 +534,19 @@ async fn transfer_private_to_public_util<N: Network>(
         update_record_spent_local::<N>(&fee_id, true)?;
     }
 
+    if let Some(window) = window.clone() {
+        match window.emit("tx_in_progress_notification", "") {
+            Ok(_) => {}
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    "Error emitting tx_in_progress_notification event".to_string(),
+                    "Error emitting tx notification event".to_string(),
+                ));
+            }
+        };
+    };
+
     let transfer_res = match program_manager.transfer(
         amount.to_owned(),
         fee.to_owned(),
@@ -653,6 +692,19 @@ async fn transfer_public<N: Network>(
     if let Some(fee_id) = fee_id.clone() {
         update_record_spent_local::<N>(&fee_id, true)?;
     }
+
+    if let Some(window) = window.clone() {
+        match window.emit("tx_in_progress_notification", "") {
+            Ok(_) => {}
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    "Error emitting tx_in_progress_notification event".to_string(),
+                    "Error emitting tx notification event".to_string(),
+                ));
+            }
+        };
+    };
 
     let transfer_res = match program_manager.transfer(
         amount.to_owned(),
