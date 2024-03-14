@@ -46,19 +46,20 @@ const TransferDialog: React.FC<DeleteDialogProperties> = ({ isOpen, onRequestClo
 		onRequestClose();
 
 		sessionStorage.setItem('transferState', 'true');
+
 		transfer(request, setErrorAlert, setMessage).then(() => {
 			sessionStorage.setItem('transferState', 'false');
 		}).catch(async error_ => {
-			console.log(error_);
 			let error = error_;
-			const os_type = await os();
-			if (os_type !== 'linux') {
+			const osType = await os();
+			if (osType !== 'linux') {
 				error = JSON.parse(error_) as AvailError;
+				console.log('Error' + error);
 			}
 
 			// Handle transfer off
 			sessionStorage.setItem('transferState', 'false');
-			emit('transfer_off');
+			await emit('transfer_off');
 
 			console.log('Error' + error);
 			setMessage('Failed to transfer, please try again.');

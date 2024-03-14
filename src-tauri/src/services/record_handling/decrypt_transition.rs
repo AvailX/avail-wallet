@@ -179,24 +179,7 @@ impl DecryptTransition {
         //check outputs
         let num_inputs = transition.inputs().len();
         for (index, output) in transition.outputs().iter().enumerate() {
-            if let Output::Private(id, ciphertext_option) = output {
-                if let Some(ciphertext) = ciphertext_option {
-                    let index_field = Field::from_u16(u16::try_from(num_inputs + index)?);
-                    let output_view_key = N::hash_psd4(&[function_id, tvk, index_field])?;
-                    let plaintext = match ciphertext.decrypt_symmetric(output_view_key) {
-                        Ok(plaintext) => plaintext,
-                        Err(_) => {
-                            continue;
-                        }
-                    };
-                    println!(
-                        "================> INSIDE Output::Private ----> PlainText -- {:?}",
-                        plaintext
-                    );
-                    let output = Output::Public(*id, Some(plaintext));
-                    decrypted_outputs.push(output.clone());
-                }
-            } else if let Output::Record(_id, _checksum, _record) = output {
+            if let Output::Record(_id, _checksum, _record) = output {
                 let (record_pointer, found_amount) = output_to_record_pointer(
                     transaction_id,
                     transition_id.to_owned(),

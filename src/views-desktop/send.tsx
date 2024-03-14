@@ -8,6 +8,7 @@ import {emit} from '@tauri-apps/api/event';
 import {transfer} from '../services/transfer/transfers';
 import {getTokenBalance} from '../services/states/utils';
 import {os} from '../services/util/open';
+import {listen} from '@tauri-apps/api/event';
 
 // Components
 import TransferBox from '../components/transfer/transfer_box';
@@ -15,6 +16,7 @@ import MiniDrawer from '../components/sidebar';
 import CTAButton from '../components/buttons/cta';
 import SettingsComponent from '../components/switch/privacy_toggle';
 import TransferDialog from '../components/dialogs/transfer';
+import TransferInProgressDialog from '../components/dialogs/transfer_in_progress';
 
 // Images
 import aleo from '../assets/icons/tokens/aleo.svg';
@@ -70,6 +72,7 @@ function Send() {
 	const [transferMessage, setTransferMessage] = React.useState<string>('');
 	const [request, setRequest] = React.useState<TransferRequest>(mockTransferRequest);
 	const [TransferDialogOpen, setTransferDialogOpen] = React.useState(false);
+	const [TransferInProgressDialogOpen, setTransferInProgressDialogOpen] = React.useState(false);
 
 	// Privacy flags
 	const [isPrivateTransferFrom, setIsPrivateTransferFrom] = React.useState(false);
@@ -97,6 +100,23 @@ function Send() {
 			setBiometric(false);
 		}
 	};
+
+	/* --Event Listners */
+	React.useEffect(() => {
+		const unlistenTx = listen('tx_in_progress_notification', event => {
+			setTransferInProgressDialogOpen(true);
+		});
+
+		return () => {
+			unlistenTx.then(remove => {
+				remove();
+			}).catch(error => {
+				console.log(error);
+				setMessage('Error listening to tx_in_progress_notification event.');
+				setErrorAlert(true);
+			});
+		};
+	}, []);
 
 	const handleTransfer = async () => {
 		let transferType: TransferType;
@@ -158,18 +178,8 @@ function Send() {
 			fee: 297_000,
 		};
 
-		setMessage(t('send.info'));
-		setSuccessAlert(true);
-
-		setTimeout(() => {
-			navigate('/home');
-		}, 2000);
-
 		sessionStorage.setItem('transferState', 'true');
 		transfer(request, setErrorAlert, setMessage).then(res => {
-			setMessage(t('send.info'));
-			setSuccessAlert(true);
-
 			sessionStorage.setItem('transferState', 'false');
 		}).catch(async error_ => {
 			console.log('Error' + error_);
@@ -183,7 +193,7 @@ function Send() {
 			sessionStorage.setItem('transferState', 'false');
 			if (error.error_type.toString() === 'Unauthorized') {
 				sessionStorage.setItem('transferState', 'false');
-				emit('transfer_off');
+				await emit('transfer_off');
 
 				setRequest(request);
 				setTransferDialogOpen(true);
@@ -205,7 +215,7 @@ function Send() {
 	React.useEffect(() => {
 		let asset_id = token;
 
-		if (token == 'ALEO') {
+		if (token === 'ALEO') {
 			asset_id = 'credits';
 		}
 
@@ -227,6 +237,11 @@ function Send() {
 			<SuccessAlert successAlert={successAlert} setSuccessAlert={setSuccessAlert} message={message} />
 			<WarningAlert warningAlert={warningAlert} setWarningAlert={setWarningAlert} message={message} />
 			<InfoAlert infoAlert={infoAlert} setInfoAlert={setInfoAlert} message={message} />
+
+			{/* TransferInProgress Dialog */}
+			<TransferInProgressDialog isOpen={TransferInProgressDialogOpen} onRequestClose={() => {
+				setTransferInProgressDialogOpen(false);
+			}} />
 
 			{/* Transfer Dialog */}
 			<TransferDialog isOpen={TransferDialogOpen} onRequestClose={() => {
@@ -338,7 +353,7 @@ function Send() {
 							setIsPrivateFee(value);
 						}} />
 						<mui.Button
-							onClick={async() => {
+							onClick={async () => {
 								await handleTransfer();
 							}}
 							variant='contained'
