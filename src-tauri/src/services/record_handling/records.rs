@@ -529,7 +529,7 @@ pub fn get_records<N: Network>(
         }
 
         // Search in reverse order from the latest block to the earliest block
-        start_height = end_height + 1;
+        start_height = end_height;
         end_height = start_height.saturating_add(step_size);
         if end_height > latest_height {
             end_height = latest_height;

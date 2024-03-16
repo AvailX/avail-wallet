@@ -820,7 +820,7 @@ pub async fn handle_encrypted_storage_and_message<N: Network>(
     let sender_address = get_address::<N>()?;
 
     let mut processing_transaction_pointer = get_transaction_pointer::<N>(transaction_pointer_id)?;
-    processing_transaction_pointer.update_pending_transaction();
+    processing_transaction_pointer.update_pending_transaction(transaction_id.clone());
 
     let encrypted_pending_transaction =
         processing_transaction_pointer.to_encrypted_data(sender_address)?;
@@ -1053,7 +1053,7 @@ pub async fn handle_transaction_update_and_encrypted_storage<N: Network>(
 
     // Update transaction to pending to confirm
     let mut processing_transaction_pointer = get_transaction_pointer::<N>(transaction_pointer_id)?;
-    processing_transaction_pointer.update_pending_transaction();
+    processing_transaction_pointer.update_pending_transaction(transaction_id.clone());
 
     let encrypted_pending_transaction =
         processing_transaction_pointer.to_encrypted_data(sender_address)?;

@@ -240,6 +240,7 @@ async fn transfer_private_util<N: Network>(
 
             pending_transaction.update_failed_transaction(
                 "Transaction execution failed, no records were spent.".to_string(),
+                None,
             );
 
             let encrypted_failed_transaction =
@@ -403,6 +404,7 @@ async fn transfer_public_to_private_util<N: Network>(
 
             pending_transaction.update_failed_transaction(
                 "Transaction execution failed, no records were spent.".to_string(),
+                None,
             );
 
             let encrypted_failed_transaction =
@@ -567,6 +569,7 @@ async fn transfer_private_to_public_util<N: Network>(
 
             pending_transaction.update_failed_transaction(
                 "Transaction execution failed, no records were spent.".to_string(),
+                None,
             );
 
             let encrypted_failed_transaction =
@@ -724,6 +727,7 @@ async fn transfer_public<N: Network>(
 
             pending_transaction.update_failed_transaction(
                 "Transaction execution failed, no records were spent.".to_string(),
+                None,
             );
 
             let encrypted_failed_transaction =
