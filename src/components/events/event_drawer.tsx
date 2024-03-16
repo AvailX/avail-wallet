@@ -105,7 +105,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 		);
 	}else{
 
-	const {type, from, to, amount, fee, message, created, transitions, fee_transition, transactionId, programId, functionId, network, status} = fullEvent;
+	const {type, from, to, amount, fee, message, created, transitions, fee_transition, transactionId, programId, functionId, network, status,error} = fullEvent;
 	const explorer_link = `https://explorer.hamp.app/transaction?id=${transactionId}`;
 	return (
 		<Drawer
@@ -251,7 +251,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 					display: 'flex',
 					justifyContent: 'center',
 					alignItems: 'center',
-					bgcolor: '#3a3a3a', // Use the appropriate color from your theme
+					bgcolor: '#3a3a3a',
 					padding: '16px',
 					borderRadius: '8px',
 					width: '60%',
@@ -266,24 +266,23 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 
 				{/* --Pending-- */}
 				{AvailEventStatus[status] == 'Pending' &&
-				<Box sx={{display:'flex',flexDirection:'row',alignSelf:'center',width:'70%',justifyContent:'space-between'}}>
+				<Box sx={{display:'flex',flexDirection:'row',alignSelf:'center',width:'85%',justifyContent:'space-between', mt:'7%', alignItems: 'center'}}>
 				 <Box
 				sx={{
 					display: 'flex',
 					justifyContent: 'center',
 					alignItems: 'center',
-					bgcolor: '#3a3a3a', // Use the appropriate color from your theme
+					bgcolor: '#3a3a3a',
 					padding: '16px',
 					borderRadius: '8px',
-					marginBottom: '8px',
-					width: '100%',
-					mt: '2%',
+					width: '50%',
+					mt:'5%'
 				}}>
 				<SubtitleText sx={{color: '#FFF'}}>
 				Waiting for the transaction to settle on chain...
 				</SubtitleText>
 				</Box>
-				<img src={pending} style={{width:'30%',height:'auto'}}/>
+				<img src={pending} style={{width:'40%',height:'auto'}}/>
 				</Box>
 				}
 

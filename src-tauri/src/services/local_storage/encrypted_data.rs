@@ -691,7 +691,7 @@ mod encrypted_data_tests {
         //test_store_encrypted_data();
 
         VIEWSESSION
-            .set_view_session("AViewKey1myvhAr2nes8MF1y8gPV19azp4evwsBR4CqyzAi62nufW")
+            .set_view_session("AViewKey1oxamV2Xo1L8EVthyrSDZoeCzk1rm1DVhHbsGypPNyke3")
             .unwrap();
 
         let res = get_encrypted_data_by_flavour(EncryptedDataTypeCommon::Record).unwrap();
