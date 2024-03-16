@@ -8,6 +8,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import failed from '../../assets/icons/failed-icon.svg';
 import pending from '../../assets/icons/pending-icon.svg';
 
+//Images
+import failed from '../../assets/icons/failed-icon.svg';
+import pending from '../../assets/icons/pending-icon.svg';
+
 // Components
 import {RiseLoader} from 'react-spinners';
 
@@ -104,6 +108,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 			</Drawer>
 		);
 	}else{
+	}else{
 
 	const {type, from, to, amount, fee, message, created, transitions, fee_transition, transactionId, programId, functionId, network, status,error} = fullEvent;
 	const explorer_link = `https://explorer.hamp.app/transaction?id=${transactionId}`;
@@ -181,6 +186,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
                   Amount:
               	</BodyText500>
               	<BodyText sx={{color: '#00FFAA', ml: '9.5%'}}>
+              	<BodyText sx={{color: '#00FFAA', ml: '9.5%'}}>
               		{amount} {parseProgramId(programId)}
               	</BodyText>
               </Box>
@@ -218,6 +224,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 						</BodyText>
 					</Box>
 				{transactionId &&
+				{transactionId &&
 					<Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
 						<BodyText500 sx={{color: '#a3a3a3'}}>
                 Transaction Id:
@@ -230,9 +237,14 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 
 				{/* Transitions */}
 				{transitions.length !== 0 &&
+				}
+
+				{/* Transitions */}
+				{transitions.length !== 0 &&
 					<SubtitleText sx={{color: '#FFF', mt: '8%'}}>
               Transitions
 					</SubtitleText>
+				}
 				}
 					{transitions.map(transition => (
 						<Transition key={transition.transitionId} event_transition={transition} />
@@ -251,7 +263,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 					display: 'flex',
 					justifyContent: 'center',
 					alignItems: 'center',
-					bgcolor: '#3a3a3a',
+					bgcolor: '#3a3a3a', // Use the appropriate color from your theme
 					padding: '16px',
 					borderRadius: '8px',
 					width: '60%',
@@ -266,23 +278,24 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 
 				{/* --Pending-- */}
 				{AvailEventStatus[status] == 'Pending' &&
-				<Box sx={{display:'flex',flexDirection:'row',alignSelf:'center',width:'85%',justifyContent:'space-between', mt:'7%', alignItems: 'center'}}>
+				<Box sx={{display:'flex',flexDirection:'row',alignSelf:'center',width:'70%',justifyContent:'space-between'}}>
 				 <Box
 				sx={{
 					display: 'flex',
 					justifyContent: 'center',
 					alignItems: 'center',
-					bgcolor: '#3a3a3a',
+					bgcolor: '#3a3a3a', // Use the appropriate color from your theme
 					padding: '16px',
 					borderRadius: '8px',
-					width: '50%',
-					mt:'5%'
+					marginBottom: '8px',
+					width: '100%',
+					mt: '2%',
 				}}>
 				<SubtitleText sx={{color: '#FFF'}}>
 				Waiting for the transaction to settle on chain...
 				</SubtitleText>
 				</Box>
-				<img src={pending} style={{width:'40%',height:'auto'}}/>
+				<img src={pending} style={{width:'30%',height:'auto'}}/>
 				</Box>
 				}
 
@@ -298,6 +311,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 			</Box>
 		</Drawer>
 	);
+	}
 	}
 };
 
