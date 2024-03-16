@@ -357,6 +357,7 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
 
                 pending_transaction.update_failed_transaction(
                     "Transaction execution failed, no records were spent.".to_string(),
+                    None,
                 );
 
                 let encrypted_failed_transaction =

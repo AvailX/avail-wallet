@@ -184,14 +184,20 @@ impl<N: Network> TransactionPointer<N> {
         self.fee = fee;
     }
 
-    pub fn update_pending_transaction(&mut self) {
+    pub fn update_pending_transaction(&mut self, transaction_id: N::TransactionID) {
         self.state = TransactionState::Pending;
+        self.transaction_id = Some(transaction_id);
     }
 
-    pub fn update_failed_transaction(&mut self, error: String) {
+    pub fn update_failed_transaction(
+        &mut self,
+        error: String,
+        transaction_id: Option<N::TransactionID>,
+    ) {
         self.state = TransactionState::Failed;
         self.error = Some(error);
         self.fee = None;
+        self.transaction_id = transaction_id;
     }
 
     pub fn update_rejected_transaction(
