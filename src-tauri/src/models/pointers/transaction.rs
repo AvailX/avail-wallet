@@ -322,15 +322,22 @@ impl<N: Network> TransactionPointer<N> {
         let api_client = setup_client::<N>()?;
 
         let event_transaction = match self.transaction_id {
-            Some(id) => match api_client.get_transaction(id) {
-                Ok(tx) => Some(tx),
-                Err(_) => {
-                    return Err(AvailError::new(
-                        AvailErrorType::Node,
-                        "Transaction not found".to_string(),
-                        "Transaction not found".to_string(),
-                    ))
-                }
+            Some(id) => match self.state {
+                TransactionState::Processing => None,
+                TransactionState::Pending => None,
+                TransactionState::Failed => None,
+                TransactionState::Aborted => None,
+                _ => match api_client.get_transaction(id) {
+                    Ok(tx) => Some(tx),
+                    Err(_) => {
+                        return Err(AvailError::new(
+                            AvailErrorType::Node,
+                            "Transaction not found".to_string(),
+                            "Transaction not found".to_string(),
+                        ))
+                    }
+                },
+                _ => None,
             },
             None => None,
         };
@@ -349,9 +356,15 @@ impl<N: Network> TransactionPointer<N> {
         };
 
         let fee_transition = match self.transaction_id {
-            Some(id) => match get_fee_transition::<N>(id) {
-                Ok(fee_transition) => Some(fee_transition),
-                Err(e) => return Err(e),
+            Some(id) => match self.state {
+                TransactionState::Processing => None,
+                TransactionState::Pending => None,
+                TransactionState::Failed => None,
+                TransactionState::Aborted => None,
+                _ => match get_fee_transition::<N>(id) {
+                    Ok(fee_transition) => Some(fee_transition),
+                    Err(e) => return Err(e),
+                },
             },
             None => None,
         };
@@ -426,15 +439,22 @@ impl<N: Network> TransactionPointer<N> {
         let api_client = setup_client::<N>()?;
 
         let event_transaction = match self.transaction_id {
-            Some(id) => match api_client.get_transaction(id) {
-                Ok(tx) => Some(tx),
-                Err(_) => {
-                    return Err(AvailError::new(
-                        AvailErrorType::Node,
-                        "Transaction not found".to_string(),
-                        "Transaction not found".to_string(),
-                    ))
-                }
+            Some(id) => match self.state {
+                TransactionState::Processing => None,
+                TransactionState::Pending => None,
+                TransactionState::Failed => None,
+                TransactionState::Aborted => None,
+                _ => match api_client.get_transaction(id) {
+                    Ok(tx) => Some(tx),
+                    Err(_) => {
+                        return Err(AvailError::new(
+                            AvailErrorType::Node,
+                            "Transaction not found".to_string(),
+                            "Transaction not found".to_string(),
+                        ))
+                    }
+                },
+                _ => None,
             },
             None => None,
         };
@@ -453,9 +473,15 @@ impl<N: Network> TransactionPointer<N> {
         };
 
         let fee_transition = match self.transaction_id {
-            Some(id) => match get_fee_transition::<N>(id) {
-                Ok(fee_transition) => Some(fee_transition),
-                Err(e) => return Err(e),
+            Some(id) => match self.state {
+                TransactionState::Processing => None,
+                TransactionState::Pending => None,
+                TransactionState::Failed => None,
+                TransactionState::Aborted => None,
+                _ => match get_fee_transition::<N>(id) {
+                    Ok(fee_transition) => Some(fee_transition),
+                    Err(e) => return Err(e),
+                },
             },
             None => None,
         };
