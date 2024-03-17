@@ -184,14 +184,20 @@ impl<N: Network> TransactionPointer<N> {
         self.fee = fee;
     }
 
-    pub fn update_pending_transaction(&mut self) {
+    pub fn update_pending_transaction(&mut self, transaction_id: N::TransactionID) {
         self.state = TransactionState::Pending;
+        self.transaction_id = Some(transaction_id);
     }
 
-    pub fn update_failed_transaction(&mut self, error: String) {
+    pub fn update_failed_transaction(
+        &mut self,
+        error: String,
+        transaction_id: Option<N::TransactionID>,
+    ) {
         self.state = TransactionState::Failed;
         self.error = Some(error);
         self.fee = None;
+        self.transaction_id = transaction_id;
     }
 
     pub fn update_rejected_transaction(
@@ -316,15 +322,22 @@ impl<N: Network> TransactionPointer<N> {
         let api_client = setup_client::<N>()?;
 
         let event_transaction = match self.transaction_id {
-            Some(id) => match api_client.get_transaction(id) {
-                Ok(tx) => Some(tx),
-                Err(_) => {
-                    return Err(AvailError::new(
-                        AvailErrorType::Node,
-                        "Transaction not found".to_string(),
-                        "Transaction not found".to_string(),
-                    ))
-                }
+            Some(id) => match self.state {
+                TransactionState::Processing => None,
+                TransactionState::Pending => None,
+                TransactionState::Failed => None,
+                TransactionState::Aborted => None,
+                _ => match api_client.get_transaction(id) {
+                    Ok(tx) => Some(tx),
+                    Err(_) => {
+                        return Err(AvailError::new(
+                            AvailErrorType::Node,
+                            "Transaction not found".to_string(),
+                            "Transaction not found".to_string(),
+                        ))
+                    }
+                },
+                _ => None,
             },
             None => None,
         };
@@ -343,9 +356,15 @@ impl<N: Network> TransactionPointer<N> {
         };
 
         let fee_transition = match self.transaction_id {
-            Some(id) => match get_fee_transition::<N>(id) {
-                Ok(fee_transition) => Some(fee_transition),
-                Err(e) => return Err(e),
+            Some(id) => match self.state {
+                TransactionState::Processing => None,
+                TransactionState::Pending => None,
+                TransactionState::Failed => None,
+                TransactionState::Aborted => None,
+                _ => match get_fee_transition::<N>(id) {
+                    Ok(fee_transition) => Some(fee_transition),
+                    Err(e) => return Err(e),
+                },
             },
             None => None,
         };
@@ -420,15 +439,22 @@ impl<N: Network> TransactionPointer<N> {
         let api_client = setup_client::<N>()?;
 
         let event_transaction = match self.transaction_id {
-            Some(id) => match api_client.get_transaction(id) {
-                Ok(tx) => Some(tx),
-                Err(_) => {
-                    return Err(AvailError::new(
-                        AvailErrorType::Node,
-                        "Transaction not found".to_string(),
-                        "Transaction not found".to_string(),
-                    ))
-                }
+            Some(id) => match self.state {
+                TransactionState::Processing => None,
+                TransactionState::Pending => None,
+                TransactionState::Failed => None,
+                TransactionState::Aborted => None,
+                _ => match api_client.get_transaction(id) {
+                    Ok(tx) => Some(tx),
+                    Err(_) => {
+                        return Err(AvailError::new(
+                            AvailErrorType::Node,
+                            "Transaction not found".to_string(),
+                            "Transaction not found".to_string(),
+                        ))
+                    }
+                },
+                _ => None,
             },
             None => None,
         };
@@ -447,9 +473,15 @@ impl<N: Network> TransactionPointer<N> {
         };
 
         let fee_transition = match self.transaction_id {
-            Some(id) => match get_fee_transition::<N>(id) {
-                Ok(fee_transition) => Some(fee_transition),
-                Err(e) => return Err(e),
+            Some(id) => match self.state {
+                TransactionState::Processing => None,
+                TransactionState::Pending => None,
+                TransactionState::Failed => None,
+                TransactionState::Aborted => None,
+                _ => match get_fee_transition::<N>(id) {
+                    Ok(fee_transition) => Some(fee_transition),
+                    Err(e) => return Err(e),
+                },
             },
             None => None,
         };

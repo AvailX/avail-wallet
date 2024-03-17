@@ -285,7 +285,7 @@ pub fn check_unconfirmed_transactions<N: Network>() -> AvailResult<()> {
                     encrypted_struct.decrypt(VIEWSESSION.get_instance::<N>()?)?;
 
                 if let Some(id) = expired_transaction.id {
-                    handle_transaction_failed::<N>(&id.to_string())?;
+                    handle_transaction_failed::<N>(&id.to_string(), None)?;
                 }
 
                 let spent_record_nonces = tx_exec.spent_record_pointers_nonces();
@@ -312,12 +312,31 @@ pub fn check_unconfirmed_transactions<N: Network>() -> AvailResult<()> {
     Ok(())
 }
 
-pub fn handle_transaction_failed<N: Network>(pointer_id: &str) -> AvailResult<()> {
+pub fn handle_transaction_failed<N: Network>(
+    pointer_id: &str,
+    transaction_id: Option<N::TransactionID>,
+) -> AvailResult<()> {
     let address = get_address::<N>()?;
     let mut transaction_pointer = get_transaction_pointer::<N>(pointer_id)?;
 
+    let tx_id = match transaction_id {
+        Some(id) => id,
+        None => {
+            if let Some(id) = transaction_pointer.transaction_id() {
+                id
+            } else {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    "No transaction id found".to_string(),
+                    "No transaction id found".to_string(),
+                ));
+            }
+        }
+    };
+
     transaction_pointer.update_failed_transaction(
         "Transaction remained unconfirmed and failed, no records were spent.".to_string(),
+        Some(tx_id),
     );
 
     let encrypted_failed_transaction = transaction_pointer.to_encrypted_data(address)?;

@@ -4,6 +4,10 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
+//Images
+import failed from '../../assets/icons/failed-icon.svg';
+import pending from '../../assets/icons/pending-icon.svg';
+
 // Components
 import {RiseLoader} from 'react-spinners';
 
@@ -99,9 +103,9 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 				</Box>
 			</Drawer>
 		);
-	}
+	}else{
 
-	const {type, from, to, amount, fee, message, created, transitions, fee_transition, transactionId, programId, functionId, network, status} = fullEvent;
+	const {type, from, to, amount, fee, message, created, transitions, fee_transition, transactionId, programId, functionId, network, status,error} = fullEvent;
 	const explorer_link = `https://explorer.hamp.app/transaction?id=${transactionId}`;
 	return (
 		<Drawer
@@ -176,7 +180,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
               	<BodyText500 sx={{color: '#a3a3a3'}}>
                   Amount:
               	</BodyText500>
-              	<BodyText sx={{color: '#fff', ml: '9.5%'}}>
+              	<BodyText sx={{color: '#00FFAA', ml: '9.5%'}}>
               		{amount} {parseProgramId(programId)}
               	</BodyText>
               </Box>
@@ -213,6 +217,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 							{formatDate(created)}
 						</BodyText>
 					</Box>
+				{transactionId &&
 					<Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
 						<BodyText500 sx={{color: '#a3a3a3'}}>
                 Transaction Id:
@@ -221,10 +226,14 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 							{transactionId}
 						</BodyText>
 					</Box>
-					{/* Transitions */}
+				}
+
+				{/* Transitions */}
+				{transitions.length !== 0 &&
 					<SubtitleText sx={{color: '#FFF', mt: '8%'}}>
               Transitions
 					</SubtitleText>
+				}
 					{transitions.map(transition => (
 						<Transition key={transition.transitionId} event_transition={transition} />
 					))}
@@ -232,10 +241,64 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 					{fee_transition
               && <Transition event_transition={fee_transition} />
 					}
+
+				{/* --Failed-- */}
+				{AvailEventStatus[status] == 'Failed' &&
+				<Box sx={{display:'flex',flexDirection:'column',alignSelf:'center',width:'80%',justifyContent:'center',mt: '3%',alignItems:'center'}}>
+				 <img src={failed} style={{width:'30%',height:'auto'}}/>
+				 <Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					bgcolor: '#3a3a3a',
+					padding: '16px',
+					borderRadius: '8px',
+					width: '60%',
+					mt: '2%',
+				}}>
+				<SubtitleText sx={{color: '#FFF',textAlign:'center'}}>
+				Transaction failed, but don't worry, no funds were spent.
+				</SubtitleText>
+				</Box>
+				</Box>
+				}
+
+				{/* --Pending-- */}
+				{AvailEventStatus[status] == 'Pending' &&
+				<Box sx={{display:'flex',flexDirection:'row',alignSelf:'center',width:'85%',justifyContent:'space-between', mt:'7%', alignItems: 'center'}}>
+				 <Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					bgcolor: '#3a3a3a',
+					padding: '16px',
+					borderRadius: '8px',
+					width: '50%',
+					mt:'5%'
+				}}>
+				<SubtitleText sx={{color: '#FFF'}}>
+				Waiting for the transaction to settle on chain...
+				</SubtitleText>
+				</Box>
+				<img src={pending} style={{width:'40%',height:'auto'}}/>
+				</Box>
+				}
+
+				{/* --Processing-- */}
+				{AvailEventStatus[status] == 'Processing' &&
+				<Box sx={{
+						display: 'flex', flexDirection: 'column', width: '80%', alignSelf: 'center', justifyContent: 'center', alignItems: 'center', height: '100%', mt:'15%'
+					}}>
+						<RiseLoader color={'#00FFAA'} loading={true} size={30} />
+					</Box>
+				}
 				</Box>
 			</Box>
 		</Drawer>
 	);
+	}
 };
 
 export default EventDrawer;
