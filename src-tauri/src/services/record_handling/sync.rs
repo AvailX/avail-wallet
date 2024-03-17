@@ -264,13 +264,13 @@ pub async fn sync_backup() -> AvailResult<()> {
 
 pub async fn blocks_sync_test(height: u32) -> AvailResult<bool> {
     let network = get_network()?;
-    let last_sync = 1777830u32;
+    let last_sync = 1777000u32;
 
     print!("From Last Sync: {:?} to height: {:?}", last_sync, height);
 
     let task = tokio::spawn(async move {
         let found_flag = match SupportedNetworks::from_str(network.as_str())? {
-            SupportedNetworks::Testnet3 => get_records::<Testnet3>(last_sync, 1778130u32, None)?,
+            SupportedNetworks::Testnet3 => get_records::<Testnet3>(last_sync, 1778000u32, None)?,
             _ => {
                 return Err(AvailError::new(
                     AvailErrorType::Internal,
