@@ -89,7 +89,9 @@ incremental = true
 
 
 [profile.test]
-
+opt-level = 3
+lto = "thin"
+incremental = true
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

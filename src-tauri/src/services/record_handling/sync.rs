@@ -260,13 +260,13 @@ pub async fn sync_backup() -> AvailResult<()> {
 
 pub async fn blocks_sync_test(height: u32) -> AvailResult<bool> {
     let network = get_network()?;
-    let last_sync = get_last_sync()?;
+    let last_sync = 1777000u32;
 
     print!("From Last Sync: {:?} to height: {:?}", last_sync, height);
 
     let task = tokio::spawn(async move {
         let found_flag = match SupportedNetworks::from_str(network.as_str())? {
-            SupportedNetworks::Testnet3 => get_records::<Testnet3>(last_sync, height, None)?,
+            SupportedNetworks::Testnet3 => get_records::<Testnet3>(last_sync, 1778000u32, None)?,
             _ => {
                 return Err(AvailError::new(
                     AvailErrorType::Internal,
@@ -464,12 +464,20 @@ mod test {
 
     #[tokio::test]
     async fn test_scan() {
-        test_setup_prerequisites();
+        //test_setup_prerequisites();
+        VIEWSESSION
+            .set_view_session("AViewKey1oxamV2Xo1L8EVthyrSDZoeCzk1rm1DVhHbsGypPNyke3")
+            .unwrap();
 
         let api_client = setup_client::<Testnet3>().unwrap();
 
         let latest_height = api_client.latest_height().unwrap();
+
+        let start = std::time::Instant::now();
         blocks_sync_test(latest_height).await.unwrap();
+        let duration = start.elapsed();
+
+        println!("Time elapsed in blocks_sync_test() is: {:?}", duration);
     }
 
     // this will fail when using the same program name with the same node instance or live network
