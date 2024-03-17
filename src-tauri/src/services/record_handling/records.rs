@@ -127,7 +127,7 @@ pub fn get_records<N: Network>(
     std::thread::spawn(move || {
         let total = amount_to_scan as f64;
         loop {
-            std::thread::sleep(Duration::from_secs(1)); // Adjust the frequency as needed
+            std::thread::sleep(Duration::from_secs(0.2)); // Adjust the frequency as needed
             let processed = progress_tracker.load(Ordering::SeqCst) as f64;
             let percentage = ((processed / total) * 10000.0).round() / 100.0;
             println!("Progress: {:.2}%", percentage);
