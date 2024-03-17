@@ -299,8 +299,8 @@ export class WalletConnectManager {
 	private async onSessionDelete(data: Web3WalletTypes.SessionDelete) {
 		console.log('Event: session_delete received');
 		console.log(data);
-		await this.close();
-		await emitTo('main', 'disconnected', 'disconnected');
+		//await this.close();
+		await emit('disconnected', 'disconnected');
 	}
 
 	private onSignClientPing(data: PingEventData) {
