@@ -101,7 +101,7 @@ pub async fn get_new_transaction_messages<N: Network>(
         owner: address,
         last_sync: last_sync_time,
     };
-
+    println!("==/> POST DATA TX-SENT - {:?}", request);
     let res = get_rm_client_with_session(reqwest::Method::POST, "txs_received")?
         .json(&request)
         .send()
@@ -168,7 +168,7 @@ pub async fn post_encrypted_data(request: Vec<EncryptedData>) -> AvailResult<Vec
             .into_iter()
             .map(|data| EncryptedDataRecord::from(data.to_owned()))
             .collect::<Vec<EncryptedDataRecord>>();
-
+        println!("==/> POST DATA - {:?}", request);
         let res = get_rm_client_with_session(reqwest::Method::POST, "data")?
             .json(&request)
             .send()
@@ -197,6 +197,7 @@ pub async fn post_encrypted_data(request: Vec<EncryptedData>) -> AvailResult<Vec
 }
 
 pub async fn send_transaction_in(request: EncryptedData) -> AvailResult<String> {
+    println!("==/> POST DATA TX-SENT - {:?}", request.clone());
     let res = get_rm_client_with_session(reqwest::Method::POST, "tx_sent")?
         .json(&EncryptedDataRecord::from(request))
         .send()
@@ -267,7 +268,7 @@ pub async fn get_data_count() -> AvailResult<i64> {
 pub async fn recover_data(_address: &str) -> AvailResult<Data> {
     let data_count = get_data_count().await?;
     let pages = (data_count as f64 / 300.0).ceil() as i64;
-
+    println!("Pages: {}", pages);
     let mut encrypted_data: Vec<Data> = vec![];
 
     for page in 0..pages {
@@ -300,7 +301,7 @@ pub async fn recover_data(_address: &str) -> AvailResult<Data> {
     let mut transactions: Vec<EncryptedDataRecord> = vec![];
     let mut transitions: Vec<EncryptedDataRecord> = vec![];
     let mut deployments: Vec<EncryptedDataRecord> = vec![];
-
+    println!("DATA FROM SERVER {:?}", encrypted_data);
     for data in encrypted_data {
         record_pointers.extend(data.record_pointers);
         transactions.extend(data.transactions);

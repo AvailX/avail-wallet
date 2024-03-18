@@ -56,7 +56,7 @@ pub fn initialize_encrypted_data_table() -> AvailResult<()> {
 /// store any encrypted data in persistent storage
 pub fn store_encrypted_data(data: EncryptedData) -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
-
+    let data_temp = data.clone();
     let id = match data.id {
         Some(id) => id.to_string(),
         None => Err(AvailError::new(
@@ -81,7 +81,7 @@ pub fn store_encrypted_data(data: EncryptedData) -> AvailResult<()> {
         Some(transaction_state) => Some(transaction_state.to_str()),
         None => None,
     };
-
+    println!("DATA in local storage =====> {:?}", data_temp);
     storage.save_mixed(
         vec![&id,&data.owner, &ciphertext, &nonce, &flavour,&record_type,&data.program_ids,&data.function_ids,&data.created_at,&data.updated_at,&data.synced_on,&data.network,&data.record_name,&data.spent,&event_type,&data.record_nonce,&transaction_state],
         "INSERT INTO encrypted_data (id,owner,ciphertext,nonce,flavour,record_type,program_ids,function_ids,created_at,updated_at,synced_on,network,record_name,spent,event_type,record_nonce,state) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)"
@@ -567,8 +567,14 @@ pub async fn get_and_store_all_data() -> AvailResult<String> {
     let address = get_address_string()?;
     let network = get_network()?;
 
-    let data = recover_data(&address.to_string()).await?;
-
+    let mut data = recover_data(&address.to_string()).await?;
+    println!("{:?}", data);
+    // // TEMP FIX
+    // // Swap data.deployments value to data.transitions
+    // let temp_deployments = data.deployments;
+    // data.deployments = data.transitions;
+    // data.transitions = temp_deployments;
+    // println!("SWAPPED DATYA{:?}", data);
     for encrypted_record_pointer in data.record_pointers {
         let e_r = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
@@ -578,6 +584,7 @@ pub async fn get_and_store_all_data() -> AvailResult<String> {
         };
         store_encrypted_data(e_r)?;
     }
+    println!("Record pointers stored");
 
     for encrypted_transaction in data.transactions {
         let e_t = match SupportedNetworks::from_str(&network)? {
@@ -592,7 +599,7 @@ pub async fn get_and_store_all_data() -> AvailResult<String> {
         };
         store_encrypted_data(e_t)?;
     }
-
+    println!("Transaction pointers stored");
     for encrypted_deployment in data.deployments {
         let e_t = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
@@ -604,7 +611,7 @@ pub async fn get_and_store_all_data() -> AvailResult<String> {
         };
         store_encrypted_data(e_t)?;
     }
-
+    println!("Deployment pointers stored");
     for encrypted_transition in data.transitions {
         let e_t = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {

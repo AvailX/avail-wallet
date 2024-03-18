@@ -42,7 +42,7 @@ pub struct DeploymentPointer<N: Network> {
 fn decrypt<N: Network>(encrypted_struct: EncryptedStruct<N>) -> AvailResult<DeploymentPointer<N>> {
     let view_key = VIEWSESSION.get_instance::<N>()?;
     let transition: DeploymentPointer<N> = encrypted_struct.decrypt(view_key)?;
-
+    println!("Transition: {:?}", transition);
     Ok(transition)
 }
 
@@ -151,15 +151,19 @@ impl<N: Network> DeploymentPointer<N> {
         encrypted_data_record: EncryptedDataRecord,
     ) -> AvailResult<EncryptedData> {
         let address = get_address::<N>()?;
+        println!("Address: {:?}", address);
         let encrypted_struct = encrypted_data_record.to_enrypted_struct::<N>()?;
+        println!("Encrypted Struct: {:?}", encrypted_struct);
         let record = decrypt::<N>(encrypted_struct)?;
+        println!("Record: {:?}", record);
         let encrypted_data = record.to_encrypted_data(address)?;
+        println!("Encrypted Data: {:?}", encrypted_data);
         Ok(encrypted_data)
     }
 
     pub fn to_encrypted_data(&self, encrypt_for: Address<N>) -> AvailResult<EncryptedData> {
         let encrypted_record_pointer = self.encrypt_for(encrypt_for)?;
-
+        println!("INSIDE TO ENCRYPTED DATA: {:?}", encrypted_record_pointer);
         let network = get_network()?;
         let id = Uuid::new_v4();
         let flavour = EncryptedDataTypeCommon::Deployment;
@@ -184,7 +188,7 @@ impl<N: Network> DeploymentPointer<N> {
             None,
             Some(self.state.clone()),
         );
-
+        println!("ENCRYPTED DATA: {:?}", encrypted_data);
         Ok(encrypted_data)
     }
 
