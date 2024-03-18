@@ -92,6 +92,7 @@ pub async fn recover_wallet_from_seed_phrase(
         .unwrap();
 
     if backup {
+        println!("Backup is true");
         get_and_store_all_data().await?;
     }
 

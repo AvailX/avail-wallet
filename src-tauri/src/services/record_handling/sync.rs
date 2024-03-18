@@ -122,7 +122,11 @@ pub async fn txs_sync_raw<N: Network>() -> AvailResult<TxScanResponse> {
             .iter_mut()
             .filter_map(|(_, _, invalid_id)| *invalid_id)
             .collect::<Vec<Uuid>>();
-
+        println!(
+            "INSIDE SYNC /// INSIDE BACKUP ---- {:?}  ///\n {:?} ",
+            records_to_post.len(),
+            transitions_to_post.len()
+        );
         let encrypted_record_ids = post_encrypted_data(records_to_post).await?;
         let encrypted_transition_ids = post_encrypted_data(transitions_to_post).await?;
 
