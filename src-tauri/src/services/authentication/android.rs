@@ -5,7 +5,7 @@ use crate::{
     models::storage::encryption::Keys,
     services::{
         account::key_management::android::keystore_load,
-        local_storage::persistent_storage::{get_network, store_view_session},
+        local_storage::persistent_storage::get_network,
     },
 };
 
@@ -33,7 +33,7 @@ pub fn android_auth(password: Option<&str>, _key_type: &str) -> AvailResult<()> 
         }
     };
 
-    store_view_session(view_key_bytes)?;
+    //TODO - Store view key session
 
     Ok(())
 }

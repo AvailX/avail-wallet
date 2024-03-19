@@ -529,7 +529,7 @@ pub fn keystore_load<N: Network>(password: Option<&str>, key_type: &str) -> Avai
     let key = match auth_type {
         true => match key_type {
             "avl-p" => {
-                let wallet = BetterAvailWallet::<N>::from_bytes(&key)?;
+                let wallet = BetterAvailWallet::<N>::from_seed_bytes(&key)?;
                 Keys::PrivateKey(wallet.private_key)
             }
             "avl-v" => {
@@ -645,7 +645,7 @@ mod tests {
 
     #[test]
     fn test_keystore_init_password() {
-        let wallet = AvailWallet::<Testnet3>::new().unwrap();
+        let wallet = BetterAvailWallet::<Testnet3>::new().unwrap();
 
         let _result = keystore_init(
             STRONG_PASSWORD,
@@ -659,7 +659,7 @@ mod tests {
     //Requires android environment to run
     #[test]
     fn test_keystore_init_biometric() {
-        let wallet = AvailWallet::<Testnet3>::new().unwrap();
+        let wallet = BetterAvailWallet::<Testnet3>::new().unwrap();
 
         let _result = keystore_init("", true, &wallet.private_key, &wallet.view_key).unwrap();
     }

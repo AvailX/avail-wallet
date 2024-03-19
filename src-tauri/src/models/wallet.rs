@@ -4,7 +4,7 @@ use snarkvm::{
     prelude::{Address, PrivateKey, ViewKey},
 };
 
-use avail_common::errors::{AvailError, AvailResult};
+use avail_common::errors::{AvailError, AvailResult,AvailErrorType};
 use zeroize::Zeroize;
 
 use crate::models::storage::languages::Languages;
@@ -58,6 +58,29 @@ impl<N: Network> BetterAvailWallet<N> {
         let seed_bytes = self.private_key.to_bytes_le()?;
 
         Ok(seed_bytes)
+    }
+
+    /// Generates a [`BetterAvailWallet`] from the bytes of the [`Field`] used to derive an Aleo [`PrivateKey`].
+    pub fn from_seed_bytes(bytes: &[u8]) -> AvailResult<Self>{
+        let seed: [u8; 32] = bytes.try_into().map_err(|_| {
+            AvailError::new(
+                AvailErrorType::InvalidData,
+                "Error generating seed phrase".to_string(),
+                "Error generating seed phrase".to_string(),
+            )
+        })?;
+
+        let field = <N as Environment>::Field::from_bytes_le_mod_order(&seed);
+        let private_key = PrivateKey::<N>::try_from(FromBytes::read_le(&*field.to_bytes_le().unwrap()).unwrap())?;
+        let view_key = ViewKey::<N>::try_from(&private_key)?;
+        let address = Address::<N>::try_from(&private_key)?;
+
+        Ok(BetterAvailWallet::<N> {
+            address,
+            view_key,
+            private_key,
+            mnemonic: None,
+        })
     }
 
     /// Generates an [`AvailWallet`] from an arbitrary seed phrase, using the specified [`Language`].

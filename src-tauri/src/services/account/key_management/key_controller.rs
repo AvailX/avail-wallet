@@ -5,8 +5,8 @@ use crate::services::local_storage::session::password::PASS;
 #[cfg(target_os = "android")]
 use super::android::{keystore_delete, keystore_init, keystore_load};
 
-#[cfg(any(target_os = "ios"))]
-use super::ios::{delete_ios, search, store_keys_local};
+#[cfg(target_os = "ios")]
+use super::iOS::{delete_ios, search, store_keys_local};
 
 use snarkvm::prelude::{Identifier, Network, PrivateKey, ViewKey};
 
@@ -41,7 +41,8 @@ impl<N: Network> KeyController<N> for AndroidKeyController {
     }
 
     fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String> {
-        read_seed_phrase::<N>(password)
+          //TODO: Seed phrase storage on mobile (read_seed_phrase(password))
+          Ok("seed_phrase".to_string())
     }
 }
 
@@ -63,7 +64,8 @@ impl<N: Network> KeyController<N> for iOSKeyController {
     }
 
     fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String> {
-        read_seed_phrase(password, ext)
+        //TODO: Seed phrase storage on mobile (read_seed_phrase(password))
+        Ok("seed_phrase".to_string())
     }
 }
 

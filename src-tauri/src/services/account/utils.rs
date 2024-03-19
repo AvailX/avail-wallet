@@ -23,19 +23,19 @@ pub fn open_url(url: &str) -> AvailResult<()> {
                 "Error opening url".to_string(),
             ))
         }
-    };
+    }
 
     #[cfg(target_os = "macos")]
     match Command::new("open").arg(url).spawn() {
-        Ok(_) => return Ok(()),
+        Ok(_) =>  Ok(()),
         Err(e) => {
-            return Err(AvailError::new(
+             Err(AvailError::new(
                 AvailErrorType::Internal,
                 format!("Error opening url: {}", e),
                 "Error opening url".to_string(),
             ))
         }
-    };
+    }
 
     #[cfg(target_os = "linux")]
     match Command::new("xdg-open").arg(url).spawn() {
@@ -47,7 +47,13 @@ pub fn open_url(url: &str) -> AvailResult<()> {
                 "Error opening url".to_string(),
             ))
         }
-    };
+    }
+
+    #[cfg(target_os = "ios")]
+    return Ok(());
+
+    #[cfg(target_os = "android")]
+    return Ok(());
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -60,6 +66,12 @@ pub fn os_type() -> AvailResult<String> {
 
     #[cfg(target_os = "linux")]
     return Ok("linux".to_string());
+
+    #[cfg(target_os = "android")]
+    return Ok("android".to_string());
+
+    #[cfg(target_os = "ios")]
+    return Ok("ios".to_string());
 }
 
 #[test]

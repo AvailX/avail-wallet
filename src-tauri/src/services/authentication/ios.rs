@@ -5,12 +5,12 @@ use avail_common::models::network::SupportedNetworks;
 
 use crate::services::local_storage::{persistent_storage::get_network, session::view::VIEWSESSION};
 
-#[cfg(any(target_os = "ios"))]
-use crate::{models::storage::encryption::Keys, services::account::key_management::ios::search};
+
+use crate::{models::storage::encryption::Keys, services::account::key_management::iOS::search};
 
 use avail_common::errors::{AvError, AvailErrorType, AvailResult};
 
-#[cfg(any(target_os = "ios"))]
+
 #[tauri::command(rename_all = "snake_case")]
 pub fn ios_auth(password: Option<&str>, key_type: &str) -> AvailResult<()> {
     let network = get_network()?;

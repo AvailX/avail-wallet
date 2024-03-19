@@ -17,7 +17,7 @@ use snarkvm::prelude::{
 };
 
 use crate::services::account::key_management::key_controller::{
-    linuxKeyController, macKeyController, windowsKeyController, KeyController,
+    linuxKeyController, macKeyController, windowsKeyController,iOSKeyController, AndroidKeyController, KeyController,
 };
 
 use avail_common::{
@@ -58,6 +58,14 @@ pub fn get_private_key<N: Network>(password: Option<String>) -> AvailResult<Priv
         {
             linuxKeyController
         }
+        #[cfg(target_os = "ios")]
+        {
+            iOSKeyController
+        }
+        #[cfg(target_os = "android")]
+        {
+            AndroidKeyController
+        }
     };
 
     let key = match password {
@@ -97,6 +105,14 @@ pub fn get_seed_phrase(password: Option<String>) -> AvailResult<String> {
                 #[cfg(target_os = "linux")]
                 {
                     linuxKeyController
+                }
+                #[cfg(target_os = "ios")]
+                {
+                    iOSKeyController
+                }
+                #[cfg(target_os = "android")]
+                {
+                    AndroidKeyController
                 }
             };
 
@@ -146,6 +162,14 @@ pub fn get_view_key<N: Network>(password: Option<String>) -> AvailResult<ViewKey
         #[cfg(target_os = "linux")]
         {
             linuxKeyController
+        }
+        #[cfg(target_os = "ios")]
+        {
+            iOSKeyController
+        }
+        #[cfg(target_os = "android")]
+        {
+            AndroidKeyController
         }
     };
 
@@ -217,13 +241,21 @@ pub async fn delete_util(password: &str) -> AvailResult<String> {
         {
             linuxKeyController
         }
+        #[cfg(target_os = "ios")]
+        {
+            iOSKeyController
+        }
+        #[cfg(target_os = "android")]
+        {
+            AndroidKeyController
+        }
     };
 
     let val: Identifier<Testnet3> = Identifier::<Testnet3>::from_str("test")?;
 
     match key_manager.delete_key(Some(password), val) {
         Ok(_) => {}
-        Err(e) => {}
+        Err(_e) => {}
     };
 
     // delete encrypted data
@@ -261,13 +293,21 @@ pub fn delete_local_for_recovery(password: &str) -> AvailResult<()> {
         {
             linuxKeyController
         }
+        #[cfg(target_os = "ios")]
+        {
+            iOSKeyController
+        }
+        #[cfg(target_os = "android")]
+        {
+            AndroidKeyController
+        }
     };
 
     let val: Identifier<Testnet3> = Identifier::<Testnet3>::from_str("test")?;
 
     match key_manager.delete_key(Some(password), val) {
         Ok(_) => {}
-        Err(e) => {}
+        Err(_e) => {}
     };
 
     // delete encrypted data

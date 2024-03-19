@@ -1,16 +1,33 @@
 use snarkvm::prelude::*;
-#[cfg(any(target_os = "macos", target_os = "ios"))]
+#[cfg(any( target_os = "ios"))]
 use tid::{LAContext, LAPolicy};
 
-#[cfg(any(target_os = "macos", target_os = "ios"))]
-use security_framework::passwords::{self};
+#[cfg(any( target_os = "ios"))]
+use security_framework::passwords::{self,get_generic_password};
+
+//#[cfg(any(target_os = "ios"))]
+#[cfg(any( target_os = "ios"))]
+use security_framework::passwords_options;
+
+#[cfg(any( target_os = "ios"))]
+use security_framework_sys::item::kSecUseAuthenticationContext;
+#[cfg(any( target_os = "ios"))]
+use core_foundation::{
+    base::{CFType, TCFType},
+    string::CFString,
+};
+
+use crate::models::storage::encryption::Keys;
+use crate::models::wallet::BetterAvailWallet;
+use crate::services::local_storage::persistent_storage::get_auth_type;
 
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
+use avail_common::models::local_storage::try_label_to_account_str;
 
 ///Accepts a private key and attempts to store it on the user's iOS device.
 ///Using apple's security framework we set access controls to protect the key entry.
 ///If biometrics are available we only add the SecAccessControl to the query.
-#[cfg(any(target_os = "ios"))]
+#[cfg(any( target_os = "ios"))]
 pub fn store_key_local(
     key: &[u8],
     password: &str,
@@ -60,7 +77,7 @@ pub fn store_key_local(
 }
 
 /// stores both the private key and viewing key inside the keychain
-#[cfg(any(target_os = "ios"))]
+#[cfg(any( target_os = "ios"))]
 pub fn store_keys_local<N: Network>(
     password: &str,
     access_type: bool,
@@ -73,12 +90,13 @@ pub fn store_keys_local<N: Network>(
     Ok("Key Stored".to_string())
 }
 
-#[cfg(any(target_os = "ios"))]
+
 /// Accepts user's password if using applicaiton password to authenticate
 /// We construct a CFDictionary query to search for the key entry in the keychain.
 /// using SecItemCopyMatching we attempt to retrieve the key entry from the keychain.
 /// and pass in the context to SecItemCopyMatching.
 /// If using biometrics we just pass in the SecAccessControl to the query but then this is blocking (seperate method).
+#[cfg(any( target_os = "ios"))]
 pub fn search<N: Network>(password: Option<&str>, label: &str) -> AvailResult<Keys<N>> {
     let auth = get_auth_type()?;
 
@@ -98,7 +116,7 @@ pub fn search<N: Network>(password: Option<&str>, label: &str) -> AvailResult<Ke
 
     match label {
         "avl-p" => {
-            let wallet = AvailWallet::<N>::from_bytes(&key)?;
+            let wallet = BetterAvailWallet::<N>::from_seed_bytes(&key)?;
 
             Ok(Keys::PrivateKey(wallet.private_key))
         }
@@ -161,7 +179,7 @@ pub fn delete_ios(password: Option<&str>) -> AvailResult<String> {
 // TODO - This should only delete key, user deletion should be a separate function call
 /* --Testing-- */
 #[tauri::command(rename_all = "snake_case")]
-pub async fn delete_ios(_password: Option<&str>) -> AvailResult<String> {
+pub fn delete_ios(_password: Option<&str>) -> AvailResult<String> {
     match passwords::delete_generic_password("com.avail", "avail-user-view", "avl-v") {
         Ok(_) => (),
         Err(e) => {
@@ -194,7 +212,7 @@ pub fn prepare_context() -> bool {
     ctx.can_evaluate_policy(LAPolicy::DeviceOwnerAuthenticationWithBiometrics)
 }
 
-#[cfg(any(target_os = "ios"))]
+
 //issues with entitlement signing on mac (see way to run all tests for mac with entitlement added)
 #[cfg(test)]
 mod tests {
