@@ -1,6 +1,7 @@
 use crate::models::{storage::encryption::Keys, wallet::BetterAvailWallet};
 use crate::services::local_storage::session::password::PASS;
 
+
 #[cfg(target_os = "android")]
 use super::android::{keystore_delete, keystore_init, keystore_load};
 
@@ -26,17 +27,8 @@ pub struct AndroidKeyController;
 
 #[cfg(target_os = "android")]
 impl<N: Network> KeyController<N> for AndroidKeyController {
-    fn store_key(&self, password: &str, wallet: BetterAvailWallet<N>) -> AvailResult<String> {
-        keystore_init(password, access_type, p_key, v_key)
-    }
-
-    fn import_key(
-        &self,
-        password: &str,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
-    ) -> AvailResult<String> {
-        keystore_init(password, access_type, p_key, v_key)
+    fn store_key(&self, password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String> {
+        keystore_init(password, true, &wallet.private_key, &wallet.view_key)
     }
 
     //TODO authenticate using read_key
@@ -57,18 +49,8 @@ pub struct iOSKeyController;
 
 #[cfg(target_os = "ios")]
 impl<N: Network> KeyController<N> for iOSKeyController {
-    fn store_key(&self, password: &str, wallet: BetterAvailWallet<N>) -> AvailResult<String> {
-        store_keys_local(password, access_type, p_key, v_key)
-    }
-
-    fn import_key(
-        &self,
-        password: &str,
-        access_type: bool,
-        p_key: &PrivateKey<N>,
-        v_key: &ViewKey<N>,
-    ) -> AvailResult<String> {
-        store_keys_local(password, access_type, p_key, v_key)
+    fn store_key(&self, password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String> {
+        store_keys_local(password, true, &wallet.private_key, &wallet.view_key)
     }
 
     //TODO authenticate using read_key
@@ -97,7 +79,7 @@ impl<N: Network> KeyController<N> for macKeyController {
         match password {
             Some(password) => delete_key::<N>(password),
             None => {
-                return Err(AvailError::new(
+                Err(AvailError::new(
                     AvailErrorType::InvalidData,
                     "Password is required".to_string(),
                     "Password is required".to_string(),

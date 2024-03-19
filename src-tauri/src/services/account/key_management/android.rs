@@ -11,14 +11,14 @@ use crate::api::{encrypted_data::delete_all_server_storage, user::delete_user};
 use crate::models::{
     auth::Options,
     storage::encryption::{EncryptedData, Keys, Keys::PrivateKey as PKey, Keys::ViewKey as VKey},
-    wallet::AvailWallet,
+    wallet::BetterAvailWallet,
 };
 
 use crate::services::local_storage::{
     persistent_storage::{
-        delete_user_preferences, get_auth_type, get_network, remove_view_session,
+        delete_user_preferences, get_auth_type, get_network,
     },
-    records_storage::delete_user_encrypted_data,
+    encrypted_data::delete_user_encrypted_data,
     utils::encrypt_with_password,
 };
 
@@ -394,7 +394,7 @@ pub fn keystore_init<N: Network>(
             print!("Got here son");
             let ciphertext_p = match SupportedNetworks::from_str(&network)? {
                 SupportedNetworks::Testnet3 => {
-                    match encrypt_with_password::<N>(password, PKey(*p_key)) {
+                    match encrypt_with_password::<N>(password, &PKey(*p_key)) {
                         Ok(c) => c,
                         Err(e) => {
                             println!("Error encrypting view key: {}", e);
@@ -410,7 +410,7 @@ pub fn keystore_init<N: Network>(
 
             let ciphertext_v = match SupportedNetworks::from_str(&network)? {
                 SupportedNetworks::Testnet3 => {
-                    match encrypt_with_password::<N>(password, VKey(*v_key)) {
+                    match encrypt_with_password::<N>(password, &VKey(*v_key)) {
                         Ok(c) => c,
                         Err(e) => {
                             println!("Error encrypting view key: {}", e);
@@ -473,7 +473,7 @@ pub fn keystore_load<N: Network>(password: Option<&str>, key_type: &str) -> Avai
 
     let mut access_control = JObject::from(env.new_string("None")?);
 
-    if auth_type.as_str() == "true" {
+    if auth_type {
         access_control = JObject::from(env.new_string("BiometryCurrentSet")?);
     }
 
@@ -521,27 +521,15 @@ pub fn keystore_load<N: Network>(password: Option<&str>, key_type: &str) -> Avai
     let alias = env.new_string("AV_KEYSTORE")?;
     let context = unsafe { JObject::from_raw(activity as jni::sys::jobject) };
 
-    let auth = match auth_type.as_str() {
-        "true" => true,
-        "false" => false,
-        _ => {
-            return Err(AvailError::new(
-                AvailErrorType::Internal,
-                "Error getting auth type".to_string(),
-                "Error getting auth type".to_string(),
-            ))
-        }
-    };
-
     print!("Before failure");
     let key = Java_com_example_keystore_KeyStoreModule_get(
         env, class2, alias, options, context, jkey_type,
     )?;
 
-    let key = match auth {
+    let key = match auth_type {
         true => match key_type {
             "avl-p" => {
-                let wallet = AvailWallet::<N>::from_bytes(&key)?;
+                let wallet = BetterAvailWallet::<N>::from_bytes(&key)?;
                 Keys::PrivateKey(wallet.private_key)
             }
             "avl-v" => {
@@ -615,12 +603,6 @@ pub fn keystore_delete(password: Option<&str>) -> AvailResult<String> {
 
     Java_com_example_keystore_KeyStoreModule_delete(env, class, alias, context)?;
 
-    delete_user_encrypted_data()?;
-    delete_user()?;
-    delete_all_server_storage()?;
-    remove_view_session()?;
-    delete_user_preferences()?;
-
     Ok("Keystore Deleted".to_string())
 }
 
@@ -659,7 +641,6 @@ pub fn device_auth_permission() -> AvailResult<bool> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::wallet::AvailWallet;
     use avail_common::models::constants::STRONG_PASSWORD;
 
     #[test]

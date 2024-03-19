@@ -23,6 +23,12 @@ use crate::services::account::key_management::key_controller::windowsKeyControll
 #[cfg(target_os = "macos")]
 use crate::services::account::key_management::key_controller::macKeyController;
 
+#[cfg(target_os = "ios")]
+use crate::services::account::key_management::key_controller::iosKeyController;
+
+#[cfg(target_os = "android")]
+use crate::services::account::key_management::key_controller::androidKeyController;
+
 use avail_common::{errors::AvailResult, models::user::User};
 
 #[tauri::command(rename_all = "snake_case")]
@@ -74,6 +80,14 @@ pub async fn create_seed_phrase_wallet(
         #[cfg(target_os = "macos")]
         {
             macKeyController {}
+        }
+        #[cfg(target_os = "android")]
+        {
+            androidKeyController {}
+        }
+        #[cfg(target_os = "ios")]
+        {
+            iosKeyController {}
         }
     };
 
@@ -142,6 +156,14 @@ pub async fn import_wallet(
         #[cfg(target_os = "macos")]
         {
             macKeyController {}
+        }
+        #[cfg(target_os = "android")]
+        {
+            androidKeyController {}
+        }
+        #[cfg(target_os = "ios")]
+        {
+            iosKeyController {}
         }
     };
 
