@@ -73,7 +73,7 @@ pub fn run() {
         .setup(|app| {
             #[cfg(desktop)]
             let handle = app.handle().clone();
-
+            
             #[cfg(desktop)]
             app.handle()
                 .plugin(tauri_plugin_updater::Builder::new().build())?;
@@ -82,7 +82,7 @@ pub fn run() {
             app.listen("deep-link://new-url", move |event| {
                 deep_link_print(event, handle.clone())
             });
-
+            
             // Remove the on_scheme method call
             #[cfg(desktop)]
             println!("Deep link: {:?}", app.deep_link().get_current());
