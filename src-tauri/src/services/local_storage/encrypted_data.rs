@@ -569,12 +569,7 @@ pub async fn get_and_store_all_data() -> AvailResult<String> {
 
     let mut data = recover_data(&address.to_string()).await?;
     println!("{:?}", data);
-    // // TEMP FIX
-    // // Swap data.deployments value to data.transitions
-    // let temp_deployments = data.deployments;
-    // data.deployments = data.transitions;
-    // data.transitions = temp_deployments;
-    // println!("SWAPPED DATYA{:?}", data);
+
     for encrypted_record_pointer in data.record_pointers {
         let e_r = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
@@ -582,7 +577,14 @@ pub async fn get_and_store_all_data() -> AvailResult<String> {
             }
             _ => AvailRecord::<Testnet3>::to_encrypted_data_from_record(encrypted_record_pointer)?,
         };
+        let e_data = e_r.clone();
         store_encrypted_data(e_r)?;
+        // check if the e_r.record_type is a token and store the token
+        if e_data.record_type == Some(RecordTypeCommon::Tokens)
+            || e_data.record_type == Some(RecordTypeCommon::AleoCredits)
+        {
+            println!("Token record found(PLACEHOLDER)");
+        }
     }
     println!("Record pointers stored");
 

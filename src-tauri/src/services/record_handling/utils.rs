@@ -354,53 +354,54 @@ pub fn transition_to_record_pointer<N: Network>(
                         }
 
                         let program_id = transition.program_id();
-                        let mut record_type = RecordTypeCommon::None;
+                        // let mut record_type = RecordTypeCommon::None;
                         let program = api_client.get_program(program_id)?;
                         let record_name =
                             get_record_name(program.clone(), transition.function_name(), index)?;
+                        let record_type = update_tokens_local_storage(record_name.clone())?;
                         // check if its in the records table
-                        if if_token_exists(&record_name.clone())? {
-                            if record_name == "credits.record" {
-                                record_type = RecordTypeCommon::AleoCredits;
-                            } else {
-                                record_type = RecordTypeCommon::Tokens;
-                            }
+                        // if if_token_exists(&record_name.clone())? {
+                        //     if record_name == "credits.record" {
+                        //         record_type = RecordTypeCommon::AleoCredits;
+                        //     } else {
+                        //         record_type = RecordTypeCommon::Tokens;
+                        //     }
 
-                            let balance = get_record_type_and_amount::<N>(
-                                record.clone(),
-                                record_name.clone(),
-                                view_key,
-                            )?;
-                            add_balance::<N>(
-                                record_name.clone().as_str(),
-                                balance.to_string().as_str(),
-                                view_key,
-                            )?;
-                        } else {
-                            record_type = match program_id.to_string().as_str() {
-                                "credits.aleo" => RecordTypeCommon::AleoCredits,
-                                _ => get_record_type(
-                                    program.clone(),
-                                    record_name.clone(),
-                                    record.clone(),
-                                )?,
-                            };
-                            if record_type == RecordTypeCommon::Tokens
-                                || record_type == RecordTypeCommon::AleoCredits
-                            {
-                                let balance = get_record_type_and_amount::<N>(
-                                    record.clone(),
-                                    record_name.clone(),
-                                    view_key,
-                                )?;
-                                init_token::<N>(
-                                    record_name.clone().as_str(),
-                                    &program_id.to_string(),
-                                    view_key.to_address().to_string().as_str(),
-                                    balance.to_string().as_str(),
-                                )?;
-                            }
-                        }
+                        //     let balance = get_record_type_and_amount::<N>(
+                        //         record.clone(),
+                        //         record_name.clone(),
+                        //         view_key,
+                        //     )?;
+                        //     add_balance::<N>(
+                        //         record_name.clone().as_str(),
+                        //         balance.to_string().as_str(),
+                        //         view_key,
+                        //     )?;
+                        // } else {
+                        //     record_type = match program_id.to_string().as_str() {
+                        //         "credits.aleo" => RecordTypeCommon::AleoCredits,
+                        //         _ => get_record_type(
+                        //             program.clone(),
+                        //             record_name.clone(),
+                        //             record.clone(),
+                        //         )?,
+                        //     };
+                        //     if record_type == RecordTypeCommon::Tokens
+                        //         || record_type == RecordTypeCommon::AleoCredits
+                        //     {
+                        //         let balance = get_record_type_and_amount::<N>(
+                        //             record.clone(),
+                        //             record_name.clone(),
+                        //             view_key,
+                        //         )?;
+                        //         init_token::<N>(
+                        //             record_name.clone().as_str(),
+                        //             &program_id.to_string(),
+                        //             view_key.to_address().to_string().as_str(),
+                        //             balance.to_string().as_str(),
+                        //         )?;
+                        //     }
+                        // }
 
                         let record_pointer = AvailRecord::from_record(
                             commitment,
@@ -435,7 +436,41 @@ pub fn transition_to_record_pointer<N: Network>(
 
     Ok(records)
 }
+pub fn update_tokens_local_storage(record_name: String) -> AvailResult<RecordTypeCommon> {
+    let mut record_type = RecordTypeCommon::None;
+    if if_token_exists(&record_name.clone())? {
+        if record_name == "credits.record" {
+            record_type = RecordTypeCommon::AleoCredits;
+        } else {
+            record_type = RecordTypeCommon::Tokens;
+        }
 
+        let balance =
+            get_record_type_and_amount::<N>(record.clone(), record_name.clone(), view_key)?;
+        add_balance::<N>(
+            record_name.clone().as_str(),
+            balance.to_string().as_str(),
+            view_key,
+        )?;
+        Ok(record_type)
+    } else {
+        record_type = match program_id.to_string().as_str() {
+            "credits.aleo" => RecordTypeCommon::AleoCredits,
+            _ => get_record_type(program.clone(), record_name.clone(), record.clone())?,
+        };
+        if record_type == RecordTypeCommon::Tokens || record_type == RecordTypeCommon::AleoCredits {
+            let balance =
+                get_record_type_and_amount::<N>(record.clone(), record_name.clone(), view_key)?;
+            init_token::<N>(
+                record_name.clone().as_str(),
+                &program_id.to_string(),
+                view_key.to_address().to_string().as_str(),
+                balance.to_string().as_str(),
+            )?;
+        }
+        Ok(record_type)
+    }
+}
 pub fn get_record_type_and_amount<N: Network>(
     record: Record<N, Plaintext<N>>,
     record_name: String,
@@ -506,50 +541,51 @@ pub fn output_to_record_pointer<N: Network>(
                     let record_name = get_record_name(program.clone(), function_id, index)?;
                     let mut balance = "".to_string();
 
-                    let mut record_type = RecordTypeCommon::None;
-                    if if_token_exists(&record_name.clone())? {
-                        if record_name.clone() == "credits.record" {
-                            record_type = RecordTypeCommon::AleoCredits;
-                        } else {
-                            record_type = RecordTypeCommon::Tokens;
-                        }
+                    // let mut record_type = RecordTypeCommon::None;
+                    // if_token_exists(&record_name.clone())? {
+                    //     if record_name.clone() == "credits.record" {
+                    //         record_type = RecordTypeCommon::AleoCredits;
+                    //     } else {
+                    //         record_type = RecordTypeCommon::Tokens;
+                    //     }
 
-                        balance = get_record_type_and_amount::<N>(
-                            record.clone(),
-                            record_name.clone(),
-                            view_key,
-                        )?;
-                        add_balance::<N>(
-                            record_name.clone().as_str(),
-                            balance.to_string().as_str(),
-                            view_key,
-                        )?;
-                    } else {
-                        record_type = match program_id.to_string().as_str() {
-                            "credits.aleo" => RecordTypeCommon::AleoCredits,
-                            _ => get_record_type(
-                                program.clone(),
-                                record_name.clone(),
-                                record.clone(),
-                            )?,
-                        };
+                    //     balance = get_record_type_and_amount::<N>(
+                    //         record.clone(),
+                    //         record_name.clone(),
+                    //         view_key,
+                    //     )?;
+                    //     add_balance::<N>(
+                    //         record_name.clone().as_str(),
+                    //         balance.to_string().as_str(),
+                    //         view_key,
+                    //     )?;
+                    // } else {
+                    //     record_type = match program_id.to_string().as_str() {
+                    //         "credits.aleo" => RecordTypeCommon::AleoCredits,
+                    //         _ => get_record_type(
+                    //             program.clone(),
+                    //             record_name.clone(),
+                    //             record.clone(),
+                    //         )?,
+                    //     };
 
-                        if record_type == RecordTypeCommon::Tokens
-                            || record_type == RecordTypeCommon::AleoCredits
-                        {
-                            balance = get_record_type_and_amount::<N>(
-                                record.clone(),
-                                record_name.clone(),
-                                view_key,
-                            )?;
-                            init_token::<N>(
-                                record_name.clone().as_str(),
-                                &program_id.to_string(),
-                                view_key.to_address().to_string().as_str(),
-                                balance.to_string().as_str(),
-                            )?;
-                        }
-                    }
+                    //     if record_type == RecordTypeCommon::Tokens
+                    //         || record_type == RecordTypeCommon::AleoCredits
+                    //     {
+                    //         balance = get_record_type_and_amount::<N>(
+                    //             record.clone(),
+                    //             record_name.clone(),
+                    //             view_key,
+                    //         )?;
+                    //         init_token::<N>(
+                    //             record_name.clone().as_str(),
+                    //             &program_id.to_string(),
+                    //             view_key.to_address().to_string().as_str(),
+                    //             balance.to_string().as_str(),
+                    //         )?;
+                    //     }
+                    // }
+                    let record_type = update_tokens_local_storage(record_name.clone())?;
                     let record_pointer = AvailRecord::from_record(
                         commitment,
                         &record.clone(),
