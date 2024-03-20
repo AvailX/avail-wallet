@@ -49,8 +49,8 @@
     "react-spinners": "^0.13.8"
   },
   "devDependencies": {
-    "@tauri-apps/api": "^2.0.0-beta.5",
-    "@tauri-apps/cli": "^2.0.0-beta.9",
+    "@tauri-apps/api": "^2.0.0-beta.6",
+    "@tauri-apps/cli": "^2.0.0-beta.10",
     "@types/conf": "^3.0.0",
     "@types/i18next": "^13.0.0",
     "@types/node": "^18.7.10",
