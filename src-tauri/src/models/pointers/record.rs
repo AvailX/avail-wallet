@@ -15,6 +15,7 @@ use avail_common::{
 };
 
 use crate::api::aleo_client::setup_client;
+use crate::api::aleo_client::setup_local_client;
 
 use crate::services::{
     local_storage::{
@@ -134,7 +135,7 @@ impl<N: Network> AvailRecord<N> {
     }
 
     pub fn to_record(&self) -> AvailResult<Record<N, Plaintext<N>>> {
-        let api_client = setup_client::<N>()?;
+        let api_client = setup_local_client::<N>();
 
         let record_transaction = api_client.get_transaction(self.pointer.transaction_id)?;
 
@@ -158,7 +159,7 @@ impl<N: Network> AvailRecord<N> {
     pub fn to_record_texts_and_data(
         &self,
     ) -> AvailResult<(String, String, HashMap<String, String>)> {
-        let api_client = setup_client::<N>()?;
+        let api_client = setup_local_client::<N>();
 
         let record_transaction = api_client.get_transaction(self.pointer.transaction_id)?;
 

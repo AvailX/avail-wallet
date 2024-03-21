@@ -59,7 +59,7 @@ pub fn get_records<N: Network>(
     let view_key = VIEWSESSION.get_instance::<N>()?;
     let address = view_key.to_address();
 
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
 
     let step_size = 49;
 
@@ -771,7 +771,7 @@ mod record_handling_test {
         let start = 500527u32;
         let end = 500531u32;
 
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_local_client::<Testnet3>();
 
         let blocks = api_client.get_blocks(start, end).unwrap();
 
@@ -812,7 +812,7 @@ mod record_handling_test {
 
     #[test]
     fn test_get_records() {
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_local_client::<Testnet3>();
 
         let latest_height = api_client.latest_height().unwrap();
         let last_sync = get_last_sync().unwrap();

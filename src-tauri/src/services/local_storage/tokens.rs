@@ -273,7 +273,7 @@ mod test_tokens {
 
     #[test]
     fn test_init() {
-        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
+        let api_client: AleoAPIClient<Testnet3> = setup_local_client::<Testnet3>();
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
         let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
         let res =
@@ -282,7 +282,7 @@ mod test_tokens {
     }
     #[test]
     fn test_pid() {
-        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
+        let api_client: AleoAPIClient<Testnet3> = setup_local_client::<Testnet3>();
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
         let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
         let res = get_program_id_for_token("testnew111.record").unwrap();
@@ -298,7 +298,7 @@ mod test_tokens {
 
     #[test]
     fn test_subtract_balance() {
-        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
+        let api_client: AleoAPIClient<Testnet3> = setup_local_client::<Testnet3>();
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
         let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
         let res = subtract_balance("token1", "100u64", vk).unwrap();
@@ -307,7 +307,7 @@ mod test_tokens {
 
     #[test]
     fn test_get_balance() {
-        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
+        let api_client: AleoAPIClient<Testnet3> = setup_local_client::<Testnet3>();
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
         //let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
 
@@ -321,7 +321,7 @@ mod test_tokens {
 
     #[test]
     fn test_record_exists() {
-        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
+        let api_client: AleoAPIClient<Testnet3> = setup_local_client::<Testnet3>();
         let res = if_token_exists("token_not_existing").unwrap();
         println!("{:?}", res);
     }

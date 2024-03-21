@@ -68,7 +68,7 @@ use super::decrypt_transition::DecryptTransition;
 
 /// Gets all tags from a given block height to the latest block height
 pub fn get_tags<N: Network>(min_block_height: u32) -> AvailResult<Vec<String>> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
     let latest_height = api_client.latest_height()?;
 
     let step = 49;
@@ -99,7 +99,7 @@ fn spent_checker<N: Network>(
     block_height: u32,
     local_tags: Vec<String>,
 ) -> AvailResult<(Vec<String>, Vec<String>)> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
     let latest_height = api_client.latest_height()?;
 
     let step = 49;
@@ -325,7 +325,7 @@ pub fn transition_to_record_pointer<N: Network>(
     let address = view_key.to_address();
     let address_x_coordinate = address.to_x_coordinate();
     let sk_tag = GraphKey::try_from(view_key)?.sk_tag();
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
 
     let outputs = transition.outputs();
     let mut records: Vec<AvailRecord<N>> = vec![];
@@ -501,7 +501,7 @@ pub fn output_to_record_pointer<N: Network>(
                         false => {}
                     }
 
-                    let api_client = setup_client::<N>()?;
+                    let api_client = setup_local_client::<N>();
                     let program = api_client.get_program(program_id)?;
                     let record_name = get_record_name(program.clone(), function_id, index)?;
                     let mut balance = "".to_string();
@@ -597,7 +597,7 @@ pub fn get_all_nft_raw<N: Network>() -> AvailResult<Vec<String>> {
         get_encrypted_data_by_flavour(EncryptedDataTypeCommon::Record).unwrap();
 
     let v_key = VIEWSESSION.get_instance::<N>().unwrap();
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
     let records = nft_encrypted_data
         .iter()
         .map(|x| {
@@ -756,7 +756,7 @@ pub fn get_public_token_balance<N: Network>(asset_id: &str) -> AvailResult<f64> 
         program_id = format!("{}.aleo", asset_id);
     }
     println!("===> PROGRAM ID FOR FETCH {:?}", program_id);
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
 
     let credits_mapping = match api_client.get_mapping_value(program_id, "account", &address) {
         Ok(credits_mapping) => credits_mapping,
@@ -1707,7 +1707,7 @@ pub fn get_fee_transition<N: Network>(
     transaction_id: N::TransactionID,
 ) -> AvailResult<EventTransition> {
     let view_key = VIEWSESSION.get_instance::<N>()?;
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
 
     let transaction = match api_client.get_transaction(transaction_id) {
         Ok(transaction) => transaction,
@@ -1957,7 +1957,7 @@ mod test {
 
     // #[tokio::test]
     // async fn test_token_record() {
-    //     let mut api_client = setup_client::<Testnet3>().unwrap();
+    //     let mut api_client = setup_local_client::<Testnet3>();
     //     let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
     //     let pk_3 = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
     //     let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
@@ -2056,7 +2056,7 @@ mod test {
 
     //     //let inputs = vec![];
 
-    //     let api_client = setup_client::<Testnet3>().unwrap();
+    //     let api_client = setup_local_client::<Testnet3>();
 
     //     let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
     //     let program_manager =
@@ -2082,7 +2082,7 @@ mod test {
     // #[tokio::test]
     // async fn test_nft_record(){
     //    // ARRANGE
-    //    let mut api_client = setup_client::<Testnet3>().unwrap();
+    //    let mut api_client = setup_local_client::<Testnet3>();
     //     // ALEO INPUTS
     //     let program_id = "avail_nft_0.aleo";
     //     let nft_program = Program::<Testnet3>::from_str(AVAIL_NFT_TEST).unwrap();

@@ -9,7 +9,7 @@ use std::fs;
 use std::{ops::Add, str::FromStr};
 use tokio::time::{Duration, Instant};
 
-use crate::api::aleo_client::setup_client;
+use crate::api::aleo_client::{setup_client, setup_local_client};
 use crate::services::local_storage::encrypted_data::update_encrypted_transaction_state_by_id;
 use crate::{
     helpers::utils::get_timestamp_from_i64,
@@ -130,7 +130,7 @@ async fn transfer_private_util<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
 
     let sender_address = get_address::<N>()?;
 
@@ -306,7 +306,7 @@ async fn transfer_public_to_private_util<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
 
@@ -463,7 +463,7 @@ async fn transfer_private_to_public_util<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
 
@@ -628,7 +628,7 @@ async fn transfer_public<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
 
@@ -788,7 +788,7 @@ pub fn find_confirmed_block_height<N: Network>(
     Option<Execution<N>>,
     Option<f64>,
 )> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
 
     let latest_block_height = api_client.latest_height()?;
 
@@ -1430,7 +1430,7 @@ mod transfer_tests {
     // Transfer funds to test wallet on local dev network
     #[tokio::test]
     async fn test_transfer_public_to_private_util() {
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_local_client::<Testnet3>();
         let private_key = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
 
         let program_manager = ProgramManager::<Testnet3>::new(

@@ -77,7 +77,7 @@ pub async fn txs_sync() -> AvailResult<TxScanResponse> {
 
 /// syncs transactions sent to user by another avail user
 pub async fn txs_sync_raw<N: Network>() -> AvailResult<TxScanResponse> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
 
     let backup = get_backup_flag()?;
 
@@ -453,7 +453,7 @@ mod test {
 
         tokio::time::sleep(tokio::time::Duration::from_secs(45)).await;
 
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_local_client::<Testnet3>();
 
         let latest_height = api_client.latest_height().unwrap();
 
@@ -469,7 +469,7 @@ mod test {
             .set_view_session("AViewKey1oxamV2Xo1L8EVthyrSDZoeCzk1rm1DVhHbsGypPNyke3")
             .unwrap();
 
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_local_client::<Testnet3>();
 
         let latest_height = api_client.latest_height().unwrap();
 
@@ -578,7 +578,7 @@ output r1 as u32.public;",
 
         let pk2 = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
 
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_local_client::<Testnet3>();
 
         let mut program_manager =
             ProgramManager::<Testnet3>::new(Some(pk2), None, Some(api_client.clone()), None)
@@ -725,7 +725,7 @@ output r1 as u32.public;",
 
     #[test]
     fn test_get_latest_height() {
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_local_client::<Testnet3>();
 
         let latest_height = api_client.latest_height().unwrap();
         println!("latest_height: {:?}", latest_height);
@@ -806,7 +806,7 @@ output r1 as u32.public;",
 
         tokio::time::sleep(tokio::time::Duration::from_secs(30)).await;
 
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_local_client::<Testnet3>();
         let latest_height2 = api_client.latest_height().unwrap();
         blocks_sync_test(latest_height2).await.unwrap();
     }
