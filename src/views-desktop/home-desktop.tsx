@@ -16,17 +16,6 @@ import Receive from '../components/dialogs/receive';
 import ScanReAuthDialog from '../components/dialogs/scan_reauth';
 import BackupDialog from '../components/backup/backup_dialog';
 import RiseLoader from 'react-spinners/RiseLoader';
-// Componenets
-import SideMenu from '../components/sidebar';
-import ProfileBar from '../components/account/profile-header';
-import TransferCTAButton from '../components/buttons/transfer_cta';
-import AvailEventComponent from '../components/events/event';
-import AssetDrawer from '../components/assets/asset_drawer';
-import EventDrawer from '../components/events/event_drawer';
-import Receive from '../components/dialogs/receive';
-import ScanReAuthDialog from '../components/dialogs/scan_reauth';
-import BackupDialog from '../components/backup/backup_dialog';
-import RiseLoader from 'react-spinners/RiseLoader';
 import SyncIcon from '@mui/icons-material/Sync';
 import WarningIcon from '@mui/icons-material/Warning';
 import NetworkDownDialog from '../components/dialogs/network_down';
@@ -51,13 +40,7 @@ import {type PointsResponse, testPoints} from '../types/quests/quest_types';
 import {useScan} from '../context/ScanContext';
 import {useWalletConnectManager} from '../context/WalletConnect';
 import {useRecentEvents} from '../context/EventsContext';
-// Context hooks
-import {useScan} from '../context/ScanContext';
-import {useWalletConnectManager} from '../context/WalletConnect';
-import {useRecentEvents} from '../context/EventsContext';
 
-// Typography
-import {SmallText, SmallText400, SubtitleText} from '../components/typography/typography';
 // Typography
 import {SmallText, SmallText400, SubtitleText} from '../components/typography/typography';
 
@@ -69,9 +52,7 @@ import {
 import {useTranslation} from 'react-i18next';
 import Balance from '../components/balance';
 import {handleGetTokens} from '../services/tokens/get_tokens';
-import {useTranslation} from 'react-i18next';
-import Balance from '../components/balance';
-import {handleGetTokens} from '../services/tokens/get_tokens';
+
 import {
 	set_first_visit, get_first_visit, set_visit_session_flag, get_visit_session_flag,
 } from '../services/storage/localStorage';
@@ -108,7 +89,7 @@ function Home() {
 	{/* --ReAuth Dialog-- */}
 	const [backupDialog, setBackupDialog] = React.useState(false);
 
-	{/* --ReAuth Dialog-- */}
+	/* --ReAuth Dialog-- */
 	const [reAuthDialogOpen, setReAuthDialogOpen] = React.useState(false);
 
 	{/* --Receive Dialog-- */ }
