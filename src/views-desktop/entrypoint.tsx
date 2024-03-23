@@ -28,7 +28,7 @@ function Entrypoint() {
 	const shouldRunEffect = React.useRef(true);
 	const [alert, setAlert] = React.useState<boolean>(false);
 	const [alertMessage, setAlertMessage] = React.useState<string>('');
-	let { walletConnectManager } = useWalletConnectManager();
+	const {walletConnectManager} = useWalletConnectManager();
 	const [updateObject, setUpdateObject] = React.useState<Update | null>(null);
 	const [updateDialog, setUpdateDialog] = React.useState<boolean>(false);
 
@@ -58,6 +58,7 @@ function Entrypoint() {
 		}, 3000);
 	}
 	const initDeepLink = async () => {
+
 		listen('deep-link-wc', async (event) => {
 			const { uri } = event.payload as { uri: string }; // Add type assertion
 			console.log('Deep link uri:', uri.split('\"')[1].split('avail://wc?uri=')[1]);
@@ -68,6 +69,7 @@ function Entrypoint() {
 			// if (decodedUri)
 			await walletConnectManager.pair(decodedUri);
 		});
+
 	};
 
 	React.useEffect(() => {
@@ -104,7 +106,35 @@ function Entrypoint() {
 					}, 3000);
 				}
 
-			}).catch(() => {
+			}).catch(async() => {
+
+				{/* --TESTING ANDROID START-- */}
+				await initDeepLink();
+				setTimeout(() => {
+					/* -- Local + Session Auth -- */
+					session_and_local_auth(undefined, navigate, setAlert, setAlertMessage, true).then(res => { }).catch(async error_ => {
+						console.log(error_);
+
+						let error = error_;
+						const os_type = await os();
+						if (os_type !== 'linux' && os_type !== 'android' && os_type !== 'ios') {
+							error = JSON.parse(error_) as AvailError;
+						}
+
+						if (error.error_type === AvailErrorType.Network) {
+							// TODO - Desktop login
+						}
+
+						if (error.error_type.toString() === 'Unauthorized') {
+							navigate('/login');
+						} else {
+							navigate('/register');
+						}
+					});
+				}, 3000);
+
+				{/* --TESTING ANDROID START-- */}
+
 				setAlertMessage("Failed to fetch latest update.");
 				setAlert(true);
 			});

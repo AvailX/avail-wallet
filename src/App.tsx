@@ -19,11 +19,11 @@ function App() {
 	const {walletConnectManager} = useWalletConnectManager();
 
 	useEffect(() => {
-		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+		const handleBeforeUnload = async(e: BeforeUnloadEvent) => {
 			e.preventDefault();
 			e.returnValue = '';
 
-			walletConnectManager.close();
+			await walletConnectManager.close();
 		};
 
 		window.addEventListener('beforeunload', handleBeforeUnload);

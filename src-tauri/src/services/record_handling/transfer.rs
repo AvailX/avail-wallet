@@ -1022,10 +1022,10 @@ pub async fn pre_install_inclusion_prover() -> AvailResult<()> {
 #[cfg(test)]
 mod transfer_tests {
 
-    use crate::models::{
+    use crate::{api::aleo_client::setup_local_client, models::{
         storage::languages::Languages,
         wallet_connect::{get_event::GetEventsRequest, records::GetRecordsRequest},
-    };
+    }};
 
     use crate::services::account::generation::import_wallet;
     use crate::services::account::key_management::key_controller::KeyController;
@@ -1430,7 +1430,7 @@ mod transfer_tests {
     // Transfer funds to test wallet on local dev network
     #[tokio::test]
     async fn test_transfer_public_to_private_util() {
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_local_client::<Testnet3>();
         let private_key = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
 
         let program_manager = ProgramManager::<Testnet3>::new(
@@ -1444,16 +1444,16 @@ mod transfer_tests {
         let program_id = format!("credits.aleo");
 
         let recipient = Address::<Testnet3>::from_str(
-            "aleo1wswguyd4gh045y9y2t36ks0wpk4yg3cpeded8cc8fjwud8j7dvystyl9lp",
+            "aleo1x2s08a2jyvd5aq29dwexqfscqrz7fgssrkhwk7ppselp2292zqfqakg7gn",
         )
         .unwrap();
 
         let transaction_id = program_manager
             .transfer(
-                7000000,
+                100000000,
                 0,
                 recipient,
-                TransferType::PublicToPrivate,
+                TransferType::Public,
                 None,
                 None,
                 None,

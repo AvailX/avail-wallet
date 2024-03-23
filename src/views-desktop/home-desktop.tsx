@@ -2,61 +2,61 @@ import * as React from 'react';
 import * as mui from '@mui/material';
 
 import Layout from './reusable/layout';
-import { useNavigate } from 'react-router-dom';
-import { listen } from '@tauri-apps/api/event';
+import {useNavigate} from 'react-router-dom';
+import {listen} from '@tauri-apps/api/event';
 
 // Services
 
-// componenets
-import SideMenu from "../components/sidebar";
-import ProfileBar from "../components/account/profile-header";
-import TransferCTAButton from "../components/buttons/transfer_cta";
-import AvailEventComponent from "../components/events/event";
-import AssetDrawer from "../components/assets/asset_drawer";
-import EventDrawer from "../components/events/event_drawer";
-import Receive from "../components/dialogs/receive";
-import ScanReAuthDialog from "../components/dialogs/scan_reauth";
-import BackupDialog from "../components/backup/backup_dialog";
-import RiseLoader from "react-spinners/RiseLoader";
+// Componenets
+import SideMenu from '../components/sidebar';
+import ProfileBar from '../components/account/profile-header';
+import TransferCTAButton from '../components/buttons/transfer_cta';
+import AvailEventComponent from '../components/events/event';
+import AssetDrawer from '../components/assets/asset_drawer';
+import EventDrawer from '../components/events/event_drawer';
+import Receive from '../components/dialogs/receive';
+import ScanReAuthDialog from '../components/dialogs/scan_reauth';
+import BackupDialog from '../components/backup/backup_dialog';
+import RiseLoader from 'react-spinners/RiseLoader';
 import SyncIcon from '@mui/icons-material/Sync';
 
-//state functions
-import { getName } from "../services/states/utils";
-import { getAuth } from "../services/states/utils";
-import { getAddress } from "../services/states/utils";
+// State functions
+import {getName} from '../services/states/utils';
+import {getAuth} from '../services/states/utils';
+import {getAddress} from '../services/states/utils';
 
 
-//interfaces
-import { AssetType } from "../types/assets/asset";
-import { AvailEvent } from "../services/wallet-connect/WCTypes";
-import Asset from "../components/assets/asset";
-import { ScanProgressEvent, TxScanResponse } from "../types/events";
-import { AvailError, AvailErrorType } from "../types/errors";
-import { SuccinctAvailEvent } from "../types/avail-events/event";
+// Interfaces
+import {AssetType} from '../types/assets/asset';
+import {AvailEvent} from '../services/wallet-connect/WCTypes';
+import Asset from '../components/assets/asset';
+import {ScanProgressEvent, TxScanResponse} from '../types/events';
+import {AvailError, AvailErrorType} from '../types/errors';
+import {SuccinctAvailEvent} from '../types/avail-events/event';
 
-//context hooks
-import { useScan } from "../context/ScanContext";
-import { useWalletConnectManager } from "../context/WalletConnect";
-import { useRecentEvents } from "../context/EventsContext";
+// Context hooks
+import {useScan} from '../context/ScanContext';
+import {useWalletConnectManager} from '../context/WalletConnect';
+import {useRecentEvents} from '../context/EventsContext';
 
-//typography
-import { SmallText, SmallText400, SubtitleText } from "../components/typography/typography";
+// Typography
+import {SmallText, SmallText400, SubtitleText} from '../components/typography/typography';
 
-//alerts
-import { ErrorAlert, SuccessAlert, WarningAlert, InfoAlert } from "../components/snackbars/alerts";
+// Alerts
+import {ErrorAlert, SuccessAlert, WarningAlert, InfoAlert} from '../components/snackbars/alerts';
 
-import { useTranslation } from "react-i18next";
-import Balance from "../components/balance";
-import { handleGetTokens } from '../services/tokens/get_tokens';
+import {useTranslation} from 'react-i18next';
+import Balance from '../components/balance';
+import {handleGetTokens} from '../services/tokens/get_tokens';
 import {
 	set_first_visit, get_first_visit, set_visit_session_flag, get_visit_session_flag
 } from '../services/storage/localStorage';
-import { os } from '../services/util/open';
-import { pre_install_inclusion_prover } from '../services/transfer/inclusion';
-import { sync_backup } from '../services/scans/backup';
-import { scan_blocks } from '../services/scans/blocks';
-import { scan_messages } from '../services/scans/encrypted_messages';
-import { getNetwork, getBackupFlag } from '../services/storage/persistent';
+import {os} from '../services/util/open';
+import {pre_install_inclusion_prover} from '../services/transfer/inclusion';
+import {sync_backup} from '../services/scans/backup';
+import {scan_blocks} from '../services/scans/blocks';
+import {scan_messages} from '../services/scans/encrypted_messages';
+import {getNetwork, getBackupFlag} from '../services/storage/persistent';
 import '../styles/animations.css';
 
 function Home() {
@@ -75,10 +75,10 @@ function Home() {
 	const [address, setAddress] = React.useState<string>('');
 	const [network, setNetwork] = React.useState<string>('');
 
-	{/* --ReAuth Dialog-- */ }
+	{/* --ReAuth Dialog-- */}
 	const [backupDialog, setBackupDialog] = React.useState(false);
 
-	{/* --ReAuth Dialog-- */ }
+	{/* --ReAuth Dialog-- */}
 	const [reAuthDialogOpen, setReAuthDialogOpen] = React.useState(false);
 	const [retryFunction, setRetryFunction] = React.useState<Promise<void>>(async () => { });
 
@@ -94,21 +94,21 @@ function Home() {
 	const [event, setEvent] = React.useState<SuccinctAvailEvent | undefined>();
 
 	{/* --Block Scan State-- */ }
-	const { scanInProgress, startScan, endScan } = useScan();
+	const {scanInProgress, startScan, endScan} = useScan();
 
 	const [localScan, setLocalScan] = React.useState<boolean>(false);
 	const [scanProgressPercent, setScanProgressPercent] = React.useState<number>(0);
 
-	{/* -- Recent Events State -- */ }
-	const { events, fetchEvents, updateEventList } = useRecentEvents();
+	{/* -- Recent Events State -- */}
+	const {events, fetchEvents, updateEventList} = useRecentEvents();
 
-	{/* --Events || Balance || Assets-- */ }
+	{/* --Events || Balance || Assets-- */}
 	const [balance, setBalance] = React.useState<number>(0);
 	const [assets, setAssets] = React.useState<AssetType[]>([]);
 
 	const [transferState, setTransferState] = React.useState<boolean>(false);
 
-	const { t } = useTranslation();
+	const {t} = useTranslation();
 	const shouldRotate = transferState || scanInProgress || localScan;
 	const shouldRunEffect = React.useRef(true);
 

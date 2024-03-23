@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 use chrono::{DateTime, Utc};
-use openssl::base64;
 use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 
 use avail_common::models::server_auth::{CreateSessionResponse, VerifySessionRequest};
@@ -60,25 +59,6 @@ impl Options {
             securityLevel: String::from("ANY"),
             authenticationType: None,
         }
-    }
-}
-
-pub struct PbkdfResult {
-    pub salt: [u8; 16],
-    pub hash: String,
-}
-
-impl Serialize for PbkdfResult {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let salt = base64::encode_block(&self.salt);
-        let hash = &self.hash;
-        let mut state = serializer.serialize_struct("PbkdfResult", 2)?;
-        state.serialize_field("salt", &salt)?;
-        state.serialize_field("hash", &hash)?;
-        state.end()
     }
 }
 
