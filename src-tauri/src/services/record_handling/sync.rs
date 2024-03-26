@@ -253,6 +253,7 @@ pub async fn sync_backup() -> AvailResult<()> {
         let timestamp = get_timestamp_from_i64_utc(block.timestamp())?;
 
         update_last_backup_sync(timestamp)
+        // update last backup sync on server side too - to be implemented\\\\\\\\\\\\\\
     } else {
         Err(AvailError::new(
             AvailErrorType::Internal,

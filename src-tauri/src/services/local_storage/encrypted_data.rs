@@ -1,14 +1,18 @@
 use std::str::FromStr;
 
+use avail_common::models::encrypted_data::Data;
 use chrono::{DateTime, Utc};
 use rusqlite::{params_from_iter, ToSql};
 use snarkvm::prelude::{Network, Testnet3};
 
+use crate::models;
+use crate::models::pointers::record;
 use crate::models::pointers::{
     deployment::DeploymentPointer, record::AvailRecord, transaction::TransactionPointer,
     transition::TransitionPointer,
 };
 use crate::models::storage::persistent::PersistentStorage;
+use crate::services::record_handling::utils::update_tokens_local_storage;
 use crate::{
     api::encrypted_data::recover_data,
     services::local_storage::{persistent_storage::*, session::view::VIEWSESSION},
@@ -82,6 +86,7 @@ pub fn store_encrypted_data(data: EncryptedData) -> AvailResult<()> {
         None => None,
     };
     println!("DATA in local storage =====> {:?}", data_temp);
+    // get from server and sture
     storage.save_mixed(
         vec![&id,&data.owner, &ciphertext, &nonce, &flavour,&record_type,&data.program_ids,&data.function_ids,&data.created_at,&data.updated_at,&data.synced_on,&data.network,&data.record_name,&data.spent,&event_type,&data.record_nonce,&transaction_state],
         "INSERT INTO encrypted_data (id,owner,ciphertext,nonce,flavour,record_type,program_ids,function_ids,created_at,updated_at,synced_on,network,record_name,spent,event_type,record_nonce,state) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)"
@@ -563,12 +568,13 @@ pub fn handle_block_scan_failure<N: Network>(block_height: u32) -> AvailResult<(
 
 ///get encrypted data and store directly locally encrypted
 #[tauri::command(rename_all = "snake_case")]
-pub async fn get_and_store_all_data() -> AvailResult<String> {
+pub async fn get_and_store_all_data() -> AvailResult<Data> {
     let address = get_address_string()?;
     let network = get_network()?;
 
-    let mut data = recover_data(&address.to_string()).await?;
-    println!("{:?}", data);
+    let data = recover_data(&address.to_string()).await?;
+    let data_r = data.clone();
+    println!("DATA IS HERE AT FIRST --> \n RP ----> {:?} \n TXN ----> {:?} \n TRN ----> {:?} \n DEPL ----> {:?}", data.record_pointers.len(), data.transactions.len(), data.transitions.len(), data.deployments.len());
 
     for encrypted_record_pointer in data.record_pointers {
         let e_r = match SupportedNetworks::from_str(&network)? {
@@ -580,11 +586,6 @@ pub async fn get_and_store_all_data() -> AvailResult<String> {
         let e_data = e_r.clone();
         store_encrypted_data(e_r)?;
         // check if the e_r.record_type is a token and store the token
-        if e_data.record_type == Some(RecordTypeCommon::Tokens)
-            || e_data.record_type == Some(RecordTypeCommon::AleoCredits)
-        {
-            println!("Token record found(PLACEHOLDER)");
-        }
     }
     println!("Record pointers stored");
 
@@ -626,11 +627,43 @@ pub async fn get_and_store_all_data() -> AvailResult<String> {
         store_encrypted_data(e_t)?;
     }
 
-    Ok("Data recovered and stored locally".to_string())
+    Ok(data_r)
 
     //now store the encoded/encrypted
 }
 
+fn aggregate_private_tokens(e_data: EncryptedData) -> AvailResult<()> {
+    let e_struct = e_data.clone().to_enrypted_struct::<Testnet3>()?;
+    let view_key = VIEWSESSION.get_instance::<Testnet3>()?;
+    let avail_record: AvailRecord<Testnet3> = e_struct.decrypt(view_key)?;
+    let record = avail_record.to_record()?;
+    if e_data.clone().record_type == Some(RecordTypeCommon::Tokens)
+        || e_data.clone().record_type == Some(RecordTypeCommon::AleoCredits)
+    {
+        println!("Token record found(PLACEHOLDER)");
+        let program_id = match e_data.clone().program_ids {
+            Some(program_ids) => program_ids,
+            None => "".to_string(),
+        };
+        let _ = update_tokens_local_storage(record, e_data.clone().record_name, program_id)?;
+    }
+    Ok(())
+}
+
+pub fn process_private_tokens(data: Data) -> AvailResult<()> {
+    let network = get_network()?;
+    for encrypted_record_pointer in data.record_pointers {
+        let e_data = match SupportedNetworks::from_str(&network)? {
+            SupportedNetworks::Testnet3 => {
+                AvailRecord::<Testnet3>::to_encrypted_data_from_record(encrypted_record_pointer)?
+            }
+            _ => AvailRecord::<Testnet3>::to_encrypted_data_from_record(encrypted_record_pointer)?,
+        };
+        aggregate_private_tokens(e_data)?;
+        // check if the e_r.record_type is a token and store the token
+    }
+    Ok(())
+}
 #[cfg(test)]
 mod encrypted_data_tests {
     use super::*;

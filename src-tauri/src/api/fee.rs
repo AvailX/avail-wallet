@@ -86,7 +86,7 @@ mod tests {
         prelude::{Address, Execution, PrivateKey, Testnet3},
     };
 
-    use crate::api::aleo_client::{setup_client, setup_local_client};
+    use crate::api::aleo_client::setup_local_client;
 
     use super::*;
 
@@ -120,7 +120,7 @@ mod tests {
 
     async fn get_execution_object() -> AvailResult<Execution<Testnet3>> {
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_local_client::<Testnet3>();
         let recipient = Address::<Testnet3>::from_str(TESTNET3_ADDRESS).unwrap();
 
         let program = api_client.get_program("credits.aleo").unwrap();
@@ -149,7 +149,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_execution_object() {
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_local_client::<Testnet3>();
         let recipient = Address::<Testnet3>::from_str(TESTNET3_ADDRESS).unwrap();
 
         let program = api_client.get_program("credits.aleo").unwrap();

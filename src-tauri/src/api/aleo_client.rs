@@ -114,7 +114,7 @@ pub static ALEO_CLIENT: Lazy<RwLock<AleoClient<Testnet3>>> =
 
 #[test]
 fn test_new_client() {
-    let api_client = setup_client::<Testnet3>().unwrap();
+    let api_client = setup_local_client::<Testnet3>();
     let height = api_client.latest_height().unwrap();
 
     println!("Height: {:?}", height);

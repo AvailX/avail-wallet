@@ -35,6 +35,35 @@ pub fn get_rm_client_with_session(
     Ok(request)
 }
 
+pub fn get_backup_client_with_session(
+    method: reqwest::Method,
+    path: &str,
+) -> AvailResult<reqwest::RequestBuilder> {
+    let api = env!("API");
+
+    let client = reqwest::Client::new();
+    let cookie_name = "id";
+
+    let session = match SESSION.get_session_token() {
+        Some(session) => session,
+        None => {
+            return Err(AvailError::new(
+                AvailErrorType::Validation,
+                "Session not found".to_string(),
+                "Session not found".to_string(),
+            ))
+        }
+    };
+
+    let cookie_value = format!("{}={}", cookie_name, session);
+    let url = format!("{}/backup-recovery/{}", api, path);
+    println!("URL: {:?}", url);
+    let request = client
+        .request(method, url)
+        .header(reqwest::header::COOKIE, cookie_value);
+    Ok(request)
+}
+
 pub fn get_um_client_with_session(
     method: reqwest::Method,
     path: &str,

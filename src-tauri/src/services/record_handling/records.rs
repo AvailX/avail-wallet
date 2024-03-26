@@ -130,7 +130,7 @@ pub fn get_records<N: Network>(
             std::thread::sleep(Duration::from_millis(250)); // Adjust the frequency as needed
             let processed = progress_tracker.load(Ordering::SeqCst) as f64;
             let percentage = ((processed / total) * 10000.0).round() / 100.0;
-            println!("Progress: {:.2}%", percentage);
+            // println!("Progress: {:.2}%", percentage);
 
             // update progress bar
             if let Some(window) = window.clone() {
@@ -527,7 +527,8 @@ pub fn get_records<N: Network>(
 
                     match update_last_sync(height) {
                         Ok(_) => {
-                            println!("Synced {}", height);
+                            // println!("Synced {}", height);
+                            // update last_sync to server side
                         }
                         Err(e) => {
                             match handle_block_scan_failure::<N>(height) {
