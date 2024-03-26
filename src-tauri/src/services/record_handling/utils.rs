@@ -358,7 +358,13 @@ pub fn transition_to_record_pointer<N: Network>(
                         let program = api_client.get_program(program_id)?;
                         let record_name =
                             get_record_name(program.clone(), transition.function_name(), index)?;
-                        let record_type = update_tokens_local_storage(record_name.clone())?;
+                        let record_type = update_tokens_local_storage::<N>(
+                            record.clone(),
+                            Some(record_name.clone()),
+                            program_id.to_string(),
+                        )?;
+                        println!("========> Record Type {:?}", record_type);
+
                         // check if its in the records table
                         // if if_token_exists(&record_name.clone())? {
                         //     if record_name == "credits.record" {
@@ -436,9 +442,21 @@ pub fn transition_to_record_pointer<N: Network>(
 
     Ok(records)
 }
-pub fn update_tokens_local_storage(record_name: String) -> AvailResult<RecordTypeCommon> {
+pub fn update_tokens_local_storage<N: Network>(
+    record: Record<N, Plaintext<N>>,
+    record_name: Option<String>,
+    program_id: String,
+) -> AvailResult<RecordTypeCommon> {
+    let view_key = VIEWSESSION.get_instance::<N>()?;
+    let api_client = setup_client::<N>()?;
+    let program = api_client.get_program(program_id.clone())?;
     let mut record_type = RecordTypeCommon::None;
+    let record_name = match record_name {
+        Some(name) => name,
+        None => "".to_string(),
+    };
     if if_token_exists(&record_name.clone())? {
+        println!("///////////EXISTS");
         if record_name == "credits.record" {
             record_type = RecordTypeCommon::AleoCredits;
         } else {
@@ -452,8 +470,11 @@ pub fn update_tokens_local_storage(record_name: String) -> AvailResult<RecordTyp
             balance.to_string().as_str(),
             view_key,
         )?;
+        println!("=========> Record Type {:?}", record_type);
+        println!("Balance: {:?}", balance);
         Ok(record_type)
     } else {
+        println!("///////////INITIALIZE");
         record_type = match program_id.to_string().as_str() {
             "credits.aleo" => RecordTypeCommon::AleoCredits,
             _ => get_record_type(program.clone(), record_name.clone(), record.clone())?,
@@ -467,7 +488,11 @@ pub fn update_tokens_local_storage(record_name: String) -> AvailResult<RecordTyp
                 view_key.to_address().to_string().as_str(),
                 balance.to_string().as_str(),
             )?;
+            println!("Balance: {:?}", balance);
         }
+
+        println!("=========> Record Type {:?}", record_type);
+
         Ok(record_type)
     }
 }
@@ -585,7 +610,12 @@ pub fn output_to_record_pointer<N: Network>(
                     //         )?;
                     //     }
                     // }
-                    let record_type = update_tokens_local_storage(record_name.clone())?;
+                    let record_type = update_tokens_local_storage::<N>(
+                        record.clone(),
+                        Some(record_name.clone()),
+                        program_id.to_string(),
+                    )?;
+                    println!("=========> Record Type {:?}", record_type);
                     let record_pointer = AvailRecord::from_record(
                         commitment,
                         &record.clone(),
@@ -1956,6 +1986,11 @@ mod test {
         // println!(":{:?}",format!("{:x}", 60419623520418866384139602471830189160u128));
         println!("res\n {:?}", res);
     }
+    // #[tokio::test]
+    // async fn test_update_tokens_local_storage() {
+    //     let res = update_tokens_local_storage().unwrap();
+    //     println!("res\n {:?}", res);
+    // }
     fn u128_to_string(u: u128) -> String {
         let mut temp_u128 = u;
         let mut bytes = vec![] as Vec<u8>;
@@ -2092,7 +2127,7 @@ mod test {
 
     //     //let inputs = vec![];
 
-    //     let api_client = setup_client::<Testnet3>().unwrap();
+    //     let api_client = setup_local_client::<Testnet3>();
 
     //     let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
     //     let program_manager =

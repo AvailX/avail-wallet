@@ -9,7 +9,7 @@ use std::fs;
 use std::{ops::Add, str::FromStr};
 use tokio::time::{Duration, Instant};
 
-use crate::api::aleo_client::setup_client;
+use crate::api::aleo_client::{setup_client, setup_local_client};
 use crate::services::local_storage::encrypted_data::update_encrypted_transaction_state_by_id;
 use crate::{
     helpers::utils::get_timestamp_from_i64,
@@ -1220,12 +1220,12 @@ mod transfer_tests {
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
         let ext = Identifier::<Testnet3>::from_str("test").unwrap();
 
-        #[cfg(target_os = "macos")]
-        let mac_key_controller = macKeyController {};
-        #[cfg(target_os = "macos")]
-        mac_key_controller
-            .delete_key(Some(STRONG_PASSWORD), ext)
-            .unwrap();
+        // #[cfg(target_os = "macos")]
+        // let mac_key_controller = macKeyController {};
+        // #[cfg(target_os = "macos")]
+        // mac_key_controller
+        //     .delete_key(Some("tylerDurden@0xf5"), ext)
+        //     .unwrap();
 
         #[cfg(target_os = "linux")]
         let linux_key_controller = linuxKeyController {};
@@ -1257,8 +1257,11 @@ mod transfer_tests {
         .unwrap();
 
         let fee = 300000u64;
-        let amount = 900000u64;
-        let recipient_address = Address::<Testnet3>::from_str(TESTNET3_ADDRESS).unwrap();
+        let amount = 90000000u64;
+        let recipient_address = Address::<Testnet3>::from_str(
+            "aleo1c0c8vu9qu7888x0x36upe2la3tnr46v4exn2knm29q7nhvf4m59s3hwae8",
+        )
+        .unwrap();
         let asset_id = "credits".to_string();
 
         let request = TransferRequest::new(
@@ -1272,13 +1275,13 @@ mod transfer_tests {
             asset_id,
         );
 
-        transfer_raw::<Testnet3>(request, None).await.unwrap();
+        let res = transfer_raw::<Testnet3>(request, None).await.unwrap();
+        println!("Transfer Response: {:?}", res);
     }
 
     #[tokio::test]
     async fn test_transfer_private_to_public() {
         //NOTE - Don't forget to change OS depending on what you testing on -default should be linux
-
         /* -- Has to be called here cause has to await-- */
         let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
         let ext = Identifier::<Testnet3>::from_str("test").unwrap();
@@ -1371,7 +1374,7 @@ mod transfer_tests {
         let mac_key_controller = macKeyController {};
         #[cfg(target_os = "macos")]
         mac_key_controller
-            .delete_key(Some(STRONG_PASSWORD), ext)
+            .delete_key(Some("tylerDurden@0xf5"), ext)
             .unwrap();
 
         #[cfg(target_os = "linux")]
@@ -1393,7 +1396,7 @@ mod transfer_tests {
         // initialize the user preferences
 
         import_wallet(
-            Some("Satoshi".to_string()),
+            Some("Satoshib".to_string()),
             STRONG_PASSWORD.to_string(),
             false,
             &pk.to_string(),
@@ -1405,8 +1408,11 @@ mod transfer_tests {
         /* --SETUP COMPLETE */
 
         let fee = 4000000u64;
-        let amount = 100000u64;
-        let recipient_address = Address::<Testnet3>::from_str("").unwrap();
+        let amount = 10000000u64;
+        let recipient_address = Address::<Testnet3>::from_str(
+            "aleo1c0c8vu9qu7888x0x36upe2la3tnr46v4exn2knm29q7nhvf4m59s3hwae8",
+        )
+        .unwrap();
         let asset_id = "credits".to_string();
 
         let request = TransferRequest::new(
@@ -1427,6 +1433,7 @@ mod transfer_tests {
     #[tokio::test]
     async fn test_transfer_public_to_private_util() {
         let api_client = setup_local_client::<Testnet3>();
+        let api_client = setup_local_client::<Testnet3>();
         let private_key = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
 
         let program_manager = ProgramManager::<Testnet3>::new(
@@ -1440,15 +1447,16 @@ mod transfer_tests {
         let program_id = format!("credits.aleo");
 
         let recipient = Address::<Testnet3>::from_str(
-            "aleo1x2s08a2jyvd5aq29dwexqfscqrz7fgssrkhwk7ppselp2292zqfqakg7gn",
+            "aleo1cnczr0y0qarqkc6k6jz2vswdmplw2ln4rqll92gyh8sfjd3hm5qqk45vt9",
         )
         .unwrap();
 
         let transaction_id = program_manager
             .transfer(
-                100000000,
+                1000000000,
                 0,
                 recipient,
+                TransferType::Public,
                 TransferType::Public,
                 None,
                 None,

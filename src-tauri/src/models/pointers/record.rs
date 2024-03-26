@@ -14,7 +14,7 @@ use avail_common::{
     },
 };
 
-use crate::api::aleo_client::setup_client;
+use crate::api::aleo_client::{setup_client, setup_local_client};
 
 use crate::services::{
     local_storage::{

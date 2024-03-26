@@ -5,10 +5,10 @@ use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter, Result as Res};
 use uuid::Uuid;
 
+use crate::api::aleo_client::setup_local_client;
 use crate::models::event::{
     AvailEvent, Event, EventTransition, Network as EventNetwork, SuccinctAvailEvent, Visibility,
 };
-
 use crate::{
     api::aleo_client::setup_client,
     services::local_storage::{

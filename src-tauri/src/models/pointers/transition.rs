@@ -1,10 +1,5 @@
-use avail_common::models::traits::encryptable::EncryptedStruct;
-use chrono::{DateTime, Local};
-use serde::{Deserialize, Serialize};
-use snarkvm::prelude::{Address, Network};
-use uuid::Uuid;
-
 use crate::api::aleo_client::setup_client;
+use crate::api::aleo_client::setup_local_client;
 use crate::models::event::{
     AvailEvent, Event, EventTransition, Network as EventNetwork, SuccinctAvailEvent, Visibility,
 };
@@ -13,6 +8,11 @@ use crate::services::local_storage::{
     session::view::VIEWSESSION,
 };
 use crate::services::record_handling::decrypt_transition::DecryptTransition;
+use avail_common::models::traits::encryptable::EncryptedStruct;
+use chrono::{DateTime, Local};
+use serde::{Deserialize, Serialize};
+use snarkvm::prelude::{Address, Network};
+use uuid::Uuid;
 
 use avail_common::{
     errors::{AvailError, AvailErrorType, AvailResult},

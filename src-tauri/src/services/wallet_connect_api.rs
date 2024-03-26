@@ -24,10 +24,8 @@ use super::{
         },
     },
 };
-use chrono::Local;
-use std::str::FromStr;
-
 use crate::api::aleo_client::setup_client;
+use crate::api::aleo_client::setup_local_client;
 use crate::models::event::{AvailEvent, SuccinctAvailEvent};
 use crate::models::pointers::{deployment::DeploymentPointer, transaction::TransactionPointer};
 use crate::models::wallet_connect::{
@@ -38,6 +36,8 @@ use crate::models::wallet_connect::{
     records::{GetRecordsRequest, GetRecordsResponse, RecordWithPlaintext},
     sign::{SignatureRequest, SignatureResponse},
 };
+use chrono::Local;
+use std::str::FromStr;
 
 use snarkvm::circuit::Aleo;
 use snarkvm::{
