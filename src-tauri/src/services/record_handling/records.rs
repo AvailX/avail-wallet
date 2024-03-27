@@ -3,9 +3,10 @@ use futures::lock::MutexGuard;
 use snarkvm::{
     console::program::Itertools,
     ledger::Block,
+    prelude::Value,
     prelude::{ConfirmedTransaction, Network, Plaintext, Record},
 };
-use std::ops::Sub;
+use std::{collections::HashMap, ops::Sub};
 use tauri::{Manager, Window};
 
 use rayon::prelude::*;
@@ -20,6 +21,7 @@ use crate::{
     helpers::utils::get_timestamp_from_i64,
     models::wallet_connect::records::{GetRecordsRequest, RecordFilterType, RecordsFilter},
     services::{
+        authentication::session::get_session_after_creation,
         local_storage::{
             encrypted_data::{
                 handle_block_scan_failure, update_encrypted_transaction_confirmed_by_id,
@@ -29,12 +31,16 @@ use crate::{
             session::view::VIEWSESSION,
             storage_api::{
                 deployment::{find_encrypt_store_deployments, get_deployment_pointer},
-                records::{get_record_pointers, get_record_pointers_for_record_type},
+                records::{
+                    get_record_pointers, get_record_pointers_for_record_type,
+                    update_record_spent_local, update_record_spent_local_via_nonce,
+                },
                 transaction::{
                     check_unconfirmed_transactions, get_transaction_pointer, get_tx_ids_from_date,
                     get_unconfirmed_and_failed_transaction_ids,
                 },
             },
+            utils::get_private_key,
         },
         record_handling::utils::{
             get_executed_transitions, handle_deployment_confirmed, handle_deployment_rejection,
@@ -45,7 +51,10 @@ use crate::{
 };
 
 use avail_common::{
-    aleo_tools::program_manager::Credits,
+    aleo_tools::{
+        api::AleoAPIClient,
+        program_manager::{Credits, ProgramManager},
+    },
     errors::{AvailError, AvailErrorType, AvailResult},
     models::encrypted_data::{EncryptedData, RecordTypeCommon, TransactionState},
 };
@@ -580,6 +589,7 @@ pub fn find_aleo_credits_record_to_spend<N: Network>(
             iter += 1;
             continue;
         }
+
         if previous.clone().contains(&record.metadata.nonce) {
             iter += 1;
             continue;
@@ -684,27 +694,105 @@ pub fn find_tokens_to_spend<N: Network>(
 
 ///Joins two records together
 /// TODO - Join n records to meet amount x
-/*
+
 async fn join_records<N: Network>(
-    pk: PrivateKey<N>,
     amount: u64,
     token: &str,
+    password: Option<String>,
+    fee_private: &bool,
 ) -> AvailResult<String> {
+    // Required variables for joining records
     let fee = 10000u64;
-
-    let fee_record = find_aleo_credits_record_to_spend::<N>(fee, vec![])?;
-
-    // TODO - iteratively find records until amount is satisfied
-
-
-    let inputs: Vec<Value<N>> = vec![Value::Record(input_record), Value::Record(input2_record)];
-
-    let api_client = AleoAPIClient::<N>::local_testnet3("3030");
+    let mut previous_record_nonces: Vec<String> = vec![];
+    // Vars for join execution
+    let api_client = setup_client::<N>()?;
+    let private_key = get_private_key::<N>(password)?;
     let mut program_manager =
-        ProgramManager::<N>::new(Some(pk), None, Some(api_client), None).unwrap();
+        ProgramManager::<N>::new(Some(private_key), None, Some(api_client), None).unwrap();
+    let program_id = "credits.aleo".to_string(); //format!("{}.aleo", token);
+    let record_name = "credits.record".to_string(); //format!("{}{}", token, ".record");
 
-    //calculate estimate
+    //  Session extension
+    let _session_task = get_session_after_creation::<N>(&private_key).await?;
 
+    //get required records if private fee
+    let (fee_record, _fee_commitment, fee_id) = match fee_private {
+        true => {
+            let (fee_record, _fee_commitment, fee_id) =
+                find_aleo_credits_record_to_spend::<N>(&fee, vec![])?;
+
+            let fee_nonce = fee_record.nonce().to_string();
+            previous_record_nonces.push(fee_nonce);
+
+            update_record_spent_local::<N>(&fee_id, true)?;
+            (Some(fee_record), Some(_fee_commitment), Some(fee_id))
+        }
+        false => (None, None, None),
+    };
+
+    let mut record_map: HashMap<String, u64> = HashMap::new();
+    let mut nonce_to_record: HashMap<String, Record<N, Plaintext<N>>> = HashMap::new();
+    let mut high_value_record_nonces: Vec<String> = vec![];
+    let mut total_record_value = 0u64;
+
+    let cloned_record_map = record_map.clone();
+    let max_record = cloned_record_map
+        .iter()
+        .max_by(|a, b| a.1.cmp(b.1))
+        .unwrap();
+    let (mut max_record_nonce, mut max_record_amount) = (max_record.0.clone(), *max_record.1);
+    total_record_value += max_record_amount;
+    while total_record_value < amount {
+        high_value_record_nonces.push(max_record_nonce.to_string());
+        record_map.remove(&max_record_nonce);
+        let max_record = cloned_record_map
+            .iter()
+            .max_by(|a, b| a.1.cmp(b.1))
+            .unwrap();
+        let (max_record_nonce, max_record_amount) = (max_record.0.clone(), *max_record.1);
+        total_record_value += max_record_amount;
+    }
+    if high_value_record_nonces.len() == 2 {
+        return execute_join::<N>(
+            high_value_record_nonces,
+            nonce_to_record,
+            program_manager.clone(),
+            fee,
+            fee_record,
+            fee_private,
+            fee_id,
+        );
+    } else {
+        /// ERROR IS FOR NOW
+        /// SHOULD BE IMPLEMENTED TO JOIN N RECORDS
+        if high_value_record_nonces.len() % 2 == 0 {
+            for nonce in high_value_record_nonces {
+                // recursive fn to join records
+            }
+        }
+        return Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Not enough records to join".to_string(),
+            "Not enough records to join".to_string(),
+        ));
+    }
+}
+fn execute_join<N: Network>(
+    high_value_record_nonces: Vec<String>,
+    nonce_to_record: HashMap<String, Record<N, Plaintext<N>>>,
+    mut program_manager: ProgramManager<N>,
+    fee: u64,
+    fee_record: Option<Record<N, Plaintext<N>>>,
+    fee_private: &bool,
+    fee_id: Option<String>,
+) -> AvailResult<String> {
+    let record1 = nonce_to_record.get(&high_value_record_nonces[0]).unwrap();
+    let record2 = nonce_to_record.get(&high_value_record_nonces[1]).unwrap();
+
+    let inputs: Vec<Value<N>> = vec![
+        Value::Record(record1.clone()),
+        Value::Record(record2.clone()),
+    ];
     let join_execution = program_manager.execute_program(
         "credits.aleo",
         "join",
@@ -713,52 +801,48 @@ async fn join_records<N: Network>(
         fee_record,
         None,
     )?;
+    if *fee_private {
+        update_record_spent_local::<N>(&fee_id.unwrap(), true)?;
+    }
+    update_record_spent_local_via_nonce::<N>(&high_value_record_nonces[0], true)?;
+    update_record_spent_local_via_nonce::<N>(&high_value_record_nonces[1], true)?;
 
-    update_identifier_status(fee_commitment, &fee_id).await?;
-    update_identifier_status(input_commitment, &input_id).await?;
-    update_identifier_status(input2_commitment, &input2_id).await?;
-
-    //check tx block, normal post tx procedure
-    Ok(join_execution)
+    return Ok(join_execution.to_string());
 }
-*/
-
 ///Splits a record into two records
-/*
-async fn split_records<N: Network>(
-    pk: PrivateKey<N>,
-    amount: u64,
-    token: &str,
-) -> AvailResult<String> {
-    let fee = 10000u64;
+// async fn split_records<N: Network>(
+//     pk: PrivateKey<N>,
+//     amount: u64,
+//     token: &str,
+// ) -> AvailResult<String> {
+//     let fee = 10000u64;
 
-    let fee_record = find_aleo_credits_record_to_spend::<N>(fee, vec![])?;
+//     let fee_record = find_aleo_credits_record_to_spend::<N>(fee, vec![])?;
 
-    let input_record = find_aleo_credits_record_to_spend::<N>(amount, vec![])?;
+//     let input_record = find_aleo_credits_record_to_spend::<N>(amount, vec![])?;
 
-    let inputs: Vec<Value<N>> = vec![Value::Record(input_record)];
+//     let inputs: Vec<Value<N>> = vec![Value::Record(input_record)];
 
-    let api_client = AleoAPIClient::<N>::local_testnet3("3030");
-    let mut program_manager =
-        ProgramManager::<N>::new(Some(pk), None, Some(api_client), None).unwrap();
+//     let api_client = AleoAPIClient::<N>::local_testnet3("3030");
+//     let mut program_manager =
+//         ProgramManager::<N>::new(Some(pk), None, Some(api_client), None).unwrap();
 
-    let split_execution = program_manager.execute_program(
-        "credits.aleo",
-        "split",
-        inputs.iter(),
-        fee,
-        fee_record,
-        None,
-    )?;
+//     let split_execution = program_manager.execute_program(
+//         "credits.aleo",
+//         "split",
+//         inputs.iter(),
+//         fee,
+//         fee_record,
+//         None,
+//     )?;
 
-    //TODO - How to get commitment from record
+//     //TODO - How to get commitment from record
 
-    update_identifier_status(fee_record.to_commitment(program_id, record_name), &fee_id).await?;
-    update_identifier_status(input_commitment, &input_id).await?;
+//     update_identifier_status(fee_record.to_commitment(program_id, record_name), &fee_id).await?;
+//     update_identifier_status(input_commitment, &input_id).await?;
 
-    Ok(split_execution)
-}
-*/
+//     Ok(split_execution)
+// }
 
 #[cfg(test)]
 mod record_handling_test {
@@ -829,4 +913,11 @@ mod record_handling_test {
 
         println!("res: {:?}", _res);
     }
+    // write a test for join_records with a join of two records, mock all values to be used
+    // #[test]
+    // fn join_records_test() {
+    //     let _res = join_records::<Testnet3>(10000, "credits", None, &false).unwrap();
+
+    //     println!("res: {:?}", _res);
+    // }
 }
