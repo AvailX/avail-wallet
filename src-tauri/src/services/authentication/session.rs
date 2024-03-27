@@ -63,10 +63,9 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
 
         SESSION.set_session_token(session_cookie.value().to_string());
 
-        let _pass_session = match password {
-            Some(password) => PASS.set_pass_session(&password)?,
-            None => {}
-        };
+        if let Some(password) = password {
+            PASS.set_pass_session(&password)?;
+        }
 
         Ok(session_request.session_id.to_string())
     } else {

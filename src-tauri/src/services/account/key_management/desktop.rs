@@ -1,5 +1,6 @@
 use bip39::Mnemonic;
 use keyring::Entry;
+
 use snarkvm::console::program::{FromFields, Itertools, ToFields};
 use snarkvm::prelude::{
     Ciphertext, Field, FromStr, Literal, Network, Plaintext, PrivateKey, StringType, ViewKey,
