@@ -137,7 +137,7 @@ pub fn get_records<N: Network>(
                 let _ = window.emit("scan_progress", percentage);
             }
 
-            if processed >= amount_to_scan as f64 {
+            if percentage >= 100.0{
                 break;
             }
         }

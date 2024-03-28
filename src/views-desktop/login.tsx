@@ -10,6 +10,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {os} from '../services/util/open';
 import WhiteHueTextField from '../components/textfields/white-hue';
 import LoginButton from '../components/buttons/login-button';
+import NewAccountDialog from '../components/dialogs/new_account';
 
 // Services
 import {session_and_local_auth, get_hash} from '../services/authentication/auth';
@@ -37,6 +38,7 @@ function Login() {
 	const [password, setPassword] = React.useState('');
 	const [open, setOpen] = React.useState(false);
 	const [passwordHidden, setPasswordHidden] = React.useState(true);
+	const [newAccountDialog, setNewAccountDialog] = React.useState(false);
 
 	const [success, setSuccess] = React.useState<boolean>(false);
 	const [info, setInfo] = React.useState<boolean>(false);
@@ -93,6 +95,11 @@ function Login() {
 			<WarningAlert warningAlert={warning} message={message} setWarningAlert={setWarning} />
 			<InfoAlert infoAlert={info} message={message} setInfoAlert={setInfo} />
 			<SuccessAlert successAlert={success} message={message} setSuccessAlert={setSuccess} />
+
+			{/* New Account Dialog */}
+			<NewAccountDialog isOpen={newAccountDialog} onRequestClose={() => {
+				setNewAccountDialog(false);
+			}} />
 
 			<mui.Box sx={{display: 'flex', flexDirection: 'row', width: '100%'}}>
 
@@ -164,16 +171,15 @@ function Login() {
 					}}>
 						<mui.Typography sx={{
 							color: '#a3a3a3', fontSize: 18, fontWeight: '700', wordWrap: 'break-word', alignContent: 'end',
-						}}>Want to import an account ?</mui.Typography>
+						}}>Want to create a new account ?</mui.Typography>
 						<mui.Button sx={{
 							display: 'flex', width: '123px', height: '35px', borderRadius: 9, background: '#3E3E3E', color: '#FFFFFF', '&:hover': {background: '#00FFAA', color: '#000'},
 						}} onClick={() => {
-							navigate('/import');
+							setNewAccountDialog(true);
 						}}>
-							<BodyText sx={{fontWeight: '700', wordWrap: 'break-word', textTransform: 'none'}}>Import</BodyText>
+							<BodyText sx={{fontWeight: '700', wordWrap: 'break-word', textTransform: 'none'}}>New Account</BodyText>
 						</mui.Button>
 					</mui.Box>
-
 				</mui.Grid>
 			</mui.Box>
 		</Layout>

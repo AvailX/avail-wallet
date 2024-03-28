@@ -75,34 +75,34 @@ function Home() {
 	const [address, setAddress] = React.useState<string>('');
 	const [network, setNetwork] = React.useState<string>('');
 
-	{/* --ReAuth Dialog-- */ }
+	/* --ReAuth Dialog-- */
 	const [backupDialog, setBackupDialog] = React.useState(false);
 
-	{/* --ReAuth Dialog-- */ }
+	/* --ReAuth Dialog-- */
 	const [reAuthDialogOpen, setReAuthDialogOpen] = React.useState(false);
 	const [retryFunction, setRetryFunction] = React.useState<Promise<void>>(async () => { });
 
-	{/* --Receive Dialog-- */ }
+	/* --Receive Dialog-- */
 	const [receiveDialogOpen, setReceiveDialogOpen] = React.useState(false);
 
-	{/* --Asset Drawer-- */ }
+	/* --Asset Drawer-- */
 	const [assetDrawerOpen, setAssetDrawerOpen] = React.useState(false);
 	const [asset, setAsset] = React.useState<AssetType | undefined>();
 
-	{/* --Event Drawer-- */ }
+	/* --Event Drawer-- */
 	const [eventDrawerOpen, setEventDrawerOpen] = React.useState(false);
 	const [event, setEvent] = React.useState<SuccinctAvailEvent | undefined>();
 
-	{/* --Block Scan State-- */ }
+	/* --Block Scan State-- */
 	const { scanInProgress, startScan, endScan } = useScan();
 
 	const [localScan, setLocalScan] = React.useState<boolean>(false);
 	const [scanProgressPercent, setScanProgressPercent] = React.useState<number>(0);
 
-	{/* -- Recent Events State -- */ }
+	/* -- Recent Events State -- */ 
 	const { events, fetchEvents, updateEventList } = useRecentEvents();
 
-	{/* --Events || Balance || Assets-- */ }
+	/* --Events || Balance || Assets-- */ 
 	const [balance, setBalance] = React.useState<number>(0);
 	const [assets, setAssets] = React.useState<AssetType[]>([]);
 
@@ -396,6 +396,8 @@ function Home() {
 			<ScanReAuthDialog isOpen={reAuthDialogOpen} onRequestClose={() => {
 				setReAuthDialogOpen(false);
 			}} />
+
+			{/* Side Menu */}
 
 			<SideMenu />
 			{loading
