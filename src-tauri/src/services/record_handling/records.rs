@@ -2,6 +2,7 @@ use chrono::Local;
 use futures::lock::MutexGuard;
 use futures::lock::MutexGuard;
 use snarkvm::{
+    circuit::group::add,
     console::program::Itertools,
     ledger::Block,
     ledger::Block,
@@ -18,7 +19,10 @@ use std::sync::{
 use std::time::Duration;
 
 use crate::{
-    api::aleo_client::{setup_client, setup_local_client},
+    api::{
+        aleo_client::{setup_client, setup_local_client},
+        backup_recovery::update_sync_height,
+    },
     helpers::utils::get_timestamp_from_i64,
     models::wallet_connect::records::{GetRecordsRequest, RecordFilterType, RecordsFilter},
     services::{
@@ -531,6 +535,7 @@ pub fn get_records<N: Network>(
                         Ok(_) => {
                             // println!("Synced {}", height);
                             // update last_sync to server side
+                            update_sync_height(address.to_string(), height.to_string());
                         }
                         Err(e) => {
                             match handle_block_scan_failure::<N>(height) {

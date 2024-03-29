@@ -115,7 +115,10 @@ pub async fn recover_wallet_from_seed_phrase(
         let sync_height = get_sync_height(avail_wallet.get_address().to_string()).await?;
         let backup_ts = get_backup_timestamp(avail_wallet.get_address().to_string()).await?;
         let last_sync = sync_height.parse::<u32>().unwrap();
-        let backup = backup_ts.to_string().parse::<DateTime<Utc>>().unwrap();
+        let backup: DateTime<Utc> = DateTime::from_naive_utc_and_offset(
+            chrono::NaiveDateTime::from_timestamp_opt(backup_ts, 0).unwrap(),
+            Utc,
+        );
         update_last_sync(last_sync)?;
         update_last_backup_sync(backup)?;
     }
@@ -139,19 +142,33 @@ async fn test_fn() {
     ))
     .unwrap();
 
-    //extend session auth
+    // //extend session auth
     let _session_task = get_session_after_creation::<Testnet3>(&private_key)
         .await
         .unwrap();
-    crate::api::backup_recovery::update_sync_height("0x123".to_string(), "8000".to_string())
+    crate::api::backup_recovery::update_sync_height(
+        sender_address.to_string(),
+        "1806046".to_string(),
+    )
+    .await
+    .unwrap();
+    let sync_height = get_sync_height(sender_address.to_string()).await.unwrap();
+    let backup_ts = get_backup_timestamp(sender_address.to_string())
         .await
         .unwrap();
-    let sync_height = get_sync_height("0x123".to_string()).await.unwrap();
-    let backup_ts = get_backup_timestamp("0x123".to_string()).await.unwrap();
     let last_sync = sync_height.parse::<u32>().unwrap();
-    let backup = backup_ts.to_string().parse::<DateTime<Utc>>().unwrap();
+    let backup: DateTime<Utc> = DateTime::from_naive_utc_and_offset(
+        chrono::NaiveDateTime::from_timestamp_opt(backup_ts, 0).unwrap(),
+        Utc,
+    );
     println!("Last Sync: {:?}", last_sync);
     println!("Last Backup Sync: {:?}", backup);
     update_last_sync(last_sync).unwrap();
     update_last_backup_sync(backup.into()).unwrap();
+    let after_modified_sync =
+        crate::services::local_storage::persistent_storage::get_last_sync().unwrap();
+    let after_modified_backup =
+        crate::services::local_storage::persistent_storage::get_last_backup_sync().unwrap();
+    println!("After Modified Sync: {:?}", after_modified_sync);
+    println!("After Modified Backup: {:?}", after_modified_backup);
 }

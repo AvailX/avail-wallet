@@ -25,7 +25,7 @@ use avail_common::{
 
 pub async fn update_sync_height(address: String, sync_height: String) -> AvailResult<String> {
     let path = format!(
-        "sync-height/{address}/{height}",
+        "sync_height/{address}/{height}",
         address = address,
         height = sync_height
     );
@@ -54,7 +54,7 @@ pub async fn update_sync_height(address: String, sync_height: String) -> AvailRe
 
 pub async fn update_backup_timestamp(address: String, timestamp: i64) -> AvailResult<String> {
     let path = format!(
-        "backup-timestamp/{address}/{timestamp}",
+        "backup_timestamp/{address}/{timestamp}",
         address = address,
         timestamp = timestamp
     );
@@ -82,7 +82,7 @@ pub async fn update_backup_timestamp(address: String, timestamp: i64) -> AvailRe
 }
 
 pub async fn get_sync_height(address: String) -> AvailResult<String> {
-    let path = format!("sync-height/{address}", address = address);
+    let path = format!("get_sync_height/{address}", address = address);
     let res = get_backup_client_with_session(reqwest::Method::GET, &path)?
         .send()
         .await?;
@@ -106,7 +106,7 @@ pub async fn get_sync_height(address: String) -> AvailResult<String> {
 }
 
 pub async fn get_backup_timestamp(address: String) -> AvailResult<i64> {
-    let path = format!("backup-timestamp/{address}", address = address);
+    let path = format!("get_backup_timestamp/{address}", address = address);
     let res = get_backup_client_with_session(reqwest::Method::GET, &path)?
         .send()
         .await?;

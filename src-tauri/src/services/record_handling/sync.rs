@@ -5,19 +5,20 @@ use uuid::Uuid;
 use crate::{
     api::{
         aleo_client::{setup_client, setup_local_client},
+        backup_recovery::update_backup_timestamp,
         encrypted_data::{
             delete_invalid_transactions_in, get_new_transaction_messages, post_encrypted_data,
             synced,
         },
     },
     helpers::utils::get_timestamp_from_i64_utc,
-    models::event::TxScanResponse,
-    models::pointers::message::TransactionMessage,
+    models::{event::TxScanResponse, pointers::message::TransactionMessage},
     services::local_storage::{
         encrypted_data::{
             get_encrypted_data_to_backup, get_encrypted_data_to_update,
             update_encrypted_data_synced_on_by_id,
         },
+        persistent_storage::get_address_string,
         storage_api::records::{encrypt_and_store_records, update_records_spent_backup},
     },
 };
@@ -221,6 +222,7 @@ pub async fn blocks_sync(height: u32, window: Window) -> AvailResult<bool> {
 pub async fn sync_backup() -> AvailResult<()> {
     let network = get_network()?;
     let backup = get_backup_flag()?;
+    let address = get_address_string()?;
 
     if backup {
         let last_backup_sync = get_last_backup_sync()?;
@@ -262,9 +264,11 @@ pub async fn sync_backup() -> AvailResult<()> {
         };
 
         let block = api_client?.get_block(last_sync)?;
-        let timestamp = get_timestamp_from_i64_utc(block.timestamp())?;
-
+        let ts = block.timestamp();
+        let timestamp = get_timestamp_from_i64_utc(ts)?;
+        update_backup_timestamp(address, ts).await?;
         update_last_backup_sync(timestamp)
+
         // update last backup sync on server side too - to be implemented\\\\\\\\\\\\\\
     } else {
         Err(AvailError::new(
@@ -318,6 +322,7 @@ pub async fn blocks_sync_test(height: u32) -> AvailResult<bool> {
 mod test {
     use super::*;
 
+    use crate::api::backup_recovery::update_sync_height;
     use crate::api::encrypted_data::delete_all_server_storage;
     use crate::api::user::delete_user;
     use crate::models::{storage::languages::Languages, transfer::TransferRequest};
@@ -619,7 +624,6 @@ output r1 as u32.public;",
 
         let latest_height1 = api_client.latest_height().unwrap();
         update_last_sync(latest_height1).unwrap();
-
         // go to sleep for 2 minutes
         tokio::time::sleep(tokio::time::Duration::from_secs(25)).await;
 

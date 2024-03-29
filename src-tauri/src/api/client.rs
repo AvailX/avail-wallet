@@ -56,7 +56,8 @@ pub fn get_backup_client_with_session(
     };
 
     let cookie_value = format!("{}={}", cookie_name, session);
-    let url = format!("{}/backup-recovery/{}", api, path);
+    let url = format!("{}/recoveryFlags/{}", api, path);
+
     println!("URL: {:?}", url);
     let request = client
         .request(method, url)
