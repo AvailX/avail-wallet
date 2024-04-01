@@ -5,7 +5,7 @@ use uuid::Uuid;
 use crate::{
     api::{
         aleo_client::{setup_client, setup_local_client},
-        backup_recovery::update_backup_timestamp,
+        backup_recovery::{update_backup_timestamp, update_sync_height},
         encrypted_data::{
             delete_invalid_transactions_in, get_new_transaction_messages, post_encrypted_data,
             synced,
@@ -259,15 +259,17 @@ pub async fn sync_backup() -> AvailResult<()> {
 
         // get timestamp from block
         let api_client = match SupportedNetworks::from_str(&network)? {
-            SupportedNetworks::Testnet3 => setup_client::<Testnet3>(),
-            _ => setup_client::<Testnet3>(),
+            SupportedNetworks::Testnet3 => setup_local_client::<Testnet3>(),
+            _ => setup_local_client::<Testnet3>(),
         };
 
-        let block = api_client?.get_block(last_sync)?;
+        let block = api_client.get_block(last_sync)?;
         let ts = block.timestamp();
         let timestamp = get_timestamp_from_i64_utc(ts)?;
+        update_sync_height(address.clone(), last_sync.to_string()).await?;
         update_backup_timestamp(address, ts).await?;
-        update_last_backup_sync(timestamp)
+        update_last_backup_sync(timestamp)?;
+        Ok(())
 
         // update last backup sync on server side too - to be implemented\\\\\\\\\\\\\\
     } else {
