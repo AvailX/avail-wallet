@@ -1,5 +1,6 @@
 use crate::api::aleo_client::setup_client;
 use crate::api::aleo_client::setup_local_client;
+use crate::helpers::utils::get_timestamp_from_i64;
 use crate::models::event::{
     AvailEvent, Event, EventTransition, Network as EventNetwork, SuccinctAvailEvent, Visibility,
 };
@@ -9,8 +10,10 @@ use crate::services::local_storage::{
 };
 use crate::services::record_handling::decrypt_transition::DecryptTransition;
 use avail_common::models::traits::encryptable::EncryptedStruct;
+use chrono::Utc;
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
+use snarkvm::circuit::group::add;
 use snarkvm::prelude::{Address, Network};
 use uuid::Uuid;
 
@@ -115,6 +118,41 @@ impl<N: Network> TransitionPointer<N> {
         Ok(encrypted_data)
     }
 
+    pub fn to_encrypted_data_from_record_after_recovery(
+        encrypted_data_record: EncryptedDataRecord,
+    ) -> AvailResult<EncryptedData> {
+        let address = get_address::<N>()?;
+        let encrypted_struct = encrypted_data_record.to_enrypted_struct::<N>()?;
+        let record = decrypt::<N>(encrypted_struct)?;
+        let api_client = setup_local_client::<N>();
+        let ts = api_client.get_block(record.block_height)?.timestamp();
+        let created_at: DateTime<Utc> = get_timestamp_from_i64(ts)?.with_timezone(&Utc);
+        println!(
+            "|||||||||| TRANSISTION TIMESTAMP CHECK  {:?}   ||||| {:?}",
+            created_at,
+            record.timestamp.with_timezone(&Utc)
+        );
+        let encrypted_data = EncryptedData::new(
+            encrypted_data_record.id,
+            address.to_string(),
+            encrypted_data_record.ciphertext.to_string(),
+            encrypted_data_record.nonce.to_string(),
+            encrypted_data_record.flavour,
+            None,
+            Some(record.program_id.clone()),
+            Some(record.function_id.clone()),
+            created_at,
+            None,
+            None,
+            encrypted_data_record.network,
+            None,
+            None,
+            Some(record.transition_type.to_event_type()),
+            None,
+            None,
+        );
+        Ok(encrypted_data)
+    }
     pub fn to_event(&self, id: &str) -> AvailResult<Event> {
         let address = get_address_string()?;
         let network = get_network()?;

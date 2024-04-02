@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use snarkvm::prelude::{Address, Field, FromStr, Network, Plaintext, Record};
 use uuid::Uuid;
@@ -81,6 +82,42 @@ impl<N: Network> AvailRecord<N> {
             None,
         );
 
+        Ok(encrypted_data)
+    }
+
+    pub fn to_encrypted_data_from_record_after_recovery(
+        encrypted_data_record: EncryptedDataRecord,
+    ) -> AvailResult<EncryptedData> {
+        let encrypted_struct = encrypted_data_record.to_enrypted_struct::<N>()?;
+        let record = decrypt::<N>(encrypted_struct)?;
+        let api_client = setup_local_client::<N>();
+        let ts = api_client
+            .get_block(record.pointer.block_height)?
+            .timestamp();
+        let created_at: DateTime<Utc> = DateTime::from_naive_utc_and_offset(
+            chrono::NaiveDateTime::from_timestamp_opt(ts, 0).unwrap(),
+            Utc,
+        );
+        let address = get_address::<N>()?;
+        let encrypted_data = EncryptedData::new(
+            encrypted_data_record.id,
+            address.to_string(),
+            encrypted_data_record.ciphertext.to_string(),
+            encrypted_data_record.nonce.to_string(),
+            encrypted_data_record.flavour,
+            Some(record.metadata.record_type.clone()),
+            Some(record.metadata.program_id.clone()),
+            Some(record.metadata.function_id.clone()),
+            created_at,
+            None,
+            None,
+            encrypted_data_record.network,
+            Some(record.metadata.name.clone()),
+            None,
+            None,
+            Some(record.metadata.nonce.clone()),
+            None,
+        );
         Ok(encrypted_data)
     }
 

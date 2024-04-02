@@ -85,7 +85,7 @@ pub fn store_encrypted_data(data: EncryptedData) -> AvailResult<()> {
         Some(transaction_state) => Some(transaction_state.to_str()),
         None => None,
     };
-    println!("DATA in local storage =====> {:?}", data_temp);
+    println!("DATA in local storage =====> {:?}", data_temp.nonce);
     // get from server and sture
     storage.save_mixed(
         vec![&id,&data.owner, &ciphertext, &nonce, &flavour,&record_type,&data.program_ids,&data.function_ids,&data.created_at,&data.updated_at,&data.synced_on,&data.network,&data.record_name,&data.spent,&event_type,&data.record_nonce,&transaction_state],
@@ -579,9 +579,13 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
     for encrypted_record_pointer in data.record_pointers {
         let e_r = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
-                AvailRecord::<Testnet3>::to_encrypted_data_from_record(encrypted_record_pointer)?
+                AvailRecord::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+                    encrypted_record_pointer,
+                )?
             }
-            _ => AvailRecord::<Testnet3>::to_encrypted_data_from_record(encrypted_record_pointer)?,
+            _ => AvailRecord::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+                encrypted_record_pointer,
+            )?,
         };
         let e_data = e_r.clone();
         store_encrypted_data(e_r)?;
@@ -592,11 +596,11 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
     for encrypted_transaction in data.transactions {
         let e_t = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
-                TransactionPointer::<Testnet3>::to_encrypted_data_from_record(
+                TransactionPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
                     encrypted_transaction,
                 )?
             }
-            _ => TransactionPointer::<Testnet3>::to_encrypted_data_from_record(
+            _ => TransactionPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
                 encrypted_transaction,
             )?,
         };
@@ -606,11 +610,13 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
     for encrypted_deployment in data.deployments {
         let e_t = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
-                DeploymentPointer::<Testnet3>::to_encrypted_data_from_record(encrypted_deployment)?
+                DeploymentPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+                    encrypted_deployment,
+                )?
             }
-            _ => {
-                DeploymentPointer::<Testnet3>::to_encrypted_data_from_record(encrypted_deployment)?
-            }
+            _ => DeploymentPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+                encrypted_deployment,
+            )?,
         };
         store_encrypted_data(e_t)?;
     }
@@ -618,11 +624,13 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
     for encrypted_transition in data.transitions {
         let e_t = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
-                TransitionPointer::<Testnet3>::to_encrypted_data_from_record(encrypted_transition)?
+                TransitionPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+                    encrypted_transition,
+                )?
             }
-            _ => {
-                TransitionPointer::<Testnet3>::to_encrypted_data_from_record(encrypted_transition)?
-            }
+            _ => TransitionPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+                encrypted_transition,
+            )?,
         };
         store_encrypted_data(e_t)?;
     }
