@@ -114,13 +114,23 @@ pub async fn recover_wallet_from_seed_phrase(
         // get last_sync_height and last_backup_timestamp from the server and store it in the local storage
         let sync_height = get_sync_height(avail_wallet.get_address().to_string()).await?;
         let backup_ts = get_backup_timestamp(avail_wallet.get_address().to_string()).await?;
+        println!("Sync Height: {:?}", sync_height);
+        println!("Backup Timestamp: {:?}", backup_ts);
         let last_sync = sync_height.parse::<u32>().unwrap();
         let backup: DateTime<Utc> = DateTime::from_naive_utc_and_offset(
             chrono::NaiveDateTime::from_timestamp_opt(backup_ts, 0).unwrap(),
             Utc,
         );
+        println!("Last Sync: {:?}", last_sync);
+        println!("Last Backup Sync: {:?}", backup);
         update_last_sync(last_sync)?;
         update_last_backup_sync(backup)?;
+        let after_modified_sync =
+            crate::services::local_storage::persistent_storage::get_last_sync().unwrap();
+        let after_modified_backup =
+            crate::services::local_storage::persistent_storage::get_last_backup_sync().unwrap();
+        println!("After Modified Sync: {:?}", after_modified_sync);
+        println!("After Modified Backup: {:?}", after_modified_backup);
     }
 
     Ok(())

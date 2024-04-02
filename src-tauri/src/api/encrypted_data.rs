@@ -168,7 +168,7 @@ pub async fn post_encrypted_data(request: Vec<EncryptedData>) -> AvailResult<Vec
             .into_iter()
             .map(|data| EncryptedDataRecord::from(data.to_owned()))
             .collect::<Vec<EncryptedDataRecord>>();
-        println!("==/> POST DATA - {:?}", request);
+        println!("==/> POST DATA - {:?}", request.len());
         let res = get_rm_client_with_session(reqwest::Method::POST, "data")?
             .json(&request)
             .send()
