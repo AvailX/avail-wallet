@@ -18,8 +18,11 @@ pub struct Client {
 }
 
 impl Client {
-    pub fn new(path: String, name: BytesDto) -> Self {
-        Self { path, name }
+    pub fn new(path: &str, name: BytesDto) -> Self {
+        Self {
+            path: path.to_string(),
+            name,
+        }
     }
 
     pub fn get_store(self) -> Store {
@@ -144,8 +147,34 @@ impl Vault {
             )),
         }
     }
+
+    pub async fn get_address(
+        self,
+        hold: State<'_, StrongholdCollection>,
+        record_path: &str,
+    ) -> AvailResult<Vec<u8>> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(record_path.to_string());
+        let location = LocationDto::Generic {
+            vault: self.name,
+            record: record_path,
+        };
+        let procedure = ProcedureDto::GetAleoAddress {
+            private_key: location,
+        };
+
+        match execute_procedure(hold, path, self.client, procedure).await {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to save record".to_string(),
+            )),
+        }
+    }
 }
 
+// TODO - store key location paths in Store
 pub struct Store {
     path: String,
     client: BytesDto,
@@ -208,11 +237,23 @@ impl Store {
     }
 }
 
+pub struct Stronghold {
+    path: String,
+}
+
+impl Stronghold {
+    pub fn new(path: &str) -> Self {
+        Self {
+            path: path.to_string(),
+        }
+    }
+}
+
 pub async fn init_stronghold(
     password: &str,
     hold: State<'_, StrongholdCollection>,
     pbkdf: State<'_, PasswordHashFunction>,
-) -> AvailResult<()> {
+) -> AvailResult<(Stronghold, Client)> {
     let path = app_root(
         AppDataType::UserData,
         &AppInfo {
@@ -221,8 +262,11 @@ pub async fn init_stronghold(
         },
     )?;
 
-    match initialize(hold, pbkdf, path, password.to_string()).await {
-        Ok(_) => Ok(()),
+    let vault_path = format! {"{}/vault.hold",path.to_str().unwrap()};
+    let vault_path_buf = PathBuf::from(vault_path.clone());
+
+    let stronghold = match initialize(hold.clone(), pbkdf, path, password.to_string()).await {
+        Ok(_) => Ok(Stronghold::new(&vault_path)),
         Err(e) => Err(AvailError::new(
             AvailErrorType::Internal,
             e.to_string(),
@@ -232,15 +276,31 @@ pub async fn init_stronghold(
 
     let client_name = BytesDto::Text("com.avail.stronghold".to_string());
 
-    /*
-    match load_client(hold, path, client_name).await {
-        Ok() => {
-
+    let client = match load_client(hold.clone(), vault_path_buf.clone(), client_name).await {
+        Ok(x) => Ok(Client::new(
+            &vault_path,
+            BytesDto::Text("com.avail.stronghold".to_string()),
+        )),
+        Err(_) => match create_client(
+            hold,
+            vault_path_buf,
+            BytesDto::Text("com.avail.stronghold".to_string()),
+        )
+        .await
+        {
+            Ok(_) => Ok(Client::new(
+                &vault_path,
+                BytesDto::Text("com.avail.stronghold".to_string()),
+            )),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to create client".to_string(),
+            )),
         },
-        Err(e) => return Err(AvailError::new(AvailErrorType::Internal, e.to_string(), "Failed to load client".to_string())),
-    }*/
+    }?;
 
-    Ok(())
+    Ok((stronghold, client))
 }
 
 #[cfg(test)]
