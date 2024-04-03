@@ -36,14 +36,11 @@ function Entrypoint() {
 		setUpdateDialog(false);
 		setTimeout(() => {
 			/* -- Local + Session Auth -- */
-			session_and_local_auth(undefined, navigate, setAlert, setAlertMessage, true).then(res => { }).catch(async error_ => {
-				console.log(error_);
+			session_and_local_auth(undefined, navigate, setAlert, setAlertMessage, true).then(res => {}).catch(async error => {
+				console.log(error);
 
-				let error = error_;
-				const os_type = await os();
-				if (os_type !== 'linux') {
-					error = JSON.parse(error_) as AvailError;
-				}
+				//let error = error_;
+				//const os_type = await os();
 
 				if (error.error_type === AvailErrorType.Network) {
 					// TODO - Desktop login
@@ -84,8 +81,8 @@ function Entrypoint() {
 					await initDeepLink();
 					setTimeout(() => {
 						/* -- Local + Session Auth -- */
-						session_and_local_auth(undefined, navigate, setAlert, setAlertMessage, true).then(res => { }).catch(async error_ => {
-							console.log(error_);
+						session_and_local_auth(undefined, navigate, setAlert, setAlertMessage, true).then(res => { }).catch(async error => {
+							console.log(error);
 
 							let error = error_;
 							const os_type = await os();
