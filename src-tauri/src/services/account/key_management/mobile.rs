@@ -3,22 +3,14 @@ use std::path::PathBuf;
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 use tauri::State;
 use tauri_plugin_stronghold::{
-    create_client, get_store_record, initialize, load_client, save_store_record, BytesDto,
-    PasswordHashFunction, StrongholdCollection,
+    create_client, execute_procedure, get_store_record, initialize, load_client, remove_secret,
+    remove_store_record, save_secret, save_store_record, BytesDto, LocationDto,
+    PasswordHashFunction, ProcedureDto, StrongholdCollection,
 };
 
 use app_dirs::*;
 use snarkvm::prelude::{Address, PrivateKey, Signature, Testnet3};
 use snarkvm::utilities::{TestRng, Uniform};
-
-/*
-pub fn init_stronghold() {
-    let path = get_app_dir(app_dirs::AppDataType::UserData, &crate::APP_INFO, "vault.hold").unwrap();
-    let stronghold = Stronghold::
-    stronghold.write().unwrap();
-
-}
-*/
 
 pub struct Client {
     pub path: String,
@@ -30,11 +22,128 @@ impl Client {
         Self { path, name }
     }
 
-    //pub fn get_store()
+    pub fn get_store(self) -> Store {
+        Store::new(self.path, self.name)
+    }
 }
 
+/// A key-value storage that allows create, update and delete operations.
+/// It does not allow reading the data, so one of the procedures must be used to manipulate
+/// the stored data, allowing secure storage of secrets.
 pub struct Vault {
-    // needs to implement all procedures
+    path: String,
+    client: BytesDto,
+    name: BytesDto,
+}
+
+impl Vault {
+    pub fn new(path: &str, client: BytesDto, name: BytesDto) -> Self {
+        Self {
+            path: path.to_string(),
+            client,
+            name,
+        }
+    }
+
+    pub async fn insert(
+        self,
+        value: &[u8],
+        hold: State<'_, StrongholdCollection>,
+        record_path: &str,
+    ) -> AvailResult<()> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(record_path.to_string());
+
+        match save_secret(
+            hold,
+            path,
+            self.client,
+            self.name,
+            record_path,
+            value.to_vec(),
+        )
+        .await
+        {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to save record".to_string(),
+            )),
+        }
+    }
+
+    pub async fn remove_secret(
+        self,
+        hold: State<'_, StrongholdCollection>,
+        record_path: &str,
+    ) -> AvailResult<()> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(record_path.to_string());
+
+        match remove_secret(hold, path, self.client, self.name, record_path).await {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to save record".to_string(),
+            )),
+        }
+    }
+
+    pub async fn generate_bip39(
+        self,
+        hold: State<'_, StrongholdCollection>,
+        record_path: &str,
+    ) -> AvailResult<Vec<u8>> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(record_path.to_string());
+        let location = LocationDto::Generic {
+            vault: self.name,
+            record: record_path,
+        };
+        let procedure = ProcedureDto::BIP39Generate {
+            passphrase: None,
+            output: location,
+        };
+
+        match execute_procedure(hold, path, self.client, procedure).await {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to save record".to_string(),
+            )),
+        }
+    }
+
+    pub async fn aleo_sign(
+        self,
+        hold: State<'_, StrongholdCollection>,
+        record_path: &str,
+        message: &str,
+        pk_path: &str,
+    ) -> AvailResult<Vec<u8>> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(pk_path.to_string());
+        let location = LocationDto::Generic {
+            vault: self.name,
+            record: record_path,
+        };
+        let procedure = ProcedureDto::AleoSign {
+            private_key: location,
+            msg: message.to_string(),
+        };
+
+        match execute_procedure(hold, path, self.client, procedure).await {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to save record".to_string(),
+            )),
+        }
+    }
 }
 
 pub struct Store {
@@ -52,7 +161,7 @@ impl Store {
         key: String,
         hold: State<'_, StrongholdCollection>,
     ) -> AvailResult<Option<Vec<u8>>> {
-        let path = PathBuf::try_from(self.path).unwrap();
+        let path = PathBuf::from(self.path);
         match get_store_record(hold, path, self.client, key).await {
             Ok(record) => Ok(record),
             Err(e) => Err(AvailError::new(
@@ -68,11 +177,11 @@ impl Store {
         key: String,
         value: Vec<u8>,
         hold: State<'_, StrongholdCollection>,
-    ) -> AvailResult<()> {
-        let path = PathBuf::try_from(self.path).unwrap();
+    ) -> AvailResult<Option<Vec<u8>>> {
+        let path = PathBuf::from(self.path);
 
         match save_store_record(hold, path, self.client, key, value, None).await {
-            Ok(_) => Ok(()),
+            Ok(record) => Ok(record),
             Err(e) => Err(AvailError::new(
                 AvailErrorType::Internal,
                 e.to_string(),
@@ -81,8 +190,21 @@ impl Store {
         }
     }
 
-    pub async fn remove() -> AvailResult<()> {
-        Ok(())
+    pub async fn remove(
+        self,
+        key: String,
+        hold: State<'_, StrongholdCollection>,
+    ) -> AvailResult<Option<Vec<u8>>> {
+        let path = PathBuf::from(self.path);
+
+        match remove_store_record(hold, path, self.client, key).await {
+            Ok(record) => Ok(record),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to save record".to_string(),
+            )),
+        }
     }
 }
 
