@@ -14,7 +14,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-plugin-fs = { version = "2.0.0-beta.2", features = [] }
+tauri-plugin-fs = { version = "2.0.0-beta.3", features = [] }
 tauri-plugin = { version = "=2.0.0-beta.10", features = [] }
 tauri-utils = { version = "=2.0.0-beta.10", features = [] }
 tauri-build = { version = "=2.0.0-beta.10", features = [] }
@@ -42,12 +42,14 @@ rayon = "1.7.0"
 rusqlite = { version = "0.29.0", features = ["bundled", "chrono"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-snarkvm = { version = "0.16.17", features = ["wasm"] }
+snarkvm = { version = "0.16.19", features = ["wasm"] }
 tauri = { version = "=2.0.0-beta.13", features = [] }
-tauri-plugin-deep-link = "2.0.0-beta.2"
-tauri-plugin-http = { version = "2.0.0-beta.2", features = ["cookies"] }
-tauri-plugin-updater = { version = "2.0.0-beta.2", features = [] }
-tauri-plugin-process = "2.0.0-beta.2"
+tauri-plugin-deep-link = "2.0.0-beta.3"
+tauri-plugin-http = { version = "2.0.0-beta.3", features = ["cookies"] }
+tauri-plugin-updater = { version = "2.0.0-beta.3", features = [] }
+tauri-plugin-process = "2.0.0-beta.3"
+tauri-plugin-stronghold = {git="https://github.com/AvailX/tauri-plugin-aleo-stronghold", rev="49882c4"}
+iota_stronghold = {git="https://github.com/AvailX/stronghold.rs", rev="fe6f7e6"}
 tiny-bip39 = "1.0.0"
 tokio = { version = "1.29.1", features = ["full"] }
 ureq = { version = "2.7.1", features = ["json"] }
@@ -58,7 +60,7 @@ zeroize = { version = "1.7.0", features = [
     "zeroize_derive",
     "alloc",
 ] }
-curl-sys = "0.4.72"
+rust-argon2 = "2.1.0"
 
 [target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
 security-framework = { git = "https://github.com/AvailX/rust-security-framework" }

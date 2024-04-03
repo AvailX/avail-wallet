@@ -48,10 +48,35 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_process::init())
+        .plugin(
+            tauri_plugin_stronghold::Builder::new(|password| {
+                // Hash the password here with e.g. argon2, blake2b or any other secure algorithm
+                // Here is an example implementation using the `rust-argon2` crate for hashing the password
+
+                use argon2::{hash_raw, Config, Variant, Version};
+
+                let config = Config {
+                    lanes: 4,
+                    mem_cost: 10_000,
+                    time_cost: 10,
+                    variant: Variant::Argon2id,
+                    version: Version::Version13,
+                    ..Default::default()
+                };
+
+                let salt = "your-salt".as_bytes();
+
+                let key =
+                    hash_raw(password.as_ref(), salt, &config).expect("failed to hash password");
+
+                key.to_vec()
+            })
+            .build(),
+        )
         .setup(|app| {
             #[cfg(desktop)]
             let handle = app.handle().clone();
-            
+
             #[cfg(desktop)]
             app.handle()
                 .plugin(tauri_plugin_updater::Builder::new().build())?;
@@ -60,7 +85,7 @@ pub fn run() {
             app.listen("deep-link://new-url", move |event| {
                 deep_link_print(event, handle.clone())
             });
-            
+
             // Remove the on_scheme method call
             #[cfg(desktop)]
             println!("Deep link: {:?}", app.deep_link().get_current());

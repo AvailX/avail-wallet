@@ -1022,10 +1022,13 @@ pub async fn pre_install_inclusion_prover() -> AvailResult<()> {
 #[cfg(test)]
 mod transfer_tests {
 
-    use crate::{api::aleo_client::setup_local_client, models::{
-        storage::languages::Languages,
-        wallet_connect::{get_event::GetEventsRequest, records::GetRecordsRequest},
-    }};
+    use crate::{
+        api::aleo_client::setup_local_client,
+        models::{
+            storage::languages::Languages,
+            wallet_connect::{get_event::GetEventsRequest, records::GetRecordsRequest},
+        },
+    };
 
     use crate::services::account::generation::import_wallet;
     use crate::services::account::key_management::key_controller::KeyController;
