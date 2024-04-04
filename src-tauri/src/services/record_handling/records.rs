@@ -692,6 +692,42 @@ pub fn find_tokens_to_spend<N: Network>(
     // find first record that satisfies the amount required
 }
 
+pub fn get_unspent_records_vector<N: Network>(
+    asset_id: &str,
+    record_name: &str,
+    previous: Vec<String>,
+) -> AvailResult<Vec<Record<N, Plaintext<N>>>> {
+    let _address = get_address_string()?;
+    let program_id = format!("{}{}", asset_id, ".aleo");
+    let record_name = format!("{}{}", asset_id, ".record");
+
+    let filter = RecordsFilter::new(
+        vec![program_id.to_string()],
+        None,
+        RecordFilterType::Unspent,
+        Some(record_name.to_string()),
+    );
+    let get_records_request = GetRecordsRequest::new(None, Some(filter), None);
+    let (record_pointers, ids) = get_record_pointers::<N>(get_records_request)?;
+
+    let mut iter = 0;
+    let mut unspent_records: Vec<Record<N, Plaintext<N>>> = vec![];
+    for record in record_pointers.iter() {
+        if record.metadata.spent {
+            iter += 1;
+            continue;
+        }
+        if previous.clone().contains(&record.metadata.nonce) {
+            iter += 1;
+            continue;
+        }
+
+        unspent_records.push(record.to_record()?);
+
+        iter += 1;
+    }
+    Ok(unspent_records)
+}
 ///Joins two records together
 /// TODO - Join n records to meet amount x
 
@@ -735,25 +771,54 @@ async fn join_records<N: Network>(
     let mut high_value_record_nonces: Vec<String> = vec![];
     let mut total_record_value = 0u64;
 
+    let unspent_records =
+        get_unspent_records_vector::<N>(token, &record_name, previous_record_nonces)?;
+    println!("Unspent records: {:?}", unspent_records.len());
+    // Iterate through unspent_records and push the records.nonce and record.microcredits to record_map
+    for record in unspent_records {
+        let record_nonce = record.nonce().to_string();
+        let record_amount = record.microcredits()?;
+        record_map.insert(record_nonce.clone(), record_amount);
+        nonce_to_record.insert(record_nonce.clone(), record);
+        println!(
+            "Record nonce: {}, Record amount: {}",
+            record_nonce, record_amount
+        );
+    }
+
     let cloned_record_map = record_map.clone();
     let max_record = cloned_record_map
         .iter()
         .max_by(|a, b| a.1.cmp(b.1))
         .unwrap();
+    println!("Max record: {:?}", max_record);
     let (mut max_record_nonce, mut max_record_amount) = (max_record.0.clone(), *max_record.1);
     total_record_value += max_record_amount;
     while total_record_value < amount {
         high_value_record_nonces.push(max_record_nonce.to_string());
         record_map.remove(&max_record_nonce);
-        let max_record = cloned_record_map
-            .iter()
-            .max_by(|a, b| a.1.cmp(b.1))
-            .unwrap();
+        let max_record = record_map.iter().max_by(|a, b| a.1.cmp(b.1)).unwrap();
         let (max_record_nonce, max_record_amount) = (max_record.0.clone(), *max_record.1);
         total_record_value += max_record_amount;
+        println!("Current record value: {}", total_record_value);
+    }
+    println!("High value record nonces: {:?}", high_value_record_nonces);
+    println!("Total record value: {}", total_record_value);
+    if total_record_value > amount {
+        let res = execute_join::<N>(
+            high_value_record_nonces.clone(),
+            nonce_to_record.clone(),
+            program_manager.clone(),
+            fee,
+            fee_record.clone(),
+            fee_private,
+            fee_id.clone(),
+        )
+        .await?;
+        println!("RESULT ARRIVED SO JOINED? - {:?}", res);
     }
     if high_value_record_nonces.len() == 2 {
-        return execute_join::<N>(
+        let res = execute_join::<N>(
             high_value_record_nonces,
             nonce_to_record,
             program_manager.clone(),
@@ -761,13 +826,16 @@ async fn join_records<N: Network>(
             fee_record,
             fee_private,
             fee_id,
-        );
+        )
+        .await?;
+        Ok(res)
     } else {
         /// ERROR IS FOR NOW
         /// SHOULD BE IMPLEMENTED TO JOIN N RECORDS
         if high_value_record_nonces.len() % 2 == 0 {
             for nonce in high_value_record_nonces {
                 // recursive fn to join records
+                println!("Joining records");
             }
         }
         return Err(AvailError::new(
@@ -777,7 +845,7 @@ async fn join_records<N: Network>(
         ));
     }
 }
-fn execute_join<N: Network>(
+async fn execute_join<N: Network>(
     high_value_record_nonces: Vec<String>,
     nonce_to_record: HashMap<String, Record<N, Plaintext<N>>>,
     mut program_manager: ProgramManager<N>,
@@ -788,7 +856,11 @@ fn execute_join<N: Network>(
 ) -> AvailResult<String> {
     let record1 = nonce_to_record.get(&high_value_record_nonces[0]).unwrap();
     let record2 = nonce_to_record.get(&high_value_record_nonces[1]).unwrap();
-
+    println!("Inside execute join");
+    println!(
+        "Record nonces {:?}, {:?}",
+        high_value_record_nonces[0], high_value_record_nonces[1]
+    );
     let inputs: Vec<Value<N>> = vec![
         Value::Record(record1.clone()),
         Value::Record(record2.clone()),
@@ -806,7 +878,9 @@ fn execute_join<N: Network>(
     }
     update_record_spent_local_via_nonce::<N>(&high_value_record_nonces[0], true)?;
     update_record_spent_local_via_nonce::<N>(&high_value_record_nonces[1], true)?;
+    // handle failure cases
 
+    println!("Spent records updated");
     return Ok(join_execution.to_string());
 }
 ///Splits a record into two records
@@ -848,9 +922,186 @@ fn execute_join<N: Network>(
 mod record_handling_test {
     use super::*;
     use crate::services::local_storage::persistent_storage::get_last_sync;
-    use snarkvm::prelude::{AleoID, Field, Testnet3};
+    use avail_common::aleo_tools::{api, test_utils::TOKEN_MINT};
+    // use avail_common::aleo_tools::test_utils::AVAIL_JOIN;
+    use snarkvm::{
+        prelude::{AleoID, Field, Testnet3},
+        synthesizer::Program,
+    };
     use std::str::FromStr;
+    pub const AVAIL_JOIN: &str = "import credits.aleo;
 
+    program availjoin.aleo;
+
+    function join_3:
+        input r0 as credits.aleo/credits.record;
+        input r1 as credits.aleo/credits.record;
+        input r2 as credits.aleo/credits.record;
+        assert.eq r0.owner r1.owner;
+        assert.eq r1.owner r2.owner;
+        call credits.aleo/join r0 r1 into r3;
+        call credits.aleo/join r3 r2 into r4;
+        output r4 as credits.aleo/credits.record;
+
+    function join_4:
+        input r0 as credits.aleo/credits.record;
+        input r1 as credits.aleo/credits.record;
+        input r2 as credits.aleo/credits.record;
+        input r3 as credits.aleo/credits.record;
+        assert.eq r0.owner r1.owner;
+        assert.eq r1.owner r2.owner;
+        assert.eq r2.owner r3.owner;
+        call credits.aleo/join r0 r1 into r4;
+        call credits.aleo/join r2 r3 into r5;
+        call credits.aleo/join r4 r5 into r6;
+        output r6 as credits.aleo/credits.record;
+
+    function join_5:
+        input r0 as credits.aleo/credits.record;
+        input r1 as credits.aleo/credits.record;
+        input r2 as credits.aleo/credits.record;
+        input r3 as credits.aleo/credits.record;
+        input r4 as credits.aleo/credits.record;
+        assert.eq r0.owner r1.owner;
+        assert.eq r1.owner r2.owner;
+        assert.eq r2.owner r3.owner;
+        assert.eq r3.owner r4.owner;
+        call credits.aleo/join r0 r1 into r5;
+        call credits.aleo/join r2 r3 into r6;
+        call credits.aleo/join r5 r6 into r7;
+        call credits.aleo/join r7 r4 into r8;
+        output r8 as credits.aleo/credits.record;
+
+    function join6:
+        input r0 as credits.aleo/credits.record;
+        input r1 as credits.aleo/credits.record;
+        input r2 as credits.aleo/credits.record;
+        input r3 as credits.aleo/credits.record;
+        input r4 as credits.aleo/credits.record;
+        input r5 as credits.aleo/credits.record;
+        assert.eq r0.owner r1.owner;
+        assert.eq r1.owner r2.owner;
+        assert.eq r2.owner r3.owner;
+        assert.eq r3.owner r4.owner;
+        assert.eq r4.owner r5.owner;
+        call credits.aleo/join r0 r1 into r6;
+        call credits.aleo/join r2 r3 into r7;
+        call credits.aleo/join r4 r5 into r8;
+        call credits.aleo/join r6 r7 into r9;
+        call credits.aleo/join r9 r8 into r10;
+        output r10 as credits.aleo/credits.record;
+
+    function join7:
+        input r0 as credits.aleo/credits.record;
+        input r1 as credits.aleo/credits.record;
+        input r2 as credits.aleo/credits.record;
+        input r3 as credits.aleo/credits.record;
+        input r4 as credits.aleo/credits.record;
+        input r5 as credits.aleo/credits.record;
+        input r6 as credits.aleo/credits.record;
+        assert.eq r0.owner r1.owner;
+        assert.eq r1.owner r2.owner;
+        assert.eq r2.owner r3.owner;
+        assert.eq r3.owner r4.owner;
+        assert.eq r4.owner r5.owner;
+        assert.eq r5.owner r6.owner;
+        call credits.aleo/join r0 r1 into r7;
+        call credits.aleo/join r2 r3 into r8;
+        call credits.aleo/join r4 r5 into r9;
+        call credits.aleo/join r7 r8 into r10;
+        call credits.aleo/join r10 r9 into r11;
+        call credits.aleo/join r11 r6 into r12;
+        output r12 as credits.aleo/credits.record;
+
+    function join8:
+        input r0 as credits.aleo/credits.record;
+        input r1 as credits.aleo/credits.record;
+        input r2 as credits.aleo/credits.record;
+        input r3 as credits.aleo/credits.record;
+        input r4 as credits.aleo/credits.record;
+        input r5 as credits.aleo/credits.record;
+        input r6 as credits.aleo/credits.record;
+        input r7 as credits.aleo/credits.record;
+        assert.eq r0.owner r1.owner;
+        assert.eq r1.owner r2.owner;
+        assert.eq r2.owner r3.owner;
+        assert.eq r3.owner r4.owner;
+        assert.eq r4.owner r5.owner;
+        assert.eq r5.owner r6.owner;
+        assert.eq r6.owner r7.owner;
+        call credits.aleo/join r0 r1 into r8;
+        call credits.aleo/join r2 r3 into r9;
+        call credits.aleo/join r4 r5 into r10;
+        call credits.aleo/join r6 r7 into r11;
+        call credits.aleo/join r8 r9 into r12;
+        call credits.aleo/join r11 r10 into r13;
+        call credits.aleo/join r12 r13 into r14;
+        output r14 as credits.aleo/credits.record;
+    function join9:
+        input r0 as credits.aleo/credits.record;
+        input r1 as credits.aleo/credits.record;
+        input r2 as credits.aleo/credits.record;
+        input r3 as credits.aleo/credits.record;
+        input r4 as credits.aleo/credits.record;
+        input r5 as credits.aleo/credits.record;
+        input r6 as credits.aleo/credits.record;
+        input r7 as credits.aleo/credits.record;
+        input r8 as credits.aleo/credits.record;
+        assert.eq r0.owner r1.owner;
+        assert.eq r1.owner r2.owner;
+        assert.eq r2.owner r3.owner;
+        assert.eq r3.owner r4.owner;
+        assert.eq r4.owner r5.owner;
+        assert.eq r5.owner r6.owner;
+        assert.eq r6.owner r7.owner;
+        assert.eq r7.owner r8.owner;
+        call credits.aleo/join r0 r1 into r9;
+        call credits.aleo/join r2 r3 into r10;
+        call credits.aleo/join r4 r5 into r11;
+        call credits.aleo/join r6 r7 into r12;
+        call credits.aleo/join r9 r10 into r13;
+        call credits.aleo/join r12 r11 into r14;
+        call credits.aleo/join r13 r14 into r15;
+        call credits.aleo/join r15 r8 into r16;
+        output r16 as credits.aleo/credits.record;
+    function join10:
+        input r0 as credits.aleo/credits.record;
+        input r1 as credits.aleo/credits.record;
+        input r2 as credits.aleo/credits.record;
+        input r3 as credits.aleo/credits.record;
+        input r4 as credits.aleo/credits.record;
+        input r5 as credits.aleo/credits.record;
+        input r6 as credits.aleo/credits.record;
+        input r7 as credits.aleo/credits.record;
+        input r8 as credits.aleo/credits.record;
+        input r9 as credits.aleo/credits.record;
+        assert.eq r0.owner r1.owner;
+        assert.eq r1.owner r2.owner;
+        assert.eq r2.owner r3.owner;
+        assert.eq r3.owner r4.owner;
+        assert.eq r4.owner r5.owner;
+        assert.eq r5.owner r6.owner;
+        assert.eq r6.owner r7.owner;
+        assert.eq r7.owner r8.owner;
+        assert.eq r8.owner r9.owner;
+        call credits.aleo/join r0 r1 into r10;
+        call credits.aleo/join r2 r3 into r11;
+        call credits.aleo/join r4 r5 into r12;
+        call credits.aleo/join r6 r7 into r13;
+        call credits.aleo/join r8 r9 into r14;
+        call credits.aleo/join r10 r11 into r15;
+        call credits.aleo/join r13 r12 into r16;
+        call credits.aleo/join r15 r16 into r17;
+        call credits.aleo/join r17 r14 into r18;
+        output r18 as credits.aleo/credits.record;
+    ";
+    pub const SAMPLE: &str = "program hello_hello.aleo;
+
+    function hello:
+        input r0 as u32.public;
+        input r1 as u32.private;
+        add r0 r1 into r2;
+        output r2 as u32.private;";
     #[test]
     fn test_get_transaction() {
         let start = 500527u32;
@@ -914,10 +1165,80 @@ mod record_handling_test {
         println!("res: {:?}", _res);
     }
     // write a test for join_records with a join of two records, mock all values to be used
-    // #[test]
-    // fn join_records_test() {
-    //     let _res = join_records::<Testnet3>(10000, "credits", None, &false).unwrap();
+    #[tokio::test]
+    async fn join_records_test() {
+        VIEWSESSION
+            .set_view_session(&"AViewKey1mw7Hqt48pTSzqWb7kmbMNzTBKmQCR8uBUJBsbUc6qD4s".to_string())
+            .unwrap();
 
-    //     println!("res: {:?}", _res);
-    // }
+        let _res = join_records::<Testnet3>(
+            13000000,
+            "credits",
+            Some("tylerDurden@0xf5".to_string()),
+            &false,
+        )
+        .await
+        .unwrap();
+
+        println!("res: {:?}", _res);
+    }
+    #[tokio::test]
+    async fn test_deploy_avail_join() {
+        let avail_join_program = Program::<Testnet3>::from_str(AVAIL_JOIN).unwrap();
+        let sample = Program::<Testnet3>::from_str(SAMPLE).unwrap();
+        let pk = get_private_key::<Testnet3>(Some("tylerDurden@0xf5".to_string())).unwrap();
+        println!("Private key: {:?}", pk.to_string());
+        let mut api_client = setup_local_client::<Testnet3>();
+        VIEWSESSION
+            .set_view_session(&"AViewKey1mw7Hqt48pTSzqWb7kmbMNzTBKmQCR8uBUJBsbUc6qD4s".to_string())
+            .unwrap();
+        let mut program_manager =
+            ProgramManager::<Testnet3>::new(Some(pk), None, Some(api_client.clone()), None)
+                .unwrap();
+        program_manager.add_program(&avail_join_program);
+        program_manager.add_program(&sample);
+
+        let deployement_id = program_manager
+            .deploy_program("availjoin.aleo", 10000u64, None, None)
+            .unwrap();
+
+        println!("----> Program Deployed - {:?}", deployement_id.to_string());
+        let avail_join_program = api_client.get_program("availjoin.aleo");
+        println!("Program: {:?}", avail_join_program);
+    }
+    #[tokio::test]
+    async fn test_avail_join() {
+        let pk = get_private_key::<Testnet3>(Some("tylerDurden@0xf5".to_string())).unwrap();
+        let mut api_client = setup_local_client::<Testnet3>();
+        let credits_program = api_client.get_program("credits.aleo").unwrap();
+        println!("Credits program: {:?}", credits_program);
+        let avail_join_program = api_client.get_program("token_avl_4.aleo").unwrap();
+        println!("Avail join program: {:?}", avail_join_program);
+        VIEWSESSION
+            .set_view_session(&"AViewKey1qnyoDCqzoi53e9SgK7efdjjp8G4iWJiGmLqPVW1qUYKV".to_string())
+            .unwrap();
+        let mut program_manager =
+            ProgramManager::<Testnet3>::new(Some(pk), None, Some(api_client.clone()), None)
+                .unwrap();
+
+        let unspent_records =
+            get_unspent_records_vector::<Testnet3>("credits", "credits.record", vec![]).unwrap();
+        println!("Unspent records: {:?}", unspent_records.len());
+        let mut inputs: Vec<Value<Testnet3>> = vec![];
+        for unspent_record in unspent_records {
+            println!("Record: {:?}", unspent_record);
+            inputs.push(Value::Record(unspent_record));
+        }
+        // let join_execution = program_manager
+        //     .execute_program(
+        //         "avail_join.aleo",
+        //         "join_4",
+        //         inputs.iter(),
+        //         10000u64,
+        //         None,
+        //         None,
+        //     )
+        //     .unwrap();
+        // println!("Join execution: {:?}", join_execution.to_string());
+    }
 }
