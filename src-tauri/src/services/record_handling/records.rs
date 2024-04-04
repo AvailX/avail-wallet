@@ -10,7 +10,7 @@ use tauri::{Manager, Window};
 
 use rayon::prelude::*;
 use std::sync::{
-    atomic::{AtomicUsize, Ordering},
+    atomic::{AtomicBool, AtomicUsize, Ordering},
     Arc, Mutex,
 };
 use std::time::Duration;
@@ -99,18 +99,6 @@ pub fn get_records<N: Network>(
         stored_transaction_ids
     );
 
-    { /* Calculate batches ranges pre scanning */ }
-    let batches: Vec<(u32, u32)> = (last_sync..latest_height)
-        .step_by(step_size as usize)
-        .map(|start_height| {
-            let mut end_height = start_height.saturating_add(step_size);
-            if end_height > latest_height {
-                end_height = latest_height;
-            }
-            (start_height, end_height)
-        })
-        .collect();
-
     let mut end_height = last_sync.saturating_add(step_size);
     let mut start_height = last_sync;
 
@@ -118,417 +106,353 @@ pub fn get_records<N: Network>(
         end_height = latest_height;
     }
 
-    //let mut found_flag = false;
-    let found_shared_state = Arc::new(Mutex::new(false));
-    let processed_blocks = Arc::new(AtomicUsize::new(0));
+    let mut found_flag = false;
 
-    // Spawn a thread to monitor progress and emit it periodically
-    let progress_tracker = processed_blocks.clone();
-    std::thread::spawn(move || {
-        let total = amount_to_scan as f64;
-        loop {
-            std::thread::sleep(Duration::from_millis(250)); // Adjust the frequency as needed
-            let processed = progress_tracker.load(Ordering::SeqCst) as f64;
-            let percentage = ((processed / total) * 10000.0).round() / 100.0;
-            println!("Progress: {:.2}%", percentage);
+    for _ in (last_sync..latest_height).step_by(step_size as usize) {
+        let mut blocks = api_client.get_blocks(start_height, end_height)?;
 
-            // update progress bar
-            if let Some(window) = window.clone() {
-                let _ = window.emit("scan_progress", percentage);
+        for block in blocks {
+            // Check for deployment transactions
+            let transactions = block.transactions();
+            let timestamp = get_timestamp_from_i64(block.clone().timestamp())?;
+            let height = block.height();
+
+            match find_encrypt_store_deployments(
+                transactions,
+                height,
+                timestamp,
+                address,
+                stored_transaction_ids.clone(),
+            ) {
+                Ok(_) => {}
+                Err(e) => {
+                    handle_block_scan_failure::<N>(height)?;
+
+                    return Err(AvailError::new(
+                        AvailErrorType::Internal,
+                        e.to_string(),
+                        "Error scanning deployment transactions.".to_string(),
+                    ));
+                }
             }
 
-            if processed >= amount_to_scan as f64 {
-                break;
-            }
-        }
-    });
+            for transaction in transactions.iter() {
+                let transaction_id = transaction.id();
 
-    batches
-        .into_par_iter()
-        .map_with(
-            processed_blocks.clone(),
-            |processed_counter: &mut Arc<AtomicUsize>, (start_height, end_height)| {
-                let blocks = api_client.get_blocks(start_height, end_height)?;
+                let unconfirmed_transaction_id = match transaction.to_unconfirmed_transaction_id() {
+                    Ok(id) => id,
+                    Err(_) => {
+                        handle_block_scan_failure::<N>(height)?;
 
-                for block in blocks {
-                    // Check for deployment transactions
-                    let transactions = block.transactions();
-                    let timestamp = get_timestamp_from_i64(block.clone().timestamp())?;
-                    let height = block.height();
+                        return Err(AvailError::new(
+                            AvailErrorType::SnarkVm,
+                            "Error getting unconfirmed transaction id".to_string(),
+                            "Issue getting unconfirmed transaction id".to_string(),
+                        ));
+                    }
+                };
 
-                    match find_encrypt_store_deployments(
-                        transactions,
-                        height,
-                        timestamp,
-                        address,
-                        stored_transaction_ids.clone(),
-                    ) {
-                        Ok(_) => {}
-                        Err(e) => {
+                if stored_transaction_ids.contains(&transaction_id)
+                    || stored_transaction_ids.contains(&unconfirmed_transaction_id)
+                {
+                    continue;
+                }
+
+                if let Some((tx_id, pointer_id)) =
+                    unconfirmed_and_failed_ids.iter().find(|(tx_id, _)| {
+                        tx_id == &transaction_id || tx_id == &unconfirmed_transaction_id
+                    })
+                {
+                    let inner_tx = transaction.transaction();
+                    let fee = match inner_tx.fee_amount() {
+                        Ok(fee) => *fee as f64 / 1000000.0,
+                        Err(_) => {
                             handle_block_scan_failure::<N>(height)?;
 
                             return Err(AvailError::new(
-                                AvailErrorType::Internal,
-                                e.to_string(),
-                                "Error scanning deployment transactions.".to_string(),
+                                AvailErrorType::SnarkVm,
+                                "Error calculating fee".to_string(),
+                                "Issue calculating fee".to_string(),
                             ));
                         }
-                    }
+                    };
 
-                    for transaction in transactions.iter() {
-                        let transaction_id = transaction.id();
-
-                        let unconfirmed_transaction_id =
-                            match transaction.to_unconfirmed_transaction_id() {
-                                Ok(id) => id,
-                                Err(_) => {
-                                    handle_block_scan_failure::<N>(height)?;
-
-                                    return Err(AvailError::new(
-                                        AvailErrorType::SnarkVm,
-                                        "Error getting unconfirmed transaction id".to_string(),
-                                        "Issue getting unconfirmed transaction id".to_string(),
-                                    ));
-                                }
-                            };
-
-                        if stored_transaction_ids.contains(&transaction_id)
-                            || stored_transaction_ids.contains(&unconfirmed_transaction_id)
-                        {
-                            continue;
-                        }
-
-                        if let Some((tx_id, pointer_id)) =
-                            unconfirmed_and_failed_ids.iter().find(|(tx_id, _)| {
-                                tx_id == &transaction_id || tx_id == &unconfirmed_transaction_id
-                            })
-                        {
-                            let inner_tx = transaction.transaction();
-                            let fee = match inner_tx.fee_amount() {
-                                Ok(fee) => *fee as f64 / 1000000.0,
-                                Err(_) => {
-                                    handle_block_scan_failure::<N>(height)?;
-
-                                    return Err(AvailError::new(
-                                        AvailErrorType::SnarkVm,
-                                        "Error calculating fee".to_string(),
-                                        "Issue calculating fee".to_string(),
-                                    ));
-                                }
-                            };
-
-                            if let ConfirmedTransaction::<N>::AcceptedExecute(_, _, _) = transaction
-                            {
-                                let executed_transitions =
-                                    match get_executed_transitions::<N>(inner_tx, height) {
-                                        Ok(transitions) => transitions,
-                                        Err(e) => {
-                                            handle_block_scan_failure::<N>(height)?;
-
-                                            return Err(AvailError::new(
-                                                AvailErrorType::SnarkVm,
-                                                e.to_string(),
-                                                "Error getting executed transitions".to_string(),
-                                            ));
-                                        }
-                                    };
-
-                                match handle_transaction_confirmed(
-                                    pointer_id.as_str(),
-                                    *tx_id,
-                                    executed_transitions,
-                                    height,
-                                    timestamp,
-                                    Some(fee),
-                                    address,
-                                ) {
-                                    Ok(_) => {}
-                                    Err(e) => {
-                                        handle_block_scan_failure::<N>(height)?;
-
-                                        return Err(AvailError::new(
-                                            AvailErrorType::Internal,
-                                            e.to_string(),
-                                            "Error handling confirmed transaction".to_string(),
-                                        ));
-                                    }
-                                };
-
-                                continue;
-                            } else if let ConfirmedTransaction::<N>::AcceptedDeploy(_, _, _) =
-                                transaction
-                            {
-                                if let Some(fee_transition) = transaction.fee_transition() {
-                                    let transition = fee_transition.transition();
-
-                                    match input_spent_check(transition, true) {
-                                        Ok(_) => {}
-                                        Err(e) => {
-                                            handle_block_scan_failure::<N>(height)?;
-
-                                            return Err(AvailError::new(
-                                                AvailErrorType::Internal,
-                                                e.to_string(),
-                                                "Error checking spent input".to_string(),
-                                            ));
-                                        }
-                                    };
-
-                                    match transition_to_record_pointer(
-                                        *tx_id,
-                                        transition.clone(),
-                                        height,
-                                        view_key,
-                                    ) {
-                                        Ok(_) => {}
-                                        Err(e) => {
-                                            handle_block_scan_failure::<N>(height)?;
-
-                                            return Err(AvailError::new(
-                                                AvailErrorType::Internal,
-                                                e.to_string(),
-                                                "Error finding records from transition".to_string(),
-                                            ));
-                                        }
-                                    };
-                                }
-
-                                match handle_deployment_confirmed(
-                                    pointer_id.as_str(),
-                                    *tx_id,
-                                    height,
-                                    Some(fee),
-                                    address,
-                                ) {
-                                    Ok(_) => {}
-                                    Err(e) => {
-                                        handle_block_scan_failure::<N>(height)?;
-
-                                        return Err(AvailError::new(
-                                            AvailErrorType::Internal,
-                                            e.to_string(),
-                                            "Error handling confirmed deployment".to_string(),
-                                        ));
-                                    }
-                                };
-
-                                continue;
-                            } else if let ConfirmedTransaction::<N>::RejectedDeploy(
-                                _,
-                                fee_tx,
-                                _,
-                                _,
-                            ) = transaction
-                            {
-                                let deployment_pointer =
-                                    match get_deployment_pointer::<N>(pointer_id.as_str()) {
-                                        Ok(pointer) => pointer,
-                                        Err(e) => {
-                                            handle_block_scan_failure::<N>(height)?;
-
-                                            return Err(AvailError::new(
-                                                AvailErrorType::Internal,
-                                                e.to_string(),
-                                                "Error getting deployment pointer".to_string(),
-                                            ));
-                                        }
-                                    };
-
-                                if let Some(fee_transition) = fee_tx.fee_transition() {
-                                    let transition = fee_transition.transition();
-
-                                    match input_spent_check(transition, true) {
-                                        Ok(_) => {}
-                                        Err(e) => {
-                                            handle_block_scan_failure::<N>(height)?;
-
-                                            return Err(AvailError::new(
-                                                AvailErrorType::Internal,
-                                                e.to_string(),
-                                                "Error checking spent input".to_string(),
-                                            ));
-                                        }
-                                    };
-
-                                    match transition_to_record_pointer(
-                                        *tx_id,
-                                        transition.clone(),
-                                        height,
-                                        view_key,
-                                    ) {
-                                        Ok(_) => {}
-                                        Err(e) => {
-                                            handle_block_scan_failure::<N>(height)?;
-
-                                            return Err(AvailError::new(
-                                                AvailErrorType::Internal,
-                                                e.to_string(),
-                                                "Error finding records from transition".to_string(),
-                                            ));
-                                        }
-                                    };
-                                }
-
-                                match handle_deployment_rejection(
-                                    deployment_pointer,
-                                    pointer_id.as_str(),
-                                    *tx_id,
-                                    height,
-                                    Some(fee),
-                                    address,
-                                ) {
-                                    Ok(_) => {}
-                                    Err(e) => {
-                                        handle_block_scan_failure::<N>(height)?;
-
-                                        return Err(AvailError::new(
-                                            AvailErrorType::Internal,
-                                            e.to_string(),
-                                            "Error handling rejected deployment".to_string(),
-                                        ));
-                                    }
-                                };
-
-                                continue;
-                            } else if let ConfirmedTransaction::<N>::RejectedExecute(
-                                _,
-                                fee_tx,
-                                rejected_tx,
-                                _,
-                            ) = transaction
-                            {
-                                let transaction_pointer =
-                                    match get_transaction_pointer::<N>(pointer_id.as_str()) {
-                                        Ok(pointer) => pointer,
-                                        Err(e) => {
-                                            handle_block_scan_failure::<N>(height)?;
-
-                                            return Err(AvailError::new(
-                                                AvailErrorType::Internal,
-                                                e.to_string(),
-                                                "Error getting transaction pointer".to_string(),
-                                            ));
-                                        }
-                                    };
-
-                                if let Some(fee_transition) = fee_tx.fee_transition() {
-                                    let transition = fee_transition.transition();
-
-                                    match input_spent_check(transition, true) {
-                                        Ok(_) => {}
-                                        Err(e) => {
-                                            handle_block_scan_failure::<N>(height)?;
-
-                                            return Err(AvailError::new(
-                                                AvailErrorType::Internal,
-                                                e.to_string(),
-                                                "Error checking spent input".to_string(),
-                                            ));
-                                        }
-                                    };
-
-                                    match transition_to_record_pointer(
-                                        *tx_id,
-                                        transition.clone(),
-                                        height,
-                                        view_key,
-                                    ) {
-                                        Ok(_) => {}
-                                        Err(e) => {
-                                            handle_block_scan_failure::<N>(height)?;
-
-                                            return Err(AvailError::new(
-                                                AvailErrorType::Internal,
-                                                e.to_string(),
-                                                "Error finding records from transition".to_string(),
-                                            ));
-                                        }
-                                    };
-                                }
-
-                                if let Some(rejected_execution) = rejected_tx.execution() {
-                                    match handle_transaction_rejection(
-                                        transaction_pointer,
-                                        pointer_id.as_str(),
-                                        Some(rejected_execution.clone()),
-                                        Some(*tx_id),
-                                        height,
-                                        Some(fee),
-                                        address,
-                                    ) {
-                                        Ok(_) => {}
-                                        Err(e) => {
-                                            handle_block_scan_failure::<N>(height)?;
-
-                                            return Err(AvailError::new(
-                                                AvailErrorType::Internal,
-                                                e.to_string(),
-                                                "Error handling rejected transaction".to_string(),
-                                            ));
-                                        }
-                                    };
-
-                                    continue;
-                                }
-
-                                match handle_transaction_rejection(
-                                    transaction_pointer,
-                                    pointer_id.as_str(),
-                                    None,
-                                    Some(*tx_id),
-                                    height,
-                                    Some(fee),
-                                    address,
-                                ) {
-                                    Ok(_) => {}
-                                    Err(e) => {
-                                        handle_block_scan_failure::<N>(height)?;
-
-                                        return Err(AvailError::new(
-                                            AvailErrorType::Internal,
-                                            e.to_string(),
-                                            "Error handling rejected transaction".to_string(),
-                                        ));
-                                    }
-                                };
-
-                                continue;
-                            }
-                            continue;
-                        }
-
-                        let (_, _, _, bool_flag) =
-                            match sync_transaction::<N>(transaction, height, timestamp, None, None)
-                            {
-                                Ok(transaction_result) => transaction_result,
+                    if let ConfirmedTransaction::<N>::AcceptedExecute(_, _, _) = transaction {
+                        let executed_transitions =
+                            match get_executed_transitions::<N>(inner_tx, height) {
+                                Ok(transitions) => transitions,
                                 Err(e) => {
-                                    match handle_block_scan_failure::<N>(height) {
-                                        Ok(_) => {}
-                                        Err(e) => {
-                                            return Err(AvailError::new(
-                                                AvailErrorType::Internal,
-                                                e.to_string(),
-                                                "Error syncing transaction".to_string(),
-                                            ));
-                                        }
-                                    }
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::SnarkVm,
+                                        e.to_string(),
+                                        "Error getting executed transitions".to_string(),
+                                    ));
+                                }
+                            };
+
+                        match handle_transaction_confirmed(
+                            pointer_id.as_str(),
+                            *tx_id,
+                            executed_transitions,
+                            height,
+                            timestamp,
+                            Some(fee),
+                            address,
+                        ) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                handle_block_scan_failure::<N>(height)?;
+
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    e.to_string(),
+                                    "Error handling confirmed transaction".to_string(),
+                                ));
+                            }
+                        };
+
+                        continue;
+                    } else if let ConfirmedTransaction::<N>::AcceptedDeploy(_, _, _) = transaction {
+                        if let Some(fee_transition) = transaction.fee_transition() {
+                            let transition = fee_transition.transition();
+
+                            match input_spent_check(transition, true) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
 
                                     return Err(AvailError::new(
                                         AvailErrorType::Internal,
                                         e.to_string(),
-                                        "Error syncing transaction".to_string(),
+                                        "Error checking spent input".to_string(),
                                     ));
                                 }
                             };
 
-                        let mut found_flag = found_shared_state.lock().unwrap();
-                        *found_flag = bool_flag;
-                    }
+                            match transition_to_record_pointer(
+                                *tx_id,
+                                transition.clone(),
+                                height,
+                                view_key,
+                            ) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
 
-                    match update_last_sync(height) {
-                        Ok(_) => {
-                            println!("Synced {}", height);
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error finding records from transition".to_string(),
+                                    ));
+                                }
+                            };
                         }
+
+                        match handle_deployment_confirmed(
+                            pointer_id.as_str(),
+                            *tx_id,
+                            height,
+                            Some(fee),
+                            address,
+                        ) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                handle_block_scan_failure::<N>(height)?;
+
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    e.to_string(),
+                                    "Error handling confirmed deployment".to_string(),
+                                ));
+                            }
+                        };
+
+                        continue;
+                    } else if let ConfirmedTransaction::<N>::RejectedDeploy(_, fee_tx, _, _) =
+                        transaction
+                    {
+                        let deployment_pointer =
+                            match get_deployment_pointer::<N>(pointer_id.as_str()) {
+                                Ok(pointer) => pointer,
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error getting deployment pointer".to_string(),
+                                    ));
+                                }
+                            };
+
+                        if let Some(fee_transition) = fee_tx.fee_transition() {
+                            let transition = fee_transition.transition();
+
+                            match input_spent_check(transition, true) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error checking spent input".to_string(),
+                                    ));
+                                }
+                            };
+
+                            match transition_to_record_pointer(
+                                *tx_id,
+                                transition.clone(),
+                                height,
+                                view_key,
+                            ) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error finding records from transition".to_string(),
+                                    ));
+                                }
+                            };
+                        }
+
+                        match handle_deployment_rejection(
+                            deployment_pointer,
+                            pointer_id.as_str(),
+                            *tx_id,
+                            height,
+                            Some(fee),
+                            address,
+                        ) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                handle_block_scan_failure::<N>(height)?;
+
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    e.to_string(),
+                                    "Error handling rejected deployment".to_string(),
+                                ));
+                            }
+                        };
+
+                        continue;
+                    } else if let ConfirmedTransaction::<N>::RejectedExecute(
+                        _,
+                        fee_tx,
+                        rejected_tx,
+                        _,
+                    ) = transaction
+                    {
+                        let transaction_pointer =
+                            match get_transaction_pointer::<N>(pointer_id.as_str()) {
+                                Ok(pointer) => pointer,
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error getting transaction pointer".to_string(),
+                                    ));
+                                }
+                            };
+
+                        if let Some(fee_transition) = fee_tx.fee_transition() {
+                            let transition = fee_transition.transition();
+
+                            match input_spent_check(transition, true) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error checking spent input".to_string(),
+                                    ));
+                                }
+                            };
+
+                            match transition_to_record_pointer(
+                                *tx_id,
+                                transition.clone(),
+                                height,
+                                view_key,
+                            ) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error finding records from transition".to_string(),
+                                    ));
+                                }
+                            };
+                        }
+
+                        if let Some(rejected_execution) = rejected_tx.execution() {
+                            match handle_transaction_rejection(
+                                transaction_pointer,
+                                pointer_id.as_str(),
+                                Some(rejected_execution.clone()),
+                                Some(*tx_id),
+                                height,
+                                Some(fee),
+                                address,
+                            ) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error handling rejected transaction".to_string(),
+                                    ));
+                                }
+                            };
+
+                            continue;
+                        }
+
+                        match handle_transaction_rejection(
+                            transaction_pointer,
+                            pointer_id.as_str(),
+                            None,
+                            Some(*tx_id),
+                            height,
+                            Some(fee),
+                            address,
+                        ) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                handle_block_scan_failure::<N>(height)?;
+
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    e.to_string(),
+                                    "Error handling rejected transaction".to_string(),
+                                ));
+                            }
+                        };
+
+                        continue;
+                    }
+                    continue;
+                }
+
+                let (_, _, _, bool_flag) =
+                    match sync_transaction::<N>(transaction, height, timestamp, None, None) {
+                        Ok(transaction_result) => transaction_result,
                         Err(e) => {
                             match handle_block_scan_failure::<N>(height) {
                                 Ok(_) => {}
@@ -544,20 +468,82 @@ pub fn get_records<N: Network>(
                             return Err(AvailError::new(
                                 AvailErrorType::Internal,
                                 e.to_string(),
-                                "Error updating last synced block height".to_string(),
+                                "Error syncing transaction".to_string(),
                             ));
                         }
                     };
 
-                    processed_counter.fetch_add(1, Ordering::SeqCst);
+                if !found_flag {
+                    found_flag = bool_flag;
                 }
+            }
 
-                Ok(())
-            },
-        )
-        .collect::<AvailResult<Vec<()>>>()?;
+            match update_last_sync(height) {
+                Ok(_) => {
+                    println!("Synced {}", height);
+                }
+                Err(e) => {
+                    match handle_block_scan_failure::<N>(height) {
+                        Ok(_) => {}
+                        Err(e) => {
+                            return Err(AvailError::new(
+                                AvailErrorType::Internal,
+                                e.to_string(),
+                                "Error syncing transaction".to_string(),
+                            ));
+                        }
+                    }
 
-    let found_flag = *found_shared_state.lock().unwrap();
+                    return Err(AvailError::new(
+                        AvailErrorType::Internal,
+                        e.to_string(),
+                        "Error updating last synced block height".to_string(),
+                    ));
+                }
+            };
+
+            let percentage =
+                (((height - last_sync) as f32 / amount_to_scan as f32) * 10000.0).round() / 100.0;
+
+            let percentage = if percentage > 100.0 {
+                100.0
+            } else {
+                percentage
+            };
+
+            // update progress bar
+            if let Some(window) = window.clone() {
+                match window.emit("scan_progress", percentage) {
+                    Ok(_) => {}
+                    Err(e) => {
+                        match handle_block_scan_failure::<N>(height) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    e.to_string(),
+                                    "Error syncing transaction".to_string(),
+                                ));
+                            }
+                        }
+
+                        return Err(AvailError::new(
+                            AvailErrorType::Internal,
+                            e.to_string(),
+                            "Error updating progress bar".to_string(),
+                        ));
+                    }
+                };
+            }
+        }
+
+        // Search in reverse order from the latest block to the earliest block
+        start_height = end_height;
+        end_height = start_height.saturating_add(step_size);
+        if end_height > latest_height {
+            end_height = latest_height;
+        };
+    }
 
     Ok(found_flag)
 }

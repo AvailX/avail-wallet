@@ -216,7 +216,6 @@ export class WalletConnectManager {
 				console.log('Storing dapp session', dappSess);
 				sessionStorage.setItem(session.topic, JSON.stringify(dappSess));
 
-				await webview.destroy();
 			});
 
 			// Listen for the rejection event from the secondary window

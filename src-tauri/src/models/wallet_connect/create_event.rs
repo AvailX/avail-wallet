@@ -2,7 +2,7 @@ use avail_common::models::encrypted_data::EventTypeCommon;
 use serde::{Deserialize, Serialize};
 /* Create Event Interfaces */
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CreateEventRequest {
     address: Option<String>,
     #[serde(rename = "type")]

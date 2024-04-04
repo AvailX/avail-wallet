@@ -301,6 +301,7 @@ function Home() {
 				// Info notify user that inclusion.prover is being installed
 				pre_install_inclusion_prover();
 				setMessage('Pre installing Aleo SRS...');
+				setSuccessAlert(true)
 			}
 
 			const transferState = sessionStorage.getItem('transferState');

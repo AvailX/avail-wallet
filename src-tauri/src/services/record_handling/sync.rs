@@ -155,7 +155,6 @@ pub async fn txs_sync_raw<N: Network>() -> AvailResult<TxScanResponse> {
     // TODO - Check if the records were spent through another platform in the meantime by taking the min block height, getting all the tags and checking the records found against them.
 }
 
-// NOTE - Production, passes window as parameter
 ///scans all blocks from last sync to cater for transitions, new records created
 #[tauri::command(rename_all = "snake_case")]
 pub async fn blocks_sync(height: u32, window: Window) -> AvailResult<bool> {
@@ -164,7 +163,8 @@ pub async fn blocks_sync(height: u32, window: Window) -> AvailResult<bool> {
 
     print!("From Last Sync: {:?} to height: {:?}", last_sync, height);
 
-    let task = tokio::spawn(async move {
+    /*
+    let task = tokio_rayon::spawn( move || {
         let found_flag = match SupportedNetworks::from_str(network.as_str())? {
             SupportedNetworks::Testnet3 => {
                 get_records::<Testnet3>(last_sync, height, Some(window))?
@@ -184,12 +184,24 @@ pub async fn blocks_sync(height: u32, window: Window) -> AvailResult<bool> {
     let result = task.await;
 
     let found_flag = match result {
-        Ok(res) => res?,
+        Ok(res) => res,
         Err(_) => {
             return Err(AvailError::new(
                 AvailErrorType::Internal,
                 "Error scanning Aleo blockchain".to_string(),
                 "Error scanning Aleo blockchain".to_string(),
+            ));
+        }
+    };
+    */
+
+    let found_flag = match SupportedNetworks::from_str(network.as_str())? {
+        SupportedNetworks::Testnet3 => get_records::<Testnet3>(last_sync, height, Some(window))?,
+        _ => {
+            return Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Invalid Network".to_string(),
+                "Invalid Network".to_string(),
             ));
         }
     };
@@ -264,7 +276,7 @@ pub async fn blocks_sync_test(height: u32) -> AvailResult<bool> {
 
     print!("From Last Sync: {:?} to height: {:?}", last_sync, height);
 
-    let task = tokio::spawn(async move {
+    let task = tokio_rayon::spawn(move || {
         let found_flag = match SupportedNetworks::from_str(network.as_str())? {
             SupportedNetworks::Testnet3 => get_records::<Testnet3>(last_sync, 1778000u32, None)?,
             _ => {
@@ -282,7 +294,7 @@ pub async fn blocks_sync_test(height: u32) -> AvailResult<bool> {
     let result = task.await;
 
     let found_flag = match result {
-        Ok(res) => res?,
+        Ok(res) => res,
         Err(_) => {
             return Err(AvailError::new(
                 AvailErrorType::Internal,
@@ -468,7 +480,7 @@ mod test {
     async fn test_scan() {
         //test_setup_prerequisites();
         VIEWSESSION
-            .set_view_session("AViewKey1oxamV2Xo1L8EVthyrSDZoeCzk1rm1DVhHbsGypPNyke3")
+            .set_view_session("AViewKey1tLudtDDJQBBcHBnBLaHTJVCdyBeNgwks9oYivxBSeegZ")
             .unwrap();
 
         let api_client = setup_client::<Testnet3>().unwrap();

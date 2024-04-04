@@ -59,11 +59,7 @@ function Login() {
 
 			navigate('/home');
 		}).catch(async error_ => {
-			let error = error_;
-			const os_type = await os();
-			if (os_type !== 'linux') {
-				error = JSON.parse(error_) as AvailError;
-			}
+			const error = error_ as AvailError;
 
 			if (error.error_type.toString() === 'Network') {
 				setMessage('No Wifi Connection');

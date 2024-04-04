@@ -336,15 +336,23 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
         if let Some(fee_id) = fee_id.clone() {
             update_record_spent_local::<N>(&fee_id, false)?;
         }
+
+        let request_clone = request.clone();
+
         println!("=====> INPUTS {:?}", input_values);
-        let transaction_id = match program_manager.execute_program(
-            request.program_id().clone(),
-            request.function_id().clone(),
-            input_values.iter(),
-            0,
-            fee_record,
-            None,
-        ) {
+        let transaction_id = tokio::task::spawn_blocking(move || {
+            program_manager.execute_program(
+                request.program_id().clone(),
+                request.function_id().clone(),
+                input_values.iter(),
+                0,
+                fee_record,
+                None,
+            )
+        })
+        .await?;
+
+        let transaction_id = match transaction_id {
             Ok(tx_id) => tx_id,
             Err(_) => {
                 if let Some(fee_id) = fee_id {
@@ -387,8 +395,8 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
                     Some(pending_event_id),
                     Some(format!(
                         "Error executing program: '{}' function: '{}' ",
-                        request.program_id(),
-                        request.function_id()
+                        request_clone.program_id(),
+                        request_clone.function_id()
                     )),
                 ));
             }
