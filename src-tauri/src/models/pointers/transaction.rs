@@ -368,7 +368,7 @@ impl<N: Network> TransactionPointer<N> {
 
         let v_key = VIEWSESSION.get_instance::<N>()?;
 
-        let api_client = setup_client::<N>()?;
+        let api_client = setup_local_client::<N>();
 
         let event_transaction = match self.transaction_id {
             Some(id) => match self.state {
@@ -485,7 +485,7 @@ impl<N: Network> TransactionPointer<N> {
 
         let v_key = VIEWSESSION.get_instance::<N>()?;
 
-        let api_client = setup_client::<N>()?;
+        let api_client = setup_local_client::<N>();
 
         let event_transaction = match self.transaction_id {
             Some(id) => match self.state {

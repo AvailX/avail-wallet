@@ -21,7 +21,7 @@ pub fn initial_user_preferences(
 ) -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
 
-    let api_client = setup_client::<Testnet3>().unwrap();
+    let api_client = setup_local_client::<Testnet3>();
 
     let latest_height = match import {
         true => 0,

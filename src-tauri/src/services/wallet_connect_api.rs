@@ -104,7 +104,7 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
     fee_private: bool,
     window: Option<Window>,
 ) -> AvailResult<CreateEventResponse> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
     let private_key = match get_private_key::<N>(None) {
         Ok(private_key) => {
             PASS.extend_session()?;

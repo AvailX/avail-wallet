@@ -167,7 +167,7 @@ impl<N: Network> TransitionPointer<N> {
             }
         };
 
-        let api_client = setup_client::<N>()?;
+        let api_client = setup_local_client::<N>();
         let transaction = api_client.get_transaction(self.transaction_id)?;
 
         let transition = match transaction.find_transition(&self.id) {
@@ -233,7 +233,7 @@ impl<N: Network> TransitionPointer<N> {
             }
         };
 
-        let api_client = setup_client::<N>()?;
+        let api_client = setup_local_client::<N>();
 
         let transaction = api_client.get_transaction(self.transaction_id)?;
 

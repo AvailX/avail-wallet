@@ -130,7 +130,7 @@ async fn transfer_private_util<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
 
     let sender_address = get_address::<N>()?;
 
@@ -306,7 +306,7 @@ async fn transfer_public_to_private_util<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
 
@@ -463,7 +463,7 @@ async fn transfer_private_to_public_util<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
 
@@ -628,7 +628,7 @@ async fn transfer_public<N: Network>(
     password: Option<String>,
     window: Option<Window>,
 ) -> AvailResult<String> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
 
@@ -788,7 +788,7 @@ pub fn find_confirmed_block_height<N: Network>(
     Option<Execution<N>>,
     Option<f64>,
 )> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_local_client::<N>();
 
     let latest_block_height = api_client.latest_height()?;
 
