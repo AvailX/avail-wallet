@@ -43,14 +43,9 @@ const ReAuthDialog: React.FC<ReAuthDialogProperties> = ({ isOpen, onRequestClose
 			if (onAuthSuccess !== undefined) {
 				await onAuthSuccess();
 			}
-		}).catch(async (e) => {
+		}).catch(async e => {
 			console.log(e);
-			let error = e;
-			const os_type = await os();
-			if (os_type !== 'linux') {
-				error = JSON.parse(e) as AvailError;
-			}
-
+			const error = e as AvailError;
 			setMessage('Failed to authenticate, please try again.');
 			setErrorAlert(true);
 			onRequestClose();

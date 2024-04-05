@@ -64,12 +64,8 @@ export function delete_util(setSuccessAlert: React.Dispatch<React.SetStateAction
 		setSuccessAlert(true);
 
 		navigate('/register');
-	}).catch(async error_ => {
-		let error = error_;
-		const os_type = await os();
-		if (os_type !== 'linux') {
-			error = JSON.parse(error_) as AvailError;
-		}
+	}).catch(async err => {
+		const error = err as AvailError;
 
 		if (error.error_type === AvailErrorType.Unauthorized) {
 			setMessage(error.external_msg);

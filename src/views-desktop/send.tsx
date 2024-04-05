@@ -181,14 +181,9 @@ function Send() {
 		sessionStorage.setItem('transferState', 'true');
 		transfer(request, setErrorAlert, setMessage).then(res => {
 			sessionStorage.setItem('transferState', 'false');
-		}).catch(async error_ => {
-			console.log('Error' + error_);
-			let error = error_;
-			const os_type = await os();
-
-			if (os_type !== 'linux') {
-				error = JSON.parse(error_) as AvailError;
-			}
+		}).catch(async err => {
+			console.log(err);
+			const error = err as AvailError;
 
 			sessionStorage.setItem('transferState', 'false');
 			if (error.error_type.toString() === 'Unauthorized') {
@@ -203,23 +198,14 @@ function Send() {
 	};
 
 	const shouldRunEffect = React.useRef(true);
-	/* Check Biometry */
 	React.useEffect(() => {
-		if (!shouldRunEffect.current) {
-			return;
-		}
-
-		getAuth();
-	}, []);
-
-	React.useEffect(() => {
-		let asset_id = token;
+		let assetId = token;
 
 		if (token === 'ALEO') {
-			asset_id = 'credits';
+			assetId = 'credits';
 		}
 
-		getTokenBalance(asset_id).then(res => {
+		getTokenBalance(assetId).then(res => {
 			if (res.balances !== undefined) {
 				const balances = res.balances[0];
 				setPrivateBalance(balances.private);
@@ -227,6 +213,8 @@ function Send() {
 			}
 		}).catch(error => {
 			console.log(error);
+			setMessage('Failed to get token balances.');
+			setErrorAlert(true);
 		});
 	}, [token]);
 

@@ -44,15 +44,10 @@ const ScanReAuthDialog: React.FC<ScanReAuthDialogProperties> = ({ isOpen, onRequ
 			await new Promise(r => setTimeout(r, 800));
 			onRequestClose();
 
-			emit('success_scan_reauth', {});
-		}).catch(async error_ => {
-			console.log(error_);
-			let error = error_;
-
-			const os_type = await os();
-			if (os_type !== 'linux') {
-				error = JSON.parse(error_) as AvailError;
-			}
+			await emit('success_scan_reauth', {});
+		}).catch(async error => {
+			console.log(error);
+			const err = error as AvailError;
 
 			setMessage('Failed to authenticate, please try again.');
 			setErrorAlert(true);
