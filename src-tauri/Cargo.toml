@@ -54,7 +54,7 @@ tiny-bip39 = "1.0.0"
 tokio = { version = "1.29.1", features = ["full"] }
 ureq = { version = "2.7.1", features = ["json"] }
 uuid = { version = "1.4.1", features = ["v4", "serde"] }
-whoami = "1.4.1"
+whoami = "1.5.0"
 zeroize = { version = "1.7.0", features = [
     "aarch64",
     "zeroize_derive",
