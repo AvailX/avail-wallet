@@ -124,37 +124,10 @@ pub fn get_records<N: Network>(
         end_height = latest_height;
     }
 
-    //let mut found_flag = false;
-    let found_shared_state = Arc::new(Mutex::new(false));
-    let processed_blocks = Arc::new(AtomicUsize::new(0));
+    let mut found_flag = false;
 
-    // Spawn a thread to monitor progress and emit it periodically
-    let progress_tracker = processed_blocks.clone();
-    std::thread::spawn(move || {
-        let total = amount_to_scan as f64;
-        loop {
-            std::thread::sleep(Duration::from_millis(250)); // Adjust the frequency as needed
-            let processed = progress_tracker.load(Ordering::SeqCst) as f64;
-            let percentage = ((processed / total) * 10000.0).round() / 100.0;
-            // println!("Progress: {:.2}%", percentage);
-
-            // update progress bar
-            if let Some(window) = window.clone() {
-                let _ = window.emit("scan_progress", percentage);
-            }
-
-            if processed >= amount_to_scan as f64 {
-                break;
-            }
-        }
-    });
-
-    batches
-        .into_par_iter()
-        .map_with(
-            processed_blocks.clone(),
-            |processed_counter: &mut Arc<AtomicUsize>, (start_height, end_height)| {
-                let blocks = api_client.get_blocks(start_height, end_height)?;
+    for _ in (last_sync..latest_height).step_by(step_size as usize) {
+        let mut blocks = api_client.get_blocks(start_height, end_height)?;
 
                 for block in blocks {
                     // Check for deployment transactions
