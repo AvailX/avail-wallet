@@ -1450,7 +1450,7 @@ mod transfer_tests {
         let program_id = format!("credits.aleo");
 
         let recipient = Address::<Testnet3>::from_str(
-            "aleo1cnczr0y0qarqkc6k6jz2vswdmplw2ln4rqll92gyh8sfjd3hm5qqk45vt9",
+            "aleo1htr3kxza6gzgkspdjarktwtrvymt8s3us8q2d3v8ny4h2xqf2c8skmq3k5",
         )
         .unwrap();
 
