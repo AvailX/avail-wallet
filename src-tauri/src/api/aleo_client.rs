@@ -12,16 +12,11 @@ use crate::services::local_storage::persistent_storage::update_network;
 /* --Client Setup functions-- */
 pub fn setup_local_client<N: Network>() -> AleoAPIClient<N> {
     let dev_node_ip = env!("DEV_NODE_IP");
-    // log("Setting up local client");
-    let api_client = AleoAPIClient::<N>::local_testnet3("3030", &dev_node_ip);
-    // log("Local client setup successful");
-    api_client
+    AleoAPIClient::<N>::local_testnet3("3030", dev_node_ip)
 }
 
 pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
     let node_api_obscura = env!("TESTNET_API_OBSCURA");
-
-    println!("Node API Obscura: {:?}", node_api_obscura);
 
     let base_url = format!(
         "https://aleo-testnet3.obscura.build/v1/{}",
@@ -33,7 +28,74 @@ pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
     Ok(api_client)
 }
 
-/* --Solve Network Generic Global State-- */
+pub fn network_status<N: Network>() -> AvailResult<()> {
+    //get block height from https://api.explorer.aleo.org/v1/testnet3/latest/height
+    // get block height from obscura client
+
+    // if both are okay and moving forward then it's okay
+    // if obscura is not moving forward and aleo is then this should be a warning
+    // if both are not moving forward then this should be an error
+    let obscura_client = setup_client::<N>()?;
+    let aleo_client = AleoAPIClient::<N>::new("https://api.explorer.aleo.org/v1/", "testnet3")?;
+
+    // loop for 5 times with 5 second delays checking the height at every loop of each client
+    // if the height is not moving forward then return an error
+    let mut obscura_heights: Vec<u32> = vec![];
+    let mut aleo_heights: Vec<u32> = vec![];
+
+    for _ in 0..5 {
+        let obscura_height = obscura_client.latest_height()?;
+        let aleo_height = aleo_client.latest_height()?;
+
+        obscura_heights.push(obscura_height);
+        aleo_heights.push(aleo_height);
+
+        std::thread::sleep(std::time::Duration::from_secs(5));
+    }
+
+    // check if the heights are moving forward
+    let obscura_moving_forward = obscura_heights.windows(2).all(|w| w[0] < w[1]);
+    let aleo_moving_forward = aleo_heights.windows(2).all(|w| w[0] < w[1]);
+
+    if !obscura_moving_forward && !aleo_moving_forward {
+        // return status Down
+        return Err(AvailError::new(
+            avail_common::errors::AvailErrorType::Network,
+            "Network is not moving forward".to_string(),
+            "Network is not moving forward".to_string(),
+        ));
+    }
+
+    if !obscura_moving_forward && aleo_moving_forward {
+        //switch to aleo base_url
+        // + add warning signal
+        return Err(AvailError::new(
+            avail_common::errors::AvailErrorType::Network,
+            "Obscura is not moving forward".to_string(),
+            "Obscura is not moving forward".to_string(),
+        ));
+    }
+
+    if obscura_moving_forward && !aleo_moving_forward {
+        //switch to obscura base_url
+        // + add warning signal
+        return Err(AvailError::new(
+            avail_common::errors::AvailErrorType::Network,
+            "Aleo is not moving forward".to_string(),
+            "Aleo is not moving forward".to_string(),
+        ));
+    }
+
+    if obscura_moving_forward && aleo_moving_forward {
+        // return status Up
+        // if base_url is aleo, it should switch to obscura
+        return Ok(());
+    }
+
+    Ok(())
+}
+
+/* TODO -Solve Network Generic Global State-- */
 #[derive(Debug, Clone)]
 pub struct AleoClient<N: Network> {
     pub client: AleoAPIClient<N>,

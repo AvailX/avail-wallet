@@ -135,15 +135,56 @@ pub fn get_records<N: Network>(
                     let timestamp = get_timestamp_from_i64(block.clone().timestamp())?;
                     let height = block.height();
 
-                    match find_encrypt_store_deployments(
-                        transactions,
-                        height,
-                        timestamp,
-                        address,
-                        stored_transaction_ids.clone(),
-                    ) {
-                        Ok(_) => {}
-                        Err(e) => {
+            match find_encrypt_store_deployments(
+                transactions,
+                height,
+                timestamp,
+                address,
+                stored_transaction_ids.clone(),
+            ) {
+                Ok(_) => {}
+                Err(e) => {
+                    handle_block_scan_failure::<N>(height)?;
+
+                    return Err(AvailError::new(
+                        AvailErrorType::Internal,
+                        e.to_string(),
+                        "Error scanning deployment transactions.".to_string(),
+                    ));
+                }
+            }
+
+            for transaction in transactions.iter() {
+                let transaction_id = transaction.id();
+
+                let unconfirmed_transaction_id = match transaction.to_unconfirmed_transaction_id() {
+                    Ok(id) => id,
+                    Err(_) => {
+                        handle_block_scan_failure::<N>(height)?;
+
+                        return Err(AvailError::new(
+                            AvailErrorType::SnarkVm,
+                            "Error getting unconfirmed transaction id".to_string(),
+                            "Issue getting unconfirmed transaction id".to_string(),
+                        ));
+                    }
+                };
+
+                if stored_transaction_ids.contains(&transaction_id)
+                    || stored_transaction_ids.contains(&unconfirmed_transaction_id)
+                {
+                    continue;
+                }
+
+                if let Some((tx_id, pointer_id)) =
+                    unconfirmed_and_failed_ids.iter().find(|(tx_id, _)| {
+                        tx_id == &transaction_id || tx_id == &unconfirmed_transaction_id
+                    })
+                {
+                    let inner_tx = transaction.transaction();
+                    let fee = match inner_tx.fee_amount() {
+                        Ok(fee) => *fee as f64 / 1000000.0,
+                        Err(_) => {
                             handle_block_scan_failure::<N>(height)?;
 
                             return Err(AvailError::new(
