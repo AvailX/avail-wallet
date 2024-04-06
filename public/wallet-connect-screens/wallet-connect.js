@@ -1,5 +1,4 @@
 const {emit, listen} = window.__TAURI__.event;
-
 let request;
 let feeOption = false; // State for the fee option
 
@@ -74,13 +73,15 @@ function updateUIswitchCase(data) {
 
 		case 'create-request-event': {
 			document.querySelector('#scrollable-container').style.paddingTop = '35px';
-			if (data.program_id) {
+			console.log('create-request-event', data);
+			if (data.programId) {
+				console.log('//program_id', data.programId);
 				document.querySelector('#program').style.display = 'block';
 				document.querySelector('#program-input').style.display = 'block';
 				document.querySelector('#program-input').innerText = data.programId;
 			}
 
-			if (data.function_id) {
+			if (data.functionId) {
 				document.querySelector('#function_id').style.display = 'block';
 				document.querySelector('#function-input').style.display = 'block';
 				document.querySelector('#function-input').innerText = data.functionId;
@@ -92,6 +93,7 @@ function updateUIswitchCase(data) {
 			document.querySelector('#fee-option').style.display = 'block';
 
 			displayInputs(data.inputs);
+			displayAmount(data.inputs);
 			break;
 		}
 
@@ -156,6 +158,8 @@ function updateUIswitchCase(data) {
 	}
 }
 
+
+
 function displayInputs(inputs) {
 	document.querySelector('#inputs').style.display = 'block';
 
@@ -175,6 +179,23 @@ function displayInputs(inputs) {
 	}
 
 	inputsContainer.style.display = 'block';
+}
+
+function displayAmount(inputs) {
+	document.querySelector('#amount').style.display = 'block';
+
+	const inputsContainer = document.querySelector('#amount-container');
+	// Clear previous inputs
+	inputsContainer.innerHTML = '';
+	if (Array.isArray(inputs)) {
+		console.log('array check worked', inputs);
+		let num = Number(inputs[2].toString().slice(0, -4));
+		const credits = num / 1000000;
+		inputsContainer.append(credits.toString());
+	}
+
+	inputsContainer.style.display = 'block';
+
 }
 
 function displayProgramIds(programs) {
@@ -213,3 +234,6 @@ function displayCiphertexts(ciphertexts) {
 
 	ciphertextsContainer.style.display = 'block';
 }
+
+
+// // export handleOpenUrl;

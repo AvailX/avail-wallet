@@ -139,8 +139,8 @@ export class WalletConnectManager {
 			const webview = new WebviewWindow('wallet-connect', {
 				url: 'wallet-connect-screens/wallet-connect.html',
 				title: 'Avail Wallet Connect',
-				width: 350,
-				height: 600,
+				width: 670,
+				height: 540,
 				resizable: false,
 			});
 

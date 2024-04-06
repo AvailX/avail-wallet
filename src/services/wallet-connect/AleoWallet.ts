@@ -165,8 +165,8 @@ export async function createWalletConnectDialog(
 		const webview = getWindowOrCreate('wallet-connect', {
 			url: 'wallet-connect-screens/wallet-connect.html',
 			title: 'Avail Wallet Connect',
-			width: 390,
-			height: 680,
+			width: 670,
+			height: 540,
 			resizable: false,
 		});
 
@@ -484,7 +484,7 @@ export class AleoWallet {
 	): Promise<JsonRpcResult | JsonRpcError> {
 		const metadata = getDappMetadata(requestEvent.topic);
 		const request = requestEvent.params.request.params as CreateEventRequest;
-		console.log('===========> Request full', request);
+		console.log('===========> Request full', requestEvent.params.request.params);
 		// TODO - User fee privacy choice
 		const wcRequest: WalletConnectRequest = {
 			method: 'create-request-event',
@@ -597,8 +597,8 @@ export class AleoWallet {
 			webview = new WebviewWindow('wallet-connect', {
 				url: 'wallet-connect-screens/wallet-connect.html',
 				title: 'Avail Wallet Connect',
-				width: 390,
-				height: 680,
+			    width: 670,
+				height: 540,
 				resizable: false,
 			});
 
@@ -708,8 +708,8 @@ export class AleoWallet {
 			webview = new WebviewWindow('wallet-connect', {
 				url: 'wallet-connect-screens/wallet-connect.html',
 				title: 'Avail Wallet Connect',
-				width: 390,
-				height: 680,
+				width: 670,
+				height: 540,
 				resizable: false,
 			});
 
@@ -836,8 +836,8 @@ export class AleoWallet {
 	    	webview = new WebviewWindow('wallet-connect', {
 				url: 'wallet-connect-screens/wallet-connect.html',
 				title: 'Avail Wallet Connect',
-				width: 390,
-				height: 680,
+				width: 670,
+				height: 540,
 				resizable: false,
 			});
 
