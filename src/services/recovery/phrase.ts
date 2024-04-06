@@ -5,6 +5,7 @@ import {type Languages} from '../../types/languages';
 
 export async function recover(phrase: string, password: string, authType: boolean, language: Languages, navigate: NavigateFunction, setSuccessAlert: React.Dispatch<React.SetStateAction<boolean>>, setErrorAlert: React.Dispatch<React.SetStateAction<boolean>>, setMessage: React.Dispatch<React.SetStateAction<string>>) {
 	return delete_local_for_recovery(password).then(() => {
+		localStorage.clear();
 		invoke<string>('recover_wallet_from_seed_phrase', {
 			seed_phrase: phrase, password, access_type: authType, language,
 		}).then(response => {

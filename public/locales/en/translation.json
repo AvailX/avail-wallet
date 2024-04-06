@@ -72,7 +72,7 @@
         },
         "password":"Password",
         "CTAButton": "Login",
-        "access": "Can't access your account?",
+        "access": "Can't access your account ?",
         "recover": "Recover",
         "messages": {
             "success": "Successfully logged in!",

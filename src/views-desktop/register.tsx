@@ -158,7 +158,6 @@ function Register() {
 
 						<mui.Box sx={{ display: 'flex', flexDirection: 'column' }}>
 							<LanguageSelector language={language} setLanguage={setLanguage} sx={{ alignSelf: 'flex-end', mr: '5%' }} />
-							<SeedLengthSelector chosenLength={length} setChosenLength={setLength} sx={{ alignSelf: 'flex-end', mr: '5%', mt: '8%' }} />
 						</mui.Box>
 
 					</mui.Box>

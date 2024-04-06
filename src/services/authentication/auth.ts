@@ -60,6 +60,7 @@ export function session(request: VerifySessionRequest, navigate: NavigateFunctio
 // TODO - Fix Delete
 export function delete_util(setSuccessAlert: React.Dispatch<React.SetStateAction<boolean>>, setErrorAlert: React.Dispatch<React.SetStateAction<boolean>>, setMessage: React.Dispatch<React.SetStateAction<string>>, navigate: NavigateFunction, password: string | undefined) {
 	invoke('delete_util', {password}).then(r => {
+		localStorage.clear();
 		setMessage('Account deleted successfully.');
 		setSuccessAlert(true);
 

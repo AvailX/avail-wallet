@@ -70,7 +70,7 @@ pub fn os_type() -> AvailResult<String> {
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn network_status_check() -> AvailResult<(Status)> {
+pub async fn network_status_check() -> AvailResult<(Status)> {
     let network = get_network()?;
 
     match SupportedNetworks::from_str(network.as_str())? {

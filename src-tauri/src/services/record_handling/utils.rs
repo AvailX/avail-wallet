@@ -821,7 +821,7 @@ pub fn get_public_token_balance<N: Network>(asset_id: &str) -> AvailResult<f64> 
     if (program_id == "") {
         program_id = format!("{}.aleo", asset_id);
     }
-    println!("===> PROGRAM ID FOR FETCH {:?}", program_id);
+
     let api_client = setup_client::<N>()?;
 
     let credits_mapping = match api_client.get_mapping_value(program_id, "account", &address) {
@@ -857,11 +857,11 @@ pub fn get_private_token_balance<N: Network>(asset_id: &str) -> AvailResult<f64>
 
 /// Get Arc20 Token Balance
 pub fn get_token_balance<N: Network>(asset_id: &str) -> AvailResult<Balance> {
-    let asset_id_modified = asset_id.to_string();
     let asset_id_final = asset_id.to_string().replace(".record", "");
-    println!("===> Asset ID after mpod {:?}", asset_id_final);
+
     let public = get_public_token_balance::<N>(&asset_id_final)?;
     let private = get_private_token_balance::<N>(&asset_id_final)?;
+
     println!("===> Token Balance of {:?}", asset_id_final);
     println!("public: {:?}", public);
     println!("private: {:?}", private);

@@ -25,7 +25,7 @@ pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
             "https://aleo-testnet3.obscura.build/v1/{}",
             node_api_obscura
         ),
-        "aleo" => "https://api.explorer.aleo.org/v1/".to_string(),
+        "aleo" => "https://api.explorer.aleo.org/v1".to_string(),
         _ => {
             return Err(AvailError::new(
                 avail_common::errors::AvailErrorType::Network,
@@ -34,6 +34,8 @@ pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
             ))
         }
     };
+
+    println!("Base URL: {:?}", base_url);
 
     let api_client = AleoAPIClient::<N>::new(&base_url, "testnet3")?;
 
@@ -54,34 +56,26 @@ pub fn setup_obscura_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
 }
 
 pub fn network_status<N: Network>() -> AvailResult<Status> {
-    //get block height from https://api.explorer.aleo.org/v1/testnet3/latest/height
-    // get block height from obscura client
+    let obscura_client = setup_obscura_client::<N>()?;
+    let aleo_client = AleoAPIClient::<N>::new("https://api.explorer.aleo.org/v1", "testnet3")?;
 
-    // if both are okay and moving forward then it's okay
-    // if obscura is not moving forward and aleo is then this should be a warning
-    // if both are not moving forward then this should be an error
-    let obscura_client = setup_client::<N>()?;
-    let aleo_client = AleoAPIClient::<N>::new("https://api.explorer.aleo.org/v1/", "testnet3")?;
-
-    // loop for 5 times with 5 second delays checking the height at every loop of each client
-    // if the height is not moving forward then return an error
     let mut obscura_heights: Vec<u32> = vec![];
     let mut aleo_heights: Vec<u32> = vec![];
 
-    for _ in 0..5 {
+    for _ in 0..3 {
         let obscura_height = obscura_client.latest_height().unwrap_or(0);
-
+        println!("Obscura Height: {:?}", obscura_height);
         let aleo_height = aleo_client.latest_height().unwrap_or(0);
-
+        println!("Aleo Height: {:?}", aleo_height);
         obscura_heights.push(obscura_height);
         aleo_heights.push(aleo_height);
 
-        std::thread::sleep(std::time::Duration::from_secs(5));
+        std::thread::sleep(std::time::Duration::from_secs(3));
     }
 
-    // check if the heights are moving forward
-    let obscura_moving_forward = obscura_heights.windows(2).all(|w| w[0] < w[1]);
-    let aleo_moving_forward = aleo_heights.windows(2).all(|w| w[0] < w[1]);
+    // check if at least once th height has moved forward
+    let obscura_moving_forward = obscura_heights.windows(2).any(|w| w[0] < w[1]);
+    let aleo_moving_forward = aleo_heights.windows(2).any(|w| w[0] < w[1]);
 
     if obscura_moving_forward && aleo_moving_forward {
         if &get_base_url()? != "obscura" {
@@ -89,9 +83,11 @@ pub fn network_status<N: Network>() -> AvailResult<Status> {
         }
         Ok(Status::Up)
     } else if obscura_moving_forward && !aleo_moving_forward {
+        println!("Switching to Obscura");
         update_base_url("obscura")?;
         return Ok(Status::Warning);
     } else if !obscura_moving_forward && aleo_moving_forward {
+        println!("Switching to Aleo");
         update_base_url("aleo")?;
         return Ok(Status::Warning);
     } else {
