@@ -1,5 +1,6 @@
 use avail_common::errors::{AvailError, AvailResult};
 use once_cell::sync::Lazy;
+use serde::{Deserialize, Serialize};
 use std::sync::RwLock;
 
 use avail_common::aleo_tools::api::AleoAPIClient;
@@ -7,7 +8,9 @@ use snarkvm::{console::network::Testnet3, prelude::Network};
 
 use crate::helpers::mobile_init::log;
 use crate::models::event::Network as EventNetwork;
-use crate::services::local_storage::persistent_storage::update_network;
+use crate::services::local_storage::persistent_storage::{
+    get_base_url, update_base_url, update_network,
+};
 
 /* --Client Setup functions-- */
 pub fn setup_local_client<N: Network>() -> AleoAPIClient<N> {
@@ -16,6 +19,28 @@ pub fn setup_local_client<N: Network>() -> AleoAPIClient<N> {
 }
 
 pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
+    let node_api_obscura = env!("TESTNET_API_OBSCURA");
+    let base_url = match get_base_url()?.as_str() {
+        "obscura" => format!(
+            "https://aleo-testnet3.obscura.build/v1/{}",
+            node_api_obscura
+        ),
+        "aleo" => "https://api.explorer.aleo.org/v1/".to_string(),
+        _ => {
+            return Err(AvailError::new(
+                avail_common::errors::AvailErrorType::Network,
+                "Invalid base_url".to_string(),
+                "Invalid base_url".to_string(),
+            ))
+        }
+    };
+
+    let api_client = AleoAPIClient::<N>::new(&base_url, "testnet3")?;
+
+    Ok(api_client)
+}
+
+pub fn setup_obscura_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
     let node_api_obscura = env!("TESTNET_API_OBSCURA");
 
     let base_url = format!(
@@ -28,7 +53,7 @@ pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
     Ok(api_client)
 }
 
-pub fn network_status<N: Network>() -> AvailResult<()> {
+pub fn network_status<N: Network>() -> AvailResult<Status> {
     //get block height from https://api.explorer.aleo.org/v1/testnet3/latest/height
     // get block height from obscura client
 
@@ -44,8 +69,9 @@ pub fn network_status<N: Network>() -> AvailResult<()> {
     let mut aleo_heights: Vec<u32> = vec![];
 
     for _ in 0..5 {
-        let obscura_height = obscura_client.latest_height()?;
-        let aleo_height = aleo_client.latest_height()?;
+        let obscura_height = obscura_client.latest_height().unwrap_or(0);
+
+        let aleo_height = aleo_client.latest_height().unwrap_or(0);
 
         obscura_heights.push(obscura_height);
         aleo_heights.push(aleo_height);
@@ -57,42 +83,27 @@ pub fn network_status<N: Network>() -> AvailResult<()> {
     let obscura_moving_forward = obscura_heights.windows(2).all(|w| w[0] < w[1]);
     let aleo_moving_forward = aleo_heights.windows(2).all(|w| w[0] < w[1]);
 
-    if !obscura_moving_forward && !aleo_moving_forward {
-        // return status Down
-        return Err(AvailError::new(
-            avail_common::errors::AvailErrorType::Network,
-            "Network is not moving forward".to_string(),
-            "Network is not moving forward".to_string(),
-        ));
-    }
-
-    if !obscura_moving_forward && aleo_moving_forward {
-        //switch to aleo base_url
-        // + add warning signal
-        return Err(AvailError::new(
-            avail_common::errors::AvailErrorType::Network,
-            "Obscura is not moving forward".to_string(),
-            "Obscura is not moving forward".to_string(),
-        ));
-    }
-
-    if obscura_moving_forward && !aleo_moving_forward {
-        //switch to obscura base_url
-        // + add warning signal
-        return Err(AvailError::new(
-            avail_common::errors::AvailErrorType::Network,
-            "Aleo is not moving forward".to_string(),
-            "Aleo is not moving forward".to_string(),
-        ));
-    }
-
     if obscura_moving_forward && aleo_moving_forward {
-        // return status Up
-        // if base_url is aleo, it should switch to obscura
-        return Ok(());
+        if &get_base_url()? != "obscura" {
+            update_base_url("obscura")?;
+        }
+        Ok(Status::Up)
+    } else if obscura_moving_forward && !aleo_moving_forward {
+        update_base_url("obscura")?;
+        return Ok(Status::Warning);
+    } else if !obscura_moving_forward && aleo_moving_forward {
+        update_base_url("aleo")?;
+        return Ok(Status::Warning);
+    } else {
+        return Ok(Status::Down);
     }
+}
 
-    Ok(())
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Status {
+    Up,
+    Down,
+    Warning,
 }
 
 /* TODO -Solve Network Generic Global State-- */
@@ -164,7 +175,7 @@ impl<N: Network> AleoClient<N> {
         let dev_node_ip = env!("DEV_NODE_IP");
 
         Ok(Self {
-            client: AleoAPIClient::local_testnet3("3030", &dev_node_ip),
+            client: AleoAPIClient::local_testnet3("3030", dev_node_ip),
         })
     }
 
@@ -182,4 +193,10 @@ fn test_new_client() {
     let height = api_client.latest_height().unwrap();
 
     println!("Height: {:?}", height);
+}
+
+#[test]
+fn test_network_status() {
+    let status = network_status::<Testnet3>().unwrap();
+    println!("Status: {:?}", status);
 }
