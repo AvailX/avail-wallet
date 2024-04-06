@@ -511,7 +511,7 @@ dependencies = [
 
 [[package]]
 name = "avail_wallet"
-version = "0.0.9"
+version = "0.1.0"
 dependencies = [
  "app_dirs2",
  "avail-common",
