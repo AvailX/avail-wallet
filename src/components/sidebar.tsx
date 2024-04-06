@@ -191,12 +191,12 @@ export default function SideMenu() {
 			}
 
 			case 3: {
-				navigate('/faucet', { state: 'https://faucet.puzzle.online' });
+				navigate('/faucet', {state: 'https://faucet.puzzle.online'});
 				break;
 			}
 
 			case 4: {
-				navigate('/browser');
+				navigate('/dapps');
 				break;
 			}
 
@@ -237,7 +237,7 @@ export default function SideMenu() {
 				setLogoutDialog(false);
 			}} />
 			<List onMouseEnter={() => { setOpen(true); setHover(true) }} onMouseLeave={() => { setOpen(false); setHover(false) }} >
-				{['Home', 'Send', 'Activity', 'Faucet', 'Browser', 'Nfts', 'Support', 'Settings', 'Logout'].map((text, index) => (
+				{['Home', 'Send', 'Activity', 'Faucet', 'Dapps', 'Nfts', 'Support', 'Settings', 'Logout'].map((text, index) => (
 					<ListItem key={text} disablePadding sx={{
 						display: 'block', color: '#fff', marginTop: (text == 'Home') ? '' : '10%', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
 						'&:hover': {

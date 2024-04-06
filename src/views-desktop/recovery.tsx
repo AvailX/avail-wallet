@@ -8,7 +8,6 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import ArrowForward from '@mui/icons-material/ArrowForward';
 import {useTranslation} from 'react-i18next';
 import {useNavigate} from 'react-router-dom';
-import SimpleAvAppBar from '../components/header/simple_appbar';
 import CTAButton from '../components/buttons/cta';
 import WhiteHueTextField from '../components/textfields/white-hue';
 import SecureButton from '../components/buttons/secure-button';
@@ -148,7 +147,6 @@ const Recovery = () => {
 			<InfoAlert infoAlert={info} setInfoAlert={setInfo} message={message}/>
 			<SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message}/>
 			<ErrorAlert errorAlert={error} setErrorAlert={setError} message={message}/>
-			<NewAccountDialog isOpen={newAccount} onRequestClose={() => {setNewAccount(false)}}/>
 
 			{/*-- Seed Info Notice --*/}
 			<mui.Snackbar open={seedNotice}  anchorOrigin={{vertical: 'top', horizontal: 'center'}} sx={{width:'60%'}}>

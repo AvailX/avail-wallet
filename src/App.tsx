@@ -1,10 +1,8 @@
+import React from 'react';
 import {useEffect, useState, useRef} from 'react';
-import {invoke} from '@tauri-apps/api/core';
-import * as platform from 'platform';
 
 /** STYLES */
 import {ThemeProvider} from '@emotion/react';
-import reactLogo from './assets/react.svg';
 import {theme} from './styles/theme';
 
 /** COMPONENTS */

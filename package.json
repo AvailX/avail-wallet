@@ -70,6 +70,7 @@
     "internal-ip": "^7.0.0",
     "typescript": "^5.3.3",
     "vite": "^4.2.1",
+    "vite-plugin-node-polyfills": "^0.21.0",
     "xo": "^0.57.0"
   },
   "peerDependencies": {
