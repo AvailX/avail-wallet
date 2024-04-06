@@ -38,6 +38,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Initialize Rust cache
+        if: matrix.platform != 'windows-latest'
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
