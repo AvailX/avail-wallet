@@ -76,6 +76,16 @@ function Entrypoint() {
 				console.log("Restart the app!")
 				if (update_res?.available) {
 					setUpdateDialog(true);
+					update_res.downloadAndInstall().then(() => {
+					// Set alert with message that "There is an update in progess. Please wait app will restart." and a loading spinner
+						setTimeout(async () => {
+							await relaunch();
+						}, 2000);
+					}).catch(() => {
+						setUpdateDialog(false);
+						setAlertMessage('Failed to download and install the update.');
+						setAlert(true);
+					});
 				} else {
 					await initDeepLink();
 					setTimeout(() => {

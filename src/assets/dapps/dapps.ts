@@ -1,11 +1,3 @@
-import shadowfi from './shadowfi.png';
-import staking from './staking.png';
-import ans from './ans.svg';
-import arcane from './arcane.svg';
-import a_logo from '../logo/a-icon.svg';
-import alpha from './alpha.png';
-import payper from './payper.webp';
-
 import dalphaswap from './dapp-home/alphaswap.svg';
 import darcane from './dapp-home/arcane.svg';
 import dans from './dapp-home/ans.svg';
@@ -13,6 +5,8 @@ import obscura from './dapp-home/obscura.svg';
 import dshadowfi from './dapp-home/shadow.svg';
 import dstaking from './dapp-home/staking.svg';
 import dpayper from './dapp-home/payper.svg';
+
+import beta_staking from './beta-staking.jpg';
 
 export type Dapp = {
 	name: string;
@@ -30,7 +24,7 @@ export const dapps: Dapp[] = [
 		description: 'Arcane Finance is a fully private non-custodial decentralized exchange enabling fully confidential DeFi on Aleo.',
 		url: 'https://app.arcane.finance',
 		img: darcane,
-		tags: ['finance', 'swap'],
+		tags: ['defi'],
 		style: {marginTop: '23%'},
 		color: '#0C6CFE',
 	},
@@ -57,7 +51,7 @@ export const dapps: Dapp[] = [
 		description: 'Shadow Finance is a Decentralized and Private Liquidity Marketplace',
 		url: 'https://app.shadowfi.xyz/',
 		img: dshadowfi,
-		tags: ['finance'],
+		tags: ['defi'],
 		style: {marginTop: '10%'},
 		color: '#F17604',
 	},
@@ -66,7 +60,7 @@ export const dapps: Dapp[] = [
 		description: 'AlphaSwap (previously AleoSwap) offers private, secure, and smooth trading experience on the Aleo blockchain.',
 		url: 'https://app.alphaswap.pro/assets/tokens',
 		img: dalphaswap,
-		tags: ['finance', 'swap'],
+		tags: ['defi'],
 		style: {marginTop: '5%'},
 		color: '#04F158',
 	},
@@ -75,9 +69,18 @@ export const dapps: Dapp[] = [
 		description: 'PayPer is a digital currency based on zero knowledge proofs, allowing infinite scalability and full privacy.',
 		url: 'https://app.payper.fi/',
 		img: dpayper,
-		tags: ['finance', 'swap'],
+		tags: ['stablecoin'],
 		style: {marginTop: '20%'},
 		color: '#6C7690',
+	},
+	{
+		name: 'Beta Staking',
+		description: 'A decentralized protocol that enables users to stake Aleo Credits on the Aleo blockchain network and earn Beta rewards.',
+		url: 'https://www.betastaking.com',
+		img: beta_staking,
+		tags: ['liquid-staking'],
+		style: {marginTop: '20%'},
+		color: '#1DB954',
 	},
 ];
 
