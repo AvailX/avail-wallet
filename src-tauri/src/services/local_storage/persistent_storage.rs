@@ -72,7 +72,7 @@ pub fn initial_user_preferences(
             &"obscura",
             &delegate
         ],
-        "INSERT INTO user_preferences (theme, language, network, auth_type, username, tag, last_sync, last_tx_sync, last_backup_sync, address, backup, delegate) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,?10, ?11)".to_string(),
+        "INSERT INTO user_preferences (theme, language, network, auth_type, username, tag, last_sync, last_tx_sync, last_backup_sync, address, backup, base_url, delegate) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,?10, ?11, ?12, ?13)".to_string(),
     )?;
 
     Ok(())
