@@ -3,7 +3,9 @@ pub mod helpers;
 pub mod models;
 pub mod services;
 
+use crate::helpers::mobile_init::test_transfer_public_mobile;
 use crate::services::record_handling::utils::get_all_nft_data;
+use api::user::{update_backup_flag, update_username};
 use services::account::generation::create_seed_phrase_wallet;
 use services::account::generation::import_wallet;
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
@@ -13,8 +15,6 @@ use services::local_storage::persistent_storage::{
     get_address_string, get_auth_type, get_backup_flag, get_language, get_last_sync, get_network,
     get_username, update_language,
 };
-
-use api::user::{update_backup_flag, update_username};
 use services::local_storage::{
     encrypted_data::get_and_store_all_data,
     tokens::get_stored_tokens,
@@ -51,7 +51,7 @@ pub fn run() {
         .setup(|app| {
             #[cfg(desktop)]
             let handle = app.handle().clone();
-            
+
             #[cfg(desktop)]
             app.handle()
                 .plugin(tauri_plugin_updater::Builder::new().build())?;
@@ -60,7 +60,7 @@ pub fn run() {
             app.listen("deep-link://new-url", move |event| {
                 deep_link_print(event, handle.clone())
             });
-            
+
             // Remove the on_scheme method call
             #[cfg(desktop)]
             println!("Deep link: {:?}", app.deep_link().get_current());
@@ -115,7 +115,8 @@ pub fn run() {
             get_succinct_avail_events,
             verify,
             /* Aleo Helpers */
-            pre_install_inclusion_prover
+            pre_install_inclusion_prover,
+            test_transfer_public_mobile
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
