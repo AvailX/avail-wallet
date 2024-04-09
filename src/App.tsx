@@ -32,11 +32,18 @@ function App() {
 			window.removeEventListener('beforeunload', handleBeforeUnload);
 		};
 	}, []);
+	const transferPublicTest = async() => {	
+		const result = await invoke('test_transfer_public_mobile');
+		console.log(result);
+	}
 
 	return (
 		<ThemeProvider theme={theme} >
 
-			<Entrypoint/>
+			{/* <Entrypoint/>
+			 */}
+
+			 <button onClick={transferPublicTest()} >Transfer Public</button>
 
 		</ThemeProvider>
 	);
