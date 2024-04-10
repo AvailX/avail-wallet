@@ -154,6 +154,12 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+    CombinedLogger::init(vec![WriteLogger::new(
+        LevelFilter::Info,
+        simplelog::Config::default(),
+        File::create("app.log").unwrap(),
+    )])
+    .unwrap();
 }
 fn deep_link_print(event: tauri::Event, handle: tauri::AppHandle) {
     let uri = event.payload().to_string();

@@ -15,7 +15,10 @@ use crate::services::local_storage::persistent_storage::{
 /* --Client Setup functions-- */
 pub fn setup_local_client<N: Network>() -> AleoAPIClient<N> {
     let dev_node_ip = env!("DEV_NODE_IP");
-    AleoAPIClient::<N>::local_testnet3("3030", dev_node_ip)
+    // log("Setting up local client");
+    let api_client = AleoAPIClient::<N>::local_testnet3("3030", &dev_node_ip);
+    // log("Local client setup successful");
+    api_client
 }
 
 pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
