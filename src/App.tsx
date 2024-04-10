@@ -14,38 +14,20 @@ import {useWalletConnectManager} from './context/WalletConnect';
 /* Components for Testing */
 import Send from './views-desktop/send';
 import Home from './views-desktop/home-desktop';
+import React from 'react';
 
 function App() {
-	const {walletConnectManager} = useWalletConnectManager();
-
-	useEffect(() => {
-		const handleBeforeUnload = async(e: BeforeUnloadEvent) => {
-			e.preventDefault();
-			e.returnValue = '';
-
-			await walletConnectManager.close();
-		};
-
-		window.addEventListener('beforeunload', handleBeforeUnload);
-
-		return () => {
-			window.removeEventListener('beforeunload', handleBeforeUnload);
-		};
-	}, []);
 	const transferPublicTest = async() => {	
-		const result = await invoke('test_transfer_public_mobile');
+		console.log('====> Inside Transfer Public');
+		const result = await invoke('test_transfer_public_mobile').then((res) => {	consolelog('====> Inside Transfer Public'); return res; }).catch((err) => { console.log(err); });
 		console.log(result);
-	}
+	};
 
 	return (
-		<ThemeProvider theme={theme} >
-
-			{/* <Entrypoint/>
-			 */}
-
-			 <button onClick={transferPublicTest()} >Transfer Public</button>
-
-		</ThemeProvider>
+		<React.Fragment>
+			<h1>Testing</h1>
+			<button onClick={transferPublicTest} >Transfer Public</button>
+		</React.Fragment>
 	);
 }
 

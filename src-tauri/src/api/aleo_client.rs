@@ -5,14 +5,16 @@ use std::sync::RwLock;
 use avail_common::aleo_tools::api::AleoAPIClient;
 use snarkvm::{console::network::Testnet3, prelude::Network};
 
+use crate::helpers::mobile_init::log;
 use crate::models::event::Network as EventNetwork;
 use crate::services::local_storage::persistent_storage::update_network;
 
 /* --Client Setup functions-- */
 pub fn setup_local_client<N: Network>() -> AleoAPIClient<N> {
     let dev_node_ip = env!("DEV_NODE_IP");
+    // log("Setting up local client");
     let api_client = AleoAPIClient::<N>::local_testnet3("3030", &dev_node_ip);
-
+    // log("Local client setup successful");
     api_client
 }
 

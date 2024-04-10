@@ -3,6 +3,7 @@ use avail_common::errors::AvailResult;
 use avail_common::aleo_tools::program_manager::TransferType;
 use avail_common::models::encrypted_data::EncryptedDataTypeCommon;
 use chrono::{DateTime, Local};
+use log::info;
 use snarkvm::circuit::Aleo;
 use snarkvm::console::network::Testnet3;
 use snarkvm::ledger::transactions::ConfirmedTransaction;
@@ -65,15 +66,56 @@ use avail_common::{
     models::encrypted_data::{EncryptedData, EventTypeCommon, RecordTypeCommon, TransactionState},
     models::{fee_request::FeeRequest, network::SupportedNetworks},
 };
+use chrono::{Datelike, Timelike};
 use snarkvm::prelude::PrivateKey;
+use std::error::Error;
+use std::fmt::Write as FmtWrite;
+use std::fs::File;
+use std::io::Write;
+
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+    message: String,
+}
+
+pub fn log(window: Window, content: &str) -> AvailResult<()> {
+    // let current_datetime = Local::now();
+    // let filename = format!(
+    //     "avail_mobile_log_{}-{}-{}_{}-{}-{}.txt",
+    //     current_datetime.year(),
+    //     current_datetime.month(),
+    //     current_datetime.day(),
+    //     current_datetime.hour(),
+    //     current_datetime.minute(),
+    //     current_datetime.second()
+    // );
+
+    // let mut file = File::create(filename)?;
+    // // Write the content to the file
+    // file.write_all(content.as_bytes())?;
+    // std::thread::spawn(move || loop {
+    //     window
+    //         .emit(
+    //             "consolelog",
+    //             Payload {
+    //                 message: content.into(),
+    //             },
+    //         )
+    //         .unwrap();
+    // });
+
+    Ok(())
+}
 
 #[tauri::command(rename_all = "snake_case")]
-pub async fn test_transfer_public_mobile() -> AvailResult<String> {
+pub fn test_transfer_public_mobile() -> AvailResult<String> {
+    // log("Transfer Public Mobile");
     let api_client = setup_local_client::<Testnet3>();
+    // log("API Client Setup");
     let private_key =
         PrivateKey::<Testnet3>::from_str(avail_common::models::constants::TESTNET_PRIVATE_KEY)
             .unwrap();
-    println!("Private Key: {:?}", private_key.to_string());
+    // log(format!("Private Key: {:?}", private_key.to_string()).as_str());
     let program_manager =
         ProgramManager::<Testnet3>::new(Some(private_key), None, Some(api_client.clone()), None)
             .unwrap();
@@ -81,7 +123,7 @@ pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     let program_id = format!("credits.aleo");
 
     let recipient = Address::<Testnet3>::from_str(
-        "aleo1x2s08a2jyvd5aq29dwexqfscqrz7fgssrkhwk7ppselp2292zqfqakg7gn",
+        "aleo17uwd9yfdlusx2u2pr2nummcx8gst694w2nfm3hxkfeccqrv9yczqnvhq0c",
     )
     .unwrap();
 

@@ -3,9 +3,18 @@ pub mod helpers;
 pub mod models;
 pub mod services;
 
+use log::{error, info};
+use std::fs::File;
+use std::io::prelude::*;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+use std::thread;
+use std::time::Duration;
+
 use crate::helpers::mobile_init::test_transfer_public_mobile;
 use crate::services::record_handling::utils::get_all_nft_data;
 use api::user::{update_backup_flag, update_username};
+use log::LevelFilter;
 use services::account::generation::create_seed_phrase_wallet;
 use services::account::generation::import_wallet;
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
@@ -23,16 +32,19 @@ use services::local_storage::{
         get_view_key_tauri,
     },
 };
+use simplelog::*; // Add the missing import statement for simplelog
 
 // record handliong services
-// use crate::services::record_handling::utils::get_all_nft_data;
 use services::record_handling::{
     sync::{blocks_sync, sync_backup, txs_sync},
     transfer::{pre_install_inclusion_prover, transfer},
 };
+use simplelog::CombinedLogger;
+use simplelog::WriteLogger; // Add the missing import statement for WriteLogger and LevelFilter
+use tauri::Config;
 use tauri::Manager;
-use tauri_plugin_deep_link::DeepLinkExt;
-// wallet connect services
+use tauri_plugin_deep_link::DeepLinkExt; // Add the missing import statement for CombinedLogger // Add the missing import statement for the transfer function
+                                         // wallet connect services
 use crate::services::wallet_connect_api::{
     decrypt_records, get_avail_event, get_avail_events, get_balance, get_event, get_events,
     get_records, get_succinct_avail_event, get_succinct_avail_events, request_create_event, sign,
@@ -45,9 +57,11 @@ struct DeepLinkPayload {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // let devtools = tauri_plugin_devtools::init();
     tauri::Builder::default()
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_process::init())
+        // .plugin(devtools)
         .setup(|app| {
             #[cfg(desktop)]
             let handle = app.handle().clone();
@@ -120,6 +134,12 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+    CombinedLogger::init(vec![WriteLogger::new(
+        LevelFilter::Info,
+        simplelog::Config::default(),
+        File::create("app.log").unwrap(),
+    )])
+    .unwrap();
 }
 fn deep_link_print(event: tauri::Event, handle: tauri::AppHandle) {
     let uri = event.payload().to_string();
