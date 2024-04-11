@@ -38,6 +38,7 @@ use crate::services::wallet_connect_api::{
     get_records, get_succinct_avail_event, get_succinct_avail_events, request_create_event, sign,
     verify,
 };
+
 #[derive(Clone, serde::Deserialize, serde::Serialize)]
 struct DeepLinkPayload {
     uri: String,
