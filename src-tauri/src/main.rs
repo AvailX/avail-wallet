@@ -8,6 +8,6 @@ mod models;
 mod services;
 
 fn main() {
-    #[cfg(desktop)]
+    #[cfg(mobile)]
     availx_lib::run();
 }

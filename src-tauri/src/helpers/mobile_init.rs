@@ -1,3 +1,4 @@
+use avail_common::converters::messages::{field_to_fields, utf8_string_to_bits};
 use avail_common::errors::AvailResult;
 
 use avail_common::aleo_tools::program_manager::TransferType;
@@ -6,6 +7,8 @@ use chrono::{DateTime, Local};
 use log::info;
 use snarkvm::circuit::Aleo;
 use snarkvm::console::network::Testnet3;
+use snarkvm::ledger::query::{self, Query};
+use snarkvm::ledger::store::helpers::memory::BlockMemory;
 use snarkvm::ledger::transactions::ConfirmedTransaction;
 use snarkvm::prelude::{
     Address, Ciphertext, Entry, Execution, Field, GraphKey, Identifier, Itertools, Literal,
@@ -126,18 +129,77 @@ pub fn test_transfer_public_mobile() -> AvailResult<String> {
         "aleo17uwd9yfdlusx2u2pr2nummcx8gst694w2nfm3hxkfeccqrv9yczqnvhq0c",
     )
     .unwrap();
+    let amount = 100000000;
 
-    let transaction_id = program_manager
-        .transfer(
-            100000000,
-            0,
-            recipient,
-            TransferType::Public,
+    // let transaction_id = program_manager.transfer(
+    //     100000000,
+    //     0,
+    //     recipient,
+    //     TransferType::Public,
+    //     None,
+    //     None,
+    //     None,
+    //     &program_id,
+    // )?;
+    // Ok(transaction_id.to_string())
+
+    let execution = {
+        let rng = &mut rand::thread_rng();
+        let query: Query<Testnet3, BlockMemory<Testnet3>> = Query::from(api_client.base_url());
+
+        // Initialize a VM
+        let store = snarkvm::ledger::store::ConsensusStore::<
+            Testnet3,
+            snarkvm::ledger::store::helpers::memory::ConsensusMemory<Testnet3>,
+        >::open(None)?;
+        let vm = snarkvm::synthesizer::VM::from(store)?;
+        let transfer_type = TransferType::Public;
+        // Prepare the inputs for a transfer.
+        let transfer_function = "transfer_public";
+
+        let inputs = vec![
+            Value::from_str(&recipient.to_string())?,
+            Value::from_str(&format!("{}u64", amount))?,
+        ];
+
+        // Create a new transaction.
+        vm.execute(
+            &private_key,
+            (program_id, transfer_function),
+            inputs.iter(),
             None,
-            None,
-            None,
-            &program_id,
-        )
-        .unwrap();
-    Ok(transaction_id.to_string())
+            10000u64,
+            Some(query),
+            rng,
+        )?
+    };
+
+    program_manager.broadcast_transaction(execution.clone())?;
+
+    Ok(execution.id().to_string())
+}
+#[tauri::command(rename_all = "snake_case")]
+
+pub fn test_snarkvm_mobile() -> AvailResult<String> {
+    let api_client = setup_local_client::<Testnet3>();
+    let private_key =
+        PrivateKey::<Testnet3>::from_str(avail_common::models::constants::TESTNET_PRIVATE_KEY)
+            .unwrap();
+    let block_height = api_client.latest_block().unwrap();
+    let rng = &mut rand::thread_rng();
+
+    let msg = utf8_string_to_bits("TESTING AVAIL MOBILE SNARKVM");
+    let msg_field = Testnet3::hash_bhp512(&msg)?;
+    let msg = field_to_fields(&msg_field)?;
+
+    let signature = private_key.sign(&msg, rng)?;
+
+    Ok(format!(
+        "PK : {} |||| Block Height: {} |||| api: {} |||| Sign : {:?}",
+        private_key,
+        block_height.height(),
+        api_client.base_url(),
+        signature.to_string()
+    )
+    .to_string())
 }

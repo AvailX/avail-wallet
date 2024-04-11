@@ -19,7 +19,7 @@ import React from 'react';
 function App() {
 	const transferPublicTest = async() => {	
 		console.log('====> Inside Transfer Public');
-		const result = await invoke('test_transfer_public_mobile').then((res) => {	consolelog('====> Inside Transfer Public'); return res; }).catch((err) => { console.log(err); });
+		const result = await invoke('test_transfer_public_mobile').then(res => {	console.log('====> Inside snark exec'); return res; }).catch((err) => { console.log("ERR",err); });
 		console.log(result);
 	};
 

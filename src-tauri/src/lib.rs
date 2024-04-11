@@ -3,18 +3,12 @@ pub mod helpers;
 pub mod models;
 pub mod services;
 
-use log::{error, info};
-use std::fs::File;
-use std::io::prelude::*;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
-use std::thread;
-use std::time::Duration;
-
+use crate::helpers::mobile_init::test_snarkvm_mobile;
 use crate::helpers::mobile_init::test_transfer_public_mobile;
 use crate::services::record_handling::utils::get_all_nft_data;
 use api::user::{update_backup_flag, update_username};
 use log::LevelFilter;
+use log::{error, info};
 use services::account::generation::create_seed_phrase_wallet;
 use services::account::generation::import_wallet;
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
@@ -32,7 +26,13 @@ use services::local_storage::{
         get_view_key_tauri,
     },
 };
-use simplelog::*; // Add the missing import statement for simplelog
+use simplelog::*;
+use std::fs::File;
+use std::io::prelude::*;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+use std::thread;
+use std::time::Duration; // Add the missing import statement for simplelog
 
 // record handliong services
 use services::record_handling::{
@@ -130,16 +130,11 @@ pub fn run() {
             verify,
             /* Aleo Helpers */
             pre_install_inclusion_prover,
-            test_transfer_public_mobile
+            test_transfer_public_mobile,
+            test_snarkvm_mobile
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
-    CombinedLogger::init(vec![WriteLogger::new(
-        LevelFilter::Info,
-        simplelog::Config::default(),
-        File::create("app.log").unwrap(),
-    )])
-    .unwrap();
 }
 fn deep_link_print(event: tauri::Event, handle: tauri::AppHandle) {
     let uri = event.payload().to_string();
