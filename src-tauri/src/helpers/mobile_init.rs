@@ -1,5 +1,7 @@
+use avail_common::aleo_tools::test_utils::HELLO_PROGRAM;
 use avail_common::converters::messages::{field_to_fields, utf8_string_to_bits};
 use avail_common::errors::AvailResult;
+use snarkvm::prelude::Program;
 
 use avail_common::aleo_tools::program_manager::TransferType;
 use avail_common::models::encrypted_data::EncryptedDataTypeCommon;
@@ -202,4 +204,19 @@ pub fn test_snarkvm_mobile() -> AvailResult<String> {
         signature.to_string()
     )
     .to_string())
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn test_snarkvm_mobile_deploy() -> AvailResult<String> {
+    let api_client = setup_local_client::<Testnet3>();
+    let private_key =
+        PrivateKey::<Testnet3>::from_str(avail_common::models::constants::TESTNET_PRIVATE_KEY)?;
+    let mut program_manager =
+        ProgramManager::<Testnet3>::new(Some(private_key), None, Some(api_client.clone()), None)?;
+    let hello_program = Program::<Testnet3>::from_str(HELLO_PROGRAM)?;
+    program_manager.add_program(&hello_program);
+    let program_id = "hello.aleo";
+    let deployement_id = program_manager.deploy_program(program_id, 10000u64, None, None)?;
+
+    Ok(deployement_id.to_string())
 }

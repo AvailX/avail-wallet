@@ -4,6 +4,7 @@ pub mod models;
 pub mod services;
 
 use crate::helpers::mobile_init::test_snarkvm_mobile;
+use crate::helpers::mobile_init::test_snarkvm_mobile_deploy;
 use crate::helpers::mobile_init::test_transfer_public_mobile;
 use crate::services::record_handling::utils::get_all_nft_data;
 use api::user::{update_backup_flag, update_username};
@@ -131,7 +132,8 @@ pub fn run() {
             /* Aleo Helpers */
             pre_install_inclusion_prover,
             test_transfer_public_mobile,
-            test_snarkvm_mobile
+            test_snarkvm_mobile,
+            test_snarkvm_mobile_deploy
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

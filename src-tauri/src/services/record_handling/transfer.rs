@@ -966,20 +966,10 @@ pub fn find_confirmed_block_height<N: Network>(
 
 #[tauri::command(rename_all = "snake_case")]
 pub async fn pre_install_inclusion_prover() -> AvailResult<()> {
-    let path = match dirs::home_dir() {
-        Some(home_dir) => home_dir
-            .join(".aleo")
-            .join("resources")
-            .join("inclusion.prover.cd85cc5"),
-
-        None => {
-            return Err(AvailError::new(
-                AvailErrorType::Internal,
-                "Error getting home directory".to_string(),
-                "Error getting home directory".to_string(),
-            ))
-        }
-    };
+    let path = std::env::current_dir()?;
+    path.join(".aleo")
+        .join("resources")
+        .join("inclusion.prover.cd85cc5");
 
     if path.as_path().exists() {
         println!("inclusion.prover.cd85cc5 already exists");
