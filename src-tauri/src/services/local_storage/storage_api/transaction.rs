@@ -137,6 +137,15 @@ pub fn get_tx_ids_from_date<N: Network>(
     Ok(transaction_ids)
 }
 
+/*
+pub fn check_txs_for_task<N:Network>(start_data: DateTime<Utc>, end_time: DateTime<Utc>, program_id: &str, function_id: &str) -> AvailResult<bool>{
+    let address = get_address::<N>()?;
+    let network = get_network()?;
+
+    // I want to query the encrypted_data table for transactions that match the program_id and function_ud
+}
+*/
+
 pub fn get_transaction_ids<N: Network>() -> AvailResult<Vec<N::TransactionID>> {
     let address = get_address::<N>()?;
     let network = get_network()?;
