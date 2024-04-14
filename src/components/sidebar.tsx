@@ -201,7 +201,7 @@ export default function SideMenu() {
 			}
 
 			case 5: {
-				navigate('/nfts');
+				navigate('/campaigns');
 				break;
 			}
 

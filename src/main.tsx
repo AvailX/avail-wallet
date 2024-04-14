@@ -25,6 +25,7 @@ import TermsAndConditions from './views-desktop/terms-and-conditions';
 import Oops from './views-desktop/oops';
 import Import from './views-desktop/import';
 import Dapps from './views-desktop/dapps';
+import Campaigns from './views-desktop/quests/campaigns';
 
 // global font styles
 import './index.css';
@@ -69,6 +70,7 @@ const router = createBrowserRouter([
 	{ path: '/terms-of-service', element: <TermsAndConditions /> },
 	{ path: '/import', element: <Import /> },
 	{ path: '/dapps', element: <Dapps /> },
+	{ path: '/campaigns', element: <Campaigns /> },
 ]);
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(
