@@ -120,22 +120,23 @@ pub async fn generate_seed_phrase(password: &str) -> AvailResult<String> {
 
 /* ALEO KEY API */
 
-pub async fn derive_aleo_master_key(password: &str) -> AvailResult<Vec<u8>> {
+pub async fn derive_aleo_master_key(password: &str) -> AvailResult<()> {
     let (hold, stronghold, client) = init_stronghold(password).await?;
 
     let vault = Vault::new(
         stronghold.path.as_str(),
-        client.name,
+        client.name.clone(),
         BytesDto::Text("slip10".to_string()),
     );
 
     let key_path = "m/44'/0'/0'/0'";
 
     let cc = vault.derive_slip10_master(&hold, key_path).await?;
+    store_chain_code(0u32, cc, client, &hold).await?;
 
     stronghold.save(&hold).await?;
     stronghold.destroy(&hold).await?;
-    Ok(cc)
+    Ok(())
 }
 
 pub async fn derive_aleo_key(password: &str, account_index: u32) -> AvailResult<String> {
@@ -232,64 +233,31 @@ mod test_helpers {
     use snarkvm::prelude::{PrivateKey, Testnet3};
     use snarkvm::utilities::{FromBytes, ToBytes};
 
+    use avail_common::models::constants::STRONG_PASSWORD;
+
     #[tokio::test]
     async fn test_generate_bip39() {
-        let (hold, stronghold, client) = init_stronghold("password").await.unwrap();
-
-        let vault = Vault::new(
-            stronghold.path.as_str(),
-            client.name,
-            BytesDto::Text("bip39".to_string()),
-        );
-
-        let record_path = "bip39";
-
-        let result = vault.generate_bip39(&hold, record_path).await.unwrap();
-
-        let mnemonic = String::from_utf8(result).unwrap();
-        stronghold.save(&hold).await.unwrap();
+        let password = "password";
+        let mnemonic = generate_seed_phrase(password).await.unwrap();
         println!("{}", mnemonic);
     }
 
     #[tokio::test]
     async fn derive_aleo_master() {
-        let (hold, stronghold, client) = init_stronghold("password").await.unwrap();
-        let vault = Vault::new(
-            stronghold.path.as_str(),
-            client.name,
-            BytesDto::Text("slip10".to_string()),
-        );
-
-        let key_path = "m/44'/0'/0'/0'";
-
-        let cc = vault.derive_slip10_master(&hold, key_path).await.unwrap();
-
-        stronghold.save(&hold).await.unwrap();
-        println!("{:?}", cc);
+        let password = "password";
+        derive_aleo_master_key(password).await.unwrap();
     }
 
     #[tokio::test]
     async fn derive_aleo_slip10_key() {
-        let (hold, stronghold, client) = init_stronghold("password").await.unwrap();
-        let vault = Vault::new(
-            stronghold.path.as_str(),
-            client.name.clone(),
-            BytesDto::Text("slip10".to_string()),
-        );
-
-        let account_index = 2;
-        let key_path = format!("m/44'/0'/{}'/0'", account_index);
-
-        let chain_code = get_chain_code(account_index.sub(1u32), client.clone(), &hold)
+        let password = "password";
+        let account_index = 1;
+        let address = derive_aleo_key(password, account_index).await.unwrap();
+        let address2 = derive_aleo_key(password, account_index + 1u32)
             .await
             .unwrap();
-        let cc = vault
-            .derive_slip10(&hold, &key_path, &chain_code)
-            .await
-            .unwrap();
-
-        stronghold.save(&hold).await.unwrap();
-        println!("{:?}", cc);
+        println!("{}", address);
+        println!("{}", address2);
     }
 
     #[tokio::test]
@@ -311,22 +279,9 @@ mod test_helpers {
 
     #[tokio::test]
     async fn test_delete_key() {
-        let (hold, stronghold, client) = init_stronghold("password").await.unwrap();
-        let vault = Vault::new(
-            stronghold.path.as_str(),
-            client.name,
-            BytesDto::Text("slip10".to_string()),
-        );
-
-        let account_index = 2;
-        let key_path = format!("m/44'/0'/{}'/0'", account_index);
-
-        vault.remove_secret(&hold, &key_path).await.unwrap();
-
-        stronghold.save(&hold).await.unwrap();
-        stronghold.destroy(&hold).await.unwrap();
-
-        println!("Key deleted");
+        let password = "password";
+        let account_index = 1;
+        delete_aleo_key(password, account_index).await.unwrap();
     }
 
     #[test]
