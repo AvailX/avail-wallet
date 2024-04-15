@@ -4,6 +4,7 @@ pub mod event;
 pub mod event_payloads;
 pub mod pointers;
 pub mod storage;
+pub mod stronghold;
 pub mod transfer;
 pub mod wallet;
 pub mod wallet_connect;
