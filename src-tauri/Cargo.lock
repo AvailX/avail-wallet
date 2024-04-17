@@ -483,11 +483,11 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin",
+ "tauri-plugin-aleo-stronghold",
  "tauri-plugin-deep-link",
  "tauri-plugin-fs",
  "tauri-plugin-http",
  "tauri-plugin-process",
- "tauri-plugin-stronghold",
  "tauri-plugin-updater",
  "tauri-utils",
  "tid-rs",
@@ -6489,6 +6489,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri-plugin-aleo-stronghold"
+version = "2.0.0-beta.3"
+source = "git+https://github.com/AvailX/tauri-plugin-aleo-stronghold?rev=2cfed60#2cfed609471d35b4c97e7fc00945223940654c93"
+dependencies = [
+ "hex",
+ "iota-crypto 0.23.1 (git+https://github.com/AvailX/crypto.rs?rev=2191a74)",
+ "iota_stronghold",
+ "rand_chacha 0.3.1",
+ "rand_core 0.6.4",
+ "rust-argon2 1.0.0",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "zeroize",
+]
+
+[[package]]
 name = "tauri-plugin-deep-link"
 version = "2.0.0-beta.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6551,26 +6568,6 @@ checksum = "11215c3615299090e97f37341ae4b01f518bc1d43e9c4391144c0e5e3b7d4f01"
 dependencies = [
  "tauri",
  "tauri-plugin",
-]
-
-[[package]]
-name = "tauri-plugin-stronghold"
-version = "2.0.0-beta.3"
-source = "git+https://github.com/AvailX/tauri-plugin-aleo-stronghold?rev=5d4c724#5d4c7247b1975c64e215669c21339f46835a4c22"
-dependencies = [
- "hex",
- "iota-crypto 0.23.1 (git+https://github.com/AvailX/crypto.rs?rev=2191a74)",
- "iota_stronghold",
- "log",
- "rand_chacha 0.3.1",
- "rand_core 0.6.4",
- "rust-argon2 1.0.0",
- "serde",
- "serde_json",
- "tauri",
- "tauri-plugin",
- "thiserror",
- "zeroize",
 ]
 
 [[package]]

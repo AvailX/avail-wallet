@@ -48,7 +48,7 @@ tauri-plugin-deep-link = "2.0.0-beta.3"
 tauri-plugin-http = { version = "2.0.0-beta.3", features = ["cookies"] }
 tauri-plugin-updater = { version = "2.0.0-beta.3", features = [] }
 tauri-plugin-process = "2.0.0-beta.3"
-tauri-plugin-stronghold = {git="https://github.com/AvailX/tauri-plugin-aleo-stronghold", rev="5d4c724"}
+tauri-plugin-aleo-stronghold = {git="https://github.com/AvailX/tauri-plugin-aleo-stronghold", rev="2cfed60"}
 iota_stronghold = {git="https://github.com/AvailX/stronghold.rs", rev="efaf753"}
 tiny-bip39 = "1.0.0"
 tokio = { version = "1.29.1", features = ["full"] }

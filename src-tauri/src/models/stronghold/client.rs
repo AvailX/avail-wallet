@@ -1,4 +1,4 @@
-use tauri_plugin_stronghold::BytesDto;
+use tauri_plugin_aleo_stronghold::BytesDto;
 
 use super::store::Store;
 use serde::{Deserialize, Serialize};

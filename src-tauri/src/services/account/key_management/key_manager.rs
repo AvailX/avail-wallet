@@ -3,7 +3,7 @@ use std::{ops::Sub, path::PathBuf};
 use app_dirs::*;
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 use iota_stronghold::procedures::Curve;
-use tauri_plugin_stronghold::{
+use tauri_plugin_aleo_stronghold::{
     create_client, destroy, execute_procedure, get_store_record, initialize, load_client,
     remove_secret, remove_store_record, save, save_secret, save_store_record, BytesDto,
     LocationDto, PasswordHashFunction, ProcedureDto, Slip10DeriveInputDto, StrongholdCollection,

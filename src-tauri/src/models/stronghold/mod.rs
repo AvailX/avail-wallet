@@ -4,7 +4,7 @@ pub mod vault;
 
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 use std::path::PathBuf;
-use tauri_plugin_stronghold::{destroy, save, StrongholdCollection};
+use tauri_plugin_aleo_stronghold::{destroy, save, StrongholdCollection};
 
 use serde::{Deserialize, Serialize};
 

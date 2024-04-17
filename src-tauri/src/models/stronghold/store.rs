@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
-use tauri_plugin_stronghold::{
+use tauri_plugin_aleo_stronghold::{
     get_store_record, remove_store_record, save_store_record, BytesDto, StrongholdCollection,
 };
 
