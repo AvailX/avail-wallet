@@ -1,8 +1,10 @@
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
+use crate::models::pointers::transaction::TransactionPointer;
 use crate::models::wallet_connect::get_event::{EventsFilter, GetEventsRequest};
-use crate::services::local_storage::storage_api::event::get_events_raw;
+use crate::services::local_storage::session::view::VIEWSESSION;
+use crate::services::local_storage::storage_api::transaction::get_transaction_ids_for_quest_verification;
 use crate::{api::client::get_quest_client_with_session, models::event};
 use avail_common::{
     errors::{AvailError, AvailErrorType, AvailResult},
@@ -11,8 +13,11 @@ use avail_common::{
 };
 use tauri_plugin_http::reqwest;
 
-use snarkvm::prelude::Testnet3;
+use snarkvm::prelude::Network;
 
+use super::aleo_client::setup_client;
+
+/* GET ALL CAMPAIGNS */
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_campaigns() -> AvailResult<Vec<Campaign>> {
     let res = get_quest_client_with_session(reqwest::Method::GET, "campaigns")?
@@ -38,6 +43,7 @@ pub async fn get_campaigns() -> AvailResult<Vec<Campaign>> {
     }
 }
 
+/* GET ALL QUESTS FOR CAMPAIGN */
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_quests_for_campaign(campaign_id: &str) -> AvailResult<Vec<Quest>> {
     let res = get_quest_client_with_session(reqwest::Method::GET, campaign_id)?
@@ -63,6 +69,7 @@ pub async fn get_quests_for_campaign(campaign_id: &str) -> AvailResult<Vec<Quest
     }
 }
 
+/* CHECK IF QUEST IS COMPLETE */
 #[tauri::command(rename_all = "snake_case")]
 pub async fn check_quest_completion(quest_id: &str) -> AvailResult<bool> {
     let res =
@@ -89,6 +96,7 @@ pub async fn check_quest_completion(quest_id: &str) -> AvailResult<bool> {
     }
 }
 
+/* CHECK IF TASK HAS ALREADY BEEN VERIFIED COMPLETED AND VERIFIED*/
 #[tauri::command(rename_all = "snake_case")]
 pub async fn is_task_verified(task_id: &Uuid) -> AvailResult<bool> {
     let res =
@@ -115,61 +123,92 @@ pub async fn is_task_verified(task_id: &Uuid) -> AvailResult<bool> {
     }
 }
 
-#[tauri::command(rename_all = "snake_case")]
-pub async fn verify_task(
+/* CHECK IF TASK IS COMPLETE */
+pub async fn verify_task_raw<N: Network>(
     start_time: DateTime<Utc>,
     end_time: DateTime<Utc>,
     task_id: &str,
     program_id: &str,
     function_id: &str,
-) -> AvailResult<()> {
-    // required data: start_time, end_time (from quest), task_id, program_id, function_id
-    // with this data we can then query transaction pointers for a match
-    //
+) -> AvailResult<bool> {
+    let view_key = VIEWSESSION.get_instance::<N>()?;
     let task_id = Uuid::parse_str(task_id)?;
     let is_task_verified = is_task_verified(&task_id).await?;
 
     if is_task_verified {
-        return Ok(());
+        return Ok(true);
     }
 
-    let event_filter = EventsFilter::new(
-        Some(EventTypeCommon::Execute),
-        Some(program_id.to_string()),
-        Some(function_id.to_string()),
-    );
+    let encrypted_transactions = get_transaction_ids_for_quest_verification::<N>(
+        start_time,
+        end_time,
+        program_id,
+        function_id,
+    )?;
 
-    let request = GetEventsRequest {
-        filter: Some(event_filter),
-        page: None,
-    };
-
-    let events = get_events_raw::<Testnet3>(request)?;
-
-    // if events is not empty, then we can verify the task
-
-    /*
-    if !events.is_empty(){
-        let request = VerifyTaskRequest {
-            task_id,
-            confirmation_height: 0,
-            transaction_id: events[0].transaction_id,
-            transition_id: events[0].transition_id,
-            tvk: events[0].tvk,
-        };
-
+    if encrypted_transactions.is_empty() {
+        return Ok(false);
     }
-    */
-    // TODO
-    // create function that specifically targets the transactions that match what we need
-    // then loops to transitions matching them w the program_id and function_id
-    // if it's the match this is the transition, and then we get the transition view key.
-    // return boolean, tx_id, transition_id, tvk
-    // then post verification
 
-    Ok(())
+    let mut transactions: Vec<TransactionPointer<N>> = vec![];
+
+    for encrypted_transaction in encrypted_transactions {
+        let encrypted_struct = encrypted_transaction.to_enrypted_struct::<N>()?;
+
+        let transaction: TransactionPointer<N> = encrypted_struct.decrypt(view_key)?;
+        transactions.push(transaction);
+    }
+
+    let aleo_client = setup_client::<N>()?;
+
+    let transaction =
+        aleo_client.get_transaction(transactions.first().unwrap().transaction_id().unwrap())?;
+
+    for transition in transaction.transitions() {
+        if transition.program_id().to_string().as_str() == program_id
+            && transition.function_name().to_string().as_str() == function_id
+        {
+            let tpk = transition.tpk();
+            let scalar = *view_key;
+            let tvk = (*tpk * scalar).to_x_coordinate();
+
+            let request = VerifyTaskRequest::<N> {
+                task_id,
+                confirmation_height: transactions.first().unwrap().block_height().unwrap(),
+                transaction_id: transaction.id(),
+                transition_id: *transition.id(),
+                tvk,
+            };
+
+            let res = get_quest_client_with_session(reqwest::Method::POST, "verify")?
+                .json(&request)
+                .send()
+                .await?;
+
+            if res.status() == 200 {
+                let completion: VerifyTaskResponse = res.json().await?;
+
+                return Ok(completion.verified);
+            } else if res.status() == 401 {
+                return Err(AvailError::new(
+                    AvailErrorType::Unauthorized,
+                    "User session has expired.".to_string(),
+                    "Your session has expired, please authenticate again.".to_string(),
+                ));
+            } else {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    "Error checking quest completion".to_string(),
+                    "Error checking quest completion".to_string(),
+                ));
+            }
+        }
+    }
+
+    Ok(false)
 }
 
+/* GET USER'S POINTS */
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_points() -> AvailResult<i32> {
     let res = get_quest_client_with_session(reqwest::Method::GET, "points")?
@@ -195,6 +234,7 @@ pub async fn get_points() -> AvailResult<i32> {
     }
 }
 
+/* GET USER'S WHITELIST */
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_whitelists() -> AvailResult<WhitelistResponse> {
     let res = get_quest_client_with_session(reqwest::Method::GET, "whitelists")?

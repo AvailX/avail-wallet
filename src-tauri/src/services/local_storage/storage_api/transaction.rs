@@ -193,6 +193,50 @@ pub fn get_transaction_ids<N: Network>() -> AvailResult<Vec<N::TransactionID>> {
     Ok(transaction_ids)
 }
 
+pub fn get_transaction_ids_for_quest_verification<N: Network>(
+    start_time: DateTime<Utc>,
+    end_time: DateTime<Utc>,
+    program_id: &str,
+    function_id: &str,
+) -> AvailResult<Vec<EncryptedData>> {
+    // for quest verification we have to find encrypted_data where the flavour is Transaction,
+    // the state is Confirmed, and the program_id and function_id match, and created_at is within the specified time range
+    let address = get_address::<N>()?;
+    let network = get_network()?;
+
+    let time_filter = format!(
+        "AND created_at BETWEEN '{}' AND '{}'",
+        start_time.to_rfc3339(), // Converts DateTime<Utc> to a string in RFC3339 format suitable for SQL queries
+        end_time.to_rfc3339()
+    );
+
+    let query = format!(
+        "SELECT *,  program_ids as json_program_ids, function_ids as json_function_ids FROM encrypted_data WHERE flavour='{}' AND state='{}' AND owner='{}' AND network='{}' {}",
+        EncryptedDataTypeCommon::Transaction.to_str(),
+        TransactionState::Confirmed.to_str(),
+        address,
+        network,
+        time_filter // Adds the time filtering to the query
+    );
+
+    let program_id_filter = format!(
+        "AND (program_ids='{}' OR JSON_EXTRACT(json_program_ids, '$') LIKE '%{}%')",
+        program_id, program_id
+    );
+
+    let function_id_filter = format!(
+        "AND (function_ids='{}' OR JSON_EXTRACT(json_function_ids, '$') LIKE '%{}%')",
+        function_id, function_id
+    );
+
+    let query = format!("{} {} {}", query, program_id_filter, function_id_filter);
+
+    // Assuming the execution of the query and processing the result happens here
+
+    let encrypted_transactions = handle_encrypted_data_query(&query)?;
+    Ok(encrypted_transactions)
+}
+
 pub fn get_unconfirmed_and_failed_transaction_ids<N: Network>(
 ) -> AvailResult<Vec<(N::TransactionID, String)>> {
     let address = get_address::<N>()?;
