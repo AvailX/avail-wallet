@@ -12,7 +12,7 @@ import {
 } from '../../services/wallet-connect/WCTypes';
 import {formatLongString} from './event_drawer';
 
-const formatDate = (date: Date) => {
+export const formatDate = (date: Date) => {
 	const today = new Date();
 	const yesterday = new Date(today);
 	yesterday.setDate(yesterday.getDate() - 1);

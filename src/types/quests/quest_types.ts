@@ -23,8 +23,8 @@ export type Quest = {
 	display_image: string;
 	tasks: Task[];
 	reward: Reward;
-	expires_on: string; // Or Date if you're directly using Date objects
-	created_on: string; // Or Date
+	expires_on: Date; // Or Date if you're directly using Date objects
+	created_on: Date; // Or Date
 	campaign_id: string;
 };
 
@@ -37,6 +37,16 @@ export type Task = {
 	function_id?: string;
 	dapp_url?: string;
 	points: number;
+};
+
+export type WhitelistResponse = {
+	collection_name: string;
+	amount: number;
+};
+
+export type CampaignDetailPageProps = {
+	campaign: Campaign;
+	quests: Quest[];
 };
 
 export type Reward = {
@@ -58,7 +68,7 @@ export const testCampaign: Campaign[] = [{
 	subtitle: 'Avail - Privacy unlocked.',
 	description: {
 		part1: 'Complete Weekly',
-		main: 'Missions',
+		main: 'Quests',
 		part2: 'Win Disruptors',
 	},
 	inner_description: 'The Disruptors are the official NFT of the Avail Wallet.',
@@ -67,3 +77,133 @@ export const testCampaign: Campaign[] = [{
     profile_image: 'https://i.imgur.com/gXfvvaJ.png',
     color: '#00FFAA'
 }];
+
+export const testQuests: Quest[] = [{
+	id: '1',
+	title: 'Mission 1',
+	description: 'Complete a transaction on the Avail Wallet.',
+	display_image: 'https://i.imgur.com/XhV1X68.png',
+	tasks: [{
+		id: '1',
+		title: 'Complete a transaction on the Avail Wallet.',
+		description: 'Complete a transaction on the Avail Wallet.',
+		transaction: true,
+		program_id: 'credits.aleo',
+		function_id: 'transfer_private',
+		points: 100,
+	}],
+	reward: {
+		id: '1',
+		collection_name: 'Disruptors',
+		amount: 100,
+		method: RewardMethod.FCFS,
+	},
+	expires_on: new Date().setDate(Date.now() + 1),
+	created_on: new Date().setDate(Date.now() - 1),
+	campaign_id: '1',
+},
+{
+	id: '2',
+	title: 'Mission 2',
+	description: 'Complete a transaction on the Avail Wallet.',
+	display_image: 'https://i.imgur.com/XhV1X68.png',
+	tasks: [{
+		id: '1',
+		title: 'Complete a transaction on the Avail Wallet.',
+		description: 'Complete a transaction on the Avail Wallet.',
+		transaction: true,
+		program_id: 'credits.aleo',
+		function_id: 'transfer_private',
+		points: 100,
+	}],
+	reward: {
+		id: '1',
+		collection_name: 'Disruptors',
+		amount: 100,
+		method: RewardMethod.FCFS,
+	},
+	expires_on: new Date().setDate(Date.now() + 1),
+	created_on: new Date().setDate(Date.now() - 1),
+	campaign_id: '1',
+},
+{
+	id: '3',
+	title: 'Mission 3',
+	description: 'Complete a transaction on the Avail Wallet.',
+	display_image: 'https://i.imgur.com/XhV1X68.png',
+	tasks: [{
+		id: '1',
+		title: 'Complete a transaction on the Avail Wallet.',
+		description: 'Complete a transaction on the Avail Wallet.',
+		transaction: true,
+		program_id: 'credits.aleo',
+		function_id: 'transfer_private',
+		points: 100,
+	}],
+	reward: {
+		id: '1',
+		collection_name: 'Disruptors',
+		amount: 100,
+		method: RewardMethod.FCFS,
+	},
+	expires_on: new Date().setDate(Date.now() + 1),
+	created_on: new Date().setDate(Date.now() - 1),
+	campaign_id: '1',
+},
+{
+	id: '4',
+	title: 'Mission 4',
+	description: 'Complete a transaction on the Avail Wallet.',
+	display_image: 'https://i.imgur.com/XhV1X68.png',
+	tasks: [{
+		id: '1',
+		title: 'Complete a transaction on the Avail Wallet.',
+		description: 'Complete a transaction on the Avail Wallet.',
+		transaction: true,
+		program_id: 'credits.aleo',
+		function_id: 'transfer_private',
+		dapp_url: 'https://app.arcane.finance',
+		points: 100,
+	},
+	{
+		id: '2',
+		title: 'Complete a transaction on the Avail Wallet.',
+		description: 'Complete a transaction on the Avail Wallet.',
+		transaction: true,
+		program_id: 'credits.aleo',
+		function_id: 'transfer_private',
+		dapp_url: 'https://app.arcane.finance',
+		points: 100,
+	},
+	{
+		id: '3',
+		title: 'Complete a transaction on the Avail Wallet.',
+		description: 'Complete a transaction on the Avail Wallet.',
+		transaction: true,
+		program_id: 'credits.aleo',
+		function_id: 'transfer_private',
+		dapp_url: 'https://app.arcane.finance',
+		points: 100,
+	},
+	{
+		id: '4',
+		title: 'Complete a transaction on the Avail Wallet.',
+		description: 'Complete a transaction on the Avail Wallet.',
+		transaction: true,
+		program_id: 'credits.aleo',
+		function_id: 'transfer_private',
+		dapp_url: 'https://app.arcane.finance',
+		points: 100,
+	}],
+	reward: {
+		id: '1',
+		collection_name: 'Disruptors',
+		amount: 100,
+		method: RewardMethod.FCFS,
+	},
+	expires_on: new Date().setDate(Date.now() + 1),
+	created_on: new Date().setDate(Date.now() - 1),
+	campaign_id: '1',
+}
+];
+

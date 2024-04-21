@@ -1,19 +1,22 @@
+use std::str::FromStr;
+
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
+use crate::api::client::get_quest_client_with_session;
 use crate::models::pointers::transaction::TransactionPointer;
-use crate::models::wallet_connect::get_event::{EventsFilter, GetEventsRequest};
+use crate::services::local_storage::persistent_storage::get_network;
 use crate::services::local_storage::session::view::VIEWSESSION;
 use crate::services::local_storage::storage_api::transaction::get_transaction_ids_for_quest_verification;
-use crate::{api::client::get_quest_client_with_session, models::event};
 use avail_common::{
     errors::{AvailError, AvailErrorType, AvailResult},
     models::encrypted_data::EventTypeCommon,
+    models::network::SupportedNetworks,
     models::quests::*,
 };
 use tauri_plugin_http::reqwest;
 
-use snarkvm::prelude::Network;
+use snarkvm::prelude::{Network, Testnet3};
 
 use super::aleo_client::setup_client;
 
@@ -123,8 +126,26 @@ pub async fn is_task_verified(task_id: &Uuid) -> AvailResult<bool> {
     }
 }
 
+#[tauri::command(rename_all = "snake_case")]
+pub async fn verify_task(
+    start_time: DateTime<Utc>,
+    end_time: DateTime<Utc>,
+    task_id: &str,
+    program_id: &str,
+    function_id: &str,
+) -> AvailResult<bool> {
+    let network = get_network()?;
+
+    match SupportedNetworks::from_str(network.as_str())? {
+        SupportedNetworks::Testnet3 => {
+            verify_task_raw::<Testnet3>(start_time, end_time, task_id, program_id, function_id)
+                .await
+        }
+    }
+}
+
 /* CHECK IF TASK IS COMPLETE */
-pub async fn verify_task_raw<N: Network>(
+async fn verify_task_raw<N: Network>(
     start_time: DateTime<Utc>,
     end_time: DateTime<Utc>,
     task_id: &str,

@@ -19,7 +19,7 @@ function Campaigns() {
 			<SideMenu />
 			<mui.Box sx={{display: 'flex', flexDirection: 'column', p: '3%', justifyContent: 'center', alignItems: 'center', background: 'url(' + greenGlow + ') no-repeat ', paddingBottom: '7%'}}>
 				<LargeTitleText sx={{color: '#FFF'}}> Web3 Privacy</LargeTitleText>
-				<LargeTitleText sx={{color: '#00FFAA', textShadow: '0 0 10px #00FFAA'}}> Missions </LargeTitleText>
+				<LargeTitleText sx={{color: '#00FFAA', textShadow: '0 0 10px #00FFAA'}}> Quests </LargeTitleText>
 			</mui.Box>
 			<mui.Box sx={{display: 'flex', flexDirection: 'column', mt: '3%'}}>
 				{testCampaign.map(campaign => (
