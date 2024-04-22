@@ -5,6 +5,8 @@ use snarkvm::prelude::Program;
 
 use avail_common::aleo_tools::program_manager::TransferType;
 use avail_common::models::encrypted_data::EncryptedDataTypeCommon;
+use avail_common::models::mobile_prover::{self, ProverRequest};
+
 use chrono::{DateTime, Local};
 use log::info;
 use snarkvm::circuit::Aleo;
@@ -24,10 +26,12 @@ use std::ops::Sub;
 use std::str::FromStr;
 use tauri::{Manager, Window};
 
+use crate::api::client::SESSION;
 use crate::api::{
     aleo_client::{setup_client, setup_local_client},
     encrypted_data::{post_encrypted_data, send_transaction_in},
     fee::{create_record, fetch_record},
+    mobile_prover_service::delegate_execution,
     user::name_to_address,
 };
 
@@ -42,6 +46,7 @@ use crate::models::pointers::{
 use crate::models::wallet_connect::balance::Balance;
 
 use crate::models::wallet_connect::records::{GetRecordsRequest, RecordFilterType, RecordsFilter};
+use crate::services::authentication::session::get_session;
 use crate::services::local_storage::encrypted_data::get_encrypted_data_by_flavour;
 use crate::services::local_storage::tokens::{
     add_balance, get_balance, get_program_id_for_token, if_token_exists, init_token,
@@ -113,9 +118,10 @@ pub fn log(window: Window, content: &str) -> AvailResult<()> {
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn test_transfer_public_mobile() -> AvailResult<String> {
+pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     // log("Transfer Public Mobile");
     let api_client = setup_local_client::<Testnet3>();
+
     // log("API Client Setup");
     let private_key =
         PrivateKey::<Testnet3>::from_str(avail_common::models::constants::TESTNET_PRIVATE_KEY)
@@ -144,8 +150,9 @@ pub fn test_transfer_public_mobile() -> AvailResult<String> {
     //     &program_id,
     // )?;
     // Ok(transaction_id.to_string())
-
-    let execution = {
+    let session_get = get_session(Some("tylerDurden@0xf5".to_string())).await?;
+    SESSION.set_session_token(session_get);
+    let authorization = {
         let rng = &mut rand::thread_rng();
         let query: Query<Testnet3, BlockMemory<Testnet3>> = Query::from(api_client.base_url());
 
@@ -165,20 +172,27 @@ pub fn test_transfer_public_mobile() -> AvailResult<String> {
         ];
 
         // Create a new transaction.
-        vm.execute(
+        vm.authorize(
             &private_key,
-            (program_id, transfer_function),
+            program_id,
+            transfer_function,
             inputs.iter(),
-            None,
-            10000u64,
-            Some(query),
             rng,
         )?
     };
+    println!("Auth: {:?}", authorization);
+    let auth_bytes = ProverRequest::to_bytes_auth_object(authorization).await?;
+    let prover_request = ProverRequest::new(
+        "aleo9789517609".to_string(),
+        auth_bytes,
+        SupportedNetworks::Testnet3,
+        None,
+    );
+    let execution = delegate_execution(prover_request).await?;
 
-    program_manager.broadcast_transaction(execution.clone())?;
+    // program_manager.broadcast_transaction(execution.clone())?;
 
-    Ok(execution.id().to_string())
+    Ok(execution.to_string())
 }
 #[tauri::command(rename_all = "snake_case")]
 
@@ -219,4 +233,12 @@ pub fn test_snarkvm_mobile_deploy() -> AvailResult<String> {
     let deployement_id = program_manager.deploy_program(program_id, 10000u64, None, None)?;
 
     Ok(deployement_id.to_string())
+}
+
+// write a test case for the test_transfer_public_mobile function
+
+#[tokio::test]
+async fn test_mobile() {
+    let result = test_transfer_public_mobile().await.unwrap();
+    println!("{:?}", result);
 }

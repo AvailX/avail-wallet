@@ -65,6 +65,38 @@ pub fn get_um_client_with_session(
     Ok(request)
 }
 
+pub fn get_prover_client_with_session(
+    method: reqwest::Method,
+    path: &str,
+) -> AvailResult<reqwest::RequestBuilder> {
+    let api = env!("API");
+
+    let client = reqwest::Client::new();
+    let cookie_name = "id";
+
+    let session = match SESSION.get_session_token() {
+        Some(session) => session,
+        None => {
+            return Err(AvailError::new(
+                AvailErrorType::Validation,
+                "Session not found".to_string(),
+                "Session not found".to_string(),
+            ))
+        }
+    };
+
+    let cookie_value = format!("{}={}", cookie_name, "...");
+
+    let url = format!("http://0.0.0.0:8000/prover/{}", path);
+
+    // let url = "http://0.0.0.0:8000/prover/delegateProving".to_string();
+    let request = client
+        .request(method, url)
+        .header(reqwest::header::COOKIE, cookie_value);
+    println!("Req====> {:?}", request);
+    Ok(request)
+}
+
 // create a global state of a session string called SESSION
 
 #[derive(Debug)]
