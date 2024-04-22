@@ -5944,7 +5944,25 @@ checksum = "754009155e9de0193285210d5b101369ae3196c1ff4f096264ddab3a0f4c8f52"
 dependencies = [
  "proc-macro2",
  "quote 1.0.35",
- "syn 2.0.58",
+ "syn 2.0.49",
+]
+
+[[package]]
+name = "snarkvm-wasm"
+version = "0.16.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "855355d94b5dff2e52ebf740439fad667c0f12b45f27b0f0decd9190aecfa5f4"
+dependencies = [
+ "getrandom 0.2.10",
+ "snarkvm-circuit-network",
+ "snarkvm-console",
+ "snarkvm-curves",
+ "snarkvm-fields",
+ "snarkvm-ledger-block",
+ "snarkvm-ledger-query",
+ "snarkvm-ledger-store",
+ "snarkvm-synthesizer",
+ "snarkvm-utilities",
 ]
 
 [[package]]
