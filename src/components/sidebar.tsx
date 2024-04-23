@@ -213,11 +213,6 @@ export default function SideMenu() {
 			}
 
 			case 6: {
-				navigate('/nfts');
-				break;
-			}
-
-			case 7: {
 				open_url('https://discord.gg/availwallet').then(res => {
 					console.log(res);
 				}).catch(error => {
