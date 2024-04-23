@@ -11,9 +11,22 @@ import greenGlow from '../../assets/images/backgrounds/gglow_quests.png';
 import {LargeTitleText} from '../../components/typography/typography';
 
 // Testing
-import {testCampaign} from '../../types/quests/quest_types';
+import {type Campaign, testCampaign} from '../../types/quests/quest_types';
+
+// Services
+import {getCampaigns} from '../../services/quests/quests';
 
 function Campaigns() {
+	const [campaigns, setCampaigns] = React.useState<Campaign[]>([]);
+
+	React.useEffect(() => {
+		getCampaigns().then(campaigns => {
+			setCampaigns(campaigns);
+		}).catch(err => {
+			console.log(err);
+		});
+	}, []);
+
 	return (
 		<Layout>
 			<SideMenu />
@@ -22,7 +35,7 @@ function Campaigns() {
 				<LargeTitleText sx={{color: '#00FFAA', textShadow: '0 0 10px #00FFAA'}}> Quests </LargeTitleText>
 			</mui.Box>
 			<mui.Box sx={{display: 'flex', flexDirection: 'column', mt: '3%'}}>
-				{testCampaign.map(campaign => (
+				{campaigns.map(campaign => (
 					<CampaignView {...campaign} key={campaign.id} />
 				))}
 			</mui.Box>

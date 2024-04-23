@@ -30,7 +30,7 @@ pub async fn create_user(request: User) -> AvailResult<String> {
     let client = reqwest::Client::new();
 
     let res = client
-        .post(format!("{}/user", api))
+        .post(format!("{}/user", "http://localhost:8001"))
         .json(&request)
         .send()
         .await?;

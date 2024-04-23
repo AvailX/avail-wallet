@@ -30,39 +30,39 @@ const TaskBox: React.FC<TaskBoxProps> = ({task, quest, questCompleted}) => {
 	const shouldRunEffect = React.useRef(true);
 	// Check if task has been complete
 
-    /*
 	React.useEffect(() => {
 		if (shouldRunEffect.current) {
-            if (questCompleted) {
-                setCompleted(true);
-            } else {
-			isTaskCompleted(task.id).then(res => {
-				if (res) {
-					setCompleted(true);
-				} else if (task.program_id && task.function_id) {
-					verifyTask(task.id, quest.created_on, quest.expires_on, task.program_id, task.function_id).then(res => {
-						if (res) {
-							setCompleted(true);
-						}
-					}).catch(err => {
-						console.log(err);
-					});
-				}
-			},
-			).catch(err => {
-				console.log(err);
-			});
-        }
+			if (questCompleted) {
+				setCompleted(true);
+			} else {
+				isTaskCompleted(task.id).then(res => {
+					console.log('Task complete ? : ', res);
+					if (res) {
+						setCompleted(true);
+					} else if (task.program_id && task.function_id) {
+						console.log('Verifying task');
+						verifyTask(task.id, quest.created_on, quest.expires_on, task.program_id, task.function_id).then(res => {
+							if (res) {
+								setCompleted(true);
+							}
+						}).catch(err => {
+							console.log(err);
+						});
+					}
+				},
+				).catch(err => {
+					console.log(err);
+				});
+			}
 
-        shouldRunEffect.current = false;
+			shouldRunEffect.current = false;
 		}
 	});
-    */
 
 	return (
 		<mui.Box sx={{
 			//backgroundImage: `linear-gradient(to right, #000 40%, transparent 60%),url(${quest.display_image})`,
-			bgcolor: '#000',
+			bgcolor: '#111111',
 			borderRadius: 5,
 			padding: '20px',
 			height: '100px',
@@ -72,12 +72,13 @@ const TaskBox: React.FC<TaskBoxProps> = ({task, quest, questCompleted}) => {
 			flexDirection: 'row',
 			alignItems: 'center',
 			justifyContent: 'space-between',
-            width: '80%',
-            alignSelf: 'center'
+			width: '80%',
+			alignSelf: 'center',
 		}}>
 			<mui.Box sx={{display: 'flex', flexDirection: 'column'}}>
 				<SubMainTitleText color='#FFF'>{task.title}</SubMainTitleText>
 				<mui.Typography variant='body1' color='#fff' sx={{mb: '0%'}}>{task.description}</mui.Typography>
+				<mui.Typography variant='h5' color='#fff' sx={{mt: '2%', color: '#00FFAA'}}>{task.points} Avail Points</mui.Typography>
 			</mui.Box>
 			{completed ? (
 				<CheckCircleIcon sx={{color: '#00FFAA', width: '35px', height: '35px'}}/>

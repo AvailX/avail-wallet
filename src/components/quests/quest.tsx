@@ -9,7 +9,6 @@ import {SubMainTitleText} from '../typography/typography';
 
 // Services
 import {isTaskCompleted} from '../../services/quests/quests';
-import {formatDate} from '../events/event';
 
 // Components
 import TaskDrawer from './tasks_drawer';
@@ -24,9 +23,17 @@ type QuestBoxProps = {
 	setQuest: (value: Quest) => void;
 };
 
+function formateDateString(date: string) {
+	const d = new Date(date);
+	const day = d.getDate();
+	const month = d.toLocaleString('default', {month: 'long'});
+	const year = d.getFullYear();
+	return `${day} ${month} ${year}`;
+}
+
 const QuestBox: React.FC<QuestBoxProps> = ({quest, openTasks, setOpenTasks, setQuest}) => {
 	const [completed, setCompleted] = React.useState(false);
-	/*
+
 	React.useEffect(() => {
 		isTaskCompleted(quest.id).then(res => {
 			if (res) {
@@ -36,7 +43,6 @@ const QuestBox: React.FC<QuestBoxProps> = ({quest, openTasks, setOpenTasks, setQ
 			console.log(err);
 		});
 	}, []);
-	*/
 
 	return (
 		<mui.Box sx={{
@@ -63,7 +69,7 @@ const QuestBox: React.FC<QuestBoxProps> = ({quest, openTasks, setOpenTasks, setQ
 		}}
 		>
 			<SubMainTitleText color='#FFF'>{quest.title}</SubMainTitleText>
-			<mui.Typography variant='body1' color='#fff' sx={{mb: '20%'}}>{quest.description}</mui.Typography>
+			<mui.Typography variant='body1' color='#fff' sx={{mb: '13%'}}>{quest.description}</mui.Typography>
 			{ quest.reward.method.toString() === 'LuckyDraw' ? (
 				<mui.Box sx={{display: 'flex', flexDirection: 'column'}}>
 					<mui.Typography variant='h4' color='#FFF'> Chance to Win {quest.reward.collection_name} Whitelist</mui.Typography>
@@ -83,7 +89,7 @@ const QuestBox: React.FC<QuestBoxProps> = ({quest, openTasks, setOpenTasks, setQ
 			{completed ? (
 				<CheckCircleIcon sx={{color: '#00FFAA', width: '35px', height: '35px'}}/>
 			) : (
-				<mui.Typography variant='body1' color='#A3A3A3' sx={{mt: '2%'}}>Expires on: {quest.expires_on.toString()}</mui.Typography>
+				<mui.Typography variant='body1' color='#A3A3A3' sx={{mt: '2%'}}>Expires on: {formateDateString(quest.expires_on.toString())}</mui.Typography>
 			)}
 		</mui.Box>);
 };

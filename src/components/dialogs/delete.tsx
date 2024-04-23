@@ -8,6 +8,7 @@ import { ErrorAlert, SuccessAlert } from '../snackbars/alerts';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
+
 type DeleteDialogProperties = {
 	isOpen: boolean;
 	onRequestClose: () => void;

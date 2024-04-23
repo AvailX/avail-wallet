@@ -17,12 +17,24 @@ import verified from '../../assets/icons/verified.svg';
 // Typography
 import {BodyText500} from '../../components/typography/typography';
 
+// Services
+import {isQuestCompleted} from '../../services/quests/quests';
+
+// Hooks
 import {useLocation} from 'react-router-dom';
+
+// Alerts
+import {SuccessAlert, ErrorAlert} from '../../components/snackbars/alerts';
 
 const Quests: React.FC = () => {
 	const {campaign, quests} = useLocation().state as CampaignDetailPageProps;
 	const [quest, setQuest] = React.useState<Quest>(quests[0]);
 	const [openTasks, setOpenTasks] = React.useState(false);
+	const [questCompleted, setQuestCompleted] = React.useState(false);
+
+	const [success, setSuccess] = React.useState(false);
+	const [error, setError] = React.useState(false);
+	const [message, setMessage] = React.useState('');
 
 	const mdsx = mui.useMediaQuery('(min-width:850px)');
 	const md = mui.useMediaQuery('(min-width:950px)');
@@ -31,10 +43,23 @@ const Quests: React.FC = () => {
 	const lg = mui.useMediaQuery('(min-width:1750px)');
 	const lgxl = mui.useMediaQuery('(min-width:1950px)');
 
+	React.useEffect(() => {
+		isQuestCompleted(quest.id).then(res => {
+	    if (res) {
+	      setQuestCompleted(true);
+	    }
+	  }).catch(err => {
+		setError(true);
+		setMessage('Error checking if task is completed');
+	  });
+}, [quest]);
+
 	return (
 		<Layout>
+			<ErrorAlert errorAlert={error} setErrorAlert={setError} message={message}/>
+			<SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message}/>
 			<SideMenu/>
-			<TaskDrawer open={openTasks} onClose={() => {setOpenTasks(false)}} quest={quest} questCompleted={false}/>
+			<TaskDrawer open={openTasks} onClose={() => {setOpenTasks(false)}} quest={quest} questCompleted={questCompleted}/>
 			<mui.Box sx={{ml: md ? '5%' : '7%', display: 'flex', flexDirection: 'column', width: md ? '95%' : '93%'}}>
 				<mui.Box sx={{background: `url(${campaign.bg_image})`, color: campaign.color, backgroundPosition: lgxl ? 'center' : 'bottom', height: lgxl ? '380px' : '320px', backgroundSize: 'cover'}}>
 					<mui.Box sx={{borderRadius: '100%', border: '1px solid #696969', p: 1.5, width: '200px', mt: lgxl ? '10%' : lg ? '8%' : lgsx ? '10%' : mdlg ? '10%' : md ? '13%' : mdsx ? '14%' : '17%', ml: '5%' }}>

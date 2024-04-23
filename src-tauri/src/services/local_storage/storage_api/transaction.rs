@@ -204,20 +204,32 @@ pub fn get_transaction_ids_for_quest_verification<N: Network>(
     let address = get_address::<N>()?;
     let network = get_network()?;
 
+    let start_time = start_time - chrono::Duration::hours(2);
+
     let time_filter = format!(
         "AND created_at BETWEEN '{}' AND '{}'",
         start_time.to_rfc3339(), // Converts DateTime<Utc> to a string in RFC3339 format suitable for SQL queries
         end_time.to_rfc3339()
     );
 
-    let query = format!(
-        "SELECT *,  program_ids as json_program_ids, function_ids as json_function_ids FROM encrypted_data WHERE flavour='{}' AND state='{}' AND owner='{}' AND network='{}' {}",
-        EncryptedDataTypeCommon::Transaction.to_str(),
-        TransactionState::Confirmed.to_str(),
+    // Query for transitions and deployments
+    let transitions_deployments_query = format!(
+        "SELECT *, '[]' as json_program_ids, '[]' as json_function_ids FROM encrypted_data WHERE flavour IN ('{}','{}') AND owner='{}' AND network='{}'",
+        EncryptedDataTypeCommon::Transition.to_str(),
+        EncryptedDataTypeCommon::Deployment.to_str(),
         address,
-        network,
-        time_filter // Adds the time filtering to the query
+        network
     );
+
+    // Query for transactions
+    let transactions_query = format!(
+        "SELECT *, program_ids as json_program_ids, function_ids as json_function_ids FROM encrypted_data WHERE flavour='{}' AND owner='{}' AND network='{}'",
+        EncryptedDataTypeCommon::Transaction.to_str(),
+        address,
+        network
+    );
+
+    let mut common_filter_conditions = String::new();
 
     let program_id_filter = format!(
         "AND (program_ids='{}' OR JSON_EXTRACT(json_program_ids, '$') LIKE '%{}%')",
@@ -229,11 +241,29 @@ pub fn get_transaction_ids_for_quest_verification<N: Network>(
         function_id, function_id
     );
 
-    let query = format!("{} {} {}", query, program_id_filter, function_id_filter);
+    common_filter_conditions.push_str(&program_id_filter);
+    common_filter_conditions.push_str(&function_id_filter);
+
+    let transitions_deployments_query_with_filters = format!(
+        "{} {}",
+        transitions_deployments_query, common_filter_conditions
+    );
+
+    let transactions_query_with_filters =
+        format!("{} {}", transactions_query, common_filter_conditions);
+
+    let mut combined_query = format!(
+        "{} UNION ALL {} ORDER BY created_at DESC",
+        transitions_deployments_query_with_filters, transactions_query_with_filters
+    );
+
+    //let query = format!("{} {} {}", query, program_id_filter, function_id_filter);
+
+    println!("Query: {}", combined_query);
 
     // Assuming the execution of the query and processing the result happens here
 
-    let encrypted_transactions = handle_encrypted_data_query(&query)?;
+    let encrypted_transactions = handle_encrypted_data_query(&combined_query)?;
     Ok(encrypted_transactions)
 }
 

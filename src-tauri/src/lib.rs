@@ -20,6 +20,12 @@ use services::local_storage::persistent_storage::{
     get_address_string, get_auth_type, get_backup_flag, get_language, get_last_sync, get_network,
     get_username, update_language,
 };
+
+use api::quests::{
+    check_quest_completion, get_campaigns, get_points, get_quests_for_campaign, get_whitelists,
+    is_task_verified, verify_task,
+};
+use api::user::{update_backup_flag, update_username};
 use services::local_storage::{
     encrypted_data::get_and_store_all_data,
     tokens::get_stored_tokens,
@@ -120,6 +126,13 @@ pub fn run() {
             get_avail_events,
             get_all_nft_data,
             transfer,
+            get_campaigns,
+            get_quests_for_campaign,
+            get_points,
+            get_whitelists,
+            verify_task,
+            is_task_verified,
+            check_quest_completion,
             /* --Wallet Connect Api */
             get_event,
             get_events,

@@ -5,8 +5,11 @@ import * as mui from '@mui/material';
 import {SubMainTitleText, SubtitleText, BodyText500} from '../../components/typography/typography';
 
 // Types
-import {type Campaign, type CampaignDetailPageProps, testQuests} from '../../types/quests/quest_types';
+import {type Campaign, type Quest, type CampaignDetailPageProps, testQuests} from '../../types/quests/quest_types';
 import {useNavigate} from 'react-router-dom';
+
+// Services
+import {getQuests} from '../../services/quests/quests';
 
 // Helper function to convert hex to RGBA
 const hexToRGBA = (hex: string, alpha: number) => {
@@ -19,10 +22,21 @@ const hexToRGBA = (hex: string, alpha: number) => {
 
 const CampaignView: React.FC<Campaign> = props => {
 	const navigate = useNavigate();
+
+	const [quests, setQuests] = React.useState<Quest[]>([]);
+
+	React.useEffect(() => {
+		getQuests(props.id).then(quests => {
+			setQuests(quests);
+		}).catch(err => {
+			console.log(err);
+		});
+	}, []);
+
 	const testCampaignDetailPage: CampaignDetailPageProps = {
 		campaign: props,
-		quests: testQuests,
-	}
+		quests,
+	};
 
 	return (
 		<mui.Card sx={{display: 'flex', flexDirection: 'row', background: `linear-gradient(to right,${hexToRGBA(props.color, 0.5)} 10%,${hexToRGBA(props.color, 0.25)} 50%, #171717 70%)`, justifyContent: 'space-between', alignItems: 'center', alignSelf: 'center', width: '85%', borderRadius: 7, cursor: 'pointer', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out, bgcolor 1s ease-in-out', // Smooth transition for transform and boxShadow
