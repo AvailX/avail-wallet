@@ -81,9 +81,9 @@ const Quests: React.FC = () => {
 				</mui.Box>
 				<mui.Divider sx={{width: '100%', height: '1px', bgcolor: '#00FFAA', mt: '3%'}} orientation='horizontal'/>
 				<mui.Grid container spacing={2} sx={{marginTop: '20px', alignItems: 'center', mb: '5%', paddingLeft: '2%', bgcolor: '#111111', alignSelf: 'center', width: '100%', justifyContent: 'space-around'}}>
-					{quests.map(quest => (
+					{quests && (quests.map(quest => (
 						<QuestBox key={quest.id} quest={quest} openTasks={openTasks} setOpenTasks={setOpenTasks} setQuest={setQuest}/>
-					))}
+					)))}
 				</mui.Grid>
 			</mui.Box>
 		</Layout>

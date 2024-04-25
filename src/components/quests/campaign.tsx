@@ -24,10 +24,12 @@ const CampaignView: React.FC<Campaign> = props => {
 	const navigate = useNavigate();
 
 	const [quests, setQuests] = React.useState<Quest[]>([]);
-
+	const [isLoaded, setLoaded] = React.useState(false);
 	React.useEffect(() => {
 		getQuests(props.id).then(quests => {
+			console.log("QUESTS",quests);
 			setQuests(quests);
+			setLoaded(true);
 		}).catch(err => {
 			console.log(err);
 		});
@@ -46,7 +48,9 @@ const CampaignView: React.FC<Campaign> = props => {
 			},
 		}}
 		onClick={() => {
-			navigate('/quests', {state: testCampaignDetailPage});
+			if (isLoaded){			navigate('/quests', {state: testCampaignDetailPage});
+		}
+
 		}}
 		>
 			<mui.Box sx={{display: 'flex', flexDirection: 'column', ml: '2%'}}>
