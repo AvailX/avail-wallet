@@ -1,6 +1,7 @@
 use avail_common::aleo_tools::test_utils::HELLO_PROGRAM;
 use avail_common::converters::messages::{field_to_fields, utf8_string_to_bits};
 use avail_common::errors::AvailResult;
+use avail_common::models::user::User;
 use snarkvm::prelude::Program;
 
 use avail_common::aleo_tools::program_manager::TransferType;
@@ -20,13 +21,14 @@ use snarkvm::prelude::{
     ViewKey,
 };
 use snarkvm::synthesizer::program::{Command, Instruction, ProgramCore};
-use snarkvm::utilities::ToBits;
+use snarkvm::utilities::{ToBits, ToBytes};
 use std::collections::HashMap;
 use std::ops::Sub;
 use std::str::FromStr;
 use tauri::{Manager, Window};
 
 use crate::api::client::SESSION;
+use crate::api::user::{create_user, get_user};
 use crate::api::{
     aleo_client::{setup_client, setup_local_client},
     encrypted_data::{post_encrypted_data, send_transaction_in},
@@ -43,13 +45,22 @@ use crate::models::pointers::{
     record::AvailRecord,
     transaction::{ExecutedTransition, TransactionPointer},
 };
+use crate::models::storage::languages::Languages;
+use crate::models::wallet::BetterAvailWallet;
 use crate::models::wallet_connect::balance::Balance;
 
 use crate::models::wallet_connect::records::{GetRecordsRequest, RecordFilterType, RecordsFilter};
-use crate::services::authentication::session::get_session;
-use crate::services::local_storage::encrypted_data::get_encrypted_data_by_flavour;
+use crate::services::account::key_management::key_controller::{
+    iOSKeyController, macKeyController, KeyController,
+};
+use crate::services::authentication::session::{get_session, get_session_after_creation};
+use crate::services::local_storage::encrypted_data::{
+    get_encrypted_data_by_flavour, initialize_encrypted_data_table,
+};
+use crate::services::local_storage::persistent_storage::initial_user_preferences;
 use crate::services::local_storage::tokens::{
     add_balance, get_balance, get_program_id_for_token, if_token_exists, init_token,
+    init_tokens_table,
 };
 use crate::services::local_storage::{
     encrypted_data::{
@@ -235,10 +246,173 @@ pub fn test_snarkvm_mobile_deploy() -> AvailResult<String> {
     Ok(deployement_id.to_string())
 }
 
+#[tauri::command(rename_all = "snake_case")]
+pub async fn init_user_mobile() -> AvailResult<String> {
+    let avail_wallet = BetterAvailWallet::<Testnet3>::from_seed_phrase(
+        "unusual squeeze advance legend sign drink buffalo until craft record carpet shuffle
+        ",
+        Languages::to_bip39_language(&Languages::English),
+    )
+    .unwrap();
+
+    // let key_manager = {
+    //     #[cfg(target_os = "macos")]
+    //     {
+    //         macKeyController
+    //     }
+    //     #[cfg(target_os = "windows")]
+    //     {
+    //         windowsKeyController
+    //     }
+    //     #[cfg(target_os = "linux")]
+    //     {
+    //         linuxKeyController
+    //     }
+    //     #[cfg(target_os = "android")]
+    //     {
+    //         AndroidKeyController {}
+    //     }
+    //     #[cfg(target_os = "ios")]
+    //     {
+    //         iOSKeyController {}
+    //     }
+    // };
+
+    // key_manager
+    //     .store_key("tylerDurden@0xf5", &avail_wallet)
+    //     .unwrap();
+
+    get_session_after_creation::<Testnet3>(&avail_wallet.private_key)
+        .await
+        .unwrap();
+
+    let (username, tag, backup) = match get_user().await {
+        Ok(user) => (user.username, user.tag, user.backup),
+        Err(_) => {
+            let request = User {
+                username: None,
+                address: avail_wallet.get_address(),
+                tag: None,
+                backup: false,
+            };
+            create_user(request).await.unwrap();
+            (None, None, false)
+        }
+    };
+
+    let _v_key = avail_wallet.view_key.to_bytes_le().unwrap();
+
+    //let mut last_sync = 0u32;
+
+    initial_user_preferences(
+        true,
+        username,
+        tag,
+        true,
+        backup,
+        avail_wallet.get_address(),
+        Languages::English,
+    )
+    .unwrap();
+
+    init_tokens_table().unwrap();
+
+    // some function
+
+    initialize_encrypted_data_table().unwrap();
+    VIEWSESSION
+        .set_view_session(&avail_wallet.get_view_key())
+        .unwrap();
+    Ok(format!(
+        "User Initialized with address: {} || PK: {}",
+        avail_wallet.get_address(),
+        avail_wallet.get_private_key()
+    ))
+}
+
 // write a test case for the test_transfer_public_mobile function
 
 #[tokio::test]
 async fn test_mobile() {
     let result = test_transfer_public_mobile().await.unwrap();
     println!("{:?}", result);
+}
+
+#[tokio::test]
+async fn test_init_user() {
+    let avail_wallet = BetterAvailWallet::<Testnet3>::from_seed_phrase(
+        "unusual squeeze advance legend sign drink buffalo until craft record carpet shuffle
+        ",
+        Languages::to_bip39_language(&Languages::English),
+    )
+    .unwrap();
+
+    let key_manager = {
+        #[cfg(target_os = "macos")]
+        {
+            macKeyController
+        }
+        #[cfg(target_os = "windows")]
+        {
+            windowsKeyController
+        }
+        #[cfg(target_os = "linux")]
+        {
+            linuxKeyController
+        }
+        #[cfg(target_os = "android")]
+        {
+            AndroidKeyController {}
+        }
+        #[cfg(target_os = "ios")]
+        {
+            iOSKeyController {}
+        }
+    };
+
+    key_manager
+        .store_key("tylerDurden@0xf5", &avail_wallet)
+        .unwrap();
+
+    get_session_after_creation::<Testnet3>(&avail_wallet.private_key)
+        .await
+        .unwrap();
+
+    let (username, tag, backup) = match get_user().await {
+        Ok(user) => (user.username, user.tag, user.backup),
+        Err(_) => {
+            let request = User {
+                username: None,
+                address: avail_wallet.get_address(),
+                tag: None,
+                backup: false,
+            };
+            create_user(request).await.unwrap();
+            (None, None, false)
+        }
+    };
+
+    let _v_key = avail_wallet.view_key.to_bytes_le().unwrap();
+
+    //let mut last_sync = 0u32;
+
+    initial_user_preferences(
+        true,
+        username,
+        tag,
+        true,
+        backup,
+        avail_wallet.get_address(),
+        Languages::English,
+    )
+    .unwrap();
+
+    init_tokens_table().unwrap();
+
+    // some function
+
+    initialize_encrypted_data_table().unwrap();
+    VIEWSESSION
+        .set_view_session(&avail_wallet.get_view_key())
+        .unwrap();
 }

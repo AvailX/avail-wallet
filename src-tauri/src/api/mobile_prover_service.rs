@@ -31,7 +31,7 @@ pub async fn delegate_execution(request: ProverRequest) -> AvailResult<String> {
         .await?;
     println!("Prover Response{:?}", res);
     if res.status() == 200 {
-        Ok("Execution Sucessfull".to_string())
+        Ok(res.text().await?)
     } else {
         Err(AvailError::new(
             AvailErrorType::External,

@@ -3,6 +3,7 @@ pub mod helpers;
 pub mod models;
 pub mod services;
 
+use crate::helpers::mobile_init::init_user_mobile;
 use crate::helpers::mobile_init::test_snarkvm_mobile;
 use crate::helpers::mobile_init::test_snarkvm_mobile_deploy;
 use crate::helpers::mobile_init::test_transfer_public_mobile;
@@ -133,7 +134,8 @@ pub fn run() {
             pre_install_inclusion_prover,
             test_transfer_public_mobile,
             test_snarkvm_mobile,
-            test_snarkvm_mobile_deploy
+            test_snarkvm_mobile_deploy,
+            init_user_mobile,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
