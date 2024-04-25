@@ -5,7 +5,7 @@ import * as mui from '@mui/material';
 import {SubMainTitleText, SubtitleText, BodyText500} from '../../components/typography/typography';
 
 // Types
-import {type Campaign, type Quest, type CampaignDetailPageProps, testQuests} from '../../types/quests/quest_types';
+import {type Campaign, type Quest, type CampaignDetailPageProps} from '../../types/quests/quest_types';
 import {useNavigate} from 'react-router-dom';
 
 // Services
