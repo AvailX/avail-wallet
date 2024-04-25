@@ -139,7 +139,6 @@ function Login() {
 							),
 						}}
 						onKeyDown={e => {
-							console.log(e.key);
 							if (e.key === 'Enter') {
 								handleLogin();
 							}
