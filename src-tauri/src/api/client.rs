@@ -27,7 +27,7 @@ pub fn get_quest_client_with_session(
     };
 
     let cookie_value = format!("{}={}", cookie_name, session);
-    let url = format!("{}/quests/{}", "http://localhost:8081", path);
+    let url = format!("{}/quests/{}", api, path);
 
     let request = client
         .request(method, url)
@@ -56,7 +56,7 @@ pub fn get_rm_client_with_session(
     };
 
     let cookie_value = format!("{}={}", cookie_name, session);
-    let url = format!("{}/encrypted_data/{}", "http://localhost:8000", path);
+    let url = format!("{}/encrypted_data/{}", api, path);
 
     let request = client
         .request(method, url)
@@ -85,7 +85,7 @@ pub fn get_backup_client_with_session(
     };
 
     let cookie_value = format!("{}={}", cookie_name, session);
-    let url = format!("{}/recoveryFlags/{}", "http://localhost:8000", path);
+    let url = format!("{}/recoveryFlags/{}", api, path);
 
     println!("URL: {:?}", url);
     let request = client
@@ -116,7 +116,7 @@ pub fn get_um_client_with_session(
 
     let cookie_value = format!("{}={}", cookie_name, session);
 
-    let url = format!("{}/{}", "http://localhost:8001", path);
+    let url = format!("{}/{}", api, path);
     let request = client
         .request(method, url)
         .header(reqwest::header::COOKIE, cookie_value);

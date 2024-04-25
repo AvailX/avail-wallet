@@ -259,8 +259,6 @@ pub fn get_transaction_ids_for_quest_verification<N: Network>(
 
     //let query = format!("{} {} {}", query, program_id_filter, function_id_filter);
 
-    println!("Query: {}", combined_query);
-
     // Assuming the execution of the query and processing the result happens here
 
     let encrypted_transactions = handle_encrypted_data_query(&combined_query)?;

@@ -61,7 +61,7 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the Avail team for enforcement via
-[Discord](https://discord.gg/avail-1140618884764942386) or
+[Discord](https://discord.gg/availwallet) or
 [Telegram](`https://telegram.me/girogio_gg`). All complaints will be reviewed
 and investigated promptly and fairly.
 

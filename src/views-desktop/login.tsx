@@ -138,6 +138,12 @@ function Login() {
 								</mui.InputAdornment>
 							),
 						}}
+						onKeyDown={e => {
+							console.log(e.key);
+							if (e.key === 'Enter') {
+								handleLogin();
+							}
+						}}
 					/>
 
 					<LoginButton onClick={() => {

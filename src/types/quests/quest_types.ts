@@ -44,6 +44,11 @@ export type WhitelistResponse = {
 	amount: number;
 };
 
+export type PointsResponse = {
+	points: number;
+	img_src: string;
+};
+
 export type CampaignDetailPageProps = {
 	campaign: Campaign;
 	quests: Quest[];
@@ -207,3 +212,16 @@ export const testQuests: Quest[] = [{
 }
 ];
 
+export const testPoints: PointsResponse[] = [{
+	points: 100,
+	img_src: 'https://i.imgur.com/vVySQ4o.png',
+},
+{
+	points: 80,
+	img_src: 'https://i.imgur.com/Wrcwhkn.png',
+}];
+
+export const testWhitelist: WhitelistResponse[] = [{
+	collection_name: 'Disruptors',
+	amount: 1,
+}];

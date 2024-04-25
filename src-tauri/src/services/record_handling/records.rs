@@ -127,7 +127,28 @@ pub fn get_records<N: Network>(
     let mut found_flag = false;
 
     for _ in (last_sync..latest_height).step_by(step_size as usize) {
-        let mut blocks = api_client.get_blocks(start_height, end_height)?;
+        let mut blocks = match api_client.get_blocks(start_height, end_height) {
+            Ok(blocks) => blocks,
+            Err(e) => {
+                println!("Error getting blocks: {:?}", e.to_string());
+
+                if &e.to_string() == "zero txs error" {
+                    start_height = end_height;
+                    end_height = start_height.saturating_add(step_size);
+                    if end_height > latest_height {
+                        end_height = latest_height;
+                    };
+
+                    continue;
+                }
+
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    e.to_string(),
+                    "Error getting blocks".to_string(),
+                ));
+            }
+        };
 
                 for block in blocks {
                     // Check for deployment transactions

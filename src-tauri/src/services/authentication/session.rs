@@ -42,7 +42,7 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
     let client = reqwest::Client::new();
 
     let res = client
-        .post(format!("{}/auth/login/", "http://localhost:8001"))
+        .post(format!("{}/auth/login/", api))
         .json(&verify_request)
         .send()
         .await?;
@@ -94,7 +94,7 @@ pub async fn get_session_after_creation<N: Network>(
     let api = env!("API");
 
     let res = reqwest::Client::new()
-        .post(format!("{}/auth/login/", "http://localhost:8001"))
+        .post(format!("{}/auth/login/", api))
         .json(&verify_request)
         .send()
         .await?;
@@ -145,7 +145,7 @@ pub async fn request_hash(address: &str) -> AvailResult<server_auth::CreateSessi
     let api = env!("API");
 
     let res = client
-        .post(format!("{}/auth/request/", "http://localhost:8001"))
+        .post(format!("{}/auth/request/", api))
         .header("Content-Type", "application/json")
         .json(&request)
         .send()

@@ -8,7 +8,7 @@ import {type Quest} from '../../types/quests/quest_types';
 import {SubMainTitleText} from '../typography/typography';
 
 // Services
-import {isTaskCompleted} from '../../services/quests/quests';
+import {isQuestCompleted} from '../../services/quests/quests';
 
 // Components
 import TaskDrawer from './tasks_drawer';
@@ -34,14 +34,19 @@ function formateDateString(date: string) {
 const QuestBox: React.FC<QuestBoxProps> = ({quest, openTasks, setOpenTasks, setQuest}) => {
 	const [completed, setCompleted] = React.useState(false);
 
+	const shouldRunEffect = React.useRef(true);
 	React.useEffect(() => {
-		isTaskCompleted(quest.id).then(res => {
-			if (res) {
-				setCompleted(true);
-			}
-		}).catch(err => {
-			console.log(err);
-		});
+		if (shouldRunEffect.current) {
+			isQuestCompleted(quest.id).then(res => {
+				console.log('Quest complete ? : ', res);
+				if (res) {
+					setCompleted(true);
+				}
+			}).catch(err => {
+				console.log(err);
+			});
+			shouldRunEffect.current = false;
+		}
 	}, []);
 
 	return (
@@ -68,11 +73,11 @@ const QuestBox: React.FC<QuestBoxProps> = ({quest, openTasks, setOpenTasks, setQ
 			setOpenTasks(true);
 		}}
 		>
-			<SubMainTitleText color='#FFF'>{quest.title}</SubMainTitleText>
-			<mui.Typography variant='body1' color='#fff' sx={{mb: '13%'}}>{quest.description}</mui.Typography>
+			<SubMainTitleText color='#FFF' sx={{backdropFilter: 'blur(2px)'}}>{quest.title}</SubMainTitleText>
+			<mui.Typography variant='body1' color='#fff' sx={{mb: '13%', backdropFilter: 'blur(2px)'}}>{quest.description}</mui.Typography>
 			{ quest.reward.method.toString() === 'LuckyDraw' ? (
 				<mui.Box sx={{display: 'flex', flexDirection: 'column'}}>
-					<mui.Typography variant='h4' color='#FFF'> Chance to Win {quest.reward.collection_name} Whitelist</mui.Typography>
+					<mui.Typography variant='h4' color='#FFF' sx={{backdropFilter: 'blur(2px)'}}> Chance to Win {quest.reward.collection_name} Whitelist</mui.Typography>
 					<mui.Typography variant='body1' color='#00FFAA'> Allocation {quest.reward.amount} </mui.Typography>
 				</mui.Box>
 			)

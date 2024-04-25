@@ -978,10 +978,10 @@ pub async fn pre_install_inclusion_prover() -> AvailResult<()> {
         let client = reqwest::Client::new();
 
         println!("Downloading inclusion.prover.cd85cc5...");
-
+        //https://s3-us-west-1.amazonaws.com/testnet.parameters/resources/inclusion/prover
         let task = tokio::spawn(async move {
             client
-                .get("https://s3-us-west-1.amazonaws.com/aleo-resources/inclusion.prover.cd85cc5")
+                .get("https://s3-us-west-1.amazonaws.com/testnet.parameters/resources/inclusion.prover")
                 .send()
                 .await
         });

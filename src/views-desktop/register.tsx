@@ -232,6 +232,11 @@ function Register() {
 						}}
 						error={Boolean(confirmPasswordError)}
 						helperText={confirmPasswordError}
+						onKeyDown={e => {
+							if (e.key === 'Enter') {
+								handleCreateWallet();
+							}
+						}}
 					/>
 
 					<mui.Typography sx={{
@@ -247,8 +252,13 @@ function Register() {
 						// Register(username, password, biometric, navigate);
 						// navigate('/home-desktop')
 					}}
-						sx={{ marginTop: '5%' }}
-						endIcon={<ArrowForward style={{ color: '#FFF' }} />}
+					sx={{marginTop: '5%'}}
+					endIcon={<ArrowForward style={{color: '#FFF'}} />}
+					onKeyDown={e => {
+						if (e.key === 'Enter') {
+							handleCreateWallet();
+						}
+					}}
 					>
 						<mui.Typography sx={{ fontSize: '1.2rem', fontWeight: 700 }}>
 							{t('signup.CTAButton')}

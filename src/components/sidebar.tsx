@@ -7,7 +7,7 @@ import {
 
 // material ui components
 import MuiDrawer from '@mui/material/Drawer';
-import MuiAppBar, { type AppBarProps as MuiAppBarProperties } from '@mui/material/AppBar';
+import MuiAppBar, {type AppBarProps as MuiAppBarProperties} from '@mui/material/AppBar';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
@@ -15,6 +15,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import {SvgIcon, createSvgIcon} from '@mui/material';
 
 // Icons
 import SwapHoriz from '@mui/icons-material/SwapHoriz';
@@ -24,13 +25,14 @@ import HistoryIcon from '@mui/icons-material/History';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import LanguageIcon from '@mui/icons-material/Language';
+import DiamondIcon from '@mui/icons-material/Diamond';
 import DropIcon from '@mui/icons-material/WaterDrop';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import a_logo from '../assets/logo/a-icon.svg';
-import { open_url } from '../services/util/open';
+import {open_url} from '../services/util/open';
 import LogoutDialog from './dialogs/logout';
 import Tooltip from '@mui/material/Tooltip';
-import { SmallText } from './typography/typography';
+import {SmallText} from './typography/typography';
 
 const drawerWidth = 240;
 const renderIcon = (index: number) => {
@@ -61,21 +63,26 @@ const renderIcon = (index: number) => {
 		}
 
 		case 5: {
-			return <InsertPhotoIcon />;
+			return <DiamondIcon/>;
 			break;
 		}
 
 		case 6: {
-			return <SupportAgentRoundedIcon />;
+			return <InsertPhotoIcon />;
 			break;
 		}
 
 		case 7: {
-			return <SettingsRoundedIcon />;
+			return <SupportAgentRoundedIcon />;
 			break;
 		}
 
 		case 8: {
+			return <SettingsRoundedIcon />;
+			break;
+		}
+
+		case 9: {
 			return <LogoutIcon />;
 			break;
 		}
@@ -206,7 +213,12 @@ export default function SideMenu() {
 			}
 
 			case 6: {
-				open_url('https://discord.gg/avail-1140618884764942386').then(res => {
+				navigate('/nfts');
+				break;
+			}
+
+			case 7: {
+				open_url('https://discord.gg/availwallet').then(res => {
 					console.log(res);
 				}).catch(error => {
 					console.log(error);
@@ -214,12 +226,12 @@ export default function SideMenu() {
 				break;
 			}
 
-			case 7: {
+			case 8: {
 				navigate('/settings');
 				break;
 			}
 
-			case 8: {
+			case 9: {
 				setLogoutDialog(true);
 				break;
 			}
@@ -237,7 +249,7 @@ export default function SideMenu() {
 				setLogoutDialog(false);
 			}} />
 			<List onMouseEnter={() => { setOpen(true); setHover(true) }} onMouseLeave={() => { setOpen(false); setHover(false) }} >
-				{['Home', 'Send', 'Activity', 'Faucet', 'Dapps', 'Nfts', 'Support', 'Settings', 'Logout'].map((text, index) => (
+				{['Home', 'Send', 'Activity', 'Faucet', 'Dapps', 'Quests', 'Nfts', 'Support', 'Settings', 'Logout'].map((text, index) => (
 					<ListItem key={text} disablePadding sx={{
 						display: 'block', color: '#fff', marginTop: (text == 'Home') ? '' : '10%', transition: 'transform 0.3s ease-in-out, boxShadow 0.3s ease-in-out', // Smooth transition for transform and boxShadow
 						'&:hover': {

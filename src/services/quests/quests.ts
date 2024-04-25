@@ -1,8 +1,6 @@
 import {invoke} from '@tauri-apps/api/core';
 
-import {type Campaign} from '../../types/quests/quest_types';
-import {type Quest} from '../../types/quests/quest_types';
-import {type WhitelistResponse} from '../../types/quests/quest_types';
+import {type Campaign, type Quest, type WhitelistResponse, type PointsResponse} from '../../types/quests/quest_types';
 
 export async function getCampaigns() {
 	return invoke<Campaign[]>('get_campaigns');
@@ -30,9 +28,9 @@ export async function verifyTask(taskId: string, startTime: Date, endTime: Date,
 }
 
 export async function getPoints() {
-	return invoke<number>('get_points');
+	return invoke<PointsResponse[]>('get_points');
 }
 
-export async function getWhitelise() {
-	return invoke<WhitelistResponse>('get_whitelist');
+export async function getWhitelists() {
+	return invoke<WhitelistResponse[]>('get_whitelists');
 }

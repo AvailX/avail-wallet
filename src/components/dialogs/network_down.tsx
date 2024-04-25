@@ -61,11 +61,11 @@ const NetworkDownDialog: React.FC<NetworkDownDialogProperties> = ({isOpen, onReq
 								<BodyText500>Whilst they build, come conversate with us on
 									<BodyText500 sx={{color: '#00FFAA', cursor: 'pointer', alignItems: 'center', display: 'flex'}}
 										onClick={async () => {
-											await open_url('https://discord.gg/avail-1140618884764942386');
+											await open_url('https://discord.gg/availwallet');
 										}}> discord.
 										<img src={avlDiscord} alt='avail-discord' style={{cursor: 'pointer', width: '30px', height: '30px', marginLeft: '4px'}}
 											onClick={async () => {
-												await open_url('https://discord.gg/avail-1140618884764942386');
+												await open_url('https://discord.gg/availwallet');
 											}}/>
 									</BodyText500>
 								</BodyText500>
@@ -78,11 +78,11 @@ const NetworkDownDialog: React.FC<NetworkDownDialogProperties> = ({isOpen, onReq
 									<BodyText500> If it does please contact us on
 										<BodyText500 sx={{color: '#00FFAA', cursor: 'pointer', alignItems: 'center', display: 'flex'}}
 											onClick={async () => {
-												await open_url('https://discord.gg/avail-1140618884764942386');
+												await open_url('https://discord.gg/availwallet');
 											}}> discord.
 											<img src={avlDiscord} alt='avail-discord' style={{cursor: 'pointer', width: '30px', height: '30px', marginLeft: '4px'}}
 												onClick={async () => {
-													await open_url('https://discord.gg/avail-1140618884764942386');
+													await open_url('https://discord.gg/availwallet');
 												}}/>
 										</BodyText500>
 

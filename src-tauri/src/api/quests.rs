@@ -172,8 +172,6 @@ async fn verify_task_raw<N: Network>(
         function_id,
     )?;
 
-    println!("encrypted_transactions: {:?}", encrypted_transactions);
-
     if encrypted_transactions.is_empty() {
         return Ok(false);
     }
@@ -185,6 +183,17 @@ async fn verify_task_raw<N: Network>(
     let aleo_client = setup_client::<N>()?;
 
     for encrypted_transaction in encrypted_transactions {
+        // check if the encypted_transaction created_at date is in between the start_time and end_time
+        println!("Checking time {}", encrypted_transaction.created_at);
+        println!("Start time {}", start_time);
+        println!("End time {}", end_time);
+        if encrypted_transaction.created_at < start_time
+            || encrypted_transaction.created_at > end_time
+        {
+            println!("Failed time check");
+            continue;
+        }
+
         println!("Into the Dungeon!");
         let encrypted_struct = encrypted_transaction.to_enrypted_struct::<N>()?;
 
@@ -217,7 +226,13 @@ async fn verify_task_raw<N: Network>(
 
     let transaction = aleo_client.get_transaction(transaction_ids[0])?;
 
+    println!("Transaction: {:?}", transaction);
+
     for transition in transaction.transitions() {
+        println!("Transition program id: {:?}", transition.program_id());
+        println!("Program id: {:?}", program_id);
+        println!("Transition function name: {:?}", transition.function_name());
+        println!("Function id: {:?}", function_id);
         if transition.program_id().to_string().as_str() == program_id
             && transition.function_name().to_string().as_str() == function_id
         {
@@ -242,6 +257,8 @@ async fn verify_task_raw<N: Network>(
             if res.status() == 200 {
                 let completion: VerifyTaskResponse = res.json().await?;
 
+                println!("TASK VERIF Response: {:?}", completion.verified);
+
                 return Ok(completion.verified);
             } else if res.status() == 401 {
                 return Err(AvailError::new(
@@ -264,15 +281,15 @@ async fn verify_task_raw<N: Network>(
 
 /* GET USER'S POINTS */
 #[tauri::command(rename_all = "snake_case")]
-pub async fn get_points() -> AvailResult<i32> {
+pub async fn get_points() -> AvailResult<Vec<PointsResponse>> {
     let res = get_quest_client_with_session(reqwest::Method::GET, "points")?
         .send()
         .await?;
 
     if res.status() == 200 {
-        let points: PointsResponse = res.json().await?;
+        let points: Vec<PointsResponse> = res.json().await?;
 
-        Ok(points.points)
+        Ok(points)
     } else if res.status() == 401 {
         Err(AvailError::new(
             AvailErrorType::Unauthorized,
@@ -290,13 +307,13 @@ pub async fn get_points() -> AvailResult<i32> {
 
 /* GET USER'S WHITELIST */
 #[tauri::command(rename_all = "snake_case")]
-pub async fn get_whitelists() -> AvailResult<WhitelistResponse> {
+pub async fn get_whitelists() -> AvailResult<Vec<WhitelistResponse>> {
     let res = get_quest_client_with_session(reqwest::Method::GET, "whitelists")?
         .send()
         .await?;
 
     if res.status() == 200 {
-        let whitelists: WhitelistResponse = res.json().await?;
+        let whitelists: Vec<WhitelistResponse> = res.json().await?;
 
         Ok(whitelists)
     } else if res.status() == 401 {
