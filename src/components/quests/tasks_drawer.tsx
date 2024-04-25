@@ -27,7 +27,6 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({open, onClose, quest, questCompl
 				borderTopLeftRadius: '20px',
 				borderTopRightRadius: '20px',
 				height: '95%', // Drawer height
-				//overflow: 'hidden', // Prevent scrolling on the entire drawer
 				backgroundImage: `linear-gradient(to right, transparent 100%, #171717 0%),url(${greenGlow})`,
 				backgroundSize: 'cover',
 				bgcolor: '#171717',
@@ -46,11 +45,17 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({open, onClose, quest, questCompl
 		</mui.Box>
 
 		<SubMainTitleText sx={{color: '#fff', ml: '5%'}}>Tasks</SubMainTitleText>
-
+		{			console.log("......",quest)}
 		{/* Quest title */}
-		{quest.tasks.map(task => (
-			<TaskBox key={task.id} task={task} quest={quest} questCompleted={questCompleted} />
-		))}
+		{quest && (
+			quest.tasks?.map(task => (
+				<TaskBox key={task.id} task={task} quest={quest} questCompleted={questCompleted} />
+			))
+		)}
+			<mui.Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: '#fff'}}>
+				No tasks available
+			</mui.Box>
+		
 
 	</mui.Drawer>
 );

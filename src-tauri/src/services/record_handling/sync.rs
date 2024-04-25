@@ -226,7 +226,7 @@ pub async fn sync_backup() -> AvailResult<()> {
 
     if backup {
         let last_backup_sync = get_last_backup_sync()?;
-
+        println!("Last Backup Sync to fetch from: {:?}", last_backup_sync);
         /* Handle spent updates first */
         let encrypted_data_to_update = get_encrypted_data_to_update(last_backup_sync)?;
 
@@ -256,19 +256,40 @@ pub async fn sync_backup() -> AvailResult<()> {
             .collect::<AvailResult<Vec<()>>>()?;
 
         let last_sync = get_last_sync()?;
-
+        println!(
+            "BACKUP PUSH
+        \n HEIGHT{:?} \n OLD TS{:?}",
+            last_sync,
+            last_backup_sync.timestamp()
+        );
         // get timestamp from block
         let api_client = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => setup_local_client::<Testnet3>(),
             _ => setup_local_client::<Testnet3>(),
         };
-
-        let block = api_client.get_block(last_sync)?;
-        let ts = block.timestamp();
-        let timestamp = get_timestamp_from_i64_utc(ts)?;
         update_sync_height(address.clone(), last_sync.to_string()).await?;
-        update_backup_timestamp(address, ts).await?;
+        println!("up[dates height");
+
+        println!("WORKS0");
+        let block = api_client.get_block(last_sync)?;
+        /// FUCKED UP RIGHT HERE
+        println!("WORKS1");
+        let ts = block.timestamp();
+        println!("WORKS2");
+
+        let timestamp = get_timestamp_from_i64_utc(ts)?;
+        println!("WORKS3");
+
+        println!(
+            "BACKUP PUSH
+        \n HEIGHT{:?} \n TS{:?}",
+            last_sync,
+            timestamp.timestamp()
+        );
         update_last_backup_sync(timestamp)?;
+        println!("updates");
+
+        update_backup_timestamp(address, ts).await?;
         Ok(())
 
         // update last backup sync on server side too - to be implemented\\\\\\\\\\\\\\
