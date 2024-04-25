@@ -354,6 +354,7 @@ mod test {
             None,
             false,
             false,
+            false,
             view_key.to_address().to_string(),
             Languages::English,
         )
@@ -396,6 +397,7 @@ mod test {
             None,
             false,
             true,
+            false,
             vk.to_address().to_string(),
             Languages::English,
         )

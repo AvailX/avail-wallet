@@ -52,7 +52,10 @@ pub async fn create_seed_phrase_wallet(
     };
 
     create_user(user_request).await?;
-
+    #[cfg(mobile)]
+    let delegate = true;
+    #[cfg(not(mobile))]
+    let delegate = false;
     //TODO: Change to mainnet on launch
     initial_user_preferences(
         access_type,
@@ -60,6 +63,7 @@ pub async fn create_seed_phrase_wallet(
         tag,
         false,
         backup,
+        delegate,
         avail_wallet.address.to_string(),
         language.clone(),
     )?;
@@ -128,12 +132,18 @@ pub async fn import_wallet(
 
     create_user(user_request).await?;
 
+    #[cfg(mobile)]
+    let delegate = true;
+    #[cfg(not(mobile))]
+    let delegate = false;
+
     initial_user_preferences(
         access_type,
         username,
         tag,
         true,
         backup,
+        delegate,
         avail_wallet.address.to_string(),
         language,
     )?;

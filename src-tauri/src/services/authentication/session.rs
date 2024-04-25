@@ -261,6 +261,7 @@ mod tests {
             Some(tag),
             false,
             false,
+            false,
             v_key.to_address().to_string(),
             Languages::English,
         )

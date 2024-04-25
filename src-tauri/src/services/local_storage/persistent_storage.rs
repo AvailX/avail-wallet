@@ -16,6 +16,7 @@ pub fn initial_user_preferences(
     tag: Option<u32>,
     import: bool,
     backup: bool,
+    delegate: bool,
     address: String,
     language: Languages,
 ) -> AvailResult<()> {
@@ -67,9 +68,10 @@ pub fn initial_user_preferences(
             &last_tx_sync,
             &Some(Utc::now()),
             &address,
-            &backup
+            &backup,
+            &delegate
         ],
-        "INSERT INTO user_preferences (theme, language, network, auth_type, username, tag, last_sync, last_tx_sync, last_backup_sync, address, backup) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,?10, ?11)".to_string(),
+        "INSERT INTO user_preferences (theme, language, network, auth_type, username, tag, last_sync, last_tx_sync, last_backup_sync, address, backup, delegate) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,?10, ?11)".to_string(),
     )?;
 
     Ok(())
@@ -430,6 +432,7 @@ fn test_initial_user_preferences() {
         true,
         Some("Test".to_string()),
         Some(1234),
+        false,
         false,
         false,
         "address".to_string(),

@@ -310,6 +310,7 @@ pub async fn init_user_mobile() -> AvailResult<String> {
         tag,
         true,
         backup,
+        false,
         avail_wallet.get_address(),
         Languages::English,
     )
@@ -402,6 +403,7 @@ async fn test_init_user() {
         tag,
         true,
         backup,
+        false,
         avail_wallet.get_address(),
         Languages::English,
     )

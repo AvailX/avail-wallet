@@ -657,6 +657,7 @@ mod encrypted_data_tests {
             None,
             false,
             false,
+            false,
             view_key.to_address().to_string(),
             Languages::English,
         )

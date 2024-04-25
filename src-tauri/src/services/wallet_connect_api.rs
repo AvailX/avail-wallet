@@ -765,6 +765,7 @@ mod test {
             None,
             false,
             false,
+            false,
             view_key.to_address().to_string(),
             Languages::English,
         )
