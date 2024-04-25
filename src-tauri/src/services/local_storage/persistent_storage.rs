@@ -42,6 +42,7 @@ pub fn initial_user_preferences(
             last_tx_sync TIMESTAMP NOT NULL,
             last_backup_sync TIMESTAMP,
             backup BOOLEAN NOT NULL DEFAULT FALSE,
+            delegate BOOLEAN NOT NULL DEFAULT FALSE,
             address TEXT NOT NULL
         )",
     )?;
@@ -365,6 +366,31 @@ pub fn update_local_backup_flag(backup: bool) -> AvailResult<()> {
     storage.save(
         vec![&backup],
         "UPDATE user_preferences SET backup = ?1".to_string(),
+    )?;
+
+    Ok(())
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn get_delegate_flag() -> AvailResult<bool> {
+    let storage = PersistentStorage::new()?;
+
+    let query = "SELECT delegate FROM user_preferences".to_string();
+
+    let res = storage.get_all::<bool>(&query, 1)?;
+
+    let delegate = res[0].clone();
+
+    Ok(delegate[0])
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn update_local_delegate_flag(delegate: bool) -> AvailResult<()> {
+    let storage = PersistentStorage::new()?;
+
+    storage.save(
+        vec![&delegate],
+        "UPDATE user_preferences SET delegate = ?1".to_string(),
     )?;
 
     Ok(())
