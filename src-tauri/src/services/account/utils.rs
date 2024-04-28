@@ -42,13 +42,21 @@ pub fn open_url(url: &str) -> AvailResult<()> {
 
     #[cfg(target_os = "linux")]
     match Command::new("xdg-open").arg(url).spawn() {
-        Ok(_) => Ok(()),
-        Err(e) => Err(AvailError::new(
-            AvailErrorType::Internal,
-            format!("Error opening url: {}", e),
-            "Error opening url".to_string(),
-        )),
+        Ok(_) => return Ok(()),
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::Internal,
+                format!("Error opening url: {}", e),
+                "Error opening url".to_string(),
+            ))
+        }
     }
+
+    #[cfg(target_os = "ios")]
+    return Ok(());
+
+    #[cfg(target_os = "android")]
+    return Ok(());
 }
 
 #[tauri::command(rename_all = "snake_case")]

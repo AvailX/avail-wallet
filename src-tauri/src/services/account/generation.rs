@@ -24,10 +24,10 @@ use crate::services::account::key_management::key_controller::windowsKeyControll
 use crate::services::account::key_management::key_controller::macKeyController;
 
 #[cfg(target_os = "ios")]
-use crate::services::account::key_management::key_controller::iosKeyController;
+use crate::services::account::key_management::key_controller::iOSKeyController;
 
 #[cfg(target_os = "android")]
-use crate::services::account::key_management::key_controller::androidKeyController;
+use crate::services::account::key_management::key_controller::AndroidKeyController;
 
 use avail_common::{errors::AvailResult, models::user::User};
 
@@ -87,11 +87,11 @@ pub async fn create_seed_phrase_wallet(
         }
         #[cfg(target_os = "android")]
         {
-            androidKeyController {}
+            AndroidKeyController {}
         }
         #[cfg(target_os = "ios")]
         {
-            iosKeyController {}
+            iOSKeyController {}
         }
     };
 
@@ -169,11 +169,11 @@ pub async fn import_wallet(
         }
         #[cfg(target_os = "android")]
         {
-            androidKeyController {}
+            AndroidKeyController {}
         }
         #[cfg(target_os = "ios")]
         {
-            iosKeyController {}
+            iOSKeyController {}
         }
     };
 

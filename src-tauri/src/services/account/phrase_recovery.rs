@@ -16,8 +16,7 @@ use avail_common::errors::AvailResult;
 use crate::api::user::{create_user, get_user};
 use crate::models::wallet::BetterAvailWallet;
 use crate::services::account::key_management::key_controller::{
-    iOSKeyController, linuxKeyController, macKeyController, windowsKeyController,
-    AndroidKeyController, KeyController,
+    linuxKeyController, macKeyController, windowsKeyController, KeyController,AndroidKeyController,iOSKeyController
 };
 use crate::services::authentication::session::get_session_after_creation;
 use crate::services::local_storage::{
