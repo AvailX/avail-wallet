@@ -21,7 +21,6 @@ tauri-build = { version = "=2.0.0-beta.11", features = [] }
 
 
 [dependencies]
-
 app_dirs = { package = "app_dirs2", version = "2.5" }
 avail-common = { git = "https://github.com/availx/avail-lib#a6dc71500aa0fb4db8a83d4ea2cf4407ba4d39c3", branch = "develop", features = [
     "snarkvm",
@@ -52,10 +51,6 @@ tauri-plugin-http = { version = "2.0.0-beta.3", features = ["cookies"] }
 tauri-plugin-updater = { version = "2.0.0-beta.3", features = [] }
 tauri-plugin-process = "2.0.0-beta.3"
 tauri = { version = "=2.0.0-beta.12", features = [] }
-tauri-plugin-deep-link = "2.0.0-beta.2"
-tauri-plugin-http = { version = "2.0.0-beta.2", features = ["cookies"] }
-tauri-plugin-updater = { version = "2.0.0-beta.2", features = [] }
-tauri-plugin-process = "2.0.0-beta.2"
 tiny-bip39 = "1.0.0"
 tokio = { version = "1.29.1", features = ["full"] }
 tokio-rayon = "2.1.0"
@@ -74,7 +69,8 @@ curl-sys = "0.4.72"
 colored = "2.1.0"
 
 [target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
-security-framework = { git = "https://github.com/AvailX/rust-security-framework" }app_dirs = { package = "app_dirs2", version = "2.5" }
+security-framework = { git = "https://github.com/AvailX/rust-security-framework" }
+app_dirs = { package = "app_dirs2", version = "2.5" }
 security-framework-sys = { git = "https://github.com/AvailX/rust-security-framework" }
 core-foundation = "0.9.3"
 tid-rs = { git = "https://github.com/Zack-Xb/tid-rs" }
