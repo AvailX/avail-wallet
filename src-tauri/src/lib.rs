@@ -25,7 +25,6 @@ use api::quests::{
     check_quest_completion, get_campaigns, get_points, get_quests_for_campaign, get_whitelists,
     is_task_verified, verify_task,
 };
-use api::user::{update_backup_flag, update_username};
 use services::local_storage::{
     encrypted_data::get_and_store_all_data,
     tokens::get_stored_tokens,
