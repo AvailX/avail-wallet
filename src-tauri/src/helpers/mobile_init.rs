@@ -1,12 +1,13 @@
+use avail_common::aleo_tools::program_manager::TransferType;
 use avail_common::aleo_tools::test_utils::HELLO_PROGRAM;
 use avail_common::converters::messages::{field_to_fields, utf8_string_to_bits};
 use avail_common::errors::AvailResult;
-use avail_common::models::user::User;
-use snarkvm::prelude::Program;
-
-use avail_common::aleo_tools::program_manager::TransferType;
+use avail_common::models::constants::TESTNET_ADDRESS;
 use avail_common::models::encrypted_data::EncryptedDataTypeCommon;
 use avail_common::models::mobile_prover::{self, ProverRequest};
+use avail_common::models::user::User;
+use avail_common::service_clients::SESSION;
+use snarkvm::prelude::Program;
 
 use chrono::{DateTime, Local};
 use log::info;
@@ -27,7 +28,6 @@ use std::ops::Sub;
 use std::str::FromStr;
 use tauri::{Manager, Window};
 
-use crate::api::client::SESSION;
 use crate::api::user::{create_user, get_user};
 use crate::api::{
     aleo_client::{setup_client, setup_local_client},
@@ -162,48 +162,64 @@ pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     // )?;
     // Ok(transaction_id.to_string())
     let session_get = get_session(Some("tylerDurden@0xf5".to_string())).await?;
+    println!("Session: {:?}", session_get);
     SESSION.set_session_token(session_get);
-    let authorization = {
-        let rng = &mut rand::thread_rng();
-        let query: Query<Testnet3, BlockMemory<Testnet3>> = Query::from(api_client.base_url());
+    // let authorization = {
+    //     let rng = &mut rand::thread_rng();
+    //     let query: Query<Testnet3, BlockMemory<Testnet3>> = Query::from(api_client.base_url());
 
-        // Initialize a VM
-        let store = snarkvm::ledger::store::ConsensusStore::<
-            Testnet3,
-            snarkvm::ledger::store::helpers::memory::ConsensusMemory<Testnet3>,
-        >::open(None)?;
-        let vm = snarkvm::synthesizer::VM::from(store)?;
-        let transfer_type = TransferType::Public;
-        // Prepare the inputs for a transfer.
-        let transfer_function = "transfer_public";
+    //     // Initialize a VM
+    //     let store = snarkvm::ledger::store::ConsensusStore::<
+    //         Testnet3,
+    //         snarkvm::ledger::store::helpers::memory::ConsensusMemory<Testnet3>,
+    //     >::open(None)?;
+    //     let vm = snarkvm::synthesizer::VM::from(store)?;
+    //     let transfer_type = TransferType::Public;
+    //     // Prepare the inputs for a transfer.
+    //     let transfer_function = "transfer_public";
 
-        let inputs = vec![
-            Value::from_str(&recipient.to_string())?,
-            Value::from_str(&format!("{}u64", amount))?,
-        ];
+    //     let inputs = vec![
+    //         Value::from_str(&recipient.to_string())?,
+    //         Value::from_str(&format!("{}u64", amount))?,
+    //     ];
 
-        // Create a new transaction.
-        vm.authorize(
-            &private_key,
-            program_id,
-            transfer_function,
-            inputs.iter(),
-            rng,
-        )?
-    };
-    println!("Auth: {:?}", authorization);
-    let auth_bytes = ProverRequest::to_bytes_auth_object(authorization).await?;
-    let prover_request = ProverRequest::new(
-        "aleo9789517609".to_string(),
-        auth_bytes,
-        SupportedNetworks::Testnet3,
-        None,
-    );
-    let execution = delegate_execution(prover_request).await?;
+    //     // Create a new transaction.
+    //     vm.authorize(
+    //         &private_key,
+    //         program_id,
+    //         transfer_function,
+    //         inputs.iter(),
+    //         rng,
+    //     )?
+    // };
+    // println!("Auth: {:?}", authorization);
+    // let auth_bytes = ProverRequest::to_bytes_auth_object(authorization).await?;
+    // let prover_request = ProverRequest::new(
+    //     "aleo9789517609".to_string(),
+    //     auth_bytes,
+    //     SupportedNetworks::Testnet3,
+    //     None,
+    // );
+    // let execution = delegate_execution(prover_request).await?;
+    let res = program_manager
+        .transfer(
+            amount,
+            10000u64,
+            recipient,
+            TransferType::Public,
+            None,
+            None,
+            None,
+            &program_id,
+            TESTNET_ADDRESS.to_string(),
+            SupportedNetworks::Testnet3,
+            true,
+        )
+        .await?;
 
     // program_manager.broadcast_transaction(execution.clone())?;
 
-    Ok(execution.to_string())
+    Ok(res.to_string())
 }
 #[tauri::command(rename_all = "snake_case")]
 
@@ -335,6 +351,11 @@ pub async fn init_user_mobile() -> AvailResult<String> {
 
 #[tokio::test]
 async fn test_mobile() {
+    // let st = get_session(Some("tylerDurden@0xf5".to_string()))
+    //     .await
+    //     .unwrap();
+    // SESSION.set_session_token(st);
+
     let result = test_transfer_public_mobile().await.unwrap();
     println!("{:?}", result);
 }
@@ -348,32 +369,32 @@ async fn test_init_user() {
     )
     .unwrap();
 
-    let key_manager = {
-        #[cfg(target_os = "macos")]
-        {
-            macKeyController
-        }
-        #[cfg(target_os = "windows")]
-        {
-            windowsKeyController
-        }
-        #[cfg(target_os = "linux")]
-        {
-            linuxKeyController
-        }
-        #[cfg(target_os = "android")]
-        {
-            AndroidKeyController {}
-        }
-        #[cfg(target_os = "ios")]
-        {
-            iOSKeyController {}
-        }
-    };
+    // let key_manager = {
+    //     #[cfg(target_os = "macos")]
+    //     {
+    //         macKeyController
+    //     }
+    //     #[cfg(target_os = "windows")]
+    //     {
+    //         windowsKeyController
+    //     }
+    //     #[cfg(target_os = "linux")]
+    //     {
+    //         linuxKeyController
+    //     }
+    //     #[cfg(target_os = "android")]
+    //     {
+    //         AndroidKeyController {}
+    //     }
+    //     #[cfg(target_os = "ios")]
+    //     {
+    //         iOSKeyController {}
+    //     }
+    // };
 
-    key_manager
-        .store_key("tylerDurden@0xf5", &avail_wallet)
-        .unwrap();
+    // key_manager
+    //     .store_key("tylerDurden@0xf5", &avail_wallet)
+    //     .unwrap();
 
     get_session_after_creation::<Testnet3>(&avail_wallet.private_key)
         .await

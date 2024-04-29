@@ -21,10 +21,6 @@ use avail_common::{
 };
 
 pub async fn delegate_execution(request: ProverRequest) -> AvailResult<String> {
-    let api = env!("API");
-
-    let client = reqwest::Client::new();
-
     let res = get_prover_client_with_session(reqwest::Method::POST, "delegateProving")?
         .json(&request)
         .send()
@@ -35,8 +31,8 @@ pub async fn delegate_execution(request: ProverRequest) -> AvailResult<String> {
     } else {
         Err(AvailError::new(
             AvailErrorType::External,
-            "Error creating user".to_string(),
-            "Error creating user".to_string(),
+            "Error delegating execution".to_string(),
+            "Error delegating execution".to_string(),
         ))
     }
 }

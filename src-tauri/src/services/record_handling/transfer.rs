@@ -11,6 +11,7 @@ use tokio::time::{Duration, Instant};
 
 use crate::api::aleo_client::setup_client;
 use crate::services::local_storage::encrypted_data::update_encrypted_transaction_state_by_id;
+use crate::services::local_storage::persistent_storage::get_delegate_flag;
 use crate::{
     helpers::utils::get_timestamp_from_i64,
     services::authentication::session::get_session_after_creation,
@@ -134,6 +135,10 @@ async fn transfer_private_util<N: Network>(
 
     let sender_address = get_address::<N>()?;
 
+    let network = SupportedNetworks::from_str(&get_network()?)?;
+
+    let delegate = get_delegate_flag()?;
+
     let private_key = get_private_key::<N>(password)?;
 
     //extend session auth
@@ -219,16 +224,22 @@ async fn transfer_private_util<N: Network>(
         };
     };
 
-    let transaction_id = match program_manager.transfer(
-        amount,
-        fee,
-        recipient,
-        TransferType::Private,
-        None,
-        Some(token_record),
-        fee_record.clone(),
-        &program_id,
-    ) {
+    let transaction_id = match program_manager
+        .transfer(
+            amount,
+            fee,
+            recipient,
+            TransferType::Private,
+            None,
+            Some(token_record),
+            fee_record.clone(),
+            &program_id,
+            sender_address.clone().to_string(),
+            network,
+            delegate,
+        )
+        .await
+    {
         Ok(tx_id) => tx_id,
         Err(e) => {
             println!("{:?}", e);
@@ -309,6 +320,8 @@ async fn transfer_public_to_private_util<N: Network>(
     let api_client = setup_client::<N>()?;
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
+    let network = SupportedNetworks::from_str(&get_network()?)?;
+    let delegate = get_delegate_flag()?;
 
     //extend session auth
     let _session_task = get_session_after_creation::<N>(&private_key).await?;
@@ -386,16 +399,22 @@ async fn transfer_public_to_private_util<N: Network>(
         };
     };
 
-    let transaction_id = match program_manager.transfer(
-        amount.to_owned(),
-        fee.to_owned(),
-        recipient,
-        TransferType::PublicToPrivate,
-        None,
-        None,
-        fee_record.clone(),
-        &program_id,
-    ) {
+    let transaction_id = match program_manager
+        .transfer(
+            amount.to_owned(),
+            fee.to_owned(),
+            recipient,
+            TransferType::PublicToPrivate,
+            None,
+            None,
+            fee_record.clone(),
+            &program_id,
+            sender_address.clone().to_string(),
+            network,
+            delegate,
+        )
+        .await
+    {
         Ok(tx_id) => tx_id,
         Err(e) => {
             if let Some(fee_id) = fee_id {
@@ -466,6 +485,8 @@ async fn transfer_private_to_public_util<N: Network>(
     let api_client = setup_client::<N>()?;
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
+    let network = SupportedNetworks::from_str(&get_network()?)?;
+    let delegate = get_delegate_flag()?;
 
     //extend session auth
     let _session_task = get_session_after_creation::<N>(&private_key).await?;
@@ -549,16 +570,22 @@ async fn transfer_private_to_public_util<N: Network>(
         };
     };
 
-    let transfer_res = match program_manager.transfer(
-        amount.to_owned(),
-        fee.to_owned(),
-        recipient,
-        TransferType::PrivateToPublic,
-        None,
-        Some(token_record.clone()),
-        fee_record.clone(),
-        &program_id,
-    ) {
+    let transfer_res = match program_manager
+        .transfer(
+            amount.to_owned(),
+            fee.to_owned(),
+            recipient,
+            TransferType::PrivateToPublic,
+            None,
+            Some(token_record.clone()),
+            fee_record.clone(),
+            &program_id,
+            sender_address.clone().to_string(),
+            network,
+            delegate,
+        )
+        .await
+    {
         Ok(tx_id) => tx_id,
         Err(e) => {
             update_record_spent_local::<N>(&token_id, false)?;
@@ -631,6 +658,8 @@ async fn transfer_public<N: Network>(
     let api_client = setup_client::<N>()?;
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
+    let network = SupportedNetworks::from_str(&get_network()?)?;
+    let delegate = get_delegate_flag()?;
 
     //extend session auth
     get_session_after_creation::<N>(&private_key).await?;
@@ -709,16 +738,22 @@ async fn transfer_public<N: Network>(
         };
     };
 
-    let transfer_res = match program_manager.transfer(
-        amount.to_owned(),
-        fee.to_owned(),
-        recipient,
-        TransferType::Public,
-        None,
-        None,
-        fee_record.clone(),
-        &program_id,
-    ) {
+    let transfer_res = match program_manager
+        .transfer(
+            amount.to_owned(),
+            fee.to_owned(),
+            recipient,
+            TransferType::Public,
+            None,
+            None,
+            fee_record.clone(),
+            &program_id,
+            sender_address.clone().to_string(),
+            network,
+            delegate,
+        )
+        .await
+    {
         Ok(tx_id) => tx_id,
         Err(e) => {
             if let Some(fee_id) = fee_id {
@@ -1443,7 +1478,7 @@ mod transfer_tests {
             "aleo1x2s08a2jyvd5aq29dwexqfscqrz7fgssrkhwk7ppselp2292zqfqakg7gn",
         )
         .unwrap();
-
+        let sender = get_address::<Testnet3>().unwrap();
         let transaction_id = program_manager
             .transfer(
                 100000000,
@@ -1454,7 +1489,11 @@ mod transfer_tests {
                 None,
                 None,
                 &program_id,
+                sender.to_string(),
+                SupportedNetworks::Testnet3,
+                false,
             )
+            .await
             .unwrap();
     }
 

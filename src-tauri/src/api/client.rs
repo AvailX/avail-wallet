@@ -87,7 +87,7 @@ pub fn get_prover_client_with_session(
 
     let cookie_value = format!("{}={}", cookie_name, session);
 
-    let url = format!("http://192.168.0.137:8000/prover/{}", path);
+    let url = format!("http://0.0.0.0:8000/prover/{}", path);
 
     // let url = "http://0.0.0.0:8000/prover/delegateProving".to_string();
     let request = client
