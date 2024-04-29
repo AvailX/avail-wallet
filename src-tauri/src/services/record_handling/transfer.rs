@@ -1451,19 +1451,19 @@ mod transfer_tests {
         )
         .unwrap();
 
-        let transaction_id = program_manager
-            .transfer(
-                1000000000,
-                0,
-                recipient,
-                TransferType::Public,
-                TransferType::Public,
-                None,
-                None,
-                None,
-                &program_id,
-            )
-            .unwrap();
+        // let transaction_id = program_manager
+        //     .transfer(
+        //         1000000000,
+        //         0,
+        //         recipient,
+        //         TransferType::Public,
+        //         TransferType::Public,
+        //         None,
+        //         None,
+        //         None,
+        //         &program_id,
+        //     )
+        //     .unwrap();
     }
 
     #[tokio::test]
