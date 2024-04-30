@@ -123,7 +123,7 @@ pub fn run() {
             get_event,
             get_events,
             get_records,
-            request_create_event,
+            // request_create_event_raw,
             sign,
             decrypt_records,
             get_balance,
@@ -132,7 +132,7 @@ pub fn run() {
             verify,
             /* Aleo Helpers */
             pre_install_inclusion_prover,
-            test_transfer_public_mobile,
+            // test_transfer_public_mobile,
             test_snarkvm_mobile,
             test_snarkvm_mobile_deploy,
             init_user_mobile,

@@ -128,7 +128,6 @@ pub fn log(window: Window, content: &str) -> AvailResult<()> {
     Ok(())
 }
 
-#[tauri::command(rename_all = "snake_case")]
 pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     // log("Transfer Public Mobile");
     let api_client = setup_local_client::<Testnet3>();
@@ -138,7 +137,7 @@ pub async fn test_transfer_public_mobile() -> AvailResult<String> {
         PrivateKey::<Testnet3>::from_str(avail_common::models::constants::TESTNET_PRIVATE_KEY)
             .unwrap();
     // log(format!("Private Key: {:?}", private_key.to_string()).as_str());
-    let program_manager =
+    let mut program_manager =
         ProgramManager::<Testnet3>::new(Some(private_key), None, Some(api_client.clone()), None)
             .unwrap();
 
@@ -201,16 +200,29 @@ pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     //     None,
     // );
     // let execution = delegate_execution(prover_request).await?;
+    // let res = program_manager
+    //     .transfer(
+    //         amount,
+    //         10000u64,
+    //         recipient,
+    //         TransferType::Public,
+    //         None,
+    //         None,
+    //         None,
+    //         &program_id,
+    //         TESTNET_ADDRESS.to_string(),
+    //         SupportedNetworks::Testnet3,
+    //         true,
+    //     )
+    //     .await?;
     let res = program_manager
-        .transfer(
-            amount,
+        .execute_program(
+            "credits.aleo",
+            "transfer_public",
+            vec![recipient.to_string(), "10000u64".to_string()].iter(),
             10000u64,
-            recipient,
-            TransferType::Public,
             None,
             None,
-            None,
-            &program_id,
             TESTNET_ADDRESS.to_string(),
             SupportedNetworks::Testnet3,
             true,

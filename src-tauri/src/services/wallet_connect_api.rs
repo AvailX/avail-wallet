@@ -27,7 +27,6 @@ use super::{
 use chrono::Local;
 use std::str::FromStr;
 
-use crate::api::aleo_client::setup_client;
 use crate::models::event::{AvailEvent, SuccinctAvailEvent};
 use crate::models::pointers::{deployment::DeploymentPointer, transaction::TransactionPointer};
 use crate::models::wallet_connect::{
@@ -37,6 +36,9 @@ use crate::models::wallet_connect::{
     get_event::{GetEventRequest, GetEventResponse, GetEventsRequest, GetEventsResponse},
     records::{GetRecordsRequest, GetRecordsResponse, RecordWithPlaintext},
     sign::{SignatureRequest, SignatureResponse},
+};
+use crate::{
+    api::aleo_client::setup_client, services::local_storage::persistent_storage::get_delegate_flag,
 };
 
 use snarkvm::circuit::Aleo;
@@ -84,7 +86,7 @@ pub fn get_balance(request: BalanceRequest) -> AvailResult<BalanceResponse> {
     Ok(BalanceResponse::new(vec![balance], None))
 }
 
-#[tauri::command(rename_all = "snake_case")]
+//#[tauri::command(rename_all = "snake_case")]
 pub async fn request_create_event(
     request: CreateEventRequest,
     fee_private: bool,
@@ -98,7 +100,7 @@ pub async fn request_create_event(
         _ => request_create_event_raw::<Testnet3, AleoV0>(request, fee_private, Some(window)).await, //SupportedNetworks::Mainnet => request_create_event_raw::<Mainnet>(request),
     }
 }
-
+#[tauri::command(rename_all = "snake_case")]
 pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network = N>>(
     request: CreateEventRequest,
     fee_private: bool,
@@ -337,14 +339,23 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
             update_record_spent_local::<N>(&fee_id, false)?;
         }
         println!("=====> INPUTS {:?}", input_values);
-        let transaction_id = match program_manager.execute_program(
-            request.program_id().clone(),
-            request.function_id().clone(),
-            input_values.iter(),
-            0,
-            fee_record,
-            None,
-        ) {
+        let delegate = get_delegate_flag()?;
+        let sender_address = get_address::<N>()?;
+        let network = SupportedNetworks::from_str(&get_network()?)?;
+        let transaction_id = match program_manager
+            .execute_program(
+                request.program_id().clone(),
+                request.function_id().clone(),
+                input_values.iter(),
+                0,
+                fee_record,
+                None,
+                sender_address.to_string(),
+                network,
+                delegate,
+            )
+            .await
+        {
             Ok(tx_id) => tx_id,
             Err(_) => {
                 if let Some(fee_id) = fee_id {
@@ -917,23 +928,26 @@ mod test {
             " <<<<<<<<<<<<<<< Testing decrypt() fn in Wallet Connect Rust API >>>>>>>>>>>>>>>"
         );
 
-        test_setup_prerequisites();
+        // test_setup_prerequisites();
 
-        let records_filter = RecordsFilter::new(
-            vec!["credits.aleo".to_string()],
-            None,
-            RecordFilterType::Unspent,
-            Some("credits.record".to_string()),
-        );
+        // let records_filter = RecordsFilter::new(
+        //     vec!["credits.aleo".to_string()],
+        //     None,
+        //     RecordFilterType::Unspent,
+        //     Some("credits.record".to_string()),
+        // );
 
-        let request = GetRecordsRequest::new(None, Some(records_filter), None);
-        let (res, _page_count) = get_records_raw::<Testnet3>(request).unwrap();
+        // let request = GetRecordsRequest::new(None, Some(records_filter), None);
+        // let (res, _page_count) = get_records_raw::<Testnet3>(request).unwrap();
 
         let mut ciphertexts: Vec<String> = vec![];
 
-        for value in res.into_iter() {
-            ciphertexts.push(value.record.ciphertext);
-        }
+        // for value in res.into_iter() {
+        ciphertexts.push("record1qyqspf8mhl4qxfladwsn8yku7dp6vdwzn20p7axnvwn9wpj2m9fydwswqyxx66trwfhkxun9v35hguerqqpqzqp7exfqu67w0g6wjv6mydaesv5h4f042gmllwglj2ps7qyv24m4pat5eds62a8khyxzesvcnkg39ggwcjq2hlet7ga7hh6w05e2nu8suqdq6ts".to_string());
+        // }
+        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let vk = ViewKey::<Testnet3>::try_from(&pk).unwrap();
+        VIEWSESSION.set_view_session(&vk.to_string()).unwrap();
 
         let request = DecryptRequest::new(ciphertexts);
         let res = decrypt_records(request).unwrap();
