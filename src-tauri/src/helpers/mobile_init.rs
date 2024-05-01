@@ -130,12 +130,13 @@ pub fn log(window: Window, content: &str) -> AvailResult<()> {
 
 pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     // log("Transfer Public Mobile");
-    let api_client = setup_local_client::<Testnet3>();
+    let api_client = setup_client::<Testnet3>()?;
 
     // log("API Client Setup");
-    let private_key =
-        PrivateKey::<Testnet3>::from_str(avail_common::models::constants::TESTNET_PRIVATE_KEY)
-            .unwrap();
+    let private_key = PrivateKey::<Testnet3>::from_str(
+        "APrivateKey1zkpEa57WrhvNVagKkja6mzU5waS4xFXidKtBNMweupft7JX",
+    )
+    .unwrap();
     // log(format!("Private Key: {:?}", private_key.to_string()).as_str());
     let mut program_manager =
         ProgramManager::<Testnet3>::new(Some(private_key), None, Some(api_client.clone()), None)
@@ -215,13 +216,18 @@ pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     //         true,
     //     )
     //     .await?;
+    const RECORD_MAINNET: &str = r"{owner:aleo18lmhpa6znqe4eqgnhqccze9awqtutlkh0aukd05k7pl52uu8cvysxqwurp.private,microcredits:5000000u64.private,_nonce:8225702631067250884087834370560624180419459511593007256346751473925039784459group.public}";
+
+    let fee_record =
+        Some(Record::<Testnet3, Plaintext<Testnet3>>::from_str(RECORD_MAINNET).unwrap()); //Some(Record::from_str(r"{owner: aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px.private,microcredits: 1000000u64.private,_nonce: 6359981118440619636307465025861597379883101966015424940295774216783421394007group.public}").unwrap());
+
     let res = program_manager
         .execute_program(
             "credits.aleo",
             "transfer_public",
             vec![recipient.to_string(), "10000u64".to_string()].iter(),
             10000u64,
-            None,
+            fee_record,
             None,
             TESTNET_ADDRESS.to_string(),
             SupportedNetworks::Testnet3,
