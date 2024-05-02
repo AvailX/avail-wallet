@@ -19,14 +19,19 @@ import {LargeTitleText, SubtitleText} from '../components/typography/typography'
 
 import {useNavigate} from 'react-router-dom';
 
+import DappPrivacySettingsDialog from '../components/dialogs/dappPrivacySettings';
+
 const Dapps = () => {
 	const mdsx = mui.useMediaQuery('(min-width:850px)');
 	const md = mui.useMediaQuery('(min-width:950px)');
 
 	const navigate = useNavigate();
 
+	const [isOpen, setIsOpen] = React.useState(true);
+
 	return (
 		<Layout>
+			<DappPrivacySettingsDialog isOpen={isOpen} onRequestClose={()=>setIsOpen(false)}/>
 			<MiniDrawer/>
 			<mui.Box sx={{ml: md ? '7%' : '10%', width: md ? '93%' : '90%'}}>
 				<mui.Box sx={{display: 'flex', flexDirection: 'row'}}>

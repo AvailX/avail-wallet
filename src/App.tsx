@@ -7,7 +7,10 @@ import {theme} from './styles/theme';
 
 /** COMPONENTS */
 import Entrypoint from './views-desktop/entrypoint';
+import Dapps from './views-desktop/dapps';
 import {useWalletConnectManager} from './context/WalletConnect';
+
+import dappPrivacySettingsDialog from './components/dialogs/dappPrivacySettings';
 
 function App() {
 	const {walletConnectManager} = useWalletConnectManager();
@@ -30,7 +33,7 @@ function App() {
 	return (
 		<ThemeProvider theme={theme} >
 
-			<Entrypoint/>
+			<Dapps/>
 
 		</ThemeProvider>
 	);
