@@ -87,29 +87,6 @@ const DappPrivacySettingsDialog: React.FC<dappPrivacySettingsDialogProperties> =
 					<mui.DialogContentText sx={{ color: '#a3a3a3' }}>
 						{t('dialogs.delete.description')}
 					</mui.DialogContentText>
-					<mui.TextField
-						autoFocus
-						margin='dense'
-						type={passwordHidden ? 'password' : ''}
-						label='Password'
-						fullWidth
-						value={password}
-						onChange={e => {
-							setPassword(e.target.value);
-						}}
-						sx={{ mt: '8%', ...textFieldStyle }}
-						InputProps={{
-							endAdornment: (
-								<mui.InputAdornment position='end'>
-									{passwordHidden ? <VisibilityOffIcon style={{ color: '#FFF', cursor: 'pointer' }} onClick={() => {
-										setPasswordHidden(false);
-									}} /> : <VisibilityIcon style={{ color: '#FFF' }} onClick={() => {
-										setPasswordHidden(true);
-									}} />}
-								</mui.InputAdornment>
-							),
-						}}
-					/>
 				</mui.DialogContent>
 				<mui.DialogActions>
 					<mui.Button onClick={onRequestClose} sx={buttonStyle}> {t('dialogs.options.cancel')}</mui.Button>
