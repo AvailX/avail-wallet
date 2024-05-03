@@ -111,6 +111,11 @@ const ScanReAuthDialog: React.FC<ScanReAuthDialogProperties> = ({ isOpen, onRequ
 								</mui.InputAdornment>
 							),
 						}}
+						onKeyDown={e => {
+							if (e.key === 'Enter') {
+								handleConfirmClick();
+							}
+						}}
 					/>
 				</mui.DialogContent>
 				<mui.DialogActions>

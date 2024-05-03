@@ -5,7 +5,7 @@ use snarkvm::{ledger::transactions::ConfirmedTransaction, prelude::*};
 use tauri::{Manager, Window};
 use tauri_plugin_http::reqwest;
 
-use std::fs;
+use std::{fs, path::PathBuf};
 use std::{ops::Add, str::FromStr};
 use tokio::time::{Duration, Instant};
 
@@ -964,8 +964,86 @@ pub fn find_confirmed_block_height<N: Network>(
     ))
 }
 
+/* -- Inclusion Prover Handlers -- */
+
 #[tauri::command(rename_all = "snake_case")]
-pub async fn pre_install_inclusion_prover() -> AvailResult<()> {
+pub async fn pre_install_inclusion_prover(window: Window) -> AvailResult<()> {
+    let path = match dirs::home_dir() {
+        Some(home_dir) => home_dir
+            .join(".aleo")
+            .join("resources")
+            .join("inclusion.prover.cd85cc5"),
+
+        None => {
+            return Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Error getting home directory".to_string(),
+                "Error getting home directory".to_string(),
+            ))
+        }
+    };
+
+    // Check if file exists and if it meets size treshold
+    if path.as_path().exists() {
+        println!("inclusion.prover.cd85cc5 already exists");
+
+        // check size of file
+        let size = fs::metadata(path.clone())?.len();
+
+        if size < 20000000 {
+            delete_inclusion_prover()?;
+        }
+    }
+
+    Ok(())
+}
+
+async fn install_prover(path: PathBuf, window: Window) -> AvailResult<()> {
+    let client = reqwest::Client::new();
+
+    match window.emit("inclusion_prover_downloading", ()) {
+        Ok(_) => {}
+        Err(_) => {
+            return Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Error emitting inclusion prover downloading alert.".to_string(),
+                "Error emitting Aleo resources downloading alert.".to_string(),
+            ));
+        }
+    };
+
+    println!("Downloading inclusion.prover.cd85cc5...");
+
+    let res = client
+        .get("https://s3-us-west-1.amazonaws.com/testnet3.parameters/inclusion.prover.cd85cc5")
+        .send()
+        .await?;
+
+    println!("Finished downloading inclusion.prover.cd85cc5...");
+
+    let body = res.bytes().await?;
+
+    match fs::write(path.clone(), body) {
+        Ok(_) => {}
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Error writing inclusion.prover.cd85cc5".to_string(),
+                format!("Error writing inclusion.prover.cd85cc5: {:?}", e),
+            ));
+        }
+    };
+
+    let size = fs::metadata(path)?.len();
+
+    println!("SIZE '{}'", size);
+
+    println!("Finished writing inclusion.prover.cd85cc5...");
+
+    Ok(())
+}
+
+fn delete_inclusion_prover() -> AvailResult<()> {
     let path = match dirs::home_dir() {
         Some(home_dir) => home_dir
             .join(".aleo")
@@ -982,41 +1060,10 @@ pub async fn pre_install_inclusion_prover() -> AvailResult<()> {
     };
 
     if path.as_path().exists() {
-        println!("inclusion.prover.cd85cc5 already exists");
-        Ok(())
-    } else {
-        let client = reqwest::Client::new();
-
-        println!("Downloading inclusion.prover.cd85cc5...");
-        //https://s3-us-west-1.amazonaws.com/testnet.parameters/resources/inclusion/prover
-        let task = tokio::spawn(async move {
-            client
-                .get("https://s3-us-west-1.amazonaws.com/testnet.parameters/resources/inclusion.prover")
-                .send()
-                .await
-        });
-
-        let res = match task.await? {
-            Ok(res) => res,
-            Err(e) => {
-                return Err(AvailError::new(
-                    AvailErrorType::Internal,
-                    "Error downloading inclusion.prover.cd85cc5".to_string(),
-                    format!("Error downloading inclusion.prover.cd85cc5: {:?}", e),
-                ))
-            }
-        };
-
-        println!("Finished downloading inclusion.prover.cd85cc5...");
-
-        let body = res.bytes().await?;
-
-        fs::write(path, body)?;
-
-        println!("Finished writing inclusion.prover.cd85cc5...");
-
-        Ok(())
+        fs::remove_file(path)?;
     }
+
+    Ok(())
 }
 
 #[cfg(test)]
@@ -1466,10 +1513,5 @@ mod transfer_tests {
                 &program_id,
             )
             .unwrap();
-    }
-
-    #[tokio::test]
-    async fn test_inclusion_prover() {
-        let _res = pre_install_inclusion_prover().await;
     }
 }

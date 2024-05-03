@@ -1,6 +1,6 @@
 [package]
 name = "avail_wallet"
-version = "0.2.1"
+version = "0.2.2"
 description = "Avail Wallet | Make it yours."
 authors = ["Avail"]
 license = "Apache-2.0"
@@ -14,15 +14,16 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-plugin-fs =  { version = "=2.0.0-beta.4", features = [] }
-tauri-plugin = { version = "=2.0.0-beta.11", features = [] }
-tauri-utils = { version = "=2.0.0-beta.11", features = [] }
-tauri-build = { version = "=2.0.0-beta.11", features = [] }
+tauri-plugin-fs =  { version = "=2.0.0-beta.7", features = [] }
+tauri-plugin = { version = "=2.0.0-beta.13", features = [] }
+tauri-utils = { version = "=2.0.0-beta.13", features = [] }
+tauri-build = { version = "=2.0.0-beta.13", features = [] }
+
 
 
 [dependencies]
 app_dirs = { package = "app_dirs2", version = "2.5" }
-avail-common = { git = "https://github.com/availx/avail-lib", tag = "v0.7.0", features = [
+avail-common = { git = "https://github.com/availx/avail-lib", tag = "v0.8.0", features = [
     "snarkvm",
 ] }
 bs58 = "0.5.0"
@@ -45,11 +46,11 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 snarkvm = { version = "0.16.19", features = [] }
 ssss = "0.2.0"
-tauri = {git="https://github.com/tauri-apps/tauri/", rev="6251645", features = [] }
-tauri-plugin-deep-link = "2.0.0-beta.3"
-tauri-plugin-http = { version = "2.0.0-beta.3", features = ["cookies"] }
-tauri-plugin-updater = { version = "2.0.0-beta.3", features = [] }
-tauri-plugin-process = "2.0.0-beta.3"
+tauri = { version = "2.0.0-beta.17", features = [] }
+tauri-plugin-deep-link = "=2.0.0-beta.3"
+tauri-plugin-http = { version = "2.0.0-beta.7", features = ["cookies"] }
+tauri-plugin-updater = { version = "2.0.0-beta.5", features = [] }
+tauri-plugin-process = "=2.0.0-beta.3"
 tiny-bip39 = "1.0.0"
 tokio = { version = "1.29.1", features = ["full"] }
 tokio-rayon = "2.1.0"
@@ -69,8 +70,6 @@ security-framework-sys = { git = "https://github.com/AvailX/rust-security-framew
 core-foundation = "0.9.3"
 tid-rs = { git = "https://github.com/Zack-Xb/tid-rs" }
 
-[patch.crates-io]
-tauri = {git="https://github.com/tauri-apps/tauri/", rev="6251645"}
 
 [profile.release]
 opt-level = 3

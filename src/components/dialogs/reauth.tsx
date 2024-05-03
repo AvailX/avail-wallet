@@ -97,6 +97,11 @@ const ReAuthDialog: React.FC<ReAuthDialogProperties> = ({ isOpen, onRequestClose
 							setPassword(e.target.value);
 						}}
 						sx={{ mt: '8%', ...textFieldStyle }}
+						onKeyDown={e => {
+							if (e.key === 'Enter') {
+								handleConfirmClick();
+							}
+						}}
 					/>
 				</mui.DialogContent>
 				<mui.DialogActions>

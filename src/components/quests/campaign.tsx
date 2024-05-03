@@ -45,7 +45,7 @@ const CampaignView: React.FC<Campaign> = props => {
 			'&:hover': {
 				transform: 'translateY(-5px)', // Moves the card up by 5px
 				boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)', // Creates a shadow effect that gives the impression of levitation
-			},
+			}, mt: '2%', mb: '2%'
 		}}
 		onClick={() => {
 			if (loaded) {
