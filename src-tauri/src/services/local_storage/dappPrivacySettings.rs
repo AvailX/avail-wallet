@@ -1,69 +1,42 @@
 use crate::models::storage::persistent::PersistentStorage;
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 
-pub fn create_dappPrivacySettings() -> AvailResult<()> {
+pub fn create_dapp_privacy_settings() -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
     storage.execute_query(
-        "CREATE TABLE IF NOT EXISTS DAPP_PRIVACY_SETTINGS (
-            url TEXT PRIMARY KEY,
-            trusted BOOLEAN
+        "CREATE TABLE IF NOT EXISTS dapp_privacy_settings (
+            url TEXT PRIMARY KEY NOT NULL,
+            trusted BOOLEAN NOT NULL
         )",
     )?;
     Ok(())
 }
 
-pub fn read_dappPrivacySettings(
-    url: &str
-) -> AvailResult<()> {
+pub fn read_dapp_privacy_settings(url: &str) -> AvailResult<Option<bool>> {
     let storage = PersistentStorage::new()?;
-    let query = format!(
-        "SELECT url, trusted FROM DAPP_PRIVACY_SETTINGS;",
-        url
-    );
-    let res = storage.get_all::<String>(&query, 1)?;
-
-    println!(res);
-
-    Ok(res.get(1))
+    let query = "SELECT trusted FROM dapp_privacy_settings WHERE url = $1;";
+    let result = storage.get_one::<bool>(&query, url)?;
+    Ok(result)
 }
 
-pub fn update_dappPrivacySettings(
-    url: &str,
-    trusted: &bool
-) -> AvailResult<()> {
+pub fn update_dapp_privacy_settings(url: &str, trusted: &bool) -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
 
-    storage.save(
+    //Make sure that storage.save() expects the data in this format and properly handles parameterization.
+    storage.save( 
         vec![
             url.to_string(),
-            trusted
+            trusted.to_string()
         ],
-        "INSERT OR REPLACE INTO DAPP_PRIVACY_SETTINGS (url, trusted) VALUES (?1, ?2)".to_string(),
+        "UPDATE dapp_privacy_settings SET trusted = ?2 WHERE url = ?1".to_string(),
     )?;
-
     Ok(())
 }
 
-pub fn drop_dappPrivacySettings() -> AvailResult<()> {
+pub fn drop_dapp_privacy_settings(url: &str) -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
-    let query = format!(
-        "DROP TABLE DAPP_PRIVACY_SETTINGS"
-    );
-
-    match storage.execute_query(query) {
-        Ok(r) => r,
-        Err(e) => match e.error_type {
-            AvailErrorType::NotFound => {}
-            _ => {
-                return Err(AvailError::new(
-                    AvailErrorType::Internal,
-                    e.internal_msg,
-                    "Error deleting dappPrivacySettings table".to_string(),
-                ))
-            }
-        },
-    };
-
+    let query = "DELETE FROM dapp_privacy_settings WHERE url = $1";
+    storage.execute_query(query, url)?;
     Ok()
 }
 
