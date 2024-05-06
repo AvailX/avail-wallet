@@ -61,7 +61,6 @@ const TaskBox: React.FC<TaskBoxProps> = ({task, quest, questCompleted}) => {
 
 	return (
 		<mui.Box sx={{
-			//backgroundImage: `linear-gradient(to right, #000 40%, transparent 60%),url(${quest.display_image})`,
 			bgcolor: '#111111',
 			borderRadius: 5,
 			padding: '20px',

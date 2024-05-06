@@ -18,7 +18,10 @@ use api::quests::{
     check_quest_completion, get_campaigns, get_points, get_quests_for_campaign, get_whitelists,
     is_task_verified, verify_task,
 };
-use api::user::{update_backup_flag, update_username};
+use api::{
+    aleo_client::switch_to_obscura,
+    user::{update_backup_flag, update_username},
+};
 use services::local_storage::{
     encrypted_data::get_and_store_all_data,
     tokens::get_stored_tokens,
@@ -121,7 +124,8 @@ pub fn run() {
             get_succinct_avail_events,
             verify,
             /* Aleo Helpers */
-            pre_install_inclusion_prover
+            pre_install_inclusion_prover,
+            switch_to_obscura
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

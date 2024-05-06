@@ -43,23 +43,12 @@ const Quests: React.FC = () => {
 	const lg = mui.useMediaQuery('(min-width:1750px)');
 	const lgxl = mui.useMediaQuery('(min-width:1950px)');
 
-	React.useEffect(() => {
-		isQuestCompleted(quest.id).then(res => {
-	    if (res) {
-	      setQuestCompleted(true);
-	    }
-	  }).catch(err => {
-		setError(true);
-		setMessage('Error checking if task is completed');
-	  });
-}, [quest]);
-
 	return (
 		<Layout>
 			<ErrorAlert errorAlert={error} setErrorAlert={setError} message={message}/>
 			<SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message}/>
 			<SideMenu/>
-			<TaskDrawer open={openTasks} onClose={() => {setOpenTasks(false)}} quest={quest} questCompleted={questCompleted}/>
+			<TaskDrawer open={openTasks} onClose={() => {setOpenTasks(false)}} quest={quest} />
 			<mui.Box sx={{ml: md ? '5%' : '7%', display: 'flex', flexDirection: 'column', width: md ? '95%' : '93%'}}>
 				<mui.Box sx={{background: `url(${campaign.bg_image})`, color: campaign.color, backgroundPosition: lgxl ? 'center' : 'bottom', height: lgxl ? '380px' : '320px', backgroundSize: 'cover'}}>
 					<mui.Box sx={{borderRadius: '100%', border: '1px solid #696969', p: 1.5, width: '200px', mt: lgxl ? '10%' : lg ? '8%' : lgsx ? '10%' : mdlg ? '10%' : md ? '13%' : mdsx ? '14%' : '17%', ml: '5%' }}>

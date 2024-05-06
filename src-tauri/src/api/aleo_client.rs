@@ -59,38 +59,42 @@ pub fn network_status<N: Network>() -> AvailResult<Status> {
     let aleo_client = AleoAPIClient::<N>::new("https://api.explorer.aleo.org/v1", "testnet3")?;
 
     let mut obscura_heights: Vec<u32> = vec![];
-    let mut aleo_heights: Vec<u32> = vec![];
+    //let mut aleo_heights: Vec<u32> = vec![];
 
-    for _ in 0..3 {
+    for _ in 0..4 {
         let obscura_height = obscura_client.latest_height().unwrap_or(0);
         println!("Obscura Height: {:?}", obscura_height);
-        let aleo_height = aleo_client.latest_height().unwrap_or(0);
-        println!("Aleo Height: {:?}", aleo_height);
+
+        //let aleo_height = aleo_client.latest_height().unwrap_or(0);
+        //println!("Aleo Height: {:?}", aleo_height);
+
         obscura_heights.push(obscura_height);
-        aleo_heights.push(aleo_height);
+        //aleo_heights.push(aleo_height);
 
         std::thread::sleep(std::time::Duration::from_secs(3));
     }
 
     // check if at least once th height has moved forward
     let obscura_moving_forward = obscura_heights.windows(2).any(|w| w[0] < w[1]);
-    let aleo_moving_forward = aleo_heights.windows(2).any(|w| w[0] < w[1]);
+    //let aleo_moving_forward = aleo_heights.windows(2).any(|w| w[0] < w[1]);
 
-    if obscura_moving_forward && aleo_moving_forward {
+    if obscura_moving_forward {
         if &get_base_url()? != "obscura" {
             update_base_url("obscura")?;
         }
         Ok(Status::Up)
-    } else if obscura_moving_forward && !aleo_moving_forward {
-        println!("Switching to Obscura");
+    } else {
         update_base_url("obscura")?;
         return Ok(Status::Warning);
-    } else if !obscura_moving_forward && aleo_moving_forward {
-        println!("Switching to Aleo");
-        update_base_url("aleo")?;
-        return Ok(Status::Warning);
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn switch_to_obscura() -> AvailResult<()> {
+    if &get_base_url()? != "obscura" {
+        update_base_url("obscura")
     } else {
-        return Ok(Status::Down);
+        Ok(())
     }
 }
 

@@ -33,7 +33,7 @@ import Asset from '../components/assets/asset';
 import {ScanProgressEvent, type TxScanResponse} from '../types/events';
 import {type AvailError, AvailErrorType} from '../types/errors';
 import {type SuccinctAvailEvent} from '../types/avail-events/event';
-import {NetworkStatus} from '../services/util/network';
+import {NetworkStatus, switchToObscura} from '../services/util/network';
 import {type PointsResponse, testPoints} from '../types/quests/quest_types';
 
 // Context hooks
@@ -301,6 +301,11 @@ function Home() {
 			const firstVisitSession = get_visit_session_flag();
 
 			if (!firstVisitSession) {
+				switchToObscura().catch(() => {
+					setMessage('Issue switching to Obscura.');
+					setErrorAlert(true);
+				});
+
 				getBackupFlag().then(async res => {
 					if (res) {
 						await sync_backup();
