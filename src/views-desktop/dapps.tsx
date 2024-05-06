@@ -19,7 +19,7 @@ import {LargeTitleText, SubtitleText} from '../components/typography/typography'
 
 import {useNavigate} from 'react-router-dom';
 
-import DappPrivacySettingsDialog from '../components/dialogs/dappPrivacySettings';
+import DappPrivacySettingsDialog from '../components/dialogs/dapp_privacy_settings';
 
 const Dapps = () => {
 	const mdsx = mui.useMediaQuery('(min-width:850px)');
