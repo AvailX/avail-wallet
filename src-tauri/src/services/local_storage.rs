@@ -4,3 +4,4 @@ pub mod session;
 pub mod storage_api;
 pub mod tokens;
 pub mod utils;
+pub mod dapp_privacy_settings;
