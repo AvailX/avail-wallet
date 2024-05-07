@@ -132,7 +132,7 @@ pub fn run() {
             verify,
             /* Aleo Helpers */
             pre_install_inclusion_prover,
-            // test_transfer_public_mobile,
+            test_transfer_public_mobile,
             test_snarkvm_mobile,
             test_snarkvm_mobile_deploy,
             init_user_mobile,

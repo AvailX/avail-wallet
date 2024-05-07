@@ -1501,4 +1501,15 @@ mod transfer_tests {
     async fn test_inclusion_prover() {
         let _res = pre_install_inclusion_prover().await;
     }
+    #[tokio::test]
+    async fn test_find_confirmed_block_height() {
+        let tx_id = "at177vfp3u9l5f2ns9xggw5d3pn868qwnaaj6jcg7v0wya606225y9s86wx93".to_string();
+        let txnid =
+            <snarkvm::prelude::Testnet3 as snarkvm::prelude::Network>::TransactionID::from_str(
+                &tx_id,
+            )
+            .unwrap();
+        let res = find_confirmed_block_height::<Testnet3>(txnid).unwrap();
+        println!("Result: {:?}", res);
+    }
 }
