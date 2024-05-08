@@ -218,7 +218,7 @@ pub async fn test_transfer_public_mobile() -> AvailResult<String> {
         .await?;
     const RECORD_MAINNET: &str = r"{owner:aleo18lmhpa6znqe4eqgnhqccze9awqtutlkh0aukd05k7pl52uu8cvysxqwurp.private,microcredits:5000000u64.private,_nonce:8225702631067250884087834370560624180419459511593007256346751473925039784459group.public}";
 
-    let fee_record = None; //Some(Record::<Testnet3, Plaintext<Testnet3>>::from_str(RECORD_MAINNET).unwrap()); //Some(Record::from_str(r"{owner: aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px.private,microcredits: 1000000u64.private,_nonce: 6359981118440619636307465025861597379883101966015424940295774216783421394007group.public}").unwrap());
+    // let fee_record = None; //Some(Record::<Testnet3, Plaintext<Testnet3>>::from_str(RECORD_MAINNET).unwrap()); //Some(Record::from_str(r"{owner: aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px.private,microcredits: 1000000u64.private,_nonce: 6359981118440619636307465025861597379883101966015424940295774216783421394007group.public}").unwrap());
 
     // let res = program_manager
     //     .execute_program(
