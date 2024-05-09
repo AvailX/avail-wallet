@@ -24,10 +24,8 @@ use super::{
         },
     },
 };
-use chrono::Local;
-use std::str::FromStr;
-
 use crate::api::aleo_client::setup_client;
+use crate::api::aleo_client::setup_local_client;
 use crate::models::event::{AvailEvent, SuccinctAvailEvent};
 use crate::models::pointers::{deployment::DeploymentPointer, transaction::TransactionPointer};
 use crate::models::wallet_connect::{
@@ -38,6 +36,8 @@ use crate::models::wallet_connect::{
     records::{GetRecordsRequest, GetRecordsResponse, RecordWithPlaintext},
     sign::{SignatureRequest, SignatureResponse},
 };
+use chrono::Local;
+use std::str::FromStr;
 
 use snarkvm::circuit::Aleo;
 use snarkvm::{
@@ -336,6 +336,9 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
         if let Some(fee_id) = fee_id.clone() {
             update_record_spent_local::<N>(&fee_id, false)?;
         }
+
+        let request_clone = request.clone();
+
         println!("=====> INPUTS {:?}", input_values);
         let transaction_id = match program_manager.execute_program(
             request.program_id().clone(),

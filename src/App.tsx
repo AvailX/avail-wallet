@@ -1,25 +1,19 @@
-import {useEffect, useState, useRef} from 'react';
-import {invoke} from '@tauri-apps/api/core';
-import * as platform from 'platform';
+import React from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 /** STYLES */
-import {ThemeProvider} from '@emotion/react';
-import reactLogo from './assets/react.svg';
-import {theme} from './styles/theme';
+import { ThemeProvider } from '@emotion/react';
+import { theme } from './styles/theme';
 
 /** COMPONENTS */
 import Entrypoint from './views-desktop/entrypoint';
-import {useWalletConnectManager} from './context/WalletConnect';
-
-/* Components for Testing */
-import Send from './views-desktop/send';
-import Home from './views-desktop/home-desktop';
+import { useWalletConnectManager } from './context/WalletConnect';
 
 function App() {
-	const {walletConnectManager} = useWalletConnectManager();
+	const { walletConnectManager } = useWalletConnectManager();
 
 	useEffect(() => {
-		const handleBeforeUnload = async(e: BeforeUnloadEvent) => {
+		const handleBeforeUnload = async (e: BeforeUnloadEvent) => {
 			e.preventDefault();
 			e.returnValue = '';
 
@@ -36,7 +30,7 @@ function App() {
 	return (
 		<ThemeProvider theme={theme} >
 
-			<Entrypoint/>
+			<Entrypoint />
 
 		</ThemeProvider>
 	);

@@ -6,8 +6,6 @@ import {listen} from '@tauri-apps/api/event';
 import {useLocation} from 'react-router-dom';
 import MiniDrawer from '../components/sidebar';
 import ReAuthDialog from '../components/dialogs/reauth';
-import DappView from '../components/dApps/dapp';
-import {dapps} from '../assets/dapps/dapps';
 
 // Tauri tools
 
@@ -30,9 +28,8 @@ const BrowserView: React.FC = () => {
 		console.log('Location State ' + location.state);
 		if (location.state !== undefined) {
 			const state = location.state as string;
-
 		} else if (activeUrl !== '') {
-			if (activeUrl !== "https://faucet.puzzle.online") {
+			if (activeUrl !== 'https://faucet.puzzle.online') {
 				setUrl(activeUrl);
 			}
 		}

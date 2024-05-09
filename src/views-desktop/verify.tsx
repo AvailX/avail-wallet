@@ -19,7 +19,6 @@ import { SuccessAlert, ErrorAlert } from '../components/snackbars/alerts';
 // Hooks
 
 import Layout from './reusable/layout';
-import BackButton from 'src/components/buttons/back';
 
 function Verify() {
 	const seed = useLocation().state.seed as string[];
@@ -98,6 +97,24 @@ function Verify() {
 		}
 	}
 
+	function handleInputChange(index: number, value: string) {
+		if (hiddenWords) {
+			const updatedWords = [...hiddenWords];
+			updatedWords[index].input = value;
+			setHiddenWords(updatedWords);
+
+			// Check if a full seed phrase is pasted
+			if (value.split(' ').length === 12) {
+				const words = value.split(' ');
+				const newHiddenWords = hiddenWords.map((hiddenWord, i) => ({
+					...hiddenWord,
+					input: hiddenWord.isHidden ? words[i] : hiddenWord.input,
+				}));
+				setHiddenWords(newHiddenWords);
+			}
+		}
+	}
+
 	React.useEffect(() => {
 		setHiddenWords(generateHiddenWords());
 	}, [seed]);
@@ -119,6 +136,7 @@ function Verify() {
 			</mui.Typography>
 			<mui.Box sx={{ width: '85%', alignSelf: 'center' }}>
 				<Title2Text sx={{ color: '#FFF' }}>{t('verify.title')}</Title2Text>
+				<SubtitleText sx={{color:'#a3a3a3'}}>You can paste in the whole seed phrase to one box if you'd like :)</SubtitleText>
 			</mui.Box>
 			<mui.Grid container spacing={1} sx={{
 				marginTop: '25px', alignSelf: 'center', bgcolor: '#1E1D1D', borderRadius: '10px', width: '85%', padding: '5%', justifyContent: 'center', mb: '2%', alignItems: 'center', position: 'relative',
@@ -139,10 +157,9 @@ function Verify() {
 							label={`Word ${index + 1}`}
 							value={word.input}
 							onChange={e => {
-								const updatedWords = [...hiddenWords];
-								updatedWords[index].input = e.target.value;
-								setHiddenWords(updatedWords);
-							}}
+								handleInputChange(index, e.target.value);
+							}
+							}
 							autoCapitalize='none'
 						/>
 					</mui.Grid>

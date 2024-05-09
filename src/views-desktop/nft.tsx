@@ -7,24 +7,44 @@ import Nft from '../components/nft';
 
 // Services
 import {get_nfts} from '../services/nfts/fetch';
+import {getWhitelists} from '../services/quests/quests';
 
 // Typography
 import {Title2Text, SubtitleText, SubMainTitleText} from '../components/typography/typography';
 
 // Types
-import {type INft} from '../types/nfts/nft';
+import {type INft, disruptorWhitelist} from '../types/nfts/nft';
 import Layout from './reusable/layout';
+import {type WhitelistResponse} from '../types/quests/quest_types';
 
 function Nfts() {
 	const [nfts, setNfts] = React.useState<INft[]>([]);
+	const shouldRunEffect = React.useRef(true);
+
+	const checkWhitelists = (whitelists: WhitelistResponse[]) => {
+		console.log(whitelists);
+		whitelists.forEach(whitelist => {
+			if (whitelist.collection_name === 'Disruptors') {
+				setNfts([...nfts, disruptorWhitelist]);
+			}
+		});
+	};
 
 	React.useEffect(() => {
-		async function fetchNfts() {
-			const nfts = await get_nfts();
-			setNfts(nfts);
-		}
+		if (shouldRunEffect.current) {
+			get_nfts().then(nfts => {
+				setNfts(nfts);
+			}).catch(err => {
+				console.log(err);
+			});
 
-		fetchNfts();
+			getWhitelists().then(whitelists => {
+				checkWhitelists(whitelists);
+			}).catch(err => {
+				console.log(err);
+			});
+			shouldRunEffect.current = false;
+		}
 	}, []);
 
 	return (

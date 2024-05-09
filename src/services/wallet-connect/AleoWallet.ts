@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-promise-reject-errors */
 import {invoke} from '@tauri-apps/api/core';
-import {once, type Event} from '@tauri-apps/api/event';
+import {once, type Event, emit} from '@tauri-apps/api/event';
 import {type WebviewOptions} from '@tauri-apps/api/webview';
 import {getAll, WebviewWindow} from '@tauri-apps/api/webviewWindow';
 import {type Window, type WindowOptions} from '@tauri-apps/api/window';
@@ -485,7 +485,7 @@ export class AleoWallet {
 		const metadata = getDappMetadata(requestEvent.topic);
 		const request = requestEvent.params.request.params as CreateEventRequest;
 		console.log('===========> Request full', request);
-		// TODO - User fee privacy choice
+
 		const wcRequest: WalletConnectRequest = {
 			method: 'create-request-event',
 			question:
@@ -515,21 +515,25 @@ export class AleoWallet {
 			{
 				async onApprove(response, webview) {
 					await webview.destroy();
-
+					await emit('transaction_start', 'Transaction started');
 					return new Promise((resolve, reject) => {
-						console.log('Response', response);
+						sessionStorage.setItem('transfer_on', 'true');
+
 						const payloadObject = JSON.stringify(response.payload);
 						const feeOption = JSON.parse(payloadObject).feeOption;
-						console.log('Fee Option', feeOption);
 
 						invoke<CreateEventResponse>('request_create_event', {
 							request,
 							fee_private: feeOption,
 						})
-							.then(response => {
+							.then(async response => {
+								sessionStorage.setItem('transfer_on', 'false');
+								await emit('transaction_end', 'Transaction ended');
 								resolve(formatJsonRpcResult(requestEvent.id, response));
 							})
-							.catch((error: AvailError) => {
+							.catch(async (error: AvailError) => {
+								sessionStorage.setItem('transfer_on', 'false');
+								await emit('transaction_end', 'Transaction ended');
 								reject(formatJsonRpcError(requestEvent.id, error.external_msg));
 							});
 					});
@@ -827,6 +831,7 @@ export class AleoWallet {
 		console.log('Checking window');
 		if (checkWindow('wallet-connect')) {
 			for (const win of getAll()) {
+				console.log('Checking window label', win);
 				if (win.label === 'wallet-connect') {
 					webview = win;
 				}

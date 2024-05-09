@@ -9,6 +9,7 @@ import {transfer} from '../services/transfer/transfers';
 import {getTokenBalance} from '../services/states/utils';
 import {os} from '../services/util/open';
 import {listen} from '@tauri-apps/api/event';
+import {getNetwork, get_address, getUsername} from '../services/storage/persistent';
 
 // Components
 import TransferBox from '../components/transfer/transfer_box';
@@ -17,6 +18,7 @@ import CTAButton from '../components/buttons/cta';
 import SettingsComponent from '../components/switch/privacy_toggle';
 import TransferDialog from '../components/dialogs/transfer';
 import TransferInProgressDialog from '../components/dialogs/transfer_in_progress';
+import ProfileBar from '../components/account/profile-header';
 
 // Images
 import aleo from '../assets/icons/tokens/aleo.svg';
@@ -86,6 +88,11 @@ function Send() {
 	const [infoAlert, setInfoAlert] = React.useState(false);
 	const [message, setMessage] = React.useState('');
 
+	// Profile  bar states
+	const [address, setAddress] = React.useState('');
+	const [username, setUsername] = React.useState('');
+	const [network, setNetwork] = React.useState('');
+
 	// Scan states
 	const {scanInProgress, startScan, endScan} = useScan();
 	const navigate = useNavigate();
@@ -100,6 +107,36 @@ function Send() {
 			setBiometric(false);
 		}
 	};
+
+	React.useEffect(() => {
+		// Set network
+
+		getNetwork().then(res => {
+			setNetwork(res);
+		}).catch(error => {
+			console.log(error);
+			setMessage('Failed to get network.');
+			setErrorAlert(true);
+		});
+
+		// Set address
+		get_address().then(res => {
+			setAddress(res);
+		}).catch(error => {
+			console.log(error);
+			setMessage('Failed to get address.');
+			setErrorAlert(true);
+		});
+
+		// Set username
+		getUsername().then(res => {
+			setUsername(res);
+		}).catch(error => {
+			console.log(error);
+			setMessage('Failed to get username.');
+			setErrorAlert(true);
+		});
+	}, []);
 
 	/* --Event Listners */
 	React.useEffect(() => {
@@ -181,14 +218,9 @@ function Send() {
 		sessionStorage.setItem('transferState', 'true');
 		transfer(request, setErrorAlert, setMessage).then(res => {
 			sessionStorage.setItem('transferState', 'false');
-		}).catch(async error_ => {
-			console.log('Error' + error_);
-			let error = error_;
-			const os_type = await os();
-
-			if (os_type !== 'linux') {
-				error = JSON.parse(error_) as AvailError;
-			}
+		}).catch(async err => {
+			console.log(err);
+			const error = err as AvailError;
 
 			sessionStorage.setItem('transferState', 'false');
 			if (error.error_type.toString() === 'Unauthorized') {
@@ -203,23 +235,14 @@ function Send() {
 	};
 
 	const shouldRunEffect = React.useRef(true);
-	/* Check Biometry */
 	React.useEffect(() => {
-		if (!shouldRunEffect.current) {
-			return;
-		}
-
-		getAuth();
-	}, []);
-
-	React.useEffect(() => {
-		let asset_id = token;
+		let assetId = token;
 
 		if (token === 'ALEO') {
-			asset_id = 'credits';
+			assetId = 'credits';
 		}
 
-		getTokenBalance(asset_id).then(res => {
+		getTokenBalance(assetId).then(res => {
 			if (res.balances !== undefined) {
 				const balances = res.balances[0];
 				setPrivateBalance(balances.private);
@@ -227,6 +250,8 @@ function Send() {
 			}
 		}).catch(error => {
 			console.log(error);
+			setMessage('Failed to get token balances.');
+			setErrorAlert(true);
 		});
 	}, [token]);
 
@@ -249,10 +274,16 @@ function Send() {
 			}} request={request} />
 			<MiniDrawer />
 			<mui.Box sx={{
-				width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignContent: 'center',
+				width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignContent: 'center', flexDirection: 'column',
 			}}>
 				<mui.Box sx={{
-					display: 'flex', width: '45%', bgcolor: '#00A07D', borderRadius: 9, mt: '12%',
+					display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', mt: '2%', mr: '5%', alignItems: 'center',
+				}}>
+					<mui.Chip label={network} variant='outlined' sx={{mr: '2%', color: '#a3a3a3'}} />
+					<ProfileBar address={address} name={username}></ProfileBar>
+				</mui.Box>
+				<mui.Box sx={{
+					display: 'flex', width: '45%', bgcolor: '#00A07D', borderRadius: 9, mt: '8%', alignSelf: 'center'
 				}}>
 					<mui.Box sx={{
 						display: 'flex', flexDirection: 'column', alignSelf: 'center', width: '100%', borderRadius: 9, backdropFilter: 'blur(10px)',

@@ -137,6 +137,15 @@ pub fn get_tx_ids_from_date<N: Network>(
     Ok(transaction_ids)
 }
 
+/*
+pub fn check_txs_for_task<N:Network>(start_data: DateTime<Utc>, end_time: DateTime<Utc>, program_id: &str, function_id: &str) -> AvailResult<bool>{
+    let address = get_address::<N>()?;
+    let network = get_network()?;
+
+    // I want to query the encrypted_data table for transactions that match the program_id and function_ud
+}
+*/
+
 pub fn get_transaction_ids<N: Network>() -> AvailResult<Vec<N::TransactionID>> {
     let address = get_address::<N>()?;
     let network = get_network()?;
@@ -182,6 +191,78 @@ pub fn get_transaction_ids<N: Network>() -> AvailResult<Vec<N::TransactionID>> {
     }
 
     Ok(transaction_ids)
+}
+
+pub fn get_transaction_ids_for_quest_verification<N: Network>(
+    start_time: DateTime<Utc>,
+    end_time: DateTime<Utc>,
+    program_id: &str,
+    function_id: &str,
+) -> AvailResult<Vec<EncryptedData>> {
+    // for quest verification we have to find encrypted_data where the flavour is Transaction,
+    // the state is Confirmed, and the program_id and function_id match, and created_at is within the specified time range
+    let address = get_address::<N>()?;
+    let network = get_network()?;
+
+    let start_time = start_time - chrono::Duration::hours(2);
+
+    let time_filter = format!(
+        "AND created_at BETWEEN '{}' AND '{}'",
+        start_time.to_rfc3339(), // Converts DateTime<Utc> to a string in RFC3339 format suitable for SQL queries
+        end_time.to_rfc3339()
+    );
+
+    // Query for transitions and deployments
+    let transitions_deployments_query = format!(
+        "SELECT *, '[]' as json_program_ids, '[]' as json_function_ids FROM encrypted_data WHERE flavour IN ('{}','{}') AND owner='{}' AND network='{}'",
+        EncryptedDataTypeCommon::Transition.to_str(),
+        EncryptedDataTypeCommon::Deployment.to_str(),
+        address,
+        network
+    );
+
+    // Query for transactions
+    let transactions_query = format!(
+        "SELECT *, program_ids as json_program_ids, function_ids as json_function_ids FROM encrypted_data WHERE flavour='{}' AND owner='{}' AND network='{}'",
+        EncryptedDataTypeCommon::Transaction.to_str(),
+        address,
+        network
+    );
+
+    let mut common_filter_conditions = String::new();
+
+    let program_id_filter = format!(
+        "AND (program_ids='{}' OR JSON_EXTRACT(json_program_ids, '$') LIKE '%{}%')",
+        program_id, program_id
+    );
+
+    let function_id_filter = format!(
+        "AND (function_ids='{}' OR JSON_EXTRACT(json_function_ids, '$') LIKE '%{}%')",
+        function_id, function_id
+    );
+
+    common_filter_conditions.push_str(&program_id_filter);
+    common_filter_conditions.push_str(&function_id_filter);
+
+    let transitions_deployments_query_with_filters = format!(
+        "{} {}",
+        transitions_deployments_query, common_filter_conditions
+    );
+
+    let transactions_query_with_filters =
+        format!("{} {}", transactions_query, common_filter_conditions);
+
+    let mut combined_query = format!(
+        "{} UNION ALL {} ORDER BY created_at DESC",
+        transitions_deployments_query_with_filters, transactions_query_with_filters
+    );
+
+    //let query = format!("{} {} {}", query, program_id_filter, function_id_filter);
+
+    // Assuming the execution of the query and processing the result happens here
+
+    let encrypted_transactions = handle_encrypted_data_query(&combined_query)?;
+    Ok(encrypted_transactions)
 }
 
 pub fn get_unconfirmed_and_failed_transaction_ids<N: Network>(

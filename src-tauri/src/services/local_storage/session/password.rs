@@ -24,7 +24,7 @@ impl PassSession {
         *password_lock = Some(password.to_string());
 
         // Set expiration to 5 minutes from now
-        *expiration_lock = Instant::now() + Duration::from_secs(5 * 60);
+        *expiration_lock = Instant::now() + Duration::from_secs(10 * 60);
         Ok(())
     }
 

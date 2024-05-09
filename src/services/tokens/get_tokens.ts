@@ -3,6 +3,7 @@ import {type AssetType} from 'src/types/assets/asset';
 import {getTokenBalance} from '../states/utils';
 import aleo from '../../assets/images/tokens/ALEO.svg';
 import usdc from '../../assets/images/tokens/USDC.svg';
+import zec from '../../assets/images/tokens/ZEC.svg';
 
 function parseTokenName(name: string) {
 	return name.split('.')[0];
@@ -42,6 +43,8 @@ export async function handleGetTokens() {
 			token_total = Math.round((token_total + Number.EPSILON) * 1000) / 1000;
 
 			let symbol = parseTokenName(tokens[i]);
+
+			console.log('Token: ' + symbol);
 			let image_reference;
 
 			if (symbol === 'credits') {
@@ -49,6 +52,8 @@ export async function handleGetTokens() {
 				image_reference = aleo;
 			} else if (symbol === 'usdc') {
 				image_reference = usdc;
+			} else if (symbol === 'ZEC') {
+				image_reference = zec;
 			}
 
 			const token_asset: AssetType = {
