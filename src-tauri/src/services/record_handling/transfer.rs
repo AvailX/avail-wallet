@@ -1052,11 +1052,12 @@ async fn install_prover(path: PathBuf, window: Window) -> AvailResult<()> {
     let res = client
         .get("https://s3-us-west-1.amazonaws.com/testnet3.parameters/inclusion.prover.cd85cc5")
         .send()
-        .await?;
+        .await
+        .unwrap();
 
     println!("Finished downloading inclusion.prover.cd85cc5...");
 
-    let body = res.bytes().await?;
+    let body = res.bytes().await.unwrap();
 
     match fs::write(path.clone(), body) {
         Ok(_) => {}

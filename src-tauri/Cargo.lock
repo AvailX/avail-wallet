@@ -421,7 +421,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "avail-common"
 version = "0.5.0"
-source = "git+https://github.com/availx/avail-lib#60c4c35600ba8ee8f24b0e108024856f2a778cac?branch=feat/delegate-proving#60c4c35600ba8ee8f24b0e108024856f2a778cac"
+source = "git+https://github.com/availx/avail-lib#c71d211a3aed982182415a1deac676f2db05c236?branch=feat/delegate-proving#c71d211a3aed982182415a1deac676f2db05c236"
 dependencies = [
  "aes-gcm",
  "app_dirs2",
@@ -442,6 +442,7 @@ dependencies = [
  "serde",
  "serde_json",
  "snarkvm",
+ "tauri-plugin-http",
  "tokio",
  "tracing",
  "ureq",

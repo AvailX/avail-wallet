@@ -4,7 +4,7 @@ use tauri_plugin_http::reqwest;
 use uuid::Uuid;
 
 use crate::{
-    api::client::get_backup_client_with_session,
+    // api::client::get_backup_client_with_session,
     models::pointers::message::TransactionMessage,
     services::local_storage::{
         persistent_storage::{get_address_string, get_last_tx_sync, update_last_tx_sync},
@@ -21,6 +21,7 @@ use avail_common::{
         },
         traits::encryptable::EncryptedStruct,
     },
+    service_clients::get_backup_client_with_session,
 };
 
 pub async fn update_sync_height(address: String, sync_height: String) -> AvailResult<String> {
@@ -32,7 +33,6 @@ pub async fn update_sync_height(address: String, sync_height: String) -> AvailRe
     let res = get_backup_client_with_session(reqwest::Method::POST, &path)?
         .send()
         .await?;
-
     if res.status() == 200 {
         let _result = res.text().await?;
     } else if res.status() == 401 {
@@ -61,7 +61,6 @@ pub async fn update_backup_timestamp(address: String, timestamp: i64) -> AvailRe
     let res = get_backup_client_with_session(reqwest::Method::POST, &path)?
         .send()
         .await?;
-
     if res.status() == 200 {
         let _result = res.text().await?;
     } else if res.status() == 401 {
@@ -86,9 +85,8 @@ pub async fn get_sync_height(address: String) -> AvailResult<String> {
     let res = get_backup_client_with_session(reqwest::Method::GET, &path)?
         .send()
         .await?;
-
     if res.status() == 200 {
-        let result = res.json::<String>().await?;
+        let result = res.json::<String>().await.unwrap();
         Ok(result)
     } else if res.status() == 401 {
         return Err(AvailError::new(
@@ -110,9 +108,8 @@ pub async fn get_backup_timestamp(address: String) -> AvailResult<i64> {
     let res = get_backup_client_with_session(reqwest::Method::GET, &path)?
         .send()
         .await?;
-
     if res.status() == 200 {
-        let result = res.json::<i64>().await?;
+        let result = res.json::<i64>().await.unwrap();
         Ok(result)
     } else if res.status() == 401 {
         return Err(AvailError::new(

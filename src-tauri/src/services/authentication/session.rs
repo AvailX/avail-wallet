@@ -45,7 +45,8 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
         .post(format!("{}/auth/login/", api))
         .json(&verify_request)
         .send()
-        .await?;
+        .await
+        .unwrap();
 
     if res.status() == 200 {
         let cookie = res.cookies().next();
@@ -97,7 +98,8 @@ pub async fn get_session_after_creation<N: Network>(
         .post(format!("{}/auth/login/", api))
         .json(&verify_request)
         .send()
-        .await?;
+        .await
+        .unwrap();
 
     if res.status() == 200 {
         let cookie = res.cookies().next();
@@ -149,10 +151,13 @@ pub async fn request_hash(address: &str) -> AvailResult<server_auth::CreateSessi
         .header("Content-Type", "application/json")
         .json(&request)
         .send()
-        .await?;
-
+        .await
+        .unwrap();
     if res.status() == 201 {
-        Ok(res.json::<server_auth::CreateSessionResponse>().await?)
+        Ok(res
+            .json::<server_auth::CreateSessionResponse>()
+            .await
+            .unwrap())
     } else {
         if res.status() == 0 {
             return Err(AvailError::new(
@@ -200,10 +205,10 @@ pub async fn get_session_only(request: VerifySessionResponse) -> AvailResult<Str
         .post("https://test-api.avail.global/auth/login/")
         .json(&request.to_request())
         .send()
-        .await?;
-
+        .await
+        .unwrap();
     if res.status() == 200 {
-        res.json::<String>().await?;
+        res.json::<String>().await.unwrap();
         // store session id in local storage (cookies)
         Ok(request.session_id.to_string())
     } else {
