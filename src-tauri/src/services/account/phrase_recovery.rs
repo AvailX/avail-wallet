@@ -1,11 +1,13 @@
-use chrono::{DateTime, Local};
+use chrono::{DateTime, Local, Utc};
 use snarkvm::prelude::{Testnet3, ToBytes};
 
 use crate::{
+    api::backup_recovery::{get_backup_timestamp, get_sync_height},
     models::storage::languages::Languages,
     services::local_storage::{
-        encrypted_data::initialize_encrypted_data_table,
-        persistent_storage::initial_user_preferences, session::view::VIEWSESSION,
+        encrypted_data::{initialize_encrypted_data_table, process_private_tokens},
+        persistent_storage::{initial_user_preferences, update_last_backup_sync, update_last_sync},
+        session::view::VIEWSESSION,
     },
 };
 
@@ -106,8 +108,77 @@ pub async fn recover_wallet_from_seed_phrase(
         .unwrap();
 
     if backup {
-        get_and_store_all_data().await?;
+        println!("Backup is true");
+        let data = get_and_store_all_data().await?;
+        process_private_tokens(data)?;
+        // get last_sync_height and last_backup_timestamp from the server and store it in the local storage
+        let sync_height = get_sync_height(avail_wallet.get_address().to_string()).await?;
+        let backup_ts = get_backup_timestamp(avail_wallet.get_address().to_string()).await?;
+        println!("Sync Height: {:?}", sync_height);
+        println!("Backup Timestamp: {:?}", backup_ts);
+        let last_sync = sync_height.parse::<u32>().unwrap();
+        let backup: DateTime<Utc> = DateTime::from_naive_utc_and_offset(
+            chrono::NaiveDateTime::from_timestamp_opt(backup_ts, 0).unwrap(),
+            Utc,
+        );
+        println!("Last Sync: {:?}", last_sync);
+        println!("Last Backup Sync: {:?}", backup);
+        update_last_sync(last_sync)?;
+        update_last_backup_sync(backup)?;
+        let after_modified_sync =
+            crate::services::local_storage::persistent_storage::get_last_sync().unwrap();
+        let after_modified_backup =
+            crate::services::local_storage::persistent_storage::get_last_backup_sync().unwrap();
+        println!("After Modified Sync: {:?}", after_modified_sync);
+        println!("After Modified Backup: {:?}", after_modified_backup);
     }
 
     Ok(())
+}
+
+// write a test for a custom function
+
+#[cfg(test)]
+#[tokio::test]
+async fn test_fn() {
+    use chrono::Utc;
+    let api_client = crate::api::aleo_client::setup_local_client::<Testnet3>();
+
+    let sender_address =
+        crate::services::local_storage::persistent_storage::get_address::<Testnet3>().unwrap();
+
+    let private_key = crate::services::local_storage::utils::get_private_key::<Testnet3>(Some(
+        "tylerDurden@0xf5".to_string(),
+    ))
+    .unwrap();
+
+    // //extend session auth
+    let _session_task = get_session_after_creation::<Testnet3>(&private_key)
+        .await
+        .unwrap();
+    crate::api::backup_recovery::update_sync_height(
+        sender_address.to_string(),
+        "1806046".to_string(),
+    )
+    .await
+    .unwrap();
+    let sync_height = get_sync_height(sender_address.to_string()).await.unwrap();
+    let backup_ts = get_backup_timestamp(sender_address.to_string())
+        .await
+        .unwrap();
+    let last_sync = sync_height.parse::<u32>().unwrap();
+    let backup: DateTime<Utc> = DateTime::from_naive_utc_and_offset(
+        chrono::NaiveDateTime::from_timestamp_opt(backup_ts, 0).unwrap(),
+        Utc,
+    );
+    println!("Last Sync: {:?}", last_sync);
+    println!("Last Backup Sync: {:?}", backup);
+    update_last_sync(last_sync).unwrap();
+    update_last_backup_sync(backup.into()).unwrap();
+    let after_modified_sync =
+        crate::services::local_storage::persistent_storage::get_last_sync().unwrap();
+    let after_modified_backup =
+        crate::services::local_storage::persistent_storage::get_last_backup_sync().unwrap();
+    println!("After Modified Sync: {:?}", after_modified_sync);
+    println!("After Modified Backup: {:?}", after_modified_backup);
 }

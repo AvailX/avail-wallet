@@ -24,18 +24,20 @@ import PrivacyPolicy from './views-desktop/privacy-policy';
 import TermsAndConditions from './views-desktop/terms-and-conditions';
 import Oops from './views-desktop/oops';
 import Import from './views-desktop/import';
+import Dapps from './views-desktop/dapps';
+import Campaigns from './views-desktop/quests/campaigns';
+import Quests from './views-desktop/quests/quests';
 
 // global font styles
 import './index.css';
 
 // global states
-import {ScanProvider} from './context/ScanContext';
-import {WalletConnectProvider} from './context/WalletConnect';
-import {RecentEventsProvider} from './context/EventsContext';
+import { ScanProvider } from './context/ScanContext';
+import { WalletConnectProvider } from './context/WalletConnect';
+import { RecentEventsProvider } from './context/EventsContext';
 
 // Languages
 import i18n from './i18next-config';
-import FaucetView from './views-desktop/faucet';
 import Faucet from './views-desktop/faucet';
 
 // See if language is set in local storage
@@ -50,24 +52,27 @@ if (storedLanguage) {
 const platform = true;
 
 const router = createBrowserRouter([
-	{path: '/', element: <App />}, // MVP
-	{path: '/register', element: <Register />},
-	{path: '/home', element: <HomeDesktop />},
-	{path: '/login', element: <Login />},
-	{path: '/send', element: <Send />},
-	{path: '/recovery', element: <Recovery />},
-	{path: '/seed', element: <SeedPhrase />},
-	{path: '/verify', element: <Verify />},
-	{path: '/settings', element: <Settings />},
-	{path: '*', element: <Oops />},
-	{path: '/activity', element: <Activity />},
-	{path: '/browser', element: <BrowserView />},
-	{path: '/faucet', element: <Faucet />},
-	{path: '/support', element: <a href='discord://EeuhRNwx' />},
-	{path: '/nfts', element: <Nfts />},
-	{path: '/privacy-policy', element: <PrivacyPolicy />},
-	{path: '/terms-of-service', element: <TermsAndConditions />},
-	{path: '/import', element: <Import />},
+	{ path: '/', element: <App /> }, // MVP
+	{ path: '/register', element: <Register /> }, // MVP
+	{ path: '/home', element: <HomeDesktop /> }, // MVP
+	{ path: '/login', element: <Login /> }, // MVP
+	{ path: '/send', element: <Send /> }, // MVP ? TBD
+	{ path: '/recovery', element: <Recovery /> }, // MVP
+	{ path: '/seed', element: <SeedPhrase /> }, // MVP
+	{ path: '/verify', element: <Verify /> }, // MVP
+	{ path: '/settings', element: <Settings /> }, // MVP
+	{ path: '*', element: <Oops /> },
+	{ path: '/activity', element: <Activity /> },
+	{ path: '/browser', element: <BrowserView /> },
+	{ path: '/faucet', element: <Faucet /> },
+	{ path: '/support', element: <a href='discord://EeuhRNwx' /> },
+	{ path: '/nfts', element: <Nfts /> },
+	{ path: '/privacy-policy', element: <PrivacyPolicy /> },
+	{ path: '/terms-of-service', element: <TermsAndConditions /> },
+	{ path: '/import', element: <Import /> },
+	{ path: '/dapps', element: <Dapps /> },
+	{ path: '/campaigns', element: <Campaigns /> },
+	{ path: '/quests', element: <Quests /> },
 ]);
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(

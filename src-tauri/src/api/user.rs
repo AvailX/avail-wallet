@@ -7,7 +7,7 @@ use crate::helpers::utils::HOST;
 use crate::helpers::validation::validate_address;
 use crate::models::account::AddressRequest;
 use crate::services::local_storage::persistent_storage::{
-    get_backup_flag, update_local_backup_flag,
+    get_backup_flag, get_last_backup_sync, get_last_sync, update_local_backup_flag,
 };
 use crate::services::{
     account::utils::generate_discriminant,
@@ -18,6 +18,8 @@ use avail_common::{
     errors::{AvailError, AvailErrorType, AvailResult},
     models::user::{UpdateBackupRequest, User},
 };
+
+use super::backup_recovery::{update_backup_timestamp, update_sync_height};
 
 /* --USER SERVICE-- */
 
@@ -208,6 +210,12 @@ pub async fn update_backup_flag(backup_flag: bool) -> AvailResult<()> {
 
     if res.status() == 200 {
         update_local_backup_flag(backup_flag)?;
+        let sync_height = get_last_sync()?;
+        let backup_ts = get_last_backup_sync()?;
+        let ts: i64 = backup_ts.timestamp();
+        let _result = update_backup_timestamp(get_address_string()?, ts).await?;
+        let _result = update_sync_height(get_address_string()?, sync_height.to_string()).await?;
+        println!("BACKUP INIT IN DB{:?}", _result);
         Ok(())
     } else if res.status() == 401 {
         Err(AvailError::new(

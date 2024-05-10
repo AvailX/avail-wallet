@@ -60,16 +60,13 @@ export function session(request: VerifySessionRequest, navigate: NavigateFunctio
 // TODO - Fix Delete
 export function delete_util(setSuccessAlert: React.Dispatch<React.SetStateAction<boolean>>, setErrorAlert: React.Dispatch<React.SetStateAction<boolean>>, setMessage: React.Dispatch<React.SetStateAction<string>>, navigate: NavigateFunction, password: string | undefined) {
 	invoke('delete_util', {password}).then(r => {
+		localStorage.clear();
 		setMessage('Account deleted successfully.');
 		setSuccessAlert(true);
 
 		navigate('/register');
-	}).catch(async error_ => {
-		let error = error_;
-		const os_type = await os();
-		if (os_type !== 'linux') {
-			error = JSON.parse(error_) as AvailError;
-		}
+	}).catch(async err => {
+		const error = err as AvailError;
 
 		if (error.error_type === AvailErrorType.Unauthorized) {
 			setMessage(error.external_msg);

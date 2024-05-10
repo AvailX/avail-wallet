@@ -161,7 +161,7 @@ export class WalletConnectManager {
 				console.log('Webview ', webview);
 
 				setTimeout(async () => {
-					await emitTo('wallet-connect', 'wallet-connect-request', wcRequest);
+					await emit('wallet-connect-request', wcRequest);
 					console.log('Emitting wallet-connect-request');
 				}, 3000);
 			});
@@ -169,6 +169,7 @@ export class WalletConnectManager {
 			const {aleoWallet, theWallet} = this;
 
 			await once('connect-approved', async response => {
+				await webview.close();
 				console.log('Wallet connect was approved', response);
 
 				SessionInfo.show(proposal, [aleoWallet.chainName()]);
@@ -198,7 +199,7 @@ export class WalletConnectManager {
 				});
 				console.log('Approved session', session);
 
-				await emitTo('main', 'connected', session);
+				await emit('connected', session);
 
 				this.currentRequestVerifyContext = proposal.verifyContext;
 
@@ -216,14 +217,13 @@ export class WalletConnectManager {
 				console.log('Storing dapp session', dappSess);
 				sessionStorage.setItem(session.topic, JSON.stringify(dappSess));
 
-				await webview.destroy();
 			});
 
 			// Listen for the rejection event from the secondary window
 			await once('connect-rejected', async response => {
 				// Handle the rejection logic here
 				console.log('Wallet connect was rejected', response);
-				await webview.destroy();
+				await webview.close();
 				throw new Error('User Rejected');
 			});
 
