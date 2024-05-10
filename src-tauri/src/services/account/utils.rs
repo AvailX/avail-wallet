@@ -27,14 +27,12 @@ pub fn open_url(url: &str) -> AvailResult<()> {
 
     #[cfg(target_os = "macos")]
     match Command::new("open").arg(url).spawn() {
-        Ok(_) =>  Ok(()),
-        Err(e) => {
-             Err(AvailError::new(
-                AvailErrorType::Internal,
-                format!("Error opening url: {}", e),
-                "Error opening url".to_string(),
-            ))
-        }
+        Ok(_) => Ok(()),
+        Err(e) => Err(AvailError::new(
+            AvailErrorType::Internal,
+            format!("Error opening url: {}", e),
+            "Error opening url".to_string(),
+        )),
     }
 
     #[cfg(target_os = "linux")]
