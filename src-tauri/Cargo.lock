@@ -442,6 +442,7 @@ dependencies = [
  "serde",
  "serde_json",
  "snarkvm",
+ "tauri-plugin-http",
  "tokio",
  "tracing",
  "ureq",
