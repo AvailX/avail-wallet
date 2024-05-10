@@ -23,7 +23,7 @@ tauri-build = { version = "=2.0.0-beta.13", features = [] }
 [dependencies]
 
 app_dirs = { package = "app_dirs2", version = "2.5" }
-avail-common = { git = "https://github.com/availx/avail-lib#c71d211a3aed982182415a1deac676f2db05c236", branch = "feat/delegate-proving", features = [
+avail-common = { git = "https://github.com/availx/avail-lib#4aef30461b1058ac6fe44d917ffffd873c3f38cb", branch = "feat/delegate-proving", features = [
     "snarkvm",
 ] }
 bs58 = "0.5.0"
