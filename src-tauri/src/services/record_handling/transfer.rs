@@ -1049,15 +1049,33 @@ async fn install_prover(path: PathBuf, window: Window) -> AvailResult<()> {
 
     println!("Downloading inclusion.prover.cd85cc5...");
 
-    let res = client
+    let res = match client
         .get("https://s3-us-west-1.amazonaws.com/testnet3.parameters/inclusion.prover.cd85cc5")
         .send()
         .await
-        .unwrap();
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Error downloading inclusion.prover.cd85cc5".to_string(),
+                format!("Error downloading inclusion.prover.cd85cc5: {:?}", e),
+            ));
+        }
+    };
 
     println!("Finished downloading inclusion.prover.cd85cc5...");
 
-    let body = res.bytes().await.unwrap();
+    let body = match res.bytes().await {
+        Ok(body) => body,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Error reading inclusion.prover.cd85cc5".to_string(),
+                format!("Error reading inclusion.prover.cd85cc5: {:?}", e),
+            ));
+        }
+    };
 
     match fs::write(path.clone(), body) {
         Ok(_) => {}

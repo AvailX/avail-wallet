@@ -12,14 +12,33 @@ use avail_common::{
 pub async fn create_record(request: FeeRequest) -> AvailResult<String> {
     let client = reqwest::Client::new();
 
-    let res = client
+    let res = match client
         .post(format!("http://localhost:8080/fee/create-record"))
         .json(&request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                "Error creating fee record ".to_string(),
+                e.to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        let result = res.json().await?;
+        let result = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    "Error creating fee record ".to_string(),
+                    e.to_string(),
+                ));
+            }
+        };
 
         Ok(result)
     } else if res.status() == 401 {
@@ -44,16 +63,35 @@ pub async fn create_record(request: FeeRequest) -> AvailResult<String> {
 pub async fn fetch_record(pid: String, fid: String) -> AvailResult<Option<i32>> {
     let client = reqwest::Client::new();
 
-    let res = client
+    let res = match client
         .get(format!(
             "http://localhost:8080/fee/fetch-record/{}/{}",
             pid, fid
         ))
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                "Error getting fee ".to_string(),
+                e.to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        let result: Option<i32> = res.json().await?;
+        let result: Option<i32> = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    "Error getting fee ".to_string(),
+                    e.to_string(),
+                ));
+            }
+        };
 
         Ok(result)
     } else if res.status() == 401 {
