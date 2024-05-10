@@ -1,14 +1,15 @@
+use snarkvm::circuit::group::add;
 use snarkvm::prelude::*;
 
-use chrono::{DateTime, Local};
+use chrono::{DateTime, Local, Utc};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter, Result as Res};
 use uuid::Uuid;
 
+use crate::api::aleo_client::setup_local_client;
 use crate::models::event::{
     AvailEvent, Event, EventTransition, Network as EventNetwork, SuccinctAvailEvent, Visibility,
 };
-
 use crate::{
     api::aleo_client::setup_client,
     services::local_storage::{
@@ -284,6 +285,54 @@ impl<N: Network> TransactionPointer<N> {
             Some(self.state.clone()),
         );
 
+        Ok(encrypted_data)
+    }
+
+    pub fn to_encrypted_data_from_record_after_recovery(
+        encrypted_data_record: EncryptedDataRecord,
+    ) -> AvailResult<EncryptedData> {
+        let address = get_address::<N>()?;
+        let encrypted_struct = encrypted_data_record.to_enrypted_struct::<N>()?;
+        let record = decrypt::<N>(encrypted_struct)?;
+        let network = get_network()?;
+        let encrypted_tx = record.encrypt_for(address)?;
+
+        let id = Uuid::new_v4();
+        let flavour = EncryptedDataTypeCommon::Transaction;
+        let created_at = chrono::Utc::now();
+
+        let program_ids = record
+            .transitions
+            .iter()
+            .map(|x| x.program_id.clone())
+            .collect::<Vec<String>>();
+        let function_ids = record
+            .transitions
+            .iter()
+            .map(|x| x.function_id.clone())
+            .collect::<Vec<String>>();
+        let json_program_ids = serde_json::to_string(&program_ids)?;
+        let json_function_ids = serde_json::to_string(&function_ids)?;
+
+        let encrypted_data = EncryptedData::new(
+            Some(id),
+            address.to_string(),
+            encrypted_tx.cipher_text.to_string(),
+            encrypted_tx.nonce.to_string(),
+            flavour,
+            None,
+            Some(json_program_ids),
+            Some(json_function_ids),
+            record.created.with_timezone(&Utc),
+            None,
+            None,
+            network,
+            None,
+            None,
+            Some(record.event_type.clone()),
+            None,
+            Some(record.state.clone()),
+        );
         Ok(encrypted_data)
     }
 

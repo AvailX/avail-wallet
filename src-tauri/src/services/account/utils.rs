@@ -1,6 +1,13 @@
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 use rand::Rng;
 use std::process::Command;
+use std::str::FromStr;
+
+use crate::api::aleo_client::{network_status, Status};
+use crate::services::local_storage::persistent_storage::get_network;
+use avail_common::models::network::SupportedNetworks;
+
+use snarkvm::prelude::Testnet3;
 
 pub fn generate_discriminant() -> u32 {
     let mut rng = rand::thread_rng();
@@ -15,14 +22,12 @@ pub fn generate_discriminant() -> u32 {
 pub fn open_url(url: &str) -> AvailResult<()> {
     #[cfg(target_os = "windows")]
     match Command::new("cmd").args(&["/c", "start", url]).spawn() {
-        Ok(_) => return Ok(()),
-        Err(e) => {
-            return Err(AvailError::new(
-                AvailErrorType::Internal,
-                format!("Error opening url: {}", e),
-                "Error opening url".to_string(),
-            ))
-        }
+        Ok(_) => Ok(()),
+        Err(e) => Err(AvailError::new(
+            AvailErrorType::Internal,
+            format!("Error opening url: {}", e),
+            "Error opening url".to_string(),
+        )),
     }
 
     #[cfg(target_os = "macos")]
@@ -37,21 +42,13 @@ pub fn open_url(url: &str) -> AvailResult<()> {
 
     #[cfg(target_os = "linux")]
     match Command::new("xdg-open").arg(url).spawn() {
-        Ok(_) => return Ok(()),
-        Err(e) => {
-            return Err(AvailError::new(
-                AvailErrorType::Internal,
-                format!("Error opening url: {}", e),
-                "Error opening url".to_string(),
-            ))
-        }
+        Ok(_) => Ok(()),
+        Err(e) => Err(AvailError::new(
+            AvailErrorType::Internal,
+            format!("Error opening url: {}", e),
+            "Error opening url".to_string(),
+        )),
     }
-
-    #[cfg(target_os = "ios")]
-    return Ok(());
-
-    #[cfg(target_os = "android")]
-    return Ok(());
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -64,12 +61,15 @@ pub fn os_type() -> AvailResult<String> {
 
     #[cfg(target_os = "linux")]
     return Ok("linux".to_string());
+}
 
-    #[cfg(target_os = "android")]
-    return Ok("android".to_string());
+#[tauri::command(rename_all = "snake_case")]
+pub async fn network_status_check() -> AvailResult<(Status)> {
+    let network = get_network()?;
 
-    #[cfg(target_os = "ios")]
-    return Ok("ios".to_string());
+    match SupportedNetworks::from_str(network.as_str())? {
+        SupportedNetworks::Testnet3 => network_status::<Testnet3>(),
+    }
 }
 
 #[test]

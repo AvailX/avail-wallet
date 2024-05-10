@@ -1,11 +1,9 @@
-import {useEffect, useState, useRef} from 'react';
-import {invoke} from '@tauri-apps/api/core';
-import * as platform from 'platform';
+import React from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 /** STYLES */
-import {ThemeProvider} from '@emotion/react';
-import reactLogo from './assets/react.svg';
-import {theme} from './styles/theme';
+import { ThemeProvider } from '@emotion/react';
+import { theme } from './styles/theme';
 
 /** COMPONENTS */
 import Entrypoint from './views-desktop/entrypoint';

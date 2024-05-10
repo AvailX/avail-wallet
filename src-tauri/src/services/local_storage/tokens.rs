@@ -312,7 +312,7 @@ mod test_tokens {
         //let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
 
         let vk =
-            ViewKey::<Testnet3>::from_str("AViewKey1rWpxoch574dTmVu9zRovZ5UKyhZeBv9ftP2MkEy6TJRF")
+            ViewKey::<Testnet3>::from_str("AViewKey1fVv19tVg53L7vcUKTUTx2VUJTX69d4TsXGpi6TWAkgYR")
                 .unwrap();
 
         let res = get_balance("credits.record", vk).unwrap();
@@ -322,7 +322,7 @@ mod test_tokens {
     #[test]
     fn test_record_exists() {
         let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
-        let res = if_token_exists("token_not_existing").unwrap();
+        let res = if_token_exists("credits.record").unwrap();
         println!("{:?}", res);
     }
 }

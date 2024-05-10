@@ -50,7 +50,7 @@ const TransferInProgressDialog: React.FC<TransferInProgressDialogProperties> = (
 				<mui.DialogTitle>Trasfer is now in progress.</mui.DialogTitle>
 				<mui.DialogContent>
 					<mui.DialogContentText sx={{color: '#a3a3a3'}}>
-						The zero knowledge proof is being generated and the transaction will being sent to the blockchain.
+						The zero knowledge proof is being generated and the transaction is being sent to the blockchain.
 					</mui.DialogContentText>
 				</mui.DialogContent>
 				<mui.DialogActions>

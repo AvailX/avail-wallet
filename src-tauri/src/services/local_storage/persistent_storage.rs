@@ -3,8 +3,7 @@ use snarkvm::prelude::*;
 
 use crate::models::{event::Network as EventNetwork, storage::languages::Languages};
 use crate::{
-    api::aleo_client::{setup_client, setup_local_client},
-    models::storage::persistent::PersistentStorage,
+    api::aleo_client::setup_obscura_client, models::storage::persistent::PersistentStorage,
 };
 
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
@@ -22,7 +21,7 @@ pub fn initial_user_preferences(
 ) -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
 
-    let api_client = setup_client::<Testnet3>().unwrap();
+    let api_client = setup_obscura_client::<Testnet3>().unwrap();
 
     let latest_height = match import {
         true => 0,
@@ -42,9 +41,10 @@ pub fn initial_user_preferences(
             last_sync INTEGER NOT NULL,
             last_tx_sync TIMESTAMP NOT NULL,
             last_backup_sync TIMESTAMP,
+            address TEXT NOT NULL
             backup BOOLEAN NOT NULL DEFAULT FALSE,
             delegate BOOLEAN NOT NULL DEFAULT FALSE,
-            address TEXT NOT NULL
+            base_url TEXT NOT NULL
         )",
     )?;
 
@@ -69,9 +69,10 @@ pub fn initial_user_preferences(
             &Some(Utc::now()),
             &address,
             &backup,
-            &delegate
+            &delegate,
+            &"obscura"
         ],
-        "INSERT INTO user_preferences (theme, language, network, auth_type, username, tag, last_sync, last_tx_sync, last_backup_sync, address, backup, delegate) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,?10, ?11)".to_string(),
+        "INSERT INTO user_preferences (theme, language, network, auth_type, username, tag, last_sync, last_tx_sync, last_backup_sync, address, backup, delegate, base_url) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,?10, ?11, ?12, ?13)".to_string(),
     )?;
 
     Ok(())
@@ -426,6 +427,48 @@ pub fn update_language(language: Languages) -> AvailResult<()> {
     Ok(())
 }
 
+pub fn get_base_url() -> AvailResult<String> {
+    let storage = PersistentStorage::new()?;
+
+    let query = "SELECT base_url FROM user_preferences".to_string();
+
+    let res = match storage.get_all::<String>(&query, 1) {
+        Ok(res) => res,
+        Err(e) => {
+            update_base_url("obscura")?;
+            return Ok("obscura".to_string());
+        }
+    };
+
+    match res.first() {
+        Some(base_url) => Ok(base_url[0].clone()),
+        None => Err(AvailError::new(
+            AvailErrorType::LocalStorage,
+            "Error getting base url".to_string(),
+            "Error getting base url".to_string(),
+        )),
+    }
+}
+
+pub fn update_base_url(base_url: &str) -> AvailResult<()> {
+    let storage = PersistentStorage::new()?;
+
+    // if storage.save fails add the base_url column to the user_preferences table
+    match storage.save(
+        vec![Box::new(base_url.to_string())],
+        "UPDATE user_preferences SET base_url = ?1".to_string(),
+    ) {
+        Ok(_) => Ok(()),
+        Err(_) => {
+            storage.execute_query(
+                "ALTER TABLE user_preferences ADD COLUMN base_url TEXT NOT NULL DEFAULT 'obscura'",
+            )?;
+
+            Ok(())
+        }
+    }
+}
+
 #[test]
 fn test_initial_user_preferences() {
     initial_user_preferences(
@@ -515,4 +558,16 @@ fn test_get_backup_flag() {
 #[test]
 fn test_update_backup_flag() {
     update_local_backup_flag(true).unwrap();
+}
+
+#[test]
+fn test_update_base_url() {
+    update_base_url("obscura").unwrap();
+}
+
+#[test]
+fn test_get_base_url() {
+    let base_url = get_base_url().unwrap();
+
+    print!("{}", base_url);
 }
