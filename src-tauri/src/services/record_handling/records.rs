@@ -840,4 +840,13 @@ mod record_handling_test {
 
         println!("res: {:?}", _res);
     }
+
+    #[test]
+    fn get_latest_block() {
+        let api_client = setup_client::<Testnet3>().unwrap();
+
+        let _res = api_client.latest_block().unwrap();
+
+        println!("res: {:?}", _res);
+    }
 }
