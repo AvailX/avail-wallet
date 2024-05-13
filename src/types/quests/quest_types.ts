@@ -67,6 +67,16 @@ enum RewardMethod {
 	FCFS = 'FCFS',
 }
 
+export type Collection = {
+	id: string;
+	name: string;
+	whitelist_img: string;
+	description: string;
+	inner_img?: string;
+	twitter_link?: string;
+	discord_link?: string;
+};
+
 export const testCampaign: Campaign[] = [{
 	id: '1',
 	title: 'Disruptors',
@@ -96,3 +106,13 @@ export const testWhitelist: WhitelistResponse[] = [{
 	collection_name: 'Disruptors',
 	amount: 1,
 }];
+
+export const testCollection: Collection = {
+	id: 'e3e56506-9bcb-46f6-83a5-27aab7ddeb9d',
+	name: 'Disruptors',
+	whitelist_img: 'https://i.imgur.com/wT8kVa0.png',
+	description: 'The Disruptors are the official NFT of the Avail Wallet.',
+	inner_img: 'https://i.imgur.com/bPfHEJt.png',
+	twitter_link: 'https://twitter.com/AvailWallet',
+	discord_link: 'https://discord.com/invite/avail',
+};

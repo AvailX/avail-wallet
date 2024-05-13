@@ -26,14 +26,77 @@ use super::aleo_client::setup_client;
 /* GET ALL CAMPAIGNS */
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_campaigns() -> AvailResult<Vec<Campaign>> {
-    let res = get_quest_client_with_session(reqwest::Method::GET, "campaigns")?
+    let res = match get_quest_client_with_session(reqwest::Method::GET, "campaigns")?
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error getting campaigns".to_string(),
+            ))
+        }
+    };
 
     if res.status() == 200 {
-        let campaigns: Vec<Campaign> = res.json().await?;
+        let campaigns: Vec<Campaign> = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error getting campaigns".to_string(),
+                ))
+            }
+        };
 
         Ok(campaigns)
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error getting campaigns".to_string(),
+            "Error getting campaigns".to_string(),
+        ))
+    }
+}
+
+/* GET ALL COLLECTIONS */
+#[tauri::command(rename_all = "snake_case")]
+pub async fn get_collections() -> AvailResult<Vec<Collection>> {
+    let res = match get_quest_client_with_session(reqwest::Method::GET, "collections")?
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error getting Nfts".to_string(),
+            ))
+        }
+    };
+
+    if res.status() == 200 {
+        let collections: Vec<Collection> = match res.json().await {
+            Ok(campaigns) => campaigns,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error getting Nfts".to_string(),
+                ))
+            }
+        };
+        Ok(collections)
     } else if res.status() == 401 {
         Err(AvailError::new(
             AvailErrorType::Unauthorized,
@@ -52,13 +115,34 @@ pub async fn get_campaigns() -> AvailResult<Vec<Campaign>> {
 /* GET ALL QUESTS FOR CAMPAIGN */
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_quests_for_campaign(campaign_id: &str) -> AvailResult<Vec<Quest>> {
-    let res =
-        get_quest_client_with_session(reqwest::Method::GET, &format!("campaign/{}", campaign_id))?
-            .send()
-            .await?;
+    let res = match get_quest_client_with_session(
+        reqwest::Method::GET,
+        &format!("campaign/{}", campaign_id),
+    )?
+    .send()
+    .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error getting quests".to_string(),
+            ))
+        }
+    };
 
     if res.status() == 200 {
-        let quests: Vec<Quest> = res.json().await?;
+        let quests: Vec<Quest> = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error getting quests".to_string(),
+                ))
+            }
+        };
 
         Ok(quests)
     } else if res.status() == 401 {
@@ -79,13 +163,34 @@ pub async fn get_quests_for_campaign(campaign_id: &str) -> AvailResult<Vec<Quest
 /* CHECK IF QUEST IS COMPLETE */
 #[tauri::command(rename_all = "snake_case")]
 pub async fn check_quest_completion(quest_id: &str) -> AvailResult<bool> {
-    let res =
-        get_quest_client_with_session(reqwest::Method::GET, &format!("confirmed/{}", quest_id))?
-            .send()
-            .await?;
+    let res = match get_quest_client_with_session(
+        reqwest::Method::GET,
+        &format!("confirmed/{}", quest_id),
+    )?
+    .send()
+    .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error checking quest completion".to_string(),
+            ))
+        }
+    };
 
     if res.status() == 200 {
-        let completion: VerifyTaskResponse = res.json().await?;
+        let completion: VerifyTaskResponse = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error checking quest completion".to_string(),
+                ))
+            }
+        };
 
         Ok(completion.verified)
     } else if res.status() == 401 {
@@ -106,13 +211,34 @@ pub async fn check_quest_completion(quest_id: &str) -> AvailResult<bool> {
 /* CHECK IF TASK HAS ALREADY BEEN VERIFIED COMPLETED AND VERIFIED*/
 #[tauri::command(rename_all = "snake_case")]
 pub async fn is_task_verified(task_id: Uuid) -> AvailResult<bool> {
-    let res =
-        get_quest_client_with_session(reqwest::Method::GET, &format!("verified/{}", task_id))?
-            .send()
-            .await?;
+    let res = match get_quest_client_with_session(
+        reqwest::Method::GET,
+        &format!("verified/{}", task_id),
+    )?
+    .send()
+    .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error checking quest completion".to_string(),
+            ))
+        }
+    };
 
     if res.status() == 200 {
-        let completion: VerifyTaskResponse = res.json().await?;
+        let completion: VerifyTaskResponse = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error checking quest completion".to_string(),
+                ))
+            }
+        };
 
         Ok(completion.verified)
     } else if res.status() == 401 {
@@ -224,54 +350,75 @@ async fn verify_task_raw<N: Network>(
         };
     }
 
-    let transaction = aleo_client.get_transaction(transaction_ids[0])?;
+    if !transaction_ids.is_empty() {
+        let transaction = aleo_client.get_transaction(transaction_ids[0])?;
 
-    println!("Transaction: {:?}", transaction);
+        println!("Transaction: {:?}", transaction);
 
-    for transition in transaction.transitions() {
-        println!("Transition program id: {:?}", transition.program_id());
-        println!("Program id: {:?}", program_id);
-        println!("Transition function name: {:?}", transition.function_name());
-        println!("Function id: {:?}", function_id);
-        if transition.program_id().to_string().as_str() == program_id
-            && transition.function_name().to_string().as_str() == function_id
-        {
-            let tpk = transition.tpk();
-            let scalar = *view_key;
-            let tvk = (*tpk * scalar).to_x_coordinate();
+        for transition in transaction.transitions() {
+            println!("Transition program id: {:?}", transition.program_id());
+            println!("Program id: {:?}", program_id);
+            println!("Transition function name: {:?}", transition.function_name());
+            println!("Function id: {:?}", function_id);
+            if transition.program_id().to_string().as_str() == program_id
+                && transition.function_name().to_string().as_str() == function_id
+            {
+                let tpk = transition.tpk();
+                let scalar = *view_key;
+                let tvk = (*tpk * scalar).to_x_coordinate();
 
-            let request = VerifyTaskRequest::<N> {
-                task_id,
-                confirmation_height: block_heights[0],
-                transaction_id: transaction.id(),
-                transition_id: *transition.id(),
-                tvk,
-            };
+                let request = VerifyTaskRequest::<N> {
+                    task_id,
+                    confirmation_height: block_heights[0],
+                    transaction_id: transaction.id(),
+                    transition_id: *transition.id(),
+                    tvk,
+                };
 
-            println!("TASK VERIF Request: {:?}", request);
-            let res = get_quest_client_with_session(reqwest::Method::POST, "verify")?
-                .json(&request)
-                .send()
-                .await?;
+                println!("TASK VERIF Request: {:?}", request);
+                let res = match get_quest_client_with_session(reqwest::Method::POST, "verify")?
+                    .json(&request)
+                    .send()
+                    .await
+                {
+                    Ok(res) => res,
+                    Err(e) => {
+                        return Err(AvailError::new(
+                            AvailErrorType::External,
+                            e.to_string(),
+                            "Error checking verifying taks.".to_string(),
+                        ))
+                    }
+                };
 
-            if res.status() == 200 {
-                let completion: VerifyTaskResponse = res.json().await?;
+                if res.status() == 200 {
+                    let completion: VerifyTaskResponse = match res.json().await {
+                        Ok(res) => res,
+                        Err(e) => {
+                            return Err(AvailError::new(
+                                AvailErrorType::External,
+                                e.to_string(),
+                                "Error checking verifying taks.".to_string(),
+                            ))
+                        }
+                    };
 
-                println!("TASK VERIF Response: {:?}", completion.verified);
+                    println!("TASK VERIF Response: {:?}", completion.verified);
 
-                return Ok(completion.verified);
-            } else if res.status() == 401 {
-                return Err(AvailError::new(
-                    AvailErrorType::Unauthorized,
-                    "User session has expired.".to_string(),
-                    "Your session has expired, please authenticate again.".to_string(),
-                ));
-            } else {
-                return Err(AvailError::new(
-                    AvailErrorType::External,
-                    "Error checking quest completion".to_string(),
-                    "Error checking quest completion".to_string(),
-                ));
+                    return Ok(completion.verified);
+                } else if res.status() == 401 {
+                    return Err(AvailError::new(
+                        AvailErrorType::Unauthorized,
+                        "User session has expired.".to_string(),
+                        "Your session has expired, please authenticate again.".to_string(),
+                    ));
+                } else {
+                    return Err(AvailError::new(
+                        AvailErrorType::External,
+                        "Error checking quest completion".to_string(),
+                        "Error checking quest completion".to_string(),
+                    ));
+                }
             }
         }
     }
@@ -282,12 +429,31 @@ async fn verify_task_raw<N: Network>(
 /* GET USER'S POINTS */
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_points() -> AvailResult<Vec<PointsResponse>> {
-    let res = get_quest_client_with_session(reqwest::Method::GET, "points")?
+    let res = match get_quest_client_with_session(reqwest::Method::GET, "points")?
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error getting points".to_string(),
+            ))
+        }
+    };
 
     if res.status() == 200 {
-        let points: Vec<PointsResponse> = res.json().await?;
+        let points: Vec<PointsResponse> = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error getting points".to_string(),
+                ))
+            }
+        };
 
         Ok(points)
     } else if res.status() == 401 {
@@ -308,12 +474,31 @@ pub async fn get_points() -> AvailResult<Vec<PointsResponse>> {
 /* GET USER'S WHITELIST */
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_whitelists() -> AvailResult<Vec<WhitelistResponse>> {
-    let res = get_quest_client_with_session(reqwest::Method::GET, "whitelists")?
+    let res = match get_quest_client_with_session(reqwest::Method::GET, "whitelists")?
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error getting whitelists".to_string(),
+            ))
+        }
+    };
 
     if res.status() == 200 {
-        let whitelists: Vec<WhitelistResponse> = res.json().await?;
+        let whitelists: Vec<WhitelistResponse> = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error getting whitelists".to_string(),
+                ))
+            }
+        };
 
         Ok(whitelists)
     } else if res.status() == 401 {

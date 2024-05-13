@@ -17,7 +17,8 @@ use snarkvm::prelude::{
 };
 
 use crate::services::account::key_management::key_controller::{
-    linuxKeyController, macKeyController, windowsKeyController,iOSKeyController, AndroidKeyController, KeyController,
+    iOSKeyController, linuxKeyController, macKeyController, windowsKeyController,
+    AndroidKeyController, KeyController,
 };
 
 use avail_common::{

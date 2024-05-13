@@ -49,6 +49,12 @@ pub fn open_url(url: &str) -> AvailResult<()> {
             "Error opening url".to_string(),
         )),
     }
+
+    #[cfg(target_os = "ios")]
+    return Ok(()); //see how to handle links on ios
+
+    #[cfg(target_os = "android")]
+    return Ok(()); //see how to handle links on android
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -61,6 +67,12 @@ pub fn os_type() -> AvailResult<String> {
 
     #[cfg(target_os = "linux")]
     return Ok("linux".to_string());
+
+    #[cfg(target_os = "ios")]
+    return Ok("ios".to_string());
+
+    #[cfg(target_os = "android")]
+    return Ok("android".to_string());
 }
 
 #[tauri::command(rename_all = "snake_case")]

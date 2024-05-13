@@ -41,11 +41,21 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
 
     let client = reqwest::Client::new();
 
-    let res = client
+    let res = match client
         .post(format!("{}/auth/login/", api))
         .json(&verify_request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error authenticating user ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
         let cookie = res.cookies().next();
@@ -93,11 +103,21 @@ pub async fn get_session_after_creation<N: Network>(
 
     let api = env!("API");
 
-    let res = reqwest::Client::new()
+    let res = match reqwest::Client::new()
         .post(format!("{}/auth/login/", api))
         .json(&verify_request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error authenticating user ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
         let cookie = res.cookies().next();
@@ -144,15 +164,36 @@ pub async fn request_hash(address: &str) -> AvailResult<server_auth::CreateSessi
 
     let api = env!("API");
 
-    let res = client
+    let res = match client
         .post(format!("{}/auth/request/", api))
         .header("Content-Type", "application/json")
         .json(&request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error requesting auth token.".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 201 {
-        Ok(res.json::<server_auth::CreateSessionResponse>().await?)
+        let res = match res.json::<server_auth::CreateSessionResponse>().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error requesting auth token.".to_string(),
+                ));
+            }
+        };
+
+        Ok(res)
     } else {
         if res.status() == 0 {
             return Err(AvailError::new(
@@ -196,14 +237,33 @@ pub fn sign_hash(
 pub async fn get_session_only(request: VerifySessionResponse) -> AvailResult<String> {
     let client = reqwest::Client::new();
 
-    let res = client
+    let res = match client
         .post("https://test-api.avail.global/auth/login/")
         .json(&request.to_request())
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error authenticating user ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        res.json::<String>().await?;
+        match res.json::<String>().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error authenticating user ".to_string(),
+                ));
+            }
+        };
         // store session id in local storage (cookies)
         Ok(request.session_id.to_string())
     } else {

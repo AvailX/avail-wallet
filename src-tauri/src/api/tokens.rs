@@ -15,13 +15,32 @@ use avail_common::{
 pub async fn get_token_list() -> AvailResult<Vec<Token>> {
     let client = reqwest::Client::new();
 
-    let res = client
+    let res = match client
         .get(format!("http://{}:8100/token", HOST))
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error getting token list.".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        let result: Vec<Token> = res.json().await?;
+        let result: Vec<Token> = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error getting token list.".to_string(),
+                ));
+            }
+        };
 
         Ok(result)
     } else if res.status() == 401 {

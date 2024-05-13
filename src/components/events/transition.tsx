@@ -56,7 +56,6 @@ const Transition: React.FC<TransitionProperties> = ({event_transition}) => {
 					<Typography variant='body1' sx={{ml: '4.5%', color: '#FFF'}}>{functionId}</Typography>
 				</Box>
 			</Box>
-			<Explorer link={explorerLink} />
 		</Box>
 	);
 };

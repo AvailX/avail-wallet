@@ -1,7 +1,6 @@
 use crate::models::{storage::encryption::Keys, wallet::BetterAvailWallet};
 use crate::services::local_storage::session::password::PASS;
 
-
 #[cfg(target_os = "android")]
 use super::android::{keystore_delete, keystore_init, keystore_load};
 
@@ -41,8 +40,8 @@ impl<N: Network> KeyController<N> for AndroidKeyController {
     }
 
     fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String> {
-          //TODO: Seed phrase storage on mobile (read_seed_phrase(password))
-          Ok("seed_phrase".to_string())
+        //TODO: Seed phrase storage on mobile (read_seed_phrase(password))
+        Ok("seed_phrase".to_string())
     }
 }
 
@@ -80,13 +79,11 @@ impl<N: Network> KeyController<N> for macKeyController {
     fn delete_key(&self, password: Option<&str>, _ext: Identifier<N>) -> AvailResult<String> {
         match password {
             Some(password) => delete_key::<N>(password),
-            None => {
-                Err(AvailError::new(
-                    AvailErrorType::InvalidData,
-                    "Password is required".to_string(),
-                    "Password is required".to_string(),
-                ))
-            }
+            None => Err(AvailError::new(
+                AvailErrorType::InvalidData,
+                "Password is required".to_string(),
+                "Password is required".to_string(),
+            )),
         }
     }
 

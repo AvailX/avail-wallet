@@ -21,8 +21,8 @@ use services::local_storage::persistent_storage::{
 };
 
 use api::quests::{
-    check_quest_completion, get_campaigns, get_points, get_quests_for_campaign, get_whitelists,
-    is_task_verified, verify_task,
+    check_quest_completion, get_campaigns, get_collections, get_points, get_quests_for_campaign,
+    get_whitelists, is_task_verified, verify_task,
 };
 use api::{
     aleo_client::switch_to_obscura,
@@ -135,6 +135,7 @@ pub fn run() {
             verify_task,
             is_task_verified,
             check_quest_completion,
+            get_collections,
             /* --Wallet Connect Api */
             get_event,
             get_events,

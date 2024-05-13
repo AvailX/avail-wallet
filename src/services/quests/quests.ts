@@ -1,6 +1,6 @@
 import {invoke} from '@tauri-apps/api/core';
 
-import {type Campaign, type Quest, type WhitelistResponse, type PointsResponse} from '../../types/quests/quest_types';
+import {type Campaign, type Quest, type WhitelistResponse, type PointsResponse, type Collection} from '../../types/quests/quest_types';
 
 export async function getCampaigns() {
 	return invoke<Campaign[]>('get_campaigns');
@@ -33,4 +33,8 @@ export async function getPoints() {
 
 export async function getWhitelists() {
 	return invoke<WhitelistResponse[]>('get_whitelists');
+}
+
+export async function getCollections() {
+	return invoke<Collection[]>('get_collections');
 }

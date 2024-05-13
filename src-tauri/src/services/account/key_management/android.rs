@@ -15,10 +15,8 @@ use crate::models::{
 };
 
 use crate::services::local_storage::{
-    persistent_storage::{
-        delete_user_preferences, get_auth_type, get_network,
-    },
     encrypted_data::delete_user_encrypted_data,
+    persistent_storage::{delete_user_preferences, get_auth_type, get_network},
     utils::encrypt_with_password,
 };
 

@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {
+	RouterProvider,
+	type RouterProviderProps,
+	createBrowserRouter,
+} from 'react-router-dom';
 
-function App() {
-  const [count, setCount] = useState(0)
+import * as React from 'react';
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+// Screens
+import Home from '../views/Home';
+import WalletChoser from '../views/WalletChoser';
+import BackupWallet from '../views/BackupWallet';
+import VerifySaved from '../views/VerifySaved';
+import DataPointers from '../views/DataPointers';
+import Dashboard from '../views/Dashboard';
+import Existing from '../views/Existing';
+import SecretRecovery from '../views/SecretRecovery';
+import {MobCarousel} from '../views/Mob';
 
-export default App
+const App: React.FC = () => {
+	const router: RouterProviderProps['router'] = createBrowserRouter([
+		{path: '/', element: <MobCarousel/>},
+		{path: '/wallet-choser', element: <WalletChoser />},
+		{path: '/backup-wallet', element: <BackupWallet />},
+		{path: '/verify-saved', element: <VerifySaved />},
+		{path: '/data-pointers', element: <DataPointers />},
+		{path: '/dashboard', element: <Dashboard />},
+		{path: '/existing', element: <Existing/>},
+		{path: '/secret-recovery', element: <SecretRecovery/>},
+	]);
+
+	return <RouterProvider router={router} />;
+};
+
+export default App;

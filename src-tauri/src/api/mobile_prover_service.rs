@@ -21,13 +21,35 @@ use avail_common::{
 };
 
 pub async fn delegate_execution(request: ProverRequest) -> AvailResult<String> {
-    let res = get_prover_client_with_session(reqwest::Method::POST, "delegateProving")?
+    let res = match get_prover_client_with_session(reqwest::Method::POST, "delegateProving")?
         .json(&request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error delegating execution".to_string(),
+            ));
+        }
+    };
+
     println!("Prover Response{:?}", res);
     if res.status() == 200 {
-        Ok(res.text().await?)
+        let result = match res.text().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error delegating execution".to_string(),
+                ));
+            }
+        };
+
+        Ok(result)
     } else {
         Err(AvailError::new(
             AvailErrorType::External,
