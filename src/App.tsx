@@ -12,12 +12,16 @@ import Entrypoint from './views-desktop/entrypoint';
 import {useWalletConnectManager} from './context/WalletConnect';
 
 /* Components for Testing */
+import { useNavigate } from 'react-router-dom';
+
 import Send from './views-desktop/send';
 import Home from './views-desktop/home-desktop';
 import React from 'react';
 import { pre_install_inclusion_prover } from './services/transfer/inclusion';
 
 function App() {
+	const navigate = useNavigate();
+
 	const [txnID, setTxnID] = useState<string>('');
 	const transferPublicTest = async() => {
 		console.log('====> Inside Transfer Public');
@@ -69,6 +73,10 @@ function App() {
 			<br/>
 			<br/>
 			<button onClick={testInitUser} >Initialise user</button>
+			<br/>
+			<br/>
+			<h1>WC</h1>
+			<button onClick={() => {navigate('/browser')}} >To browser</button>
 		</React.Fragment>
 	);
 }
