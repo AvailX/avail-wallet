@@ -1,0 +1,18 @@
+.search-box .MuiOutlinedInput-root {
+    color: white; /* Color of the input text */
+  }
+
+.search-box .search-input {
+    caret-color: #00FFAA; /* Color of the input caret */
+  }
+
+  .search-box .search-outline {
+    border-color: #00FFAA; /* Initial color of the outline */
+  }
+
+  /* Glowing effect */
+  .search-box .MuiOutlinedInput-root.Mui-focused .search-outline {
+    box-shadow: 0 0 10px #00FFAA; /* Adjust color and size to match your design */
+  }
+
+  /* You may want to adjust the background, border colors, and possibly add transitions */

@@ -89,6 +89,11 @@ const ViewKeyDialog: React.FC<VkDialogProperties> = ({ isOpen, onRequestClose, s
 								</mui.InputAdornment>
 							),
 						}}
+						onKeyDown={e => {
+							if (e.key === 'Enter') {
+								handleConfirmClick();
+							}
+						}}
 					/>
 				</mui.DialogContent>
 				<mui.DialogActions>

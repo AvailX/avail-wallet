@@ -1,7 +1,7 @@
 [package]
 name = "avail_wallet"
-version = "0.0.7"
-description = "Frictionless control of your money and data."
+version = "0.2.4"
+description = "Avail Wallet | Make it yours."
 authors = ["Avail"]
 license = "Apache-2.0"
 repository = "https://github.com/availx/avail-wallet"
@@ -14,13 +14,14 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-plugin-fs = { version = "2.0.0-beta.2", features = [] }
-tauri-plugin = { version = "=2.0.0-beta.10", features = [] }
-tauri-utils = { version = "=2.0.0-beta.10", features = [] }
-tauri-build = { version = "=2.0.0-beta.10", features = [] }
+tauri-plugin-fs = { version = "=2.0.0-beta.7", features = [] }
+tauri-plugin = { version = "=2.0.0-beta.13", features = [] }
+tauri-utils = { version = "=2.0.0-beta.13", features = [] }
+tauri-build = { version = "=2.0.0-beta.13", features = [] }
 
 
 [dependencies]
+
 app_dirs = { package = "app_dirs2", version = "2.5" }
 avail-common = { git = "https://github.com/availx/avail-lib#0b342478d8c94fb6d8f626fd42a7516b0dfa6f97", branch = "feat/delegate-proving", features = [
     "snarkvm",
@@ -44,14 +45,16 @@ rayon = "1.7.0"
 rusqlite = { version = "0.29.0", features = ["bundled", "chrono"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-snarkvm = { version = "0.16.17", features = ["wasm"] }
-tauri = { version = "=2.0.0-beta.13", features = [] }
-tauri-plugin-deep-link = "2.0.0-beta.2"
-tauri-plugin-http = { version = "2.0.0-beta.2", features = ["cookies"] }
-tauri-plugin-updater = { version = "2.0.0-beta.2", features = [] }
-tauri-plugin-process = "2.0.0-beta.2"
+snarkvm = { version = "0.16.19", features = [] }
+ssss = "0.2.0"
+tauri = { version = "2.0.0-beta.17", features = [] }
+tauri-plugin-deep-link = "=2.0.0-beta.3"
+tauri-plugin-http = { version = "2.0.0-beta.7", features = ["cookies"] }
+tauri-plugin-updater = { version = "2.0.0-beta.5", features = [] }
+tauri-plugin-process = "=2.0.0-beta.3"
 tiny-bip39 = "1.0.0"
 tokio = { version = "1.29.1", features = ["full"] }
+tokio-rayon = "2.1.0"
 ureq = { version = "2.7.1", features = ["json"] }
 uuid = { version = "1.4.1", features = ["v4", "serde"] }
 whoami = "1.4.1"

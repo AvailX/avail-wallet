@@ -4,6 +4,7 @@ use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use crate::api::aleo_client::setup_local_client;
 use crate::models::event::{
     AvailEvent, Event, Network as EventNetwork, SuccinctAvailEvent, Visibility,
 };
@@ -42,7 +43,7 @@ pub struct DeploymentPointer<N: Network> {
 fn decrypt<N: Network>(encrypted_struct: EncryptedStruct<N>) -> AvailResult<DeploymentPointer<N>> {
     let view_key = VIEWSESSION.get_instance::<N>()?;
     let transition: DeploymentPointer<N> = encrypted_struct.decrypt(view_key)?;
-
+    println!("Transition: {:?}", transition);
     Ok(transition)
 }
 
@@ -159,7 +160,6 @@ impl<N: Network> DeploymentPointer<N> {
 
     pub fn to_encrypted_data(&self, encrypt_for: Address<N>) -> AvailResult<EncryptedData> {
         let encrypted_record_pointer = self.encrypt_for(encrypt_for)?;
-
         let network = get_network()?;
         let id = Uuid::new_v4();
         let flavour = EncryptedDataTypeCommon::Deployment;
@@ -184,7 +184,39 @@ impl<N: Network> DeploymentPointer<N> {
             None,
             Some(self.state.clone()),
         );
+        Ok(encrypted_data)
+    }
 
+    pub fn to_encrypted_data_from_record_after_recovery(
+        encrypted_data_record: EncryptedDataRecord,
+    ) -> AvailResult<EncryptedData> {
+        let encrypted_struct = encrypted_data_record.to_enrypted_struct::<N>()?;
+        let record = decrypt::<N>(encrypted_struct)?;
+        let address = get_address::<N>()?;
+        let encrypted_record_pointer = record.encrypt_for(address)?;
+        let network = get_network()?;
+        let id = Uuid::new_v4();
+        let flavour = EncryptedDataTypeCommon::Deployment;
+
+        let encrypted_data = EncryptedData::new(
+            Some(id),
+            address.to_string(),
+            encrypted_record_pointer.cipher_text.to_string(),
+            encrypted_record_pointer.nonce.to_string(),
+            flavour,
+            None,
+            Some(record.program_id.clone()),
+            None,
+            record.created.with_timezone(&chrono::Utc),
+            None,
+            None,
+            network,
+            None,
+            None,
+            Some(EventTypeCommon::Deploy),
+            None,
+            Some(record.state.clone()),
+        );
         Ok(encrypted_data)
     }
 
