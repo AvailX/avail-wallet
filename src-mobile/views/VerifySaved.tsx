@@ -9,6 +9,8 @@ import SwipeableEdgeDrawer from "../components/SwipeableDrawer";
 
 import React from "react";
 
+import {useNavigate} from "react-router-dom";
+
 const VerifySaved = () => {
   const recoveryPhase = [
     "Babayaga",
@@ -29,6 +31,8 @@ const VerifySaved = () => {
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
   };
+
+  const navigate = useNavigate();
 
   return (
     <>

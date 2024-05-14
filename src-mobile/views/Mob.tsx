@@ -27,7 +27,6 @@ const Mob: React.FC<IProps> = ({ title, img }) => {
       sx={{ backgroundImage: `url(${img})`, backgroundSize: "cover" }}
     >
       <Typography
-        marginTop='10vh'
         mx='auto'
         width='90%'
         color='#fff'
@@ -62,7 +61,7 @@ export const MobCarousel = () => {
   ];
   return (
     <>
-      <div style={{height: '100vh' }}>
+      <div style={{height: '100vh', backgroundColor: '#111111' }}>
         <AutoplaySlider
           play={true}
           bullets={false}

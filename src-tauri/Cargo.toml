@@ -45,7 +45,6 @@ rayon = "1.7.0"
 rusqlite = { version = "0.29.0", features = ["bundled", "chrono"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-snarkvm = { version = "0.16.19", features = ["wasm"] }
 ssss = "0.2.0"
 tauri = { version = "2.0.0-beta.17", features = [] }
 tauri-plugin-deep-link = "=2.0.0-beta.3"
@@ -77,6 +76,12 @@ tid-rs = { git = "https://github.com/Zack-Xb/tid-rs" }
 
 [target.'cfg(target_os = "android")'.dependencies]
 ndk-context = "0.1.1"
+
+[target.'cfg(target_os = "ios")'.dependencies]
+snarkvm = { version = "0.16.19", features = ["wasm"] }
+
+[target.'cfg(not(target_os = "ios"))'.dependencies]
+snarkvm = { version = "0.16.19", features = [] }
 
 [profile.release]
 opt-level = 3

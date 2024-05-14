@@ -3,6 +3,8 @@ import { Box, Button, IconButton, Typography } from "@mui/material";
 import React from "react";
 import SwipeableEdgeDrawer from "../components/SwipeableDrawer";
 
+import {useNavigate} from "react-router-dom";
+
 const SecretRecovery = () => {
   const recoveryPhase = [
     "Babayaga",
@@ -23,6 +25,7 @@ const SecretRecovery = () => {
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
   };
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -79,6 +82,7 @@ const SecretRecovery = () => {
           }}
           variant='contained'
           type='submit'
+          onClick={()=>{navigate('/verify-saved')}}
         >
           Next
         </Button>
