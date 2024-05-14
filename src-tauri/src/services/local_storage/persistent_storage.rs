@@ -571,3 +571,27 @@ fn test_get_base_url() {
 
     print!("{}", base_url);
 }
+
+#[tokio::test]
+async fn test_timestamp_to_blockheight() {
+    let timestamp = Utc::now();
+    let timestamp = timestamp - chrono::Duration::days(10);
+
+    let obscura_api_key = env!("OBSCURA_SDK");
+
+    let client = tauri_plugin_http::reqwest::Client::new();
+    let query = format!(
+        "https://aleo-testnet3.obscura.network/api/{}/blocks/timestamps?start={}&end={}
+    ",
+        obscura_api_key,
+        timestamp.timestamp(),
+        timestamp.timestamp()
+    );
+
+    let response = client.get(query).send().await.unwrap();
+    println!("{:?}", response);
+    let response: Vec<Block<Testnet3>> = response.json().await.unwrap();
+    let latest_height = response[0].height();
+
+    println!("Latest height: {}", latest_height);
+}

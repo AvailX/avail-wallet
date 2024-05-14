@@ -350,48 +350,37 @@ async fn verify_task_raw<N: Network>(
         };
     }
 
-    let transaction = aleo_client.get_transaction(transaction_ids[0])?;
+    if !transaction_ids.is_empty() {
+        let transaction = aleo_client.get_transaction(transaction_ids[0])?;
 
-    println!("Transaction: {:?}", transaction);
+        println!("Transaction: {:?}", transaction);
 
-    for transition in transaction.transitions() {
-        println!("Transition program id: {:?}", transition.program_id());
-        println!("Program id: {:?}", program_id);
-        println!("Transition function name: {:?}", transition.function_name());
-        println!("Function id: {:?}", function_id);
-        if transition.program_id().to_string().as_str() == program_id
-            && transition.function_name().to_string().as_str() == function_id
-        {
-            let tpk = transition.tpk();
-            let scalar = *view_key;
-            let tvk = (*tpk * scalar).to_x_coordinate();
-
-            let request = VerifyTaskRequest::<N> {
-                task_id,
-                confirmation_height: block_heights[0],
-                transaction_id: transaction.id(),
-                transition_id: *transition.id(),
-                tvk,
-            };
-
-            println!("TASK VERIF Request: {:?}", request);
-            let res = match get_quest_client_with_session(reqwest::Method::POST, "verify")?
-                .json(&request)
-                .send()
-                .await
+        for transition in transaction.transitions() {
+            println!("Transition program id: {:?}", transition.program_id());
+            println!("Program id: {:?}", program_id);
+            println!("Transition function name: {:?}", transition.function_name());
+            println!("Function id: {:?}", function_id);
+            if transition.program_id().to_string().as_str() == program_id
+                && transition.function_name().to_string().as_str() == function_id
             {
-                Ok(res) => res,
-                Err(e) => {
-                    return Err(AvailError::new(
-                        AvailErrorType::External,
-                        e.to_string(),
-                        "Error checking verifying taks.".to_string(),
-                    ))
-                }
-            };
+                let tpk = transition.tpk();
+                let scalar = *view_key;
+                let tvk = (*tpk * scalar).to_x_coordinate();
 
-            if res.status() == 200 {
-                let completion: VerifyTaskResponse = match res.json().await {
+                let request = VerifyTaskRequest::<N> {
+                    task_id,
+                    confirmation_height: block_heights[0],
+                    transaction_id: transaction.id(),
+                    transition_id: *transition.id(),
+                    tvk,
+                };
+
+                println!("TASK VERIF Request: {:?}", request);
+                let res = match get_quest_client_with_session(reqwest::Method::POST, "verify")?
+                    .json(&request)
+                    .send()
+                    .await
+                {
                     Ok(res) => res,
                     Err(e) => {
                         return Err(AvailError::new(
@@ -402,21 +391,34 @@ async fn verify_task_raw<N: Network>(
                     }
                 };
 
-                println!("TASK VERIF Response: {:?}", completion.verified);
+                if res.status() == 200 {
+                    let completion: VerifyTaskResponse = match res.json().await {
+                        Ok(res) => res,
+                        Err(e) => {
+                            return Err(AvailError::new(
+                                AvailErrorType::External,
+                                e.to_string(),
+                                "Error checking verifying taks.".to_string(),
+                            ))
+                        }
+                    };
 
-                return Ok(completion.verified);
-            } else if res.status() == 401 {
-                return Err(AvailError::new(
-                    AvailErrorType::Unauthorized,
-                    "User session has expired.".to_string(),
-                    "Your session has expired, please authenticate again.".to_string(),
-                ));
-            } else {
-                return Err(AvailError::new(
-                    AvailErrorType::External,
-                    "Error checking quest completion".to_string(),
-                    "Error checking quest completion".to_string(),
-                ));
+                    println!("TASK VERIF Response: {:?}", completion.verified);
+
+                    return Ok(completion.verified);
+                } else if res.status() == 401 {
+                    return Err(AvailError::new(
+                        AvailErrorType::Unauthorized,
+                        "User session has expired.".to_string(),
+                        "Your session has expired, please authenticate again.".to_string(),
+                    ));
+                } else {
+                    return Err(AvailError::new(
+                        AvailErrorType::External,
+                        "Error checking quest completion".to_string(),
+                        "Error checking quest completion".to_string(),
+                    ));
+                }
             }
         }
     }
