@@ -12,8 +12,7 @@ import {useWalletConnectManager} from './context/WalletConnect';
 /* Components for Testing */
 import Send from './views-desktop/send';
 import Home from './views-desktop/home-desktop';
-import React from 'react';
-import { pre_install_inclusion_prover } from './services/transfer/inclusion';
+// import { pre_install_inclusion_prover } from './services/transfer/inclusion';
 
 function App() {
 	const [txnID, setTxnID] = useState<string>('');
@@ -63,7 +62,7 @@ function App() {
 			<button onClick={deployVMTest} >Test snarkVM (Deploy helloworld.aleo)</button>
 			<br/>
 			<br/>
-			<button onClick={pre_install_inclusion_prover} >Inclusion Prover </button>
+			{/* <button onClick={pre_install_inclusion_prover} >Inclusion Prover </button> */}
 			<br/>
 			<br/>
 			<button onClick={testInitUser} >Initialise user</button>
