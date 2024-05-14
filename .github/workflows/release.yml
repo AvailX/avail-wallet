@@ -2,7 +2,7 @@ name: Tauri Build + Release
 
 on:
     push:
-        branches: [ develop, staging, release ]
+        branches: [feat/ios-snarkvm-exec] # [ develop, staging, release ]
 
 # This workflow will build your tauri app without uploading it anywhere.
 
@@ -116,7 +116,7 @@ jobs:
           MAINNET_API_OBSCURA: ""
           DEVNET_API_OBSCURA: ""
         with:
-          tauriScript: cargo tauri
+          tauriScript: cargo tauri ios
           # This is required for Apple ARM chips and license bundling
           args: "${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64-apple-darwin' || matrix.platform == 'macos_x86-latest' && ' --target x86_64-apple-darwin' || '' }} --config {\"bundle\":{\"licenseFile\":\"${{ matrix.platform == 'windows-latest' && '..\\\\EULA.rtf' || '../EULA.txt' }}\"}}"
           distPath: dist
