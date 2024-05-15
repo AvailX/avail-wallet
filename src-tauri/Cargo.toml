@@ -1,5 +1,5 @@
 [package]
-name = "wallet"
+name = "avail_wallet"
 version = "0.0.5"
 description = "Avail Wallet | Make it yours."
 authors = ["Avail"]
