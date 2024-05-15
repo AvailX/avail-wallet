@@ -99,6 +99,10 @@ jobs:
           crate: tauri-cli
           version: "2.0.0-beta.15"
 
+      - name: Initialise iOS
+        run : |
+            cargo tauri ios init
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
