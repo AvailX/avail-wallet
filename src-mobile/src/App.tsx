@@ -15,7 +15,7 @@ import DataPointers from '../views/DataPointers';
 import Dashboard from '../views/Dashboard';
 import Existing from '../views/Existing';
 import SecretRecovery from '../views/SecretRecovery';
-import {MobCarousel} from '../views/Mob';
+import {MobCarousel} from '../views/CreateWallet';
 
 const App: React.FC = () => {
 	const router: RouterProviderProps['router'] = createBrowserRouter([
