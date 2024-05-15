@@ -73,7 +73,7 @@ jobs:
       - name: Install the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.platform == 'macos_arm-latest' && 'aarch64-apple-darwin' && 'aarch64'|| matrix.platform == 'macos_x86-latest' && 'x86_64-apple-darwin' && 'x86_64' || '' }}
+          targets: ${{ matrix.platform == 'macos_arm-latest' && 'aarch64'|| matrix.platform == 'macos_x86-latest' && 'x86_64' || '' }}
       - name: Initialize Rust cache
         if: matrix.platform != 'windows-latest'
         uses: swatinem/rust-cache@v2
