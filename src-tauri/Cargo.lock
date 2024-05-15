@@ -451,59 +451,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "avail_wallet"
-version = "0.0.5"
-dependencies = [
- "app_dirs2",
- "avail-common",
- "bs58",
- "chrono",
- "colored",
- "core-foundation",
- "curl-sys",
- "dirs 5.0.1",
- "dotenv",
- "fix-path-env",
- "futures 0.3.30",
- "jni",
- "keyring",
- "libc",
- "log",
- "ndk-context",
- "once_cell",
- "openssl",
- "rand 0.8.5",
- "rayon",
- "rstest",
- "rusqlite",
- "security-framework 2.9.1",
- "security-framework-sys 2.9.0",
- "serde",
- "serde_json",
- "simplelog",
- "snarkvm",
- "ssss",
- "tail",
- "tauri",
- "tauri-build",
- "tauri-plugin",
- "tauri-plugin-deep-link",
- "tauri-plugin-fs",
- "tauri-plugin-http",
- "tauri-plugin-process",
- "tauri-plugin-updater",
- "tauri-utils",
- "tid-rs",
- "tiny-bip39",
- "tokio",
- "tokio-rayon",
- "ureq",
- "uuid",
- "whoami",
- "zeroize",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7065,6 +7012,59 @@ checksum = "36df944cda56c7d8d8b7496af378e6b16de9284591917d307c9b4d313c44e698"
 dependencies = [
  "same-file",
  "winapi-util",
+]
+
+[[package]]
+name = "wallet"
+version = "0.2.9"
+dependencies = [
+ "app_dirs2",
+ "avail-common",
+ "bs58",
+ "chrono",
+ "colored",
+ "core-foundation",
+ "curl-sys",
+ "dirs 5.0.1",
+ "dotenv",
+ "fix-path-env",
+ "futures 0.3.30",
+ "jni",
+ "keyring",
+ "libc",
+ "log",
+ "ndk-context",
+ "once_cell",
+ "openssl",
+ "rand 0.8.5",
+ "rayon",
+ "rstest",
+ "rusqlite",
+ "security-framework 2.9.1",
+ "security-framework-sys 2.9.0",
+ "serde",
+ "serde_json",
+ "simplelog",
+ "snarkvm",
+ "ssss",
+ "tail",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin",
+ "tauri-plugin-deep-link",
+ "tauri-plugin-fs",
+ "tauri-plugin-http",
+ "tauri-plugin-process",
+ "tauri-plugin-updater",
+ "tauri-utils",
+ "tid-rs",
+ "tiny-bip39",
+ "tokio",
+ "tokio-rayon",
+ "ureq",
+ "uuid",
+ "whoami",
+ "zeroize",
 ]
 
 [[package]]
