@@ -7016,7 +7016,7 @@ dependencies = [
 
 [[package]]
 name = "wallet"
-version = "0.2.9"
+version = "0.0.5"
 dependencies = [
  "app_dirs2",
  "avail-common",

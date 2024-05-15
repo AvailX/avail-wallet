@@ -65,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos_x86-latest, macos_arm-latest, ubuntu-latest, windows-latest]
+        platform: [macos_x86-latest, macos_arm-latest, ubuntu-latest, windows-latest, ios-latest]
     runs-on: ${{ (matrix.platform == 'macos_x86-latest' || matrix.platform =='macos_arm-latest' ) && 'macos-latest' || matrix.platform}}
     steps:
       - uses: actions/checkout@v4
