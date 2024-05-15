@@ -285,8 +285,7 @@ pub async fn init_user_mobile() -> AvailResult<String> {
         "unusual squeeze advance legend sign drink buffalo until craft record carpet shuffle
         ",
         Languages::to_bip39_language(&Languages::English),
-    )
-    .unwrap();
+    )?;
 
     // let key_manager = {
     //     #[cfg(target_os = "macos")]
@@ -346,14 +345,13 @@ pub async fn init_user_mobile() -> AvailResult<String> {
         false,
         avail_wallet.get_address(),
         Languages::English,
-    )
-    .unwrap();
+    )?;
 
-    init_tokens_table().unwrap();
+    init_tokens_table()?;
 
     // some function
 
-    initialize_encrypted_data_table().unwrap();
+    initialize_encrypted_data_table()?;
     VIEWSESSION
         .set_view_session(&avail_wallet.get_view_key())
         .unwrap();

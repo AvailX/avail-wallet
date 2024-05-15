@@ -12,6 +12,7 @@ import {useWalletConnectManager} from './context/WalletConnect';
 /* Components for Testing */
 import Send from './views-desktop/send';
 import Home from './views-desktop/home-desktop';
+import { invoke } from '@tauri-apps/api/core';
 // import { pre_install_inclusion_prover } from './services/transfer/inclusion';
 
 function App() {
