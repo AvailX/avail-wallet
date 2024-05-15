@@ -27,7 +27,7 @@ function App() {
 			console.log('====> set state ', txnID);
 			console.log('====> obj ', resJson.id);
 
-			return res; 
+			return res;
 	}).catch((err) => { console.log("ERR",err); });
 		console.log(result);
 	};
