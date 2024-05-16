@@ -1,7 +1,7 @@
 import { ContentCopy } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import React from "react";
-import SwipeableEdgeDrawer from "../components/SwipeableDrawer";
+import SwipeableEdgeDrawer from "../../components/SwipeableDrawer";
 
 import {useNavigate} from "react-router-dom";
 

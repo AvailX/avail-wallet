@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from "@mui/material";
 
-import img from "../assets/data-pointers.png";
-import SwipeableEdgeDrawer from "../components/SwipeableDrawer";
+import img from "../../assets/data-pointers.png";
+import SwipeableEdgeDrawer from "../../components/SwipeableDrawer";
 import React from "react";
 
 const DataPointers = () => {

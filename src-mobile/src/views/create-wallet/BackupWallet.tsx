@@ -1,6 +1,6 @@
 import {Box, Button, Typography} from '@mui/material';
 
-import backupHand from '../assets/backup-hand.png';
+import backupHand from '../../assets/backup-hand.png';
 
 const BackupWallet = () => {
   return (
