@@ -119,6 +119,10 @@ jobs:
           TAURI_APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
         run : |
             cargo tauri ios init
+      - name: Decrypt provisioning profile
+        run: |
+            mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+            openssl aes-256-cbc -k ${{ secrets.PROFILE_DECRYPTION_KEY }} -in .github/secrets/avail_mobile_ios_encrypted.mobileprovision -out ~/Library/MobileDevice/Provisioning\ Profiles/avail_mobile_ios.mobileprovision -d
 
       - uses: tauri-apps/tauri-action@v0
         env:
