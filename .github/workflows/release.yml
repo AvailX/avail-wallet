@@ -102,6 +102,7 @@ jobs:
       - name: Initialise iOS
         run : |
             cargo tauri ios init
+            tauri info
 
       - uses: tauri-apps/tauri-action@v0
         env:
