@@ -7,26 +7,29 @@ import {
 import * as React from 'react';
 
 // Screens
-import Home from '../views/Home';
-import WalletChoser from '../views/WalletChoser';
-import BackupWallet from '../views/BackupWallet';
-import VerifySaved from '../views/VerifySaved';
-import DataPointers from '../views/DataPointers';
-import Dashboard from '../views/Dashboard';
-import Existing from '../views/Existing';
-import SecretRecovery from '../views/SecretRecovery';
-import {MobCarousel} from '../views/CreateWallet';
+import EntryPoint from './views/Entrypoint';
+import WalletChoser from './views/WalletChoser';
+import BackupWallet from './views/create-wallet/BackupWallet';
+import VerifySaved from './views/create-wallet/VerifySaved';
+import DataPointers from './views/create-wallet/DataPointers';
+import Dashboard from './views/Dashboard';
+import SecretRecovery from './views/create-wallet/SecretRecovery';
+import {MobCarousel} from './views/create-wallet/CreateWallet';
 
 const App: React.FC = () => {
 	const router: RouterProviderProps['router'] = createBrowserRouter([
-		{path: '/', element: <MobCarousel/>},
+		/* --EntryPoint-- */
+		{path: '/', element: <EntryPoint/>},
+		/* --Create Wallet Flow-- */
 		{path: '/wallet-choser', element: <WalletChoser />},
 		{path: '/backup-wallet', element: <BackupWallet />},
 		{path: '/verify-saved', element: <VerifySaved />},
 		{path: '/data-pointers', element: <DataPointers />},
 		{path: '/dashboard', element: <Dashboard />},
-		{path: '/existing', element: <Existing/>},
 		{path: '/secret-recovery', element: <SecretRecovery/>},
+		/* --Existing Wallet Flow-- */
+		/* --Dapp Flow-- */
+		/* --Quest Flow-- */
 	]);
 
 	return <RouterProvider router={router} />;

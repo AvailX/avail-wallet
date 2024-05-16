@@ -5,7 +5,7 @@ import {
   Typography,
   checkboxClasses,
 } from "@mui/material";
-import SwipeableEdgeDrawer from "../components/SwipeableDrawer";
+import SwipeableEdgeDrawer from "../../components/SwipeableDrawer";
 
 import React from "react";
 
