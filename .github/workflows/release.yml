@@ -112,7 +112,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           API: ${{ secrets.AVAIL_API_URL}}
@@ -122,7 +122,7 @@ jobs:
           DEVNET_API_OBSCURA: ""
           TAURI_APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
         with:
-          tauriScript: APPLE_DEVELOPMENT_TEAM="WTK34UZPZK" cargo tauri ios
+          tauriScript: cargo tauri ios
           # This is required for Apple ARM chips and license bundling
           args: "${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64' || matrix.platform == 'macos_x86-latest' && ' --target x86_64' || '' }} --config {\"bundle\":{\"licenseFile\":\"${{ matrix.platform == 'windows-latest' && '..\\\\EULA.rtf' || '../EULA.txt' }}\"}}"
           distPath: dist
