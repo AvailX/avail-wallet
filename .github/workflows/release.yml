@@ -124,6 +124,11 @@ jobs:
             mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
             base64 -d -i .github/secrets/avail_ios_encrypted.mobileprovision | openssl aes-256-cbc -pbkdf2 -k ${{ secrets.PROFILE_DECRYPTION_KEY }} -d -out ~/Library/MobileDevice/Provisioning\ Profiles/avail_mobile_ios.mobileprovision
 
+      - name: List installed provisioning profiles
+        run: ls ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: Verify provisioning profile content
+        run: cat ~/Library/MobileDevice/Provisioning\ Profiles/avail_mobile_ios.mobileprovision
 
       - uses: tauri-apps/tauri-action@v0
         env:
