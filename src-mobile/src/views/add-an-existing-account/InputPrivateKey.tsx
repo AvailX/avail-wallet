@@ -5,7 +5,7 @@ import {ArrowBackIos} from '@mui/icons-material';
 import {useNavigate} from 'react-router-dom';
 import AvailTextField from '../../components/texfields/AvailTextField';
 
-function PrivateKeyLogin() {
+function Import() {
   const navigate = useNavigate();
 
   return (
@@ -73,7 +73,7 @@ function PrivateKeyLogin() {
         <mui.Button
           variant="contained"
           size="large"
-          onClick={() => navigate("/username-select-screen")}
+          onClick={() => navigate("/username")}
           sx={{
             fontSize: "20px",
             padding: "12px 140px",
@@ -88,4 +88,4 @@ function PrivateKeyLogin() {
   );
 }
 
-export default PrivateKeyLogin;
+export default Import;

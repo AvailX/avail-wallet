@@ -5,7 +5,7 @@ import { ArrowBackIos } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import WalletInput from "../../components/texfields/AvailTextField";
 
-function SeedLogin() {
+function Recover() {
   const navigate = useNavigate();
   return (
     <mui.Grid
@@ -89,4 +89,4 @@ function SeedLogin() {
   );
 }
 
-export default SeedLogin;
+export default Recover;

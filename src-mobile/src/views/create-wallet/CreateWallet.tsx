@@ -99,7 +99,7 @@ export const MobCarousel = () => {
           >
             Create Wallet
           </Button>
-          <Button sx={{mt: 3}} fullWidth variant='outlined'>
+          <Button sx={{mt: 3}} fullWidth variant='outlined' onClick={() => {navigate('/choose-method')}}>
             Add an existing wallet
           </Button>
           <Typography variant='body1' mt={4} color='#9d9d9d' fontWeight={700}>

@@ -16,11 +16,18 @@ import Dashboard from './views/Dashboard';
 import SecretRecovery from './views/create-wallet/SecretRecovery';
 import {MobCarousel} from './views/create-wallet/CreateWallet';
 
+/* --Existing Wallet Flow-- */
+import ChooseMethod from './views/add-an-existing-account/ChooseMethod';
+import Import from './views/add-an-existing-account/InputPrivateKey';
+import Recover from './views/add-an-existing-account/InputSeedPhrase';
+
+
 const App: React.FC = () => {
 	const router: RouterProviderProps['router'] = createBrowserRouter([
 		/* --EntryPoint-- */
 		{path: '/', element: <EntryPoint/>},
 		/* --Create Wallet Flow-- */
+		{path: '/create-wallet', element: <MobCarousel/>},
 		{path: '/wallet-choser', element: <WalletChoser />},
 		{path: '/backup-wallet', element: <BackupWallet />},
 		{path: '/verify-saved', element: <VerifySaved />},
@@ -28,6 +35,9 @@ const App: React.FC = () => {
 		{path: '/dashboard', element: <Dashboard />},
 		{path: '/secret-recovery', element: <SecretRecovery/>},
 		/* --Existing Wallet Flow-- */
+		{path: '/choose-method', element: <ChooseMethod/>},
+		{path: '/import', element: <Import/>},
+		{path: '/recover', element: <Recover/>},
 		/* --Dapp Flow-- */
 		/* --Quest Flow-- */
 	]);

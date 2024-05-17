@@ -64,7 +64,7 @@ function ChooseMethod() {
         <mui.Box sx={{ padding: "0px 10px" }}>
           <mui.Button
             fullWidth
-            onClick={() => navigate("/seed-phrase-login")}
+            onClick={() => navigate("/recover")}
             size="large"
             sx={{ fontSize: "1rem", padding: "12px 90px", mt: 10 }}
           >
@@ -82,7 +82,7 @@ function ChooseMethod() {
             fullWidth
             color="success"
             size="large"
-            onClick={() => navigate("/private-key-login")}
+            onClick={() => navigate("/import")}
             sx={{
               fontSize: "1rem",
               padding: "12px 90px",
@@ -98,23 +98,6 @@ function ChooseMethod() {
           </mui.Typography>
         </mui.Box>
 
-        {/* The Next button */}
-        <mui.Box mb={5}>
-          <mui.Button
-            variant="contained"
-            fullWidth
-            size="large"
-            onClick={() => navigate("/next-page")}
-            sx={{
-              fontSize: "1rem",
-              padding: "12px 165px",
-              background:
-                "linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA",
-            }}
-          >
-            Next
-          </mui.Button>
-        </mui.Box>
       </mui.Box>
     </mui.Box>
   );
