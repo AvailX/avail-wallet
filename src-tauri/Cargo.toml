@@ -9,7 +9,7 @@ edition = "2021"
 
 [lib]
 name = "availx_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
+crate-type = ["staticlib", "rlib"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -68,6 +68,7 @@ curl-sys = "0.4.72"
 # devtools = "0.3.1"
 # tauri-plugin-devtools = { git = "https://github.com/crabnebula-dev/devtools", version = "2.0.0-beta.0" }
 colored = "2.1.0"
+cargo-xcode = "1.10.0"
 
 [target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
 security-framework = { git = "https://github.com/AvailX/rust-security-framework" }
@@ -109,3 +110,7 @@ custom-protocol = ["tauri/custom-protocol"]
 
 [dev-dependencies]
 rstest = "0.18.2"
+
+[package.metadata.ios]
+# Required
+build_targets = ["aarch64-apple-ios"]
