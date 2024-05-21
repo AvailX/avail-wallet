@@ -1,8 +1,13 @@
 import { Box, Typography } from "@mui/material";
 import avatarImg from "../assets/avatar-img.svg";
 import scanIcon from "../assets/scan-icon.svg";
+import { FC } from "react";
 
-const DashboardHeader = () => {
+interface IProps {
+  onProfileClick: () => void;
+}
+
+const DashboardHeader: FC<IProps> = ({ onProfileClick }) => {
   return (
     <Box
       mb={3}
@@ -10,7 +15,7 @@ const DashboardHeader = () => {
       alignItems='center'
       justifyContent='space-between'
     >
-      <Box display='flex' alignItems='center'>
+      <Box onClick={onProfileClick} display='flex' alignItems='center'>
         <img src={avatarImg} />
         <Box ml={3}>
           <Typography fontWeight={700} color='#fff'>

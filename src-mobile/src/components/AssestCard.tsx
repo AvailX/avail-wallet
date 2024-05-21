@@ -2,9 +2,12 @@ import { Box, Typography } from "@mui/material";
 import { FC } from "react";
 import { AssetType } from "../types/assets/asset";
 
-type IProps = Pick<AssetType, "image_ref" | "symbol" | "total" | "value">;
+export type IDisplayAsset = Pick<
+  AssetType,
+  "image_ref" | "symbol" | "total" | "value"
+>;
 
-const AssestCard: FC<IProps> = ({ image_ref, symbol, total, value }) => {
+const AssestCard: FC<IDisplayAsset> = ({ image_ref, symbol, total, value }) => {
   return (
     <Box
       color='#fff'
@@ -29,7 +32,7 @@ const AssestCard: FC<IProps> = ({ image_ref, symbol, total, value }) => {
       </Box>
       <Box textAlign='left'>
         <Typography fontSize='17px' fontWeight={500}>
-          ${value}
+          ${value * total}
         </Typography>
       </Box>
     </Box>

@@ -5,6 +5,8 @@ import anchorIcon from "../assets/anchor-icon.svg";
 import diamondIcon from "../assets/diamond-icon.svg";
 import homeIcon from "../assets/home-icon.svg";
 
+import splashImg from "../assets/green-splash.svg";
+
 interface IProps extends PropsWithChildren {}
 
 const DashboardLayout: FC<IProps> = ({ children }) => {
@@ -21,6 +23,9 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
   ];
   return (
     <Box height='100vh'>
+      <Box position='absolute' width='100%' top={0}>
+        <img src={splashImg} width='100%' />
+      </Box>
       <Box
         bgcolor='black'
         textAlign='center'
@@ -32,7 +37,7 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
       >
         {children}
       </Box>
-      <Box height='15vh' bgcolor='#2A2A2A' px={4} position='relative'>
+      <Box height='15vh' bgcolor='#2A2A2A' px={4} position='fixed' width='100%'>
         <Box
           width='100%'
           mx='auto'
