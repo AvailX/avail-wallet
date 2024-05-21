@@ -16,6 +16,7 @@ import Dashboard from "./views/Dashboard";
 import SecretRecovery from "./views/create-wallet/SecretRecovery";
 import { MobCarousel } from "./views/create-wallet/CreateWallet";
 import AvailPoints from "./views/AvailPoints";
+import WalletConnect from "./components/WalletConnect";
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
@@ -29,6 +30,10 @@ const App: React.FC = () => {
     { path: "/dashboard", element: <Dashboard /> },
     { path: "/secret-recovery", element: <SecretRecovery /> },
     { path: "/points", element: <AvailPoints /> },
+
+    // Route to test wallet connect
+    { path: "wallet-connect", element: <WalletConnect /> },
+
     /* --Existing Wallet Flow-- */
     /* --Dapp Flow-- */
     /* --Quest Flow-- */
