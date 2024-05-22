@@ -1,8 +1,14 @@
 import {Box, Button, Typography} from '@mui/material';
 
 import backupHand from '../../assets/backup-hand.png';
+import {useNavigate} from 'react-router-dom';
+import React from "react";
 
 const BackupWallet = () => {
+  const navigate = useNavigate();
+  const goToOther = () => {
+    navigate('/verify-saved');
+  };
   return (
     <Box
       pt={16}
@@ -12,6 +18,11 @@ const BackupWallet = () => {
       bgcolor='#111111'
       color='#fff'
     >
+      <Box>
+        <button onClick={goToOther}>
+          Next page
+        </button>
+      </Box>
       <Typography
         fontSize='60px'
         textAlign='center'
