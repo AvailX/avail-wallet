@@ -273,11 +273,11 @@ const Browser: React.FC<BrowserProperties> = ({
               />
             </Paper>
           </Search> */}
-          <Box sx={{ width: "30%", ml: "2%" }}>
+          <Box sx={{ width: "100%", ml: "1%" }}>
             <Paper
               component="form"
               sx={{
-                p: "2px 4px",
+                p: "2px 2px",
                 display: "flex",
                 alignItems: "center",
                 width: "80%",
@@ -293,7 +293,7 @@ const Browser: React.FC<BrowserProperties> = ({
               />
             </Paper>
           </Box>
-          <Button
+          {/* <Button
             sx={{
               borderRadius: "10px",
               width: "12%",
@@ -320,20 +320,27 @@ const Browser: React.FC<BrowserProperties> = ({
             {connected
               ? t("browser.message.success.disconnect")
               : t("browser.connect")}
-          </Button>
+          </Button> */}
         </Toolbar>
       </AppBar>
-      {url !== "" && (
-        <iframe
-          src={url}
-          title="Browser"
-          width="100%"
-          height="100%"
-          loading="lazy"
-          allowFullScreen
-          allow="clipboard-read; clipboard-write"
-        />
-      )}
+      <Box
+        sx={{
+          p: "20px",
+          // ml: "2%",
+        }}
+      >
+        {url !== "" && (
+          <iframe
+            src={url}
+            title="Browser"
+            width="100%"
+            height="100%"
+            loading="lazy"
+            allowFullScreen
+            allow="clipboard-read; clipboard-write"
+          />
+        )}
+      </Box>
       {url === "" && (
         <Box
           sx={{
@@ -343,11 +350,11 @@ const Browser: React.FC<BrowserProperties> = ({
             ml: "2%",
           }}
         >
-          <Title2Text sx={{ color: "#fff" }}> {t("browser.title")} </Title2Text>
+          {/* <Title2Text sx={{ color: "#fff" }}> {t("browser.title")} </Title2Text>
           <Typography variant="body1" sx={{ color: "#a3a3a3" }}>
             {t("browser.subtitle")}
-          </Typography>
-          {/* <Grid
+          </Typography> */}
+          <Grid
             container
             spacing={2}
             sx={{ marginTop: "20px", alignItems: "center" }}
@@ -363,7 +370,7 @@ const Browser: React.FC<BrowserProperties> = ({
                 />
               </Grid>
             ))}
-          </Grid> */}
+          </Grid>
         </Box>
       )}
     </Box>
