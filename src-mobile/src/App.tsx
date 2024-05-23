@@ -16,6 +16,9 @@ import Dashboard from "./views/Dashboard";
 import SecretRecovery from "./views/create-wallet/SecretRecovery";
 import { MobCarousel } from "./views/create-wallet/CreateWallet";
 import AvailPoints from "./views/AvailPoints";
+import Send from "./views/send/Send";
+import InputRecipient from "./views/send/InputRecipient";
+import QrCode from "./views/QrCode";
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
@@ -29,6 +32,9 @@ const App: React.FC = () => {
     { path: "/dashboard", element: <Dashboard /> },
     { path: "/secret-recovery", element: <SecretRecovery /> },
     { path: "/points", element: <AvailPoints /> },
+    { path: "/send", element: <Send /> },
+    { path: "/input-send", element: <InputRecipient /> },
+    { path: "/qr-code", element: <QrCode /> },
     /* --Existing Wallet Flow-- */
     /* --Dapp Flow-- */
     /* --Quest Flow-- */
