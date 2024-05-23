@@ -253,27 +253,7 @@ const Browser: React.FC<BrowserProperties> = ({
           >
             <RefreshIcon />
           </IconButton>
-          {/* <Search>
-            <Paper
-              component="form"
-              sx={{
-                p: "2px 4px",
-                display: "flex",
-                alignItems: "center",
-                width: "50%",
-              }}
-              onSubmit={handleInputSubmit}
-            >
-              <InputBase
-                sx={{ ml: 1, flex: 1 }}
-                placeholder={t("browser.enter") + " URL"}
-                inputProps={{ "aria-label": "enter url" }}
-                value={inputUrl}
-                onChange={handleInputChange}
-              />
-            </Paper>
-          </Search> */}
-          <Box sx={{ width: "100%", ml: "1%" }}>
+          {/* <Box sx={{ width: "100%", ml: "1%" }}>
             <Paper
               component="form"
               sx={{
@@ -292,41 +272,12 @@ const Browser: React.FC<BrowserProperties> = ({
                 onChange={handleInputWcUrl}
               />
             </Paper>
-          </Box>
-          {/* <Button
-            sx={{
-              borderRadius: "10px",
-              width: "12%",
-              bgcolor: "#00FFAA",
-              color: "#111111",
-              transition:
-                "transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out",
-              textTransform: "none",
-              "&:hover": {
-                backgroundColor: "#00FFAA",
-                boxShadow: "0 0 8px 2px rgba(0, 255, 170, 0.6)",
-                transform: "scale(1.03)",
-              },
-              "&:focus": {
-                backgroundColor: "#00FFAA",
-                boxShadow: "0 0 8px 2px rgba(0, 255, 170, 0.8)",
-              },
-            }}
-            onClick={() => {
-              connected ? handleDisconnect() : handleConnected();
-            }}
-          >
-            {" "}
-            {connected
-              ? t("browser.message.success.disconnect")
-              : t("browser.connect")}
-          </Button> */}
+          </Box> */}
         </Toolbar>
       </AppBar>
       <Box
         sx={{
           p: "20px",
-          // ml: "2%",
         }}
       >
         {url !== "" && (
@@ -350,10 +301,6 @@ const Browser: React.FC<BrowserProperties> = ({
             ml: "2%",
           }}
         >
-          {/* <Title2Text sx={{ color: "#fff" }}> {t("browser.title")} </Title2Text>
-          <Typography variant="body1" sx={{ color: "#a3a3a3" }}>
-            {t("browser.subtitle")}
-          </Typography> */}
           <Grid
             container
             spacing={2}

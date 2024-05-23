@@ -1,20 +1,20 @@
 import React from "react";
+import DashboardLayout from "../layouts/DashboardLayout";
 import * as mui from "@mui/material";
 
 // Components
 import { listen } from "@tauri-apps/api/event";
 import { useLocation } from "react-router-dom";
+import SwipeableEdgeDrawer from "../components/SwipeableDrawer";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import MiniDrawer from "../../../src/components/sidebar";
 import ReAuthDialog from "../../../src/components/dialogs/reauth";
 // Tauri tools
 
-
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 // global state
 import { useWalletConnectManager } from "../../../src/context/WalletConnect";
 import { Title2Text } from "../../../../avail-wallet/src/components/typography/typography";
-import Layout from "../../../src/views-desktop/reusable/layout";
 
 //imported from the mobile browser to aid editing
 import Browser from "../browser/mobile_browser";
@@ -24,6 +24,12 @@ const BrowserView: React.FC = () => {
 
   const [url, setUrl] = React.useState("");
   const [reauthDialogOpen, setReauthDialogOpen] = React.useState(false);
+
+  //Drawer
+  const [open, setOpen] = React.useState<boolean>(true);
+  const toggleDrawer = (newOpen: boolean) => (): void => {
+    setOpen(newOpen);
+  };
 
   // TODO - Handle the activeUrl state
   const { activeUrl, setActiveUrl } = useWalletConnectManager();
@@ -48,7 +54,7 @@ const BrowserView: React.FC = () => {
   const navigate = useNavigate();
 
   const handleOnClick = () => {
-    navigate('/home')
+    navigate("/home");
   };
   React.useEffect(() => {
     handleUrl();
@@ -66,33 +72,30 @@ const BrowserView: React.FC = () => {
     location.state !== ""
   ) {
     return (
-      <Layout>
+      <DashboardLayout>
         <ReAuthDialog
           isOpen={reauthDialogOpen}
           onRequestClose={() => {
             setReauthDialogOpen(false);
           }}
         />
-        {/* the back button fits here */}
         <ArrowBackIosNewIcon />
-        {/* <MiniDrawer /> */}
         <Browser
           initialUrl={location.state}
           handleDappSelection={handleDappSelection}
         />
-      </Layout>
+      </DashboardLayout>
     );
   }
 
   return (
-    <Layout>
+    <DashboardLayout>
       <ReAuthDialog
         isOpen={reauthDialogOpen}
         onRequestClose={() => {
           setReauthDialogOpen(false);
         }}
       />
-      {/* the back button fits here */}
       <ArrowBackIosNewIcon
         sx={{
           minHeight: 48,
@@ -106,9 +109,11 @@ const BrowserView: React.FC = () => {
           handleOnClick();
         }}
       />
-      {/* <MiniDrawer /> */}
       <Browser initialUrl={url} handleDappSelection={handleDappSelection} />
-    </Layout>
+      <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}>
+        <h1>Hello</h1>
+      </SwipeableEdgeDrawer>
+    </DashboardLayout>
   );
 };
 
