@@ -16,7 +16,7 @@ import Dashboard from "./views/Dashboard";
 import SecretRecovery from "./views/create-wallet/SecretRecovery";
 import { MobCarousel } from "./views/create-wallet/CreateWallet";
 import AvailPoints from "./views/AvailPoints";
-import WalletConnect from "./components/WalletConnect";
+import WalletConnect from "./views/WalletConnect";
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
