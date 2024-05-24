@@ -80,6 +80,8 @@ impl<N: Network> AvailRecord<N> {
             None,
             Some(self.metadata.nonce.clone()),
             None,
+            Some(self.pointer.transaction_id.to_string()),
+            Some(self.pointer.transition_id.to_string()),
         );
 
         Ok(encrypted_data)
@@ -117,6 +119,8 @@ impl<N: Network> AvailRecord<N> {
             None,
             Some(record.metadata.nonce.clone()),
             None,
+            Some(record.pointer.transaction_id.to_string()),
+            Some(record.pointer.transition_id.to_string()),
         );
         Ok(encrypted_data)
     }

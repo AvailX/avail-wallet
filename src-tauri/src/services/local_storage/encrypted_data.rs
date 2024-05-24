@@ -119,6 +119,8 @@ pub fn handle_encrypted_data_query(query: &str) -> AvailResult<Vec<EncryptedData
         let event_type: Option<String> = row.get(14)?;
         let record_nonce: Option<String> = row.get(15)?;
         let transaction_state: Option<String> = row.get(16)?;
+        let transaction_id: Option<String> = row.get(17)?;
+        let transition_id: Option<String> = row.get(18)?;
 
         let id = match uuid::Uuid::parse_str(&id) {
             Ok(id) => id,
@@ -166,6 +168,8 @@ pub fn handle_encrypted_data_query(query: &str) -> AvailResult<Vec<EncryptedData
             event_type,
             record_nonce,
             transaction_state,
+            transaction_id,
+            transition_id,
         );
 
         Ok(encrypted_data)
@@ -206,6 +210,8 @@ pub fn handle_encrypted_data_query_params<T: ToSql>(
         let event_type: Option<String> = row.get(14)?;
         let record_nonce: Option<String> = row.get(15)?;
         let transaction_state: Option<String> = row.get(16)?;
+        let transaction_id: Option<String> = row.get(17)?;
+        let transition_id: Option<String> = row.get(18)?;
 
         let id = match uuid::Uuid::parse_str(&id) {
             Ok(id) => id,
@@ -252,6 +258,8 @@ pub fn handle_encrypted_data_query_params<T: ToSql>(
             event_type,
             record_nonce,
             transaction_state,
+            transaction_id,
+            transition_id,
         );
 
         Ok(encrypted_data)
