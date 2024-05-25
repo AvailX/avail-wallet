@@ -22,7 +22,7 @@ const MobileTab: FC<IProps> = ({ children }) => {
     },
   ];
   return (
-    <Box>
+    <Box height="15vh" bgcolor="#2A2A2A" px={4} position="fixed" width="100%">
       <Box
         display="flex"
         alignItems="center"

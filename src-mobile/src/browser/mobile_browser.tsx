@@ -18,6 +18,10 @@ import {
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { styled } from "@mui/material/styles";
+import arcane from "../assets/arcane.svg";
+import SegmentIcon from "@mui/icons-material/Segment";
+import CloseIcon from "@mui/icons-material/Close";
+import LoopIcon from "@mui/icons-material/Loop";
 
 // global state
 import { useTranslation } from "react-i18next";
@@ -36,6 +40,7 @@ import {
 } from "../../../src/components/snackbars/alerts";
 import { open_url } from "../../../src/services/util/open";
 import { useNavigate } from "react-router-dom";
+import TestnetFaucet from "../components/TestnetFaucet";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -233,50 +238,72 @@ const Browser: React.FC<BrowserProperties> = ({
         setSuccessAlert={setSuccessAlert}
         message={alertMessage}
       />
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        pt={1}
-        pb={2}
-        m={0}
-      >
+      <Box display="flex" alignItems="center" pt={1} pb={2} m={0}>
         <IconButton
-          edge="start"
-          color="inherit"
-          size="small"
-          sx={{ mr: 2 }}
+          sx={{
+            background: " #3E3E3E",
+            border: 0,
+            width: "30px",
+            height: "30px",
+            borderRadius: "50%",
+            p: 0,
+            ml: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          type="submit"
           aria-label="back"
           onClick={handleBack}
         >
-          <ArrowBackIosNewIcon />
+          <ArrowBackIosNewIcon sx={{ color: "#BDBDBD" }} fontSize="small" />
         </IconButton>
         <IconButton
-          color="inherit"
-          aria-label="reload"
-          edge="start"
-          size="small"
-          sx={{ mr: 2 }}
+          sx={{
+            background: " #3E3E3E",
+            border: 0,
+            width: "30px",
+            height: "30px",
+            borderRadius: "50%",
+            p: 0,
+            mx: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          type="submit"
+          aria-label="back"
           onClick={handleReload}
         >
-          <RefreshIcon />
+          <LoopIcon sx={{ color: "#BDBDBD" }} fontSize="small" />
         </IconButton>
         {/* <IconButton onClick={handleWCR}>
           <p>connect</p>
         </IconButton> */}
       </Box>
-      <Box>
-        <Typography>
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Typography
+          fontSize="12px"
+          textAlign="center"
+          fontWeight={700}
+          lineHeight="20px"
+          color="#fff"
+        >
           Due to the instability of ALEO official test network nodes,
           transactions may fail
         </Typography>
         <IconButton>
-          <p>X</p>
+          <CloseIcon />
         </IconButton>
       </Box>
-      <Box>
-        <p>Image</p>
-        <IconButton>Connect Wallet</IconButton>
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <img src={arcane} />
+        <Box>
+          <Button>Connect Wallet</Button>
+          <IconButton>
+            <SegmentIcon sx={{ color: "#fff" }} />
+          </IconButton>
+        </Box>
       </Box>
       <Box
         sx={{
@@ -295,6 +322,7 @@ const Browser: React.FC<BrowserProperties> = ({
           />
         )}
       </Box>
+      <TestnetFaucet />
     </Box>
   );
 };

@@ -100,38 +100,24 @@ const BrowserView: React.FC = () => {
   return (
     <Box
       height="100vh"
-      display="flex"
-      flexDirection="column"
-      justifyContent="space-between"
       sx={{
         m: 0,
         bgcolor: "#111111",
-        p: 2,
+        pt: 1,
       }}
     >
-      <ReAuthDialog
-        isOpen={reauthDialogOpen}
-        onRequestClose={() => {
-          setReauthDialogOpen(false);
-        }}
-      />
-      {/* <ArrowBackIosNewIcon
-        sx={{
-          minHeight: 48,
-          px: 2.5,
-          color: "#fff",
-          "&:hover": {
-            color: "#00FFAA",
-          },
-        }}
-        onClick={() => {
-          handleOnClick();
-        }}
-      /> */}
-      <Browser initialUrl={url} handleDappSelection={handleDappSelection} />
-      <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}>
-        <RequestModal />
-      </SwipeableEdgeDrawer>
+      <Box height="90vh">
+        <ReAuthDialog
+          isOpen={reauthDialogOpen}
+          onRequestClose={() => {
+            setReauthDialogOpen(false);
+          }}
+        />
+        <Browser initialUrl={url} handleDappSelection={handleDappSelection} />
+        <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}>
+          <RequestModal />
+        </SwipeableEdgeDrawer>
+      </Box>
       <MobileTab />
     </Box>
   );
