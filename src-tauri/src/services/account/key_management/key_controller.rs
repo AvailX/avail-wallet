@@ -7,10 +7,15 @@ use super::android::{keystore_delete, keystore_init, keystore_load};
 #[cfg(target_os = "ios")]
 use super::iOS::{delete_ios, search, store_keys_local};
 
-use snarkvm::prelude::{Identifier, Network, PrivateKey, ViewKey};
+use snarkvm::prelude::{Identifier, Network, PrivateKey, ViewKey, FromStr};
 
 use super::desktop::{delete_key, read_key, read_seed_phrase, store};
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
+use avail_common::models::constants::{PRIVATE_KEY, VIEW_KEY};
+#[cfg(target_os = "ios")]
+use super::faceid::{store_keys_ios, delete_key_ios, get_key_ios};
+#[cfg(target_os = "ios")]
+use crate::services::local_storage::persistent_storage::get_address_string;
 
 /// This trait is used as a standard interface for the key management service.
 /// The key_type field refers to the private key type when true and the viewing key type when false.
@@ -49,17 +54,43 @@ pub struct iOSKeyController;
 
 #[cfg(target_os = "ios")]
 impl<N: Network> KeyController<N> for iOSKeyController {
-    fn store_key(&self, password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String> {
-        store_keys_local(password, true, &wallet.private_key, &wallet.view_key)
+    fn store_key(&self, _password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String> {
+        match store_keys_ios("com.avail", &wallet.address.to_string(), &wallet.private_key.to_string(), PRIVATE_KEY) {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        };
+        store_keys_ios("com.avail", &wallet.address.to_string(), &wallet.view_key.to_string(), VIEW_KEY)
     }
 
-    //TODO authenticate using read_key
-    fn delete_key(&self, password: Option<&str>, ext: Identifier<N>) -> AvailResult<String> {
-        delete_ios(password)
+    // Delete both private key and viewing key for current account
+    fn delete_key(&self, _password: Option<&str>, _ext: Identifier<N>) -> AvailResult<String> {
+        // Get address from local storage
+        let address = get_address_string()?;
+
+        match delete_key_ios("com.avail", &address, PRIVATE_KEY) {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        };
+        delete_key_ios("com.avail", &address, VIEW_KEY)
     }
 
-    fn read_key(&self, password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>> {
-        search(password, key_type)
+    fn read_key(&self, _password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>> {
+        let address = get_address_string()?;
+        match key_type {
+            PRIVATE_KEY => {
+                let private_key = get_key_ios("com.avail", &address, key_type)?;
+                Ok(Keys::PrivateKey(PrivateKey::from_str(&private_key)?))
+            }
+            VIEW_KEY => {
+                let view_key = get_key_ios("com.avail", &address, key_type)?;
+                Ok(Keys::ViewKey(ViewKey::from_str(&view_key)?))
+            }
+            _ => Err(AvailError::new(
+                AvailErrorType::InvalidData,
+                "Invalid label".to_string(),
+                "Invalid label".to_string(),
+            )),
+        }
     }
 
     fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String> {
@@ -67,6 +98,27 @@ impl<N: Network> KeyController<N> for iOSKeyController {
         Ok("seed_phrase".to_string())
     }
 }
+
+// #[cfg(target_os = "ios")]
+// impl<N: Network> KeyController<N> for iOSKeyController {
+//     fn store_key(&self, password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String> {
+//         store_keys_local(password, true, &wallet.private_key, &wallet.view_key)
+//     }
+//
+//     //TODO authenticate using read_key
+//     fn delete_key(&self, password: Option<&str>, ext: Identifier<N>) -> AvailResult<String> {
+//         delete_ios(password)
+//     }
+//
+//     fn read_key(&self, password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>> {
+//         search(password, key_type)
+//     }
+//
+//     fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String> {
+//         //TODO: Seed phrase storage on mobile (read_seed_phrase(password))
+//         Ok("seed_phrase".to_string())
+//     }
+// }
 
 pub struct macKeyController;
 

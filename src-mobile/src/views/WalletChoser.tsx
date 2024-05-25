@@ -24,7 +24,7 @@ const WalletChoser: FC = () => {
 	};
 
 	async function storePassword(username: string, password: string) {
-		await invoke('store_password_apple', {
+		await invoke('store_password_ios', {
 			service: 'avail.com',
 			username: username,
 			password: password,
@@ -36,7 +36,7 @@ const WalletChoser: FC = () => {
 	}
 
 	async function getPassword(username: string) {
-		await invoke('get_password', {
+		await invoke('get_password_ios', {
 			service: 'avail.com',
 			username: username,
 		}).then((res) => {
