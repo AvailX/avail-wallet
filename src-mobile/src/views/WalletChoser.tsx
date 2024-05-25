@@ -11,7 +11,6 @@ const WalletChoser: FC = () => {
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
   };
-
   return (
     <Box
       height="100vh"

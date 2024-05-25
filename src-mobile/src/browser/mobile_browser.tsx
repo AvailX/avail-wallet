@@ -1,7 +1,7 @@
 import React, { type ReactEventHandler, useState } from "react";
-
+import { type WalletConnectRequest } from "../../../src/services/wallet-connect/WCTypes";
 // Tauri tools
-import { listen } from "@tauri-apps/api/event";
+import { emitTo, listen, emit } from "@tauri-apps/api/event";
 
 // Styles
 import {
@@ -98,25 +98,6 @@ const Browser: React.FC<BrowserProperties> = ({
 
   const handleInputWcUrl = (event: React.ChangeEvent<HTMLInputElement>) => {
     setWcUrl(event.target.value);
-  };
-
-  const handleInputSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (inputUrl && inputUrl !== url && inputUrl !== "") {
-      let urlModified = inputUrl;
-
-      if (!inputUrl.startsWith("https://") && !inputUrl.startsWith("http://")) {
-        urlModified = "https://" + inputUrl;
-      }
-
-      setPreviousUrls([...previousUrls, url ?? ""]);
-      setUrl(urlModified);
-      setShowMenu(false);
-
-      if (urlModified !== "https://faucet.puzzle.online") {
-        sessionStorage.setItem("activeUrl", urlModified);
-      }
-    }
   };
 
   const handleDisconnect = () => {
@@ -224,8 +205,24 @@ const Browser: React.FC<BrowserProperties> = ({
     };
   }, []);
 
+  const wcRequest: WalletConnectRequest = {
+    method: "connect",
+    question: "Do you want to connect to " + "metadata.name" + " ?",
+    imageRef: "../wc-images/connect.svg",
+    approveResponse: "User approved wallet connect",
+    rejectResponse: "User rejected wallet connect",
+    description: "metadata.description",
+    dappUrl: "",
+    dappImage: "metadata.icons[0]",
+  };
+
+  const handleWCR = async () => {
+    await emit("wallet-connect-request", {});
+    console.log("Emitting wallet-connect-request");
+  };
+
   return (
-    <Box sx={{ ml: "5%", height: url === "" ? "100%" : "94vh", width: "94%" }}>
+    <Box sx={{}}>
       <ErrorAlert
         errorAlert={errorAlert}
         setErrorAlert={setErrorAlert}
@@ -236,45 +233,51 @@ const Browser: React.FC<BrowserProperties> = ({
         setSuccessAlert={setSuccessAlert}
         message={alertMessage}
       />
-      <AppBar position="static" sx={{ bgcolor: "#111111" }}>
-        <Toolbar variant="dense">
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="back"
-            onClick={handleBack}
-          >
-            <ArrowBackIosNewIcon />
-          </IconButton>
-          <IconButton
-            color="inherit"
-            aria-label="reload"
-            onClick={handleReload}
-          >
-            <RefreshIcon />
-          </IconButton>
-          {/* <Box sx={{ width: "100%", ml: "1%" }}>
-            <Paper
-              component="form"
-              sx={{
-                p: "2px 2px",
-                display: "flex",
-                alignItems: "center",
-                width: "80%",
-              }}
-              onSubmit={handleInputSubmit}
-            >
-              <InputBase
-                sx={{ ml: 1, flex: 1 }}
-                placeholder={t("browser.enter") + " Wallet Connect Link"}
-                inputProps={{ "aria-label": "enter url" }}
-                value={wcUrl}
-                onChange={handleInputWcUrl}
-              />
-            </Paper>
-          </Box> */}
-        </Toolbar>
-      </AppBar>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        pt={1}
+        pb={2}
+        m={0}
+      >
+        <IconButton
+          edge="start"
+          color="inherit"
+          size="small"
+          sx={{ mr: 2 }}
+          aria-label="back"
+          onClick={handleBack}
+        >
+          <ArrowBackIosNewIcon />
+        </IconButton>
+        <IconButton
+          color="inherit"
+          aria-label="reload"
+          edge="start"
+          size="small"
+          sx={{ mr: 2 }}
+          onClick={handleReload}
+        >
+          <RefreshIcon />
+        </IconButton>
+        {/* <IconButton onClick={handleWCR}>
+          <p>connect</p>
+        </IconButton> */}
+      </Box>
+      <Box>
+        <Typography>
+          Due to the instability of ALEO official test network nodes,
+          transactions may fail
+        </Typography>
+        <IconButton>
+          <p>X</p>
+        </IconButton>
+      </Box>
+      <Box>
+        <p>Image</p>
+        <IconButton>Connect Wallet</IconButton>
+      </Box>
       <Box
         sx={{
           p: "20px",
@@ -292,34 +295,6 @@ const Browser: React.FC<BrowserProperties> = ({
           />
         )}
       </Box>
-      {url === "" && (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            p: "20px",
-            ml: "2%",
-          }}
-        >
-          <Grid
-            container
-            spacing={2}
-            sx={{ marginTop: "20px", alignItems: "center" }}
-          >
-            {dapps.map((dapp, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <DappView
-                  dapp={dapp}
-                  onClick={() => {
-                    handleDappSelect(dapp.url);
-                    handleDappSelection(dapp.url);
-                  }}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      )}
     </Box>
   );
 };
