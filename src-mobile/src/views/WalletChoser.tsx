@@ -8,12 +8,18 @@ import SwipeableEdgeDrawer from '../components/SwipeableDrawer';
 import {useNavigate} from 'react-router-dom';
 
 import {invoke} from '@tauri-apps/api/core';
+import {Languages} from "../../../src/types/languages";
+import type {AvailError} from "../../../src/types/errors";
+import {register_seed_phrase} from "../../../src/services/authentication/register";
 
 const WalletChoser: FC = () => {
 	const [username, setUsername] = React.useState<string>('');
 	const [password, setPassword] = React.useState<string>('');
 	const [resultMessage, setResultMessage] = React.useState<string>('');
 	const [resultMessage2, setResultMessage2] = React.useState<string>('');
+	const [resultMessage3, setResultMessage3] = React.useState<string>('');
+	const [resultMessage4, setResultMessage4] = React.useState<string>('');
+	const [resultMessage5, setResultMessage5] = React.useState<string>('');
 	const [open, setOpen] = React.useState<boolean>(false);
 	const toggleDrawer = (newOpen: boolean) => (): void => {
 		setOpen(newOpen);
@@ -23,26 +29,54 @@ const WalletChoser: FC = () => {
 		navigate('/backup-wallet');
 	};
 
-	async function storePassword(username: string, password: string) {
-		await invoke('store_password_ios', {
-			service: 'avail.com',
-			username: username,
-			password: password,
+	async function newWallet() {
+		await invoke('create_seed_phrase_wallet', {
+			username: undefined, password: "password", access_type: true, backup: false, language: Languages.English, length: 12
 		}).then((res) => {
-			setResultMessage(`Password stored successfully: ${res}`);
-		}).catch((err) => {
-			setResultMessage(`Failed to store password: ${err}`);
+			setResultMessage(`New wallet created successfully: ${res}`);
+		}).catch((err: AvailError) => {
+			setResultMessage(`Failed to create wallet: ${err.internal_msg} | ${err.external_msg}`);
+			console.log(err);
 		});
 	}
 
-	async function getPassword(username: string) {
-		await invoke('get_password_ios', {
-			service: 'avail.com',
-			username: username,
+	async function getAddress() {
+		await invoke('get_address_string', {
+			password: undefined
 		}).then((res) => {
-			setResultMessage2(`Password retrieved successfully: ${res}`);
+			setResultMessage5(`Address retrieved successfully: ${res}`);
 		}).catch((err) => {
-			setResultMessage2(`Failed to retrieve password: ${err}`);
+			setResultMessage5(`Failed to retrieve address: ${err}`);
+		});
+	}
+
+	async function getPrivateKey() {
+		await invoke('get_private_key_tauri', {
+			password: undefined
+		}).then((res) => {
+			setResultMessage2(`Private key retrieved successfully: ${res}`);
+		}).catch((err) => {
+			setResultMessage2(`Failed to retrieve private key: ${err}`);
+		});
+	}
+
+	async function getViewKey() {
+		await invoke('get_view_key_tauri', {
+			password: undefined
+		}).then((res) => {
+			setResultMessage3(`View key retrieved successfully: ${res}`);
+		}).catch((err) => {
+			setResultMessage3(`Failed to retrieve view key: ${err}`);
+		});
+	}
+
+	async function getSeedPhrase() {
+		await invoke('get_seed_phrase', {
+			password: "password"
+		}).then((res) => {
+			setResultMessage4(`Seed phrase retrieved successfully: ${res}`);
+		}).catch((err) => {
+			setResultMessage4(`Failed to retrieve seed phrase: ${err}`);
 		});
 	}
 
@@ -67,13 +101,13 @@ const WalletChoser: FC = () => {
 				</button>
 			</Box>
 			<AvatarDropDown onClick={toggleDrawer(true)}/>
-			<img
-				src={availLogo}
-				alt='avail-logo'
-				style={{paddingTop: '150px', width: '100%'}}
-			/>
+			{/*<img*/}
+			{/*	src={availLogo}*/}
+			{/*	alt='avail-logo'*/}
+			{/*	style={{paddingTop: '150px', width: '100%'}}*/}
+			{/*/>*/}
 			<Box
-				height='100vh' // Set the height to 100% of the viewport height
+				height='200vh' // Set the height to 100% of the viewport height
 				display='flex'
 				flexDirection='column'
 				justifyContent='space-between'
@@ -82,25 +116,17 @@ const WalletChoser: FC = () => {
 					bgcolor: '#111111',
 					p: 1,
 				}}>
-				<input
-					type="text"
-					value={username}
-					onChange={(e) => setUsername(e.target.value)}
-					placeholder="Username"
-				/>
-				<input
-					type="password"
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-					placeholder="Password"
-				/>
-				<button onClick={() => storePassword(username, password)}>
-					Store Password
+				<button onClick={() => newWallet()}>
+					Generate new wallet
 				</button>
 				{resultMessage && <p style={{ color: 'white' }}>{resultMessage}</p>}
+				<button onClick={() => getAddress()}>
+					Get Address
+				</button>
+				{resultMessage5 && <p style={{ color: 'white' }}>{resultMessage5}</p>}
 				</Box>
 				<Box
-					height='100vh' // Set the height to 100% of the viewport height
+					height='300vh' // Set the height to 100% of the viewport height
 					display='flex'
 					flexDirection='column'
 					justifyContent='space-between'
@@ -109,16 +135,18 @@ const WalletChoser: FC = () => {
 						bgcolor: '#111111',
 						p: 1,
 					}}>
-				<input
-					type="text"
-					value={username}
-					onChange={(e) => setUsername(e.target.value)}
-					placeholder="Username"
-				/>
-				<button onClick={() => getPassword(username)}>
-					Get Password
+				<button onClick={() => getPrivateKey()}>
+					Get Private Key
 				</button>
 				{resultMessage2 && <p style={{ color: 'white' }}>{resultMessage2}</p>}
+				<button onClick={() => getViewKey()}>
+					Get View Key
+				</button>
+				{resultMessage3 && <p style={{ color: 'white' }}>{resultMessage3}</p>}
+				<button onClick={() => getSeedPhrase()}>
+					Get Seed Phrase
+				</button>
+				{resultMessage4 && <p style={{ color: 'white' }}>{resultMessage4}</p>}
 			</Box>
 			<SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}/>
 		</Box>
