@@ -55,34 +55,52 @@ pub struct iOSKeyController;
 #[cfg(target_os = "ios")]
 impl<N: Network> KeyController<N> for iOSKeyController {
     fn store_key(&self, _password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String> {
-        match store_keys_ios("com.avail", &wallet.address.to_string(), &wallet.private_key.to_string(), PRIVATE_KEY) {
+        let service = "com.avail";
+        match store_keys_ios(service, &wallet.address.to_string(), &wallet.private_key.to_string(), PRIVATE_KEY) {
             Ok(_) => {}
             Err(e) => return Err(e),
         };
-        store_keys_ios("com.avail", &wallet.address.to_string(), &wallet.view_key.to_string(), VIEW_KEY)
+        match store_keys_ios(service, &wallet.address.to_string(), &wallet.view_key.to_string(), VIEW_KEY) {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        };
+        match store_keys_ios(service, &wallet.address.to_string(), &wallet.mnemonic.to_string(), "avl-s") {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        };
+        Ok("Keys Stored".to_string())
     }
 
-    // Delete both private key and viewing key for current account
+    // Delete private key, viewing key and seed phrase for current account
     fn delete_key(&self, _password: Option<&str>, _ext: Identifier<N>) -> AvailResult<String> {
+        let service = "com.avail";
         // Get address from local storage
         let address = get_address_string()?;
-
-        match delete_key_ios("com.avail", &address, PRIVATE_KEY) {
+        match delete_key_ios(service, &address, PRIVATE_KEY) {
             Ok(_) => {}
             Err(e) => return Err(e),
         };
-        delete_key_ios("com.avail", &address, VIEW_KEY)
+        match delete_key_ios(service, &address, VIEW_KEY) {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        };
+        match delete_key_ios(service, &address, "avl-s") {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        };
+        Ok("Keys Deleted".to_string())
     }
 
     fn read_key(&self, _password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>> {
+        let service = "com.avail";
         let address = get_address_string()?;
         match key_type {
             PRIVATE_KEY => {
-                let private_key = get_key_ios("com.avail", &address, key_type)?;
+                let private_key = get_key_ios(service, &address, key_type)?;
                 Ok(Keys::PrivateKey(PrivateKey::from_str(&private_key)?))
             }
             VIEW_KEY => {
-                let view_key = get_key_ios("com.avail", &address, key_type)?;
+                let view_key = get_key_ios(service, &address, key_type)?;
                 Ok(Keys::ViewKey(ViewKey::from_str(&view_key)?))
             }
             _ => Err(AvailError::new(
@@ -93,9 +111,9 @@ impl<N: Network> KeyController<N> for iOSKeyController {
         }
     }
 
-    fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String> {
-        //TODO: Seed phrase storage on mobile (read_seed_phrase(password))
-        Ok("seed_phrase".to_string())
+    fn read_phrase(&self, _password: &str, _ext: Identifier<N>) -> AvailResult<String> {
+        let address = get_address_string()?;
+        get_key_ios("com.avail", &address, "avl-s")
     }
 }
 
