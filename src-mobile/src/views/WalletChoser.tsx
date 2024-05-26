@@ -20,6 +20,7 @@ const WalletChoser: FC = () => {
 	const [resultMessage3, setResultMessage3] = React.useState<string>('');
 	const [resultMessage4, setResultMessage4] = React.useState<string>('');
 	const [resultMessage5, setResultMessage5] = React.useState<string>('');
+	const [resultMessage6, setResultMessage6] = React.useState<string>('');
 	const [open, setOpen] = React.useState<boolean>(false);
 	const toggleDrawer = (newOpen: boolean) => (): void => {
 		setOpen(newOpen);
@@ -77,6 +78,16 @@ const WalletChoser: FC = () => {
 			setResultMessage4(`Seed phrase retrieved successfully: ${res}`);
 		}).catch((err) => {
 			setResultMessage4(`Failed to retrieve seed phrase: ${err}`);
+		});
+	}
+
+	async function deleteKeys() {
+		await invoke('delete_util', {
+			password: "password"
+		}).then((res) => {
+			setResultMessage6(`Keys deleted: ${res}`);
+		}).catch((err) => {
+			setResultMessage6(`Failed to delete keys: ${err}`);
 		});
 	}
 
@@ -147,6 +158,10 @@ const WalletChoser: FC = () => {
 					Get Seed Phrase
 				</button>
 				{resultMessage4 && <p style={{ color: 'white' }}>{resultMessage4}</p>}
+				<button onClick={() => deleteKeys()}>
+					Delete Keys
+				</button>
+				{resultMessage6 && <p style={{ color: 'white' }}>{resultMessage6}</p>}
 			</Box>
 			<SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}/>
 		</Box>

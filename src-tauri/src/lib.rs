@@ -15,6 +15,7 @@ use services::account::generation::import_wallet;
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
 use services::account::utils::{network_status_check, open_url, os_type};
 use services::authentication::session::get_session;
+use services::account::key_management::faceid::{store_keys_ios, get_key_ios};
 use services::local_storage::persistent_storage::{
     get_address_string, get_auth_type, get_backup_flag, get_language, get_last_sync, get_network,
     get_username, update_language,
@@ -154,6 +155,8 @@ pub fn run() {
             test_snarkvm_mobile_deploy,
             init_user_mobile,
             switch_to_obscura,
+            store_keys_ios,
+            get_key_ios,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
