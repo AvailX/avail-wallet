@@ -22,6 +22,7 @@ import arcane from "../assets/arcane.svg";
 import SegmentIcon from "@mui/icons-material/Segment";
 import CloseIcon from "@mui/icons-material/Close";
 import LoopIcon from "@mui/icons-material/Loop";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 // global state
 import { useTranslation } from "react-i18next";
@@ -40,7 +41,6 @@ import {
 } from "../../../src/components/snackbars/alerts";
 import { open_url } from "../../../src/services/util/open";
 import { useNavigate } from "react-router-dom";
-import TestnetFaucet from "../components/TestnetFaucet";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -243,8 +243,8 @@ const Browser: React.FC<BrowserProperties> = ({
           sx={{
             background: " #3E3E3E",
             border: 0,
-            width: "30px",
-            height: "30px",
+            width: "35px",
+            height: "35px",
             borderRadius: "50%",
             p: 0,
             ml: 2,
@@ -262,8 +262,8 @@ const Browser: React.FC<BrowserProperties> = ({
           sx={{
             background: " #3E3E3E",
             border: 0,
-            width: "30px",
-            height: "30px",
+            width: "35px",
+            height: "35px",
             borderRadius: "50%",
             p: 0,
             mx: 2,
@@ -277,42 +277,50 @@ const Browser: React.FC<BrowserProperties> = ({
         >
           <LoopIcon sx={{ color: "#BDBDBD" }} fontSize="small" />
         </IconButton>
-        {/* <IconButton onClick={handleWCR}>
-          <p>connect</p>
-        </IconButton> */}
-      </Box>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Typography
-          fontSize="12px"
-          textAlign="center"
-          fontWeight={700}
-          lineHeight="20px"
-          color="#fff"
+        <IconButton
+          sx={{
+            background: " #3E3E3E",
+            border: 0,
+            p: 0,
+            width: "35px",
+            height: "35px",
+            mx: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={handleWCR}
         >
-          Due to the instability of ALEO official test network nodes,
-          transactions may fail
-        </Typography>
-        <IconButton>
-          <CloseIcon />
+          <PlayArrowIcon />
         </IconButton>
-      </Box>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <img src={arcane} />
-        <Box>
-          <Button>Connect Wallet</Button>
-          <IconButton>
-            <SegmentIcon sx={{ color: "#fff" }} />
-          </IconButton>
-        </Box>
+        <IconButton
+          sx={{
+            background: " #3E3E3E",
+            border: 0,
+            p: 0,
+            width: "35px",
+            height: "35px",
+            mx: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => {
+            handleDappSelect("https://app.arcane.finance");
+            handleDappSelection("https://app.arcane.finance");
+          }}
+        >
+          <PlayArrowIcon />
+        </IconButton>
       </Box>
       <Box
         sx={{
-          p: "20px",
+          height: "85vh",
         }}
       >
         {url !== "" && (
           <iframe
-            src={url}
+            src="https://app.arcane.finance"
             title="Browser"
             width="100%"
             height="100%"
@@ -322,7 +330,6 @@ const Browser: React.FC<BrowserProperties> = ({
           />
         )}
       </Box>
-      <TestnetFaucet />
     </Box>
   );
 };
