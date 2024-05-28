@@ -2,12 +2,14 @@ import { Box, Typography } from "@mui/material";
 import avatarImg from "../assets/avatar-img.svg";
 import scanIcon from "../assets/scan-icon.svg";
 import { FC } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
   onProfileClick: () => void;
 }
 
 const DashboardHeader: FC<IProps> = ({ onProfileClick }) => {
+  const navigate = useNavigate();
   return (
     <Box
       mb={3}
@@ -24,7 +26,12 @@ const DashboardHeader: FC<IProps> = ({ onProfileClick }) => {
         </Box>
       </Box>
 
-      <img src={scanIcon} />
+      <img
+        src={scanIcon}
+        onClick={() => {
+          navigate("/qr-code");
+        }}
+      />
     </Box>
   );
 };

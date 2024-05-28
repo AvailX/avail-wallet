@@ -6,8 +6,11 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import aleoGreen from "../../assets/alo-green.svg";
 import recipientDown from "../../assets/recipient-down.svg";
 import DashboardLayout from "../../layouts/DashboardLayout";
+import { useLocation } from "react-router-dom";
 
 function InputRecipient() {
+  const location = useLocation();
+  const { address } = location.state || {};
   return (
     <DashboardLayout>
       <Box>
@@ -55,7 +58,7 @@ function InputRecipient() {
             borderRadius='9px'
           >
             <Typography fontSize='20px' fontWeight={700}>
-              aleo1zkpsaou...1u3r
+              {address || "No address found."}
             </Typography>
           </Box>
         </Box>
