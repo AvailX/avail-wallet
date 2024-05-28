@@ -320,7 +320,7 @@ const Browser: React.FC<BrowserProperties> = ({
       >
         {url !== "" && (
           <iframe
-            src="https://app.arcane.finance"
+            src={url}
             title="Browser"
             width="100%"
             height="100%"
