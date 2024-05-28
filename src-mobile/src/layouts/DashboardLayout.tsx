@@ -6,12 +6,13 @@ import diamondIcon from "../assets/diamond-icon.svg";
 import homeIcon from "../assets/home-icon.svg";
 
 import splashImg from "../assets/green-splash.svg";
+import { useNavigate } from "react-router-dom";
 
 interface IProps extends PropsWithChildren {}
 
 const DashboardLayout: FC<IProps> = ({ children }) => {
   const MOBILE_TAB = [
-    { icon: homeIcon, link: "home" },
+    { icon: homeIcon, path: "/" },
     {
       icon: anchorIcon,
       link: "anchor",
@@ -21,6 +22,8 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
       link: "diamond",
     },
   ];
+  const navigate = useNavigate();
+
   return (
     <Box height='100vh'>
       <Box position='absolute' width='100%' top={0}>
@@ -58,7 +61,13 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
           pb={2}
         >
           {MOBILE_TAB.map(({ icon, link }) => (
-            <img src={icon} key={link} />
+            <img
+              src={icon}
+              key={link}
+              onClick={() => {
+                navigate(link || "");
+              }}
+            />
           ))}
         </Box>
       </Box>

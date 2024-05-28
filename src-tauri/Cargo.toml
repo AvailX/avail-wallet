@@ -23,8 +23,8 @@ tauri-build = { version = "=2.0.0-beta.15", features = [] }
 [dependencies]
 
 app_dirs = { package = "app_dirs2", version = "2.5" }
-avail-common = { git = "https://github.com/availx/avail-lib#0b342478d8c94fb6d8f626fd42a7516b0dfa6f97", branch = "develop", features = [
-    "snarkvm",
+avail-common = { git = "https://github.com/availx/avail-lib", rev = "f50541a2164f7b5016a4a442e05bdd3517708ba4", features = [
+"snarkvm",
 ] }
 bs58 = "0.5.0"
 chrono = "0.4.26"
@@ -67,6 +67,7 @@ curl-sys = "0.4.72"
 # devtools = "0.3.1"
 # tauri-plugin-devtools = { git = "https://github.com/crabnebula-dev/devtools", version = "2.0.0-beta.0" }
 colored = "2.1.0"
+tauri-plugin-barcode-scanner = "2.0.0-beta.5"
 
 [target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
 security-framework = { git = "https://github.com/AvailX/rust-security-framework" }
