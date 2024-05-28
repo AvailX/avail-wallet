@@ -80,6 +80,8 @@ impl<N: Network> AvailRecord<N> {
             None,
             Some(self.metadata.nonce.clone()),
             None,
+            None,
+            None,
         );
 
         Ok(encrypted_data)
@@ -116,6 +118,8 @@ impl<N: Network> AvailRecord<N> {
             None,
             None,
             Some(record.metadata.nonce.clone()),
+            None,
+            None,
             None,
         );
         Ok(encrypted_data)

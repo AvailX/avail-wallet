@@ -283,6 +283,8 @@ impl<N: Network> TransactionPointer<N> {
             Some(self.event_type.clone()),
             None,
             Some(self.state.clone()),
+            None,
+            None,
         );
 
         Ok(encrypted_data)
@@ -332,6 +334,8 @@ impl<N: Network> TransactionPointer<N> {
             Some(record.event_type.clone()),
             None,
             Some(record.state.clone()),
+            None,
+            None,
         );
         Ok(encrypted_data)
     }
