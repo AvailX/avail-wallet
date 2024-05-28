@@ -26,6 +26,8 @@ use avail_common::{
     models::network::SupportedNetworks,
 };
 
+use super::storage_api::transaction;
+
 /* Main Encrypted Data funcions */
 
 ///initialize enrypted data table
@@ -166,6 +168,8 @@ pub fn handle_encrypted_data_query(query: &str) -> AvailResult<Vec<EncryptedData
             event_type,
             record_nonce,
             transaction_state,
+            None,
+            None,
         );
 
         Ok(encrypted_data)
@@ -252,6 +256,8 @@ pub fn handle_encrypted_data_query_params<T: ToSql>(
             event_type,
             record_nonce,
             transaction_state,
+            None,
+            None,
         );
 
         Ok(encrypted_data)

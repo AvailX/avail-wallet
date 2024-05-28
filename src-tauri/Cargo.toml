@@ -1,5 +1,5 @@
 [package]
-name = "avail_wallet"
+name = "wallet"
 version = "0.2.9"
 description = "Avail Wallet | Make it yours."
 authors = ["Avail"]
@@ -23,7 +23,7 @@ tauri-build = { version = "=2.0.0-beta.15", features = [] }
 [dependencies]
 
 app_dirs = { package = "app_dirs2", version = "2.5" }
-avail-common = { git = "https://github.com/availx/avail-lib#0b342478d8c94fb6d8f626fd42a7516b0dfa6f97", branch = "develop", features = [
+avail-common = { git = "https://github.com/availx/avail-lib#0b342478d8c94fb6d8f626fd42a7516b0dfa6f97", branch = "feat/delegate-proving", features = [
     "snarkvm",
 ] }
 bs58 = "0.5.0"
@@ -42,7 +42,7 @@ once_cell = "1.18.0"
 openssl = { version = "0.10.36", features = ["vendored"] }
 rand = "0.8.5"
 rayon = "1.7.0"
-rusqlite = { version = "0.29.0", features = ["bundled", "chrono"] }
+rusqlite = { version = "0.31.0", features = ["bundled", "chrono"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 ssss = "0.2.0"
