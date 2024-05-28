@@ -6,6 +6,7 @@ interface NewContainerProps {
   title: string;
   description: string;
   bgImage: string;
+  onClick: () => void; // Add onClick to the interface
 }
 
 const NewContainerBox = styled(Box, {
@@ -22,14 +23,15 @@ const NewContainerBox = styled(Box, {
   alignItems: 'center',
   color: 'white',
   borderRadius: '11px',
+  cursor: 'pointer', // Ensure the cursor changes to pointer
 }));
 
 const NewContainerText = styled(Box)({
   marginLeft: '10px',
 });
 
-const NewContainer: React.FC<NewContainerProps> = ({ title, description, bgImage }) => (
-  <NewContainerBox bgImage={bgImage}>
+const NewContainer: React.FC<NewContainerProps> = ({ title, description, bgImage, onClick }) => (
+  <NewContainerBox bgImage={bgImage} onClick={onClick}>
     <NewContainerText>
       <Typography fontSize={'13px'} fontWeight={'bold'}>
         {title}

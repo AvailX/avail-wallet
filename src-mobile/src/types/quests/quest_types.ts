@@ -8,6 +8,8 @@ export type Campaign = {
 	bg_image: string;
 	profile_image: string;
 	color: string;
+	points_image: string;
+	project_name: string;
 };
 
 type CampaignDescription = {
@@ -61,7 +63,7 @@ export type Reward = {
 	method: RewardMethod;
 };
 
-enum RewardMethod {
+export enum RewardMethod {
 	LuckyDraw = 'LuckyDraw',
 	LeaderBoard = 'LeaderBoard',
 	FCFS = 'FCFS',
@@ -90,7 +92,9 @@ export const testCampaign: Campaign[] = [{
 	box_image: 'https://i.imgur.com/IzWdTWR.png',
     bg_image: 'https://i.imgur.com/bPfHEJt.png',
     profile_image: 'https://i.imgur.com/gXfvvaJ.png',
-    color: '#00FFAA'
+    color: '#00FFAA',
+	points_image: 'https://i.imgur.com/vVySQ4o.png',
+    project_name: 'Avail',
 }];
 
 export const testPoints: PointsResponse[] = [{
@@ -116,3 +120,143 @@ export const testCollection: Collection = {
 	twitter_link: 'https://twitter.com/AvailWallet',
 	discord_link: 'https://discord.com/invite/avail',
 };
+
+
+// Sample quests data
+export const quests: Quest[] = [
+	{
+	  id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+	  title: "Mission 1",
+	  description: "Complete a transaction on the Avail Wallet.",
+	  display_image: "https://i.imgur.com/XhV1X68.png",
+	  tasks: [
+		{
+		  id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+		  title: "Complete a transaction on the Avail Wallet.",
+		  description: "Complete a transaction on the Avail Wallet.",
+		  transaction: true,
+		  program_id: "credits.aleo",
+		  function_id: "transfer_private",
+		  points: 100,
+		},
+	  ],
+	  reward: {
+		id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+		collection_name: "Disruptors",
+		amount: 100,
+		method: RewardMethod.FCFS,
+	  },
+	  expires_on: new Date(),
+	  created_on: new Date(),
+	  campaign_id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+	},
+	{
+	  id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+	  title: "Mission 2",
+	  description: "Complete a transaction on the Avail Wallet.",
+	  display_image: "https://i.imgur.com/XhV1X68.png",
+	  tasks: [
+		{
+		  id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+		  title: "Complete a transaction on the Avail Wallet.",
+		  description: "Complete a transaction on the Avail Wallet.",
+		  transaction: true,
+		  program_id: "credits.aleo",
+		  function_id: "transfer_private",
+		  points: 100,
+		},
+	  ],
+	  reward: {
+		id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+		collection_name: "Disruptors",
+		amount: 100,
+		method: RewardMethod.FCFS,
+	  },
+	  expires_on: new Date(),
+	  created_on: new Date(),
+	  campaign_id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+	},
+	{
+	  id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+	  title: "Mission 3",
+	  description: "Complete a transaction on the Avail Wallet.",
+	  display_image: "https://i.imgur.com/XhV1X68.png",
+	  tasks: [
+		{
+		  id: "1",
+		  title: "Complete a transaction on the Avail Wallet.",
+		  description: "Complete a transaction on the Avail Wallet.",
+		  transaction: true,
+		  program_id: "credits.aleo",
+		  function_id: "transfer_private",
+		  points: 100,
+		},
+	  ],
+	  reward: {
+		id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+		collection_name: "Disruptors",
+		amount: 100,
+		method: RewardMethod.FCFS,
+	  },
+	  expires_on: new Date(),
+	  created_on: new Date(),
+	  campaign_id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+	},
+	{
+	  id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+	  title: "Mission 4",
+	  description: "Complete a transaction on the Avail Wallet.",
+	  display_image: "https://i.imgur.com/XhV1X68.png",
+	  tasks: [
+		{
+		  id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+		  title: "Complete a transaction on the Avail Wallet.",
+		  description: "Complete a transaction on the Avail Wallet.",
+		  transaction: true,
+		  program_id: "credits.aleo",
+		  function_id: "transfer_private",
+		  dapp_url: "https://app.arcane.finance",
+		  points: 100,
+		},
+		{
+		  id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+		  title: "Complete a transaction on the Avail Wallet.",
+		  description: "Complete a transaction on the Avail Wallet.",
+		  transaction: true,
+		  program_id: "credits.aleo",
+		  function_id: "transfer_private",
+		  dapp_url: "https://app.arcane.finance",
+		  points: 100,
+		},
+		{
+		  id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+		  title: "Complete a transaction on the Avail Wallet.",
+		  description: "Complete a transaction on the Avail Wallet.",
+		  transaction: true,
+		  program_id: "credits.aleo",
+		  function_id: "transfer_private",
+		  dapp_url: "https://app.arcane.finance",
+		  points: 100,
+		},
+		{
+		  id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+		  title: "Complete a transaction on the Avail Wallet.",
+		  description: "Complete a transaction on the Avail Wallet.",
+		  transaction: true,
+		  program_id: "credits.aleo",
+		  function_id: "transfer_private",
+		  dapp_url: "https://app.arcane.finance",
+		  points: 100,
+		},
+	  ],
+	  reward: {
+		id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+		collection_name: "Disruptors",
+		amount: 100,
+		method: RewardMethod.FCFS,
+	  },
+	  expires_on: new Date(),
+	  created_on: new Date(),
+	  campaign_id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+	},
+  ];
