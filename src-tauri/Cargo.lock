@@ -422,7 +422,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "avail-common"
 version = "0.13.0"
-source = "git+https://github.com/availx/avail-lib#0b342478d8c94fb6d8f626fd42a7516b0dfa6f97?branch=feat/delegate-proving#8a318b7ad6d8bdbe055d4af82f4a01e2b6c85314"
+source = "git+https://github.com/availx/avail-lib#0b342478d8c94fb6d8f626fd42a7516b0dfa6f97?branch=feat/delegate-proving#86b7ac3544a2d91e3b3ede0c114a8ec912349448"
 dependencies = [
  "aes-gcm",
  "app_dirs2",
@@ -6138,6 +6138,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri-plugin-barcode-scanner"
+version = "2.0.0-beta.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "986d2cf46b6ddab09da036c4a367501b88142c2bb853764d8ecaa959a59ad888"
+dependencies = [
+ "log",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-plugin",
+ "thiserror",
+]
+
+[[package]]
 name = "tauri-plugin-deep-link"
 version = "2.0.0-beta.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7053,6 +7067,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin",
+ "tauri-plugin-barcode-scanner",
  "tauri-plugin-deep-link",
  "tauri-plugin-fs",
  "tauri-plugin-http",
