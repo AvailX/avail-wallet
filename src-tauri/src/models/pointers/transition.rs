@@ -103,6 +103,8 @@ impl<N: Network> TransitionPointer<N> {
             Some(self.transition_type.to_event_type()),
             None,
             None,
+            None,
+            None,
         );
 
         Ok(encrypted_data)
@@ -148,6 +150,8 @@ impl<N: Network> TransitionPointer<N> {
             None,
             None,
             Some(record.transition_type.to_event_type()),
+            None,
+            None,
             None,
             None,
         );
