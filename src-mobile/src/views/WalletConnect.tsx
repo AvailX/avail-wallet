@@ -19,8 +19,8 @@ import { Title2Text } from "../../../../avail-wallet/src/components/typography/t
 
 //imported from the mobile browser to aid editing
 import Browser from "../browser/mobile_browser";
-import MobileTab from "../layouts/MobileTab";
 import RequestModal from "../components/RequestModal";
+import BrowserLayout from "../layouts/BrowserLayout";
 
 const BrowserView: React.FC = () => {
   const location = useLocation();
@@ -98,14 +98,7 @@ const BrowserView: React.FC = () => {
   }
 
   return (
-    <Box
-      height="100vh"
-      sx={{
-        m: 0,
-        bgcolor: "#111111",
-        pt: 1,
-      }}
-    >
+    <BrowserLayout>
       <Box height="90vh">
         <ReAuthDialog
           isOpen={reauthDialogOpen}
@@ -118,8 +111,7 @@ const BrowserView: React.FC = () => {
           <RequestModal />
         </SwipeableEdgeDrawer>
       </Box>
-      <MobileTab />
-    </Box>
+    </BrowserLayout>
   );
 };
 
