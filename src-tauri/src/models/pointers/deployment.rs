@@ -183,6 +183,8 @@ impl<N: Network> DeploymentPointer<N> {
             Some(EventTypeCommon::Deploy),
             None,
             Some(self.state.clone()),
+            None,
+            None,
         );
         Ok(encrypted_data)
     }
@@ -216,6 +218,8 @@ impl<N: Network> DeploymentPointer<N> {
             Some(EventTypeCommon::Deploy),
             None,
             Some(record.state.clone()),
+            None,
+            None,
         );
         Ok(encrypted_data)
     }

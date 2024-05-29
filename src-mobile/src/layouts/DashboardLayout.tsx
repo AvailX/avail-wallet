@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { FC, PropsWithChildren } from "react";
 
 import anchorIcon from "../assets/anchor-icon.svg";
@@ -25,24 +25,32 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
   const navigate = useNavigate();
 
   return (
-    <Box height='100vh'>
+    <Box height='100vh' position='relative'>
       <Box position='absolute' width='100%' top={0}>
         <img src={splashImg} width='100%' />
       </Box>
+      {/* <Button onClick={() => navigate("/dashboard")}>Back</Button> */}
       <Box
         bgcolor='black'
         textAlign='center'
         color='#fff'
         pt='10vh'
-        height='90vh'
-        //position='fixed'
+        height='100%'
         width='100%'
         px={3}
         sx={{ overflowY: "auto" }}
       >
         {children}
       </Box>
-      <Box height='15vh' bgcolor='#2A2A2A' px={4} position='fixed' width='100%'>
+      <Box
+        height='10vh'
+        bgcolor='#2A2A2A'
+        px={4}
+        position='absolute'
+        width='100%'
+        bottom={0}
+        sx={{ position: "fixed" }}
+      >
         <Box
           width='100%'
           mx='auto'
@@ -58,7 +66,6 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
           alignItems='center'
           justifyContent='space-between'
           pt={1}
-          pb={2}
         >
           {MOBILE_TAB.map(({ icon, link }) => (
             <img

@@ -84,6 +84,8 @@ impl<N: Network> TransactionMessage<N> {
             None,
             None,
             None,
+            None,
+            None,
         );
 
         Ok(encrypted_data)
