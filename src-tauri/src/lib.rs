@@ -7,11 +7,10 @@ use crate::helpers::mobile_init::init_user_mobile;
 use crate::helpers::mobile_init::test_snarkvm_mobile;
 use crate::helpers::mobile_init::test_snarkvm_mobile_deploy;
 use crate::helpers::mobile_init::test_transfer_public_mobile;
-use crate::services::record_handling::utils::get_all_nft_data;
-use crate::services::record_handling::{
-    scan_utils::{handle_unconfirmed_transactions, scan_public_transitions},
-    utils::get_all_nft_data,
+use crate::services::record_handling::scan_utils::{
+    handle_unconfirmed_transactions, scan_public_transitions,
 };
+use crate::services::record_handling::utils::get_all_nft_data;
 use log::LevelFilter;
 use log::{error, info};
 use services::account::generation::create_seed_phrase_wallet;
