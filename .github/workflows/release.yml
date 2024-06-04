@@ -148,6 +148,7 @@ jobs:
           MAINNET_API_OBSCURA: ""
           DEVNET_API_OBSCURA: ""
           TAURI_APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          OBSCURA_SDK: ${{ secrets.OBSCURA_SDK}}
         with:
           tauriScript: cargo tauri ios
           # This is required for Apple ARM chips and license bundling

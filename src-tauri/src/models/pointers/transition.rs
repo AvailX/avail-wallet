@@ -156,8 +156,8 @@ impl<N: Network> TransitionPointer<N> {
             Some(record.transition_type.to_event_type()),
             None,
             None,
-            None,
-            None,
+            Some(record.transaction_id.to_string()),
+            Some(record.id.to_string()),
         );
         Ok(encrypted_data)
     }

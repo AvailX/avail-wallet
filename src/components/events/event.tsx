@@ -36,6 +36,11 @@ export const formatDate = (date: Date) => {
 export const parseProgramId = (programId: string) => {
 	// An example program id is "program.aleo", the goal of parsing it is to remove the .aleo
 	// and turn the returned string to all caps
+
+	if (programId.startsWith('"') && programId.endsWith('"')) {
+		programId = programId.slice(1, -1);
+	}
+
 	const parts = programId.split('.');
 	if (parts[0] == 'credits') {
 		return 'ALEO';

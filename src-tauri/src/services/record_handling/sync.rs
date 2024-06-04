@@ -18,13 +18,17 @@ use crate::{
             get_encrypted_data_to_backup, get_encrypted_data_to_update,
             update_encrypted_data_synced_on_by_id,
         },
-        persistent_storage::get_address_string,
+        persistent_storage::{get_address_string, update_last_sync},
         storage_api::records::{encrypt_and_store_records, update_records_spent_backup},
     },
 };
 
 use std::str::FromStr;
 
+use crate::services::local_storage::session::view::VIEWSESSION;
+use crate::services::record_handling::scan_utils::{
+    get_records_new, get_sync_txn_params, handle_unconfirmed_transactions,
+};
 use avail_common::{
     errors::{AvailError, AvailErrorType, AvailResult},
     models::{encrypted_data::EncryptedData, network::SupportedNetworks},
@@ -35,7 +39,7 @@ use crate::services::local_storage::persistent_storage::{
     update_last_backup_sync,
 };
 
-use super::{records::get_records, utils::sync_transaction};
+use super::utils::sync_transaction;
 
 /// processes transactions into record and transition pointers and stores them
 fn process_transaction<N: Network>(
@@ -47,7 +51,7 @@ fn process_transaction<N: Network>(
 
     if let Some(transaction) = transaction {
         println!("Transaction verified");
-        let (_, record_pointers, encrypted_transitions, _) = sync_transaction(
+        let (record_pointers, encrypted_transitions, _) = sync_transaction(
             &transaction,
             transaction_message.confirmed_height(),
             timestamp,
@@ -168,40 +172,20 @@ pub async fn blocks_sync(height: u32, window: Window) -> AvailResult<bool> {
 
     print!("From Last Sync: {:?} to height: {:?}", last_sync, height);
 
-    /*
-    let task = tokio_rayon::spawn( move || {
-        let found_flag = match SupportedNetworks::from_str(network.as_str())? {
-            SupportedNetworks::Testnet3 => {
-                get_records::<Testnet3>(last_sync, height, Some(window))?
-            }
-            _ => {
-                return Err(AvailError::new(
-                    AvailErrorType::Internal,
-                    "Invalid Network".to_string(),
-                    "Invalid Network".to_string(),
-                ));
-            }
-        };
-
-        Ok(found_flag)
-    });
-
-    let result = task.await;
-
-    let found_flag = match result {
-        Ok(res) => res,
-        Err(_) => {
-            return Err(AvailError::new(
-                AvailErrorType::Internal,
-                "Error scanning Aleo blockchain".to_string(),
-                "Error scanning Aleo blockchain".to_string(),
-            ));
-        }
-    };
-    */
-
     let found_flag = match SupportedNetworks::from_str(network.as_str())? {
-        SupportedNetworks::Testnet3 => get_records::<Testnet3>(last_sync, height, Some(window))?,
+        SupportedNetworks::Testnet3 => {
+            type N = Testnet3;
+
+            let view_key = VIEWSESSION.get_instance::<N>()?;
+
+            let timerx = std::time::Instant::now();
+            let records = get_records_new::<N>(last_sync, height).await?;
+            println!("Time elapsed in getting records is: {:?}", timerx.elapsed());
+
+            let res = get_sync_txn_params::<N>(records, Some(window)).await?;
+
+            res
+        }
         _ => {
             return Err(AvailError::new(
                 AvailErrorType::Internal,
@@ -211,6 +195,7 @@ pub async fn blocks_sync(height: u32, window: Window) -> AvailResult<bool> {
         }
     };
 
+    update_last_sync(height)?;
     print!("Scan Complete");
 
     Ok(found_flag)
@@ -283,41 +268,27 @@ pub async fn sync_backup() -> AvailResult<()> {
 
 pub async fn blocks_sync_test(height: u32) -> AvailResult<bool> {
     let network = get_network()?;
-    let last_sync = 1720731u32;
+    let last_sync = get_last_sync()?;
 
-    print!("From Last Sync: {:?} to height: {:?}", last_sync, height);
+    match SupportedNetworks::from_str(network.as_str())? {
+        SupportedNetworks::Testnet3 => {
+            type N = Testnet3;
 
-    let task = tokio_rayon::spawn(move || {
-        let found_flag = match SupportedNetworks::from_str(network.as_str())? {
-            SupportedNetworks::Testnet3 => get_records::<Testnet3>(last_sync, 1764731u32, None)?,
-            _ => {
-                return Err(AvailError::new(
-                    AvailErrorType::Internal,
-                    "Invalid Network".to_string(),
-                    "Invalid Network".to_string(),
-                ));
-            }
-        };
+            let view_key = std::env::var("VIEW_KEY").unwrap();
+            VIEWSESSION.set_view_session(&view_key).unwrap();
 
-        Ok(found_flag)
-    });
+            let records = get_records_new::<N>(last_sync, height).await.unwrap();
 
-    let result = task.await;
+            let res = get_sync_txn_params::<N>(records, None).await.unwrap();
 
-    let found_flag = match result {
-        Ok(res) => res,
-        Err(_) => {
-            return Err(AvailError::new(
-                AvailErrorType::Internal,
-                "Error scanning Aleo blockchain".to_string(),
-                "Error scanning Aleo blockchain".to_string(),
-            ));
+            Ok(res)
         }
-    };
-
-    print!("Scan Complete {}", found_flag);
-
-    Ok(found_flag)
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Invalid Network".to_string(),
+            "Invalid Network".to_string(),
+        )),
+    }
 }
 
 #[cfg(test)]
@@ -492,7 +463,7 @@ mod test {
     async fn test_scan() {
         //test_setup_prerequisites();
         VIEWSESSION
-            .set_view_session("AViewKey1tLudtDDJQBBcHBnBLaHTJVCdyBeNgwks9oYivxBSeegZ")
+            .set_view_session("AViewKey1h4qXQ8kP2JT7Vo7pBuhtMrHz7R81RJUHLc2LTQfrCt3R")
             .unwrap();
 
         let api_client = setup_client::<Testnet3>().unwrap();
