@@ -71,7 +71,8 @@ colored = "2.1.0"
 cargo-xcode = "1.10.0"
 
 [target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
-security-framework = { git = "https://github.com/AvailX/rust-security-framework" }app_dirs = { package = "app_dirs2", version = "2.5" }
+security-framework = { git = "https://github.com/AvailX/rust-security-framework" }
+app_dirs = { package = "app_dirs2", version = "2.5" }
 security-framework-sys = { git = "https://github.com/AvailX/rust-security-framework" }
 core-foundation = "0.9.3"
 tid-rs = { git = "https://github.com/Zack-Xb/tid-rs" }
