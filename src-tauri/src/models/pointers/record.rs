@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use snarkvm::prelude::{Address, Field, FromStr, Network, Plaintext, Record};
+use snarkvm::{
+    ledger::transaction,
+    prelude::{Address, Field, FromStr, Network, Plaintext, Record},
+};
 use uuid::Uuid;
 
 use avail_common::{
@@ -61,7 +64,8 @@ impl<N: Network> AvailRecord<N> {
         let id = Uuid::new_v4();
         let flavour = EncryptedDataTypeCommon::Record;
         let created_at = chrono::Utc::now();
-
+        let transaction_id = self.pointer.transaction_id.to_string();
+        let transition_id = self.pointer.transition_id.to_string();
         let encrypted_data = EncryptedData::new(
             Some(id),
             encrypt_for.to_string(),
@@ -80,6 +84,8 @@ impl<N: Network> AvailRecord<N> {
             None,
             Some(self.metadata.nonce.clone()),
             None,
+            Some(transaction_id),
+            Some(transition_id),
         );
 
         Ok(encrypted_data)
@@ -99,6 +105,8 @@ impl<N: Network> AvailRecord<N> {
             Utc,
         );
         let address = get_address::<N>()?;
+        let transaction_id = record.pointer.transaction_id.to_string();
+        let transition_id = record.pointer.transition_id.to_string();
         let encrypted_data = EncryptedData::new(
             encrypted_data_record.id,
             address.to_string(),
@@ -117,6 +125,8 @@ impl<N: Network> AvailRecord<N> {
             None,
             Some(record.metadata.nonce.clone()),
             None,
+            Some(transaction_id),
+            Some(transition_id),
         );
         Ok(encrypted_data)
     }

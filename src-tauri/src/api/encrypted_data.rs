@@ -710,6 +710,8 @@ mod encrypted_data_api_tests {
             None,
             None,
             None,
+            None,
+            None,
         );
 
         let updated_encrypted_record = EncryptedData::new(
@@ -727,6 +729,8 @@ mod encrypted_data_api_tests {
             "testnet3".to_string(),
             Some("record_name".to_string()),
             Some(false),
+            None,
+            None,
             None,
             None,
             None,
@@ -762,6 +766,8 @@ mod encrypted_data_api_tests {
             None,
             None,
             None,
+            None,
+            None,
         );
 
         post_encrypted_data(vec![encrypted_record.clone()])
@@ -794,6 +800,8 @@ mod encrypted_data_api_tests {
             None,
             None,
             None,
+            None,
+            None,
         );
 
         let res = post_encrypted_data(vec![encrypted_record]).await.unwrap();
@@ -819,6 +827,8 @@ mod encrypted_data_api_tests {
             "testnet3".to_string(),
             Some("record_name".to_string()),
             Some(false),
+            None,
+            None,
             None,
             None,
             None,

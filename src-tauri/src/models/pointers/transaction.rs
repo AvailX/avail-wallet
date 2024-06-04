@@ -264,6 +264,14 @@ impl<N: Network> TransactionPointer<N> {
             .collect::<Vec<String>>();
         let json_program_ids = serde_json::to_string(&program_ids)?;
         let json_function_ids = serde_json::to_string(&function_ids)?;
+        let transaction_id = match self.transaction_id {
+            Some(id) => id.to_string(),
+            None => Err(AvailError::new(
+                AvailErrorType::Internal,
+                "No transaction id found".to_string(),
+                "No Transaction Id Found".to_string(),
+            ))?,
+        };
 
         let encrypted_data = EncryptedData::new(
             Some(id),
@@ -283,6 +291,8 @@ impl<N: Network> TransactionPointer<N> {
             Some(self.event_type.clone()),
             None,
             Some(self.state.clone()),
+            Some(transaction_id),
+            None,
         );
 
         Ok(encrypted_data)
@@ -313,6 +323,14 @@ impl<N: Network> TransactionPointer<N> {
             .collect::<Vec<String>>();
         let json_program_ids = serde_json::to_string(&program_ids)?;
         let json_function_ids = serde_json::to_string(&function_ids)?;
+        let transaction_id = match record.transaction_id {
+            Some(id) => id.to_string(),
+            None => Err(AvailError::new(
+                AvailErrorType::Internal,
+                "No transaction id found".to_string(),
+                "No Transaction Id Found".to_string(),
+            ))?,
+        };
 
         let encrypted_data = EncryptedData::new(
             Some(id),
@@ -332,6 +350,8 @@ impl<N: Network> TransactionPointer<N> {
             Some(record.event_type.clone()),
             None,
             Some(record.state.clone()),
+            Some(transaction_id),
+            None,
         );
         Ok(encrypted_data)
     }
