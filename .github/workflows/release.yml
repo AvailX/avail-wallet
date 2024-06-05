@@ -150,7 +150,8 @@ jobs:
             APPLE_DEVELOPMENT_TEAM="WTK34UZPZK" cargo tauri ios init
       - name: Copy Export Options Plist
         run: cp .github/ios/ExportOptions.plist src-tauri/gen/apple/ExportOptions.plist
-
+      - name: TAURI INFO
+        run: cargo tauri info
       - uses: tauri-apps/tauri-action@v0
         env:
           # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
