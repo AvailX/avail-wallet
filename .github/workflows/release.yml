@@ -171,7 +171,7 @@ jobs:
           # TAURI_APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
           OBSCURA_SDK: ${{ secrets.OBSCURA_SDK}}
         with:
-          tauriScript: APPLE_DEVELOPMENT_TEAM="WTK34UZPZK" cargo tauri ios
+          tauriScript: cargo tauri ios
           # This is required for Apple ARM chips and license bundling
           args: "${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64' || matrix.platform == 'macos_x86-latest' && ' --target x86_64' || '' }} --config {\"bundle\":{\"licenseFile\":\"${{ matrix.platform == 'windows-latest' && '..\\\\EULA.rtf' || '../EULA.txt' }}\"}}"
           distPath: dist
