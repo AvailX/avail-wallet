@@ -32,6 +32,8 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
         color='#fff'
         pt='10vh'
         height='90vh'
+        //position='fixed'
+        width='100%'
         px={3}
         sx={{ overflowY: "auto" }}
       >
@@ -55,8 +57,8 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
           pt={1}
           pb={2}
         >
-          {MOBILE_TAB.map(({ icon }) => (
-            <img src={icon} />
+          {MOBILE_TAB.map(({ icon, link }) => (
+            <img src={icon} key={link} />
           ))}
         </Box>
       </Box>
