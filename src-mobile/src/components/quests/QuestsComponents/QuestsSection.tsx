@@ -1,14 +1,13 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import NavigateNextOutlinedIcon from "@mui/icons-material/NavigateNextOutlined";
-import { Dapp } from "src/assets/dapps/dapps";
+import { Campaign } from "../../../types/quests/quest_types";
 
 interface DappsSectionProps {
-  title: string;
-  dapps: Dapp[];
+  campaign: Campaign[];
 }
 
-const DappsSection: React.FC<DappsSectionProps> = ({ title, dapps }) => {
+const QuestsSection: React.FC<DappsSectionProps> = ({  campaign }) => {
   return (
     <Box
       sx={{
@@ -40,7 +39,7 @@ const DappsSection: React.FC<DappsSectionProps> = ({ title, dapps }) => {
           }}
         >
           <img
-            src={dapps[0].img}
+            src={campaign[0].box_image}
             alt="Connected Dapp"
             style={{ width: "100%", height: "auto" }}
           />
@@ -57,13 +56,14 @@ const DappsSection: React.FC<DappsSectionProps> = ({ title, dapps }) => {
             variant="body1"
             sx={{ fontSize: "17px", fontWeight: "normal" }}
           >
-            Arcane Finance {/* Use the 'name' property of the 'dapp' prop */}
+            {campaign[0].title}
+            {/* Use the 'name' property of the 'dapp' prop */}
           </Typography>
           <Typography
             variant="body1"
             sx={{ fontSize: "10px", fontWeight: "normal" }}
           >
-            Decentralized Exchange on Aleo
+            {campaign[0].subtitle}
           </Typography>
         </Box>
       </Box>
@@ -78,4 +78,5 @@ const DappsSection: React.FC<DappsSectionProps> = ({ title, dapps }) => {
   );
 };
 
-export default DappsSection;
+export default QuestsSection;
+ 

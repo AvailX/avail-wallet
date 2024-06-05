@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Box, Typography } from '@mui/material';
 import img from '../../assets/connected-dapp.svg';
-import { type Dapp } from '../../types/dapps/types';
+// import { type Dapp } from '../../types/dapps/types';
+import { Dapp } from "src/assets/dapps/dapps";
 
 import { useNavigate } from 'react-router-dom';
 import { PropTypes } from '@mui/material';

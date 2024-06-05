@@ -1,29 +1,29 @@
 import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import DashboardLayout from "../../layouts/DashboardLayout";
-import DappsAppBar from "../../components/dapps/DappsAppBar";
 import { Dapp } from "../../types/dapps/types";
 import ConnectedDappsGrid from "../../components/dapps/ConnectedDappsGrid";
 import HorizontalScrollContainer from "../../components/dapps/HorizontalScrollContainer";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import img from "../assets/connected-dapp.svg";
-import NavigateNextOutlinedIcon from "@mui/icons-material/NavigateNextOutlined";
 import DappsSection from "../../components/dapps/DappsSection";
-import { displayDapps, dapps } from "../../assets/dapps/dapps";
+import QuestsAppBar from "../../components/quests/QuestsComponents/QuestsAppBar";
+import { Campaign } from "../../types/quests/quest_types";
+import QuestsAppBarScroll from "../../components/quests/QuestsComponents/QuestsAppBarScroll";
+import QuestsSection from "../../components/quests/QuestsComponents/QuestsSection";
+import ConnectedQuestsGrid from "../../components/quests/QuestsComponents/QuestsGrid";
 
-// interface DappsPageProps {
-//   dapps: Dapp[];
-// }
+interface QuestsPageProps {
+  campaign: Campaign[];
+}
 
-// const DappsPage: React.FC<DappsPageProps> = ({ dapps }) => {
-const DappsPage = () => {
+const QuestsScreen: React.FC<QuestsPageProps> = ({ campaign }) => {
   const renderHorizontalScrollContainers = () => {
-    return dapps.map((dapp, index) => (
-      <HorizontalScrollContainer key={index} dapp={dapp} />
+    return campaign.map((campaign, index) => (
+      <QuestsAppBarScroll key={index} campaign={campaign} />
     ));
   };
-  const [activeTab, setActiveTab] = useState("explore");
+  const [activeTab, setActiveTab] = useState("quests");
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -55,7 +55,7 @@ const DappsPage = () => {
 
   return (
     <DashboardLayout>
-      <DappsAppBar activeTab={activeTab} onTabChange={handleTabChange} />
+      <QuestsAppBar activeTab={activeTab} onTabChange={handleTabChange} />
 
       <Box
         sx={{
@@ -68,8 +68,8 @@ const DappsPage = () => {
           overflowY: "auto", // Enable vertical scrolling if content exceeds the container height
         }}
       >
-        {/* Explore screen */}
-        {activeTab === "explore" && (
+        {/* Quests screen */}
+        {activeTab === "quests" && (
           <Box>
             <Carousel
               swipeable={true}
@@ -87,7 +87,7 @@ const DappsPage = () => {
               {renderHorizontalScrollContainers()}
             </Carousel>
 
-            {/* Exchange Section */}
+            {/* Quests Ending Soon Section */}
             <Box>
               {/* Title */}
               <Typography
@@ -96,7 +96,7 @@ const DappsPage = () => {
                 sx={{ color: "#ffffff", fontWeight: "bold", textAlign: "left" }}
               >
                 {" "}
-                Exchanges
+                <span style={{ color: "#01f0a0" }}> Quests</span> Ending Soon!
               </Typography>
 
               {/* Container for the exchange item */}
@@ -105,7 +105,7 @@ const DappsPage = () => {
                 sx={{
                   position: "relative",
                   width: "340px",
-                  maxHeight: `${48 * dapps.length}px`, // Calculate the height dynamically based on the number of items
+                  maxHeight: `${48 * campaign.length}px`, // Calculate the height dynamically based on the number of items
                   overflowX: "auto",
                   background: "#2A2A2A",
                   padding: "10px",
@@ -116,9 +116,9 @@ const DappsPage = () => {
                 }}
               >
                 {/*This is the Row section of the container. placed at the bottom */}
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
+                <QuestsSection campaign={campaign} />
+                <QuestsSection campaign={campaign} />
+                <QuestsSection campaign={campaign} />
               </Box>
             </Box>
 
@@ -131,7 +131,7 @@ const DappsPage = () => {
                 sx={{ color: "#ffffff", fontWeight: "bold", textAlign: "left" }}
               >
                 {" "}
-                Staking
+                Newest <span style={{ color: "#01f0a0" }}> Quests</span>
               </Typography>
 
               {/* Container for the exchange item */}
@@ -149,24 +149,54 @@ const DappsPage = () => {
                   justifyContent: "flex-end",
                 }}
               >
-                {/*This is the Row section of the container. placed at the bottom */}
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
+                <QuestsSection campaign={campaign} />
+                <QuestsSection campaign={campaign} />
+              </Box>
+            </Box>
+
+            {/* Another container */}
+            <Box>
+              {/* Title */}
+              <Typography
+                mt="22px"
+                fontSize={25}
+                sx={{ color: "#ffffff", fontWeight: "bold", textAlign: "left" }}
+              >
+                {" "}
+                Completed <span style={{ color: "#01f0a0" }}> Quests</span>
+              </Typography>
+
+              {/* Container for the exchange item */}
+
+              <Box
+                sx={{
+                  position: "relative",
+                  width: "340px",
+                  overflowX: "auto",
+                  background: "#2A2A2A",
+                  padding: "10px",
+                  borderRadius: "22px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <QuestsSection campaign={campaign} />
               </Box>
             </Box>
           </Box>
         )}
 
         {/* Connected screen */}
-        {activeTab === "connected" && (
-          <ConnectedDappsGrid dapps={dapps} activeTab="connected" />
+        {activeTab === "launch-a-quest" && (
+          <ConnectedQuestsGrid
+            campaigns={campaign}
+            activeTab="launch-a-quest"
+          />
         )}
       </Box>
     </DashboardLayout>
   );
 };
 
-export default DappsPage;
+export default QuestsScreen;

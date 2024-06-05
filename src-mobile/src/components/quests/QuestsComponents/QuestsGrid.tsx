@@ -1,16 +1,18 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-// import { Dapp } from "../../types/dapps/types";
-import { Dapp } from "src/assets/dapps/dapps";
 
 import { useNavigate } from "react-router-dom";
+import { Campaign } from "../../../types/quests/quest_types";
 
-interface DappsGridView {
-  dapps: Dapp[];
+interface QuestsGridView {
+  campaigns: Campaign[];
   activeTab: string;
 }
 
-const ConnectedDappsGrid: React.FC<DappsGridView> = ({ dapps, activeTab }) => {
+const ConnectedQuestsGrid: React.FC<QuestsGridView> = ({
+  campaigns,
+  activeTab,
+}) => {
   return (
     <Box
       sx={{
@@ -21,12 +23,12 @@ const ConnectedDappsGrid: React.FC<DappsGridView> = ({ dapps, activeTab }) => {
       }}
     >
       {activeTab === "connected" &&
-        dapps.map((dapp, index) => (
+        campaigns.map((campaign, index) => (
           <Box
             key={index}
             onClick={() => {
-              const navigate = useNavigate();
-              navigate("browser", { state: dapp.url });
+              //   const navigate = useNavigate();
+              //   navigate("browser", { state: campaign.url? });
             }}
             sx={{
               display: "flex",
@@ -52,13 +54,13 @@ const ConnectedDappsGrid: React.FC<DappsGridView> = ({ dapps, activeTab }) => {
               }}
             >
               <img
-                src={dapp.img}
+                src={campaign.profile_image}
                 alt="Connected Dapp"
                 style={{ width: "100%", height: "auto" }} // Ensure image fits inside box
               />
             </Box>
             <Typography sx={{ color: "#B0B0B0", fontSize: "11px" }}>
-              {dapp.name}
+              {campaign.title}
             </Typography>
           </Box>
         ))}
@@ -66,4 +68,4 @@ const ConnectedDappsGrid: React.FC<DappsGridView> = ({ dapps, activeTab }) => {
   );
 };
 
-export default ConnectedDappsGrid;
+export default ConnectedQuestsGrid;

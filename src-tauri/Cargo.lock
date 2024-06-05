@@ -6138,6 +6138,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri-plugin-barcode-scanner"
+version = "2.0.0-beta.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "986d2cf46b6ddab09da036c4a367501b88142c2bb853764d8ecaa959a59ad888"
+dependencies = [
+ "log",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-plugin",
+ "thiserror",
+]
+
+[[package]]
 name = "tauri-plugin-deep-link"
 version = "2.0.0-beta.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7053,6 +7067,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin",
+ "tauri-plugin-barcode-scanner",
  "tauri-plugin-deep-link",
  "tauri-plugin-fs",
  "tauri-plugin-http",

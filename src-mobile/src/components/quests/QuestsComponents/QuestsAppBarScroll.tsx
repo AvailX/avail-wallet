@@ -1,32 +1,36 @@
-import React from "react";
 import { Box, Typography } from "@mui/material";
-import NavigateNextOutlinedIcon from "@mui/icons-material/NavigateNextOutlined";
-import { Dapp } from "src/assets/dapps/dapps";
+import img from "../../../assets/connected-dapp.svg";
+import { Campaign } from "../../../types/quests/quest_types";
 
-interface DappsSectionProps {
-  title: string;
-  dapps: Dapp[];
+interface QuestsScrollContainerProps {
+  campaign: Campaign; // Define a prop 'dapp' of type 'Dapp'
 }
 
-const DappsSection: React.FC<DappsSectionProps> = ({ title, dapps }) => {
+const QuestsScrollContainer: React.FC<QuestsScrollContainerProps> = ({
+  campaign,
+}) => {
   return (
     <Box
       sx={{
-        height: "40px",
+        position: "relative", // Set position to relative
+        width: "340px",
+        height: "165px",
+        overflowX: "auto", // Enable horizontal scrolling
+        background:
+          "linear-gradient(to right, #0038FF 0%,  #000000 50%, #0038FF 100%)",
+        padding: "10px",
+        borderRadius: "22px",
         display: "flex",
-        justifyContent: "space-between", // Align items with space between
-        mt: "10px", // Add margin top
-        mb: "10px",
+        flexDirection: "column",
+        justifyContent: "flex-end", // Align content to the bottom
       }}
     >
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          mr: "7px", // Add margin right
         }}
       >
-        {/*Image */}
         <Box
           sx={{
             justifyContent: "center",
@@ -40,12 +44,12 @@ const DappsSection: React.FC<DappsSectionProps> = ({ title, dapps }) => {
           }}
         >
           <img
-            src={dapps[0].img}
+            src={img}
             alt="Connected Dapp"
             style={{ width: "100%", height: "auto" }}
           />
         </Box>
-        {/* Text */}
+
         <Box
           sx={{
             display: "flex",
@@ -57,25 +61,19 @@ const DappsSection: React.FC<DappsSectionProps> = ({ title, dapps }) => {
             variant="body1"
             sx={{ fontSize: "17px", fontWeight: "normal" }}
           >
-            Arcane Finance {/* Use the 'name' property of the 'dapp' prop */}
+            {campaign.title} {/* Use the 'name' property of the 'dapp' prop */}
           </Typography>
           <Typography
             variant="body1"
             sx={{ fontSize: "10px", fontWeight: "normal" }}
           >
-            Decentralized Exchange on Aleo
+            {campaign.subtitle}{" "}
+            {/* Use the 'description' property of the 'dapp' prop */}
           </Typography>
         </Box>
-      </Box>
-      <Box
-        sx={{
-          marginRight: "19px",
-        }}
-      >
-        <NavigateNextOutlinedIcon></NavigateNextOutlinedIcon>
       </Box>
     </Box>
   );
 };
 
-export default DappsSection;
+export default QuestsScrollContainer;

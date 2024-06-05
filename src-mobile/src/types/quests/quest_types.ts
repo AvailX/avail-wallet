@@ -95,7 +95,39 @@ export const testCampaign: Campaign[] = [{
     color: '#00FFAA',
 	points_image: 'https://i.imgur.com/vVySQ4o.png',
     project_name: 'Avail',
-}];
+},{
+	id: '1',
+	title: 'Disruptors',
+	subtitle: 'Avail - Privacy unlocked.',
+	description: {
+		part1: 'Complete Weekly',
+		main: 'Quests',
+		part2: 'Win Disruptors',
+	},
+	inner_description: 'The Disruptors are the official NFT of the Avail Wallet.',
+	box_image: 'https://i.imgur.com/IzWdTWR.png',
+    bg_image: 'https://i.imgur.com/bPfHEJt.png',
+    profile_image: 'https://i.imgur.com/gXfvvaJ.png',
+    color: '#00FFAA',
+	points_image: 'https://i.imgur.com/vVySQ4o.png',
+    project_name: 'Avail',
+}, {
+	id: '1',
+	title: 'Disruptors',
+	subtitle: 'Avail - Privacy unlocked.',
+	description: {
+		part1: 'Complete Weekly',
+		main: 'Quests',
+		part2: 'Win Disruptors',
+	},
+	inner_description: 'The Disruptors are the official NFT of the Avail Wallet.',
+	box_image: 'https://i.imgur.com/IzWdTWR.png',
+    bg_image: 'https://i.imgur.com/bPfHEJt.png',
+    profile_image: 'https://i.imgur.com/gXfvvaJ.png',
+    color: '#00FFAA',
+	points_image: 'https://i.imgur.com/vVySQ4o.png',
+    project_name: 'Avail',
+},];
 
 export const testPoints: PointsResponse[] = [{
 	points: 100,
