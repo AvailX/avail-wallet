@@ -102,23 +102,22 @@ const DappsPage = () => {
               {/* Container for the exchange item */}
 
               <Box
-                sx={{
-                  position: "relative",
-                  width: "340px",
-                  maxHeight: `${48 * dapps.length}px`, // Calculate the height dynamically based on the number of items
-                  overflowX: "auto",
-                  background: "#2A2A2A",
-                  padding: "10px",
-                  borderRadius: "22px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                }}
+               sx={{
+                position: "relative",
+                width: "340px",
+                overflowX: "auto",
+                background: "#2A2A2A",
+                padding: "10px",
+                borderRadius: "22px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-end",
+              }}
               >
                 {/*This is the Row section of the container. placed at the bottom */}
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
+                {dapps.map((dapp, index) => (
+                  <DappsSection title="Exchanges" dapp={dapp} />
+                ))}
               </Box>
             </Box>
 
@@ -150,11 +149,9 @@ const DappsPage = () => {
                 }}
               >
                 {/*This is the Row section of the container. placed at the bottom */}
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
+                {dapps.map((dapp, index) => (
+                  <DappsSection title="Exchanges" dapp={dapp} />
+                ))}
               </Box>
             </Box>
           </Box>

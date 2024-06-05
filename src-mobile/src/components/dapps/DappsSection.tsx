@@ -5,17 +5,17 @@ import { Dapp } from "src/assets/dapps/dapps";
 
 interface DappsSectionProps {
   title: string;
-  dapps: Dapp[];
+  dapp: Dapp;
 }
 
-const DappsSection: React.FC<DappsSectionProps> = ({ title, dapps }) => {
+const DappsSection: React.FC<DappsSectionProps> = ({ title, dapp }) => {
   return (
     <Box
       sx={{
-        height: "40px",
+        height: "52px",
         display: "flex",
-        justifyContent: "space-between", // Align items with space between
-        mt: "10px", // Add margin top
+        justifyContent: "space-between",
+        mt: "10px",
         mb: "10px",
       }}
     >
@@ -23,7 +23,8 @@ const DappsSection: React.FC<DappsSectionProps> = ({ title, dapps }) => {
         sx={{
           display: "flex",
           alignItems: "center",
-          mr: "7px", // Add margin right
+          mr: "7px",
+          flex: 15,
         }}
       >
         {/*Image */}
@@ -32,17 +33,26 @@ const DappsSection: React.FC<DappsSectionProps> = ({ title, dapps }) => {
             justifyContent: "center",
             alignItems: "center",
             width: "33px",
+            minWidth: "33px",
+            maxWidth: "33px",
             height: "33px",
-            borderRadius: "10px",
+            maxHeight: "33px",
+            minHeight: "33px",
+            borderRadius: "5px",
             overflow: "hidden",
             backgroundColor: "#000000",
             marginRight: "7px",
           }}
         >
           <img
-            src={dapps[0].img}
+            src={dapp.img}
             alt="Connected Dapp"
-            style={{ width: "100%", height: "auto" }}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center"
+            }}
           />
         </Box>
         {/* Text */}
@@ -51,25 +61,50 @@ const DappsSection: React.FC<DappsSectionProps> = ({ title, dapps }) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
+            right: "unset",
           }}
         >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "flex-end",
+            }}
+          >
+            <Typography
+              variant="body1"
+              sx={{ fontSize: "15px", fontWeight: "normal" }}
+            >
+              {dapp.name}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{ fontSize: "11px", ml: "8px", color: "lightgray" }}
+            >
+              {`[${dapp.tags}]`}
+            </Typography>
+          </Box>
           <Typography
             variant="body1"
-            sx={{ fontSize: "17px", fontWeight: "normal" }}
+            sx={{
+              fontSize: "10px",
+              textAlign: "left",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              maxWidth: "100%",
+            }}
           >
-            Arcane Finance {/* Use the 'name' property of the 'dapp' prop */}
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{ fontSize: "10px", fontWeight: "normal" }}
-          >
-            Decentralized Exchange on Aleo
+            {dapp.description}
           </Typography>
         </Box>
       </Box>
       <Box
         sx={{
           marginRight: "19px",
+          flex: 1,
         }}
       >
         <NavigateNextOutlinedIcon></NavigateNextOutlinedIcon>
