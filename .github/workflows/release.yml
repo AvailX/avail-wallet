@@ -129,23 +129,23 @@ jobs:
             cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Initialise iOS
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_CERTIFICATE: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-          API: ${{ secrets.AVAIL_API_URL}}
-          DEV_NODE_IP: ${{ secrets.DEV_NODE_IP}}
-          TESTNET_API_OBSCURA: ${{ secrets.TESTNET_API_OBSCURA}}
-          MAINNET_API_OBSCURA: ""
-          DEVNET_API_OBSCURA: ""
-          TAURI_APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        # env:
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # APPLE_CERTIFICATE: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          # APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          # APPLE_ID: ${{ secrets.APPLE_ID }}
+          # APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          # TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          # TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          # API: ${{ secrets.AVAIL_API_URL}}
+          # DEV_NODE_IP: ${{ secrets.DEV_NODE_IP}}
+          # TESTNET_API_OBSCURA: ${{ secrets.TESTNET_API_OBSCURA}}
+          # MAINNET_API_OBSCURA: ""
+          # DEVNET_API_OBSCURA: ""
+          # TAURI_APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
         run : |
             cargo tauri ios init
       - name: Copy Export Options Plist
@@ -153,22 +153,22 @@ jobs:
 
       - uses: tauri-apps/tauri-action@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_CERTIFICATE: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          # APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
-          # TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          # TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # APPLE_CERTIFICATE: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          # # APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          # APPLE_ID: ${{ secrets.APPLE_ID }}
+          # APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          # # TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          # # TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           API: ${{ secrets.AVAIL_API_URL}}
           DEV_NODE_IP: ${{ secrets.DEV_NODE_IP}}
           TESTNET_API_OBSCURA: ${{ secrets.TESTNET_API_OBSCURA}}
           MAINNET_API_OBSCURA: ""
           DEVNET_API_OBSCURA: ""
-          TAURI_APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          # TAURI_APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
           OBSCURA_SDK: ${{ secrets.OBSCURA_SDK}}
         with:
           tauriScript: cargo tauri ios
