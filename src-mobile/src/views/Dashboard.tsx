@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
@@ -19,11 +19,12 @@ import React, { useState } from "react";
 import ActivityDetails from "../components/ActivityDetails";
 import AsssetDisplay from "../components/AsssetDisplay";
 import DashboardCarousel from "../components/DashboardCarousel";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const DASHBOARD_ITEMS = [
     { icon: diamondShinyIcon },
-    { icon: sendIcon },
+    { icon: sendIcon, path: "/send" },
     { icon: receiveIcon },
     { icon: receiveIcon },
   ];
@@ -67,6 +68,8 @@ const Dashboard = () => {
     ],
   };
 
+  const navigate = useNavigate();
+
   return (
     <>
       <DashboardLayout>
@@ -93,7 +96,7 @@ const Dashboard = () => {
           width='90%'
           mx='auto'
         >
-          {DASHBOARD_ITEMS.map(({ icon }, i) => (
+          {DASHBOARD_ITEMS.map(({ icon, path }, i) => (
             <Box
               borderRadius='9px'
               p={1}
@@ -105,7 +108,13 @@ const Dashboard = () => {
               bgcolor='#2A2A2A'
               key={i}
             >
-              <img src={icon} />
+              <IconButton
+                onClick={() => {
+                  path && navigate(path);
+                }}
+              >
+                <img src={icon} />
+              </IconButton>
             </Box>
           ))}
         </Box>
