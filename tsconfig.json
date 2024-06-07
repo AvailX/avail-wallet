@@ -22,7 +22,8 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
+    "src",
+    "src-mobile"
   ],
   "references": [
     {

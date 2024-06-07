@@ -36,7 +36,9 @@ use crate::models::wallet_connect::{
     records::{GetRecordsRequest, GetRecordsResponse, RecordWithPlaintext},
     sign::{SignatureRequest, SignatureResponse},
 };
-use crate::services::local_storage::persistent_storage::get_delegate_flag;
+use crate::{
+    api::aleo_client::setup_client, services::local_storage::persistent_storage::get_delegate_flag,
+};
 use chrono::Local;
 use std::str::FromStr;
 

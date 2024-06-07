@@ -26,6 +26,8 @@ use avail_common::{
     models::network::SupportedNetworks,
 };
 
+use super::storage_api::transaction;
+
 /* Main Encrypted Data funcions */
 
 ///initialize enrypted data table

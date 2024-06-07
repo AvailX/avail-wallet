@@ -35,10 +35,11 @@ pub async fn delegate_execution(request: ProverRequest) -> AvailResult<String> {
             return Err(AvailError::new(
                 AvailErrorType::External,
                 e.to_string(),
-                "Error updating encrypted data record ".to_string(),
+                "Error delegating execution".to_string(),
             ));
         }
     };
+
     println!("Prover Response{:?}", res);
     if res.status() == 200 {
         let result = match res.text().await {

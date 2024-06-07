@@ -1,6 +1,6 @@
 [package]
 name = "wallet"
-version = "0.0.5"
+version = "0.2.9"
 description = "Avail Wallet | Make it yours."
 authors = ["Avail"]
 license = "Apache-2.0"
@@ -51,7 +51,7 @@ tauri = { version = "2.0.0-beta.22", features = [] }
 tauri-plugin-deep-link = "=2.0.0-beta.3"
 tauri-plugin-http = { version = "2.0.0-beta.7", features = ["cookies"] }
 tauri-plugin-updater = { version = "2.0.0-beta.5", features = [] }
-tauri-plugin-process = "=2.0.0-beta.3"
+tauri-plugin-process = "=2.0.0-beta.4"
 tiny-bip39 = "1.0.0"
 tokio = { version = "1.29.1", features = ["full"] }
 tokio-rayon = "2.1.0"
@@ -70,6 +70,7 @@ curl-sys = "0.4.72"
 colored = "2.1.0"
 cargo-xcode = "1.10.0"
 http = "1.1.0"
+tauri-plugin-barcode-scanner = "2.0.0-beta.5"
 
 [target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
 security-framework = { git = "https://github.com/AvailX/rust-security-framework" }
@@ -80,6 +81,12 @@ tid-rs = { git = "https://github.com/Zack-Xb/tid-rs" }
 
 [target.'cfg(target_os = "android")'.dependencies]
 ndk-context = "0.1.1"
+
+[target.'cfg(target_os = "ios")'.dependencies]
+snarkvm = { version = "0.16.19", features = ["wasm"] }
+
+[target.'cfg(not(target_os = "ios"))'.dependencies]
+snarkvm = { version = "0.16.19", features = [] }
 
 [profile.release]
 opt-level = 3

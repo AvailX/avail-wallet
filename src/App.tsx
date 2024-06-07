@@ -12,17 +12,17 @@ import { theme } from './styles/theme';
 
 /** COMPONENTS */
 import Entrypoint from './views-desktop/entrypoint';
-import {useWalletConnectManager} from './context/WalletConnect';
+import { useWalletConnectManager } from './context/WalletConnect';
 
 /* Components for Testing */
 import Send from './views-desktop/send';
 import Home from './views-desktop/home-desktop';
+import { preInstallInclusionProver } from './services/transfer/inclusion';
 import { invoke } from '@tauri-apps/api/core';
-// import { pre_install_inclusion_prover } from './services/transfer/inclusion';
 
 function App() {
 	const [txnID, setTxnID] = useState<string>('');
-	const transferPublicTest = async() => {
+	const transferPublicTest = async () => {
 		console.log('====> Inside Transfer Public');
 		const result = await invoke('test_transfer_public_mobile').then(res => {
 			console.log('====> Inside snark exec');
@@ -39,22 +39,22 @@ function App() {
 		console.log(result);
 	};
 
-	const noVMTest = async() => {
+	const noVMTest = async () => {
 		console.log('====> Non snarkVM Test');
 		// eslint-disable-next-line @typescript-eslint/brace-style
-		const result = await invoke('test_snarkvm_mobile').then(res => {	console.log('====> After Exec '); return res; }).catch((err) => { console.log("ERR",err); });
+		const result = await invoke('test_snarkvm_mobile').then(res => { console.log('====> After Exec '); return res; }).catch((err) => { console.log("ERR", err); });
 		console.log(result);
 	};
 
-	const deployVMTest = async() => {
+	const deployVMTest = async () => {
 		console.log('====> snarkVM Deploy Test');
-		const result = await invoke('test_snarkvm_mobile_deploy').then(res => {	console.log('====> After deploy '); return res; }).catch((err) => { console.log("ERR",err); });
+		const result = await invoke('test_snarkvm_mobile_deploy').then(res => { console.log('====> After deploy '); return res; }).catch((err) => { console.log("ERR", err); });
 		console.log(result);
 	};
 
-	const testInitUser = async() => {
+	const testInitUser = async () => {
 		console.log('====> user init');
-		const result = await invoke('init_user_mobile').then(res => {	console.log('====> After user init '); return res; }).catch((err) => { console.log("ERR",err); });
+		const result = await invoke('init_user_mobile').then(res => { console.log('====> After user init '); return res; }).catch((err) => { console.log("ERR", err); });
 		console.log(result);
 	};
 
@@ -62,20 +62,20 @@ function App() {
 		<React.Fragment>
 			<h1>Testing</h1>
 			<button onClick={noVMTest}>Test Sign (Non snarkVM)</button>
-			<br/>
-			<br/>
+			<br />
+			<br />
 			<button onClick={transferPublicTest} >Transfer Public</button>
 			<h5>TXN ID</h5>{txnID}
-			<br/>
-			<br/>
+			<br />
+			<br />
 			<button onClick={deployVMTest} >Test snarkVM (Deploy helloworld.aleo)</button>
-			<br/>
-			<br/>
+			<br />
+			<br />
 			{/* <button onClick={pre_install_inclusion_prover} >Inclusion Prover </button> */}
-			<br/>
-			<br/>
+			<br />
+			<br />
 			<button onClick={testInitUser} >Initialise user</button>
-		</React.Fragment>
+		</React.Fragment >
 	);
 }
 
