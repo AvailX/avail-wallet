@@ -20,12 +20,17 @@ import Send from "./views/send/Send";
 import InputRecipient from "./views/send/InputRecipient";
 import QrCode from "./views/QrCode";
 import Settings from "./views/Settings";
+import Username from "./views/create-wallet/Username";
+import Password from "./views/create-wallet/Password";
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
     /* --EntryPoint-- */
     { path: "/", element: <EntryPoint /> },
     /* --Create Wallet Flow-- */
+    { path: "/create-wallet", element: <MobCarousel /> },
+    { path: "/username", element: <Username /> },
+    { path: "/password", element: <Password /> },
     { path: "/wallet-choser", element: <WalletChoser /> },
     { path: "/backup-wallet", element: <BackupWallet /> },
     { path: "/verify-saved", element: <VerifySaved /> },

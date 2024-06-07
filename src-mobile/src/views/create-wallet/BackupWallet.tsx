@@ -1,8 +1,10 @@
-import {Box, Button, Typography} from '@mui/material';
+import { Box, Button, Typography } from "@mui/material";
 
-import backupHand from '../../assets/backup-hand.png';
+import backupHand from "../../assets/backup-hand.png";
+import { useNavigate } from "react-router-dom";
 
 const BackupWallet = () => {
+  const navigate = useNavigate();
   return (
     <Box
       pt={16}
@@ -55,6 +57,9 @@ const BackupWallet = () => {
       >
         <Button
           fullWidth
+          onClick={() => {
+            navigate("/secret-recovery");
+          }}
           sx={{
             background:
               "linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA",

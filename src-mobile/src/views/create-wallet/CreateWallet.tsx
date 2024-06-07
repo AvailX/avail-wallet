@@ -88,7 +88,7 @@ export const MobCarousel = () => {
         >
           <Button
             fullWidth
-            onClick={(): void => navigate("/secret-recovery")}
+            onClick={(): void => navigate("/username")}
             sx={{
               background:
                 "linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA",

@@ -7,7 +7,7 @@ function EntryPoint() {
   const navigate = useNavigate();
   React.useEffect(() => {
     setTimeout(() => {
-      navigate("/dashboard");
+      navigate("/create-wallet");
     }, 2000);
   }, []);
   return (
