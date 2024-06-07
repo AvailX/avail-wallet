@@ -7,7 +7,7 @@ function EntryPoint() {
   const navigate = useNavigate();
   React.useEffect(() => {
     setTimeout(() => {
-      navigate("/wallet-connect");
+      navigate("/create-wallet");
     }, 2000);
   }, []);
   return (

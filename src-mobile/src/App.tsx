@@ -27,6 +27,7 @@ const App: React.FC = () => {
     /* --EntryPoint-- */
     { path: "/", element: <EntryPoint /> },
     /* --Create Wallet Flow-- */
+    { path: "/create-waller", element: <MobCarousel /> },
     { path: "/wallet-choser", element: <WalletChoser /> },
     { path: "/backup-wallet", element: <BackupWallet /> },
     { path: "/verify-saved", element: <VerifySaved /> },
