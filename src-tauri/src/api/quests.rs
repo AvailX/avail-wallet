@@ -515,3 +515,439 @@ pub async fn get_whitelists() -> AvailResult<Vec<WhitelistResponse>> {
         ))
     }
 }
+
+// ======= QaaS API =======
+#[tauri::command(rename_all = "snake_case")]
+pub async fn create_campaign(campaign: Campaign) -> AvailResult<Campaign> {
+    let res = match get_quest_client_with_session(reqwest::Method::POST, "campaign")?
+        .json(&campaign)
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error creating campaign".to_string(),
+            ))
+        }
+    };
+    if res.status() == 200 {
+        let campaign: Campaign = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error creating campaign".to_string(),
+                ))
+            }
+        };
+
+        Ok(campaign)
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error creating campaign".to_string(),
+            "Error creating campaign".to_string(),
+        ))
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn update_campaign(campaign: Campaign) -> AvailResult<Campaign> {
+    let path = format!("campaign/{}", campaign.id);
+    let res = match get_quest_client_with_session(reqwest::Method::PUT, &path)?
+        .json(&campaign)
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error updating campaign".to_string(),
+            ))
+        }
+    };
+    if res.status() == 200 {
+        let campaign: Campaign = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error updating campaign".to_string(),
+                ))
+            }
+        };
+
+        Ok(campaign)
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error updating campaign".to_string(),
+            "Error updating campaign".to_string(),
+        ))
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn delete_campaign(campaign_id: &str) -> AvailResult<()> {
+    let path = format!("campaign/{}", campaign_id);
+    let res = match get_quest_client_with_session(reqwest::Method::DELETE, &path)?
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error deleting campaign".to_string(),
+            ))
+        }
+    };
+    if res.status() == 200 {
+        Ok(())
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error deleting campaign".to_string(),
+            "Error deleting campaign".to_string(),
+        ))
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn create_quest(quest: Quest) -> AvailResult<Quest> {
+    let res = match get_quest_client_with_session(reqwest::Method::POST, "create")?
+        .json(&quest)
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error creating quest".to_string(),
+            ))
+        }
+    };
+    if res.status() == 200 {
+        let quest: Quest = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error creating quest".to_string(),
+                ))
+            }
+        };
+
+        Ok(quest)
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error creating quest".to_string(),
+            "Error creating quest".to_string(),
+        ))
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn update_quest(quest: Quest) -> AvailResult<Quest> {
+    let path = format!("update/{}", quest.id);
+    let res = match get_quest_client_with_session(reqwest::Method::PUT, &path)?
+        .json(&quest)
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error updating quest".to_string(),
+            ))
+        }
+    };
+    if res.status() == 200 {
+        let quest: Quest = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error updating quest".to_string(),
+                ))
+            }
+        };
+
+        Ok(quest)
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error updating quest".to_string(),
+            "Error updating quest".to_string(),
+        ))
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn delete_quest(quest_id: &str) -> AvailResult<()> {
+    let path = format!("delete/{}", quest_id);
+    let res = match get_quest_client_with_session(reqwest::Method::DELETE, &path)?
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error deleting quest".to_string(),
+            ))
+        }
+    };
+    if res.status() == 200 {
+        Ok(())
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error deleting quest".to_string(),
+            "Error deleting quest".to_string(),
+        ))
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn create_collection(collection: Collection) -> AvailResult<Collection> {
+    let res = match get_quest_client_with_session(reqwest::Method::POST, "collection")?
+        .json(&collection)
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error creating collection".to_string(),
+            ))
+        }
+    };
+    if res.status() == 200 {
+        let collection: Collection = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error creating collection".to_string(),
+                ))
+            }
+        };
+
+        Ok(collection)
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error creating collection".to_string(),
+            "Error creating collection".to_string(),
+        ))
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn update_collection(collection: Collection) -> AvailResult<Collection> {
+    let path = format!("collection/{}", collection.id);
+    let res = match get_quest_client_with_session(reqwest::Method::PUT, &path)?
+        .json(&collection)
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error updating collection".to_string(),
+            ))
+        }
+    };
+    if res.status() == 200 {
+        let collection: Collection = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error updating collection".to_string(),
+                ))
+            }
+        };
+
+        Ok(collection)
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error updating collection".to_string(),
+            "Error updating collection".to_string(),
+        ))
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn delete_collection(collection_id: &str) -> AvailResult<()> {
+    let path = format!("collection/{}", collection_id);
+    let res = match get_quest_client_with_session(reqwest::Method::DELETE, &path)?
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error deleting collection".to_string(),
+            ))
+        }
+    };
+    if res.status() == 200 {
+        Ok(())
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error deleting collection".to_string(),
+            "Error deleting collection".to_string(),
+        ))
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn distribute_rewards(quest_id: &str) -> AvailResult<()> {
+    let path = format!("reward/{}", quest_id);
+    let res = match get_quest_client_with_session(reqwest::Method::POST, &path)?
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error distributing rewards".to_string(),
+            ))
+        }
+    };
+    if res.status() == 200 {
+        Ok(())
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error distributing rewards".to_string(),
+            "Error distributing rewards".to_string(),
+        ))
+    }
+}
+
+// #[tauri::command(rename_all = "snake_case")]
+// pub async fn airdrop_nfts(collection_name: String, addresses: Vec<String>) -> AvailResult<()> {
+//     // create a json reuesy with the collection name and addresses
+
+//     let request =
+//     let res = match get_quest_client_with_session(reqwest::Method::POST, "airdrop")?
+//         .json(request)
+//         .send()
+//         .await
+//     {
+//         Ok(res) => res,
+//         Err(e) => {
+//             return Err(AvailError::new(
+//                 AvailErrorType::External,
+//                 e.to_string(),
+//                 "Error airdropping NFTs".to_string(),
+//             ))
+//         }
+//     };
+//     if res.status() == 200 {
+//         Ok(())
+//     } else if res.status() == 401 {
+//         Err(AvailError::new(
+//             AvailErrorType::Unauthorized,
+//             "User session has expired.".to_string(),
+//             "Your session has expired, please authenticate again.".to_string(),
+//         ))
+//     } else {
+//         Err(AvailError::new(
+//             AvailErrorType::External,
+//             "Error airdropping NFTs".to_string(),
+//             "Error airdropping NFTs".to_string(),
+//         ))
+//     }
+// }

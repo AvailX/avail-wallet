@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable max-params */
 import {invoke} from '@tauri-apps/api/core';
 import * as platform from 'platform';
 import {type NavigateFunction} from 'react-router-dom';
