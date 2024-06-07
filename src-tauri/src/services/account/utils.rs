@@ -49,6 +49,15 @@ pub fn open_url(url: &str) -> AvailResult<()> {
             "Error opening url".to_string(),
         )),
     }
+    #[cfg(target_os = "ios")]
+    match Command::new("uiapplication-openurl").arg(url).spawn() {
+        Ok(_) => Ok(()),
+        Err(e) => Err(AvailError::new(
+            AvailErrorType::Internal,
+            format!("Error opening url: {}", e),
+            "Error opening url".to_string(),
+        )),
+    }
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -61,6 +70,9 @@ pub fn os_type() -> AvailResult<String> {
 
     #[cfg(target_os = "linux")]
     return Ok("linux".to_string());
+
+    #[cfg(target_os = "ios")]
+    return Ok("ios".to_string());
 }
 
 #[tauri::command(rename_all = "snake_case")]
