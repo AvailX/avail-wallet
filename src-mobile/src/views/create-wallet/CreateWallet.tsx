@@ -1,4 +1,4 @@
-import {Box, Button, Typography} from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 
 import connectWallet from '../assets/connect-wallet.png';
 import ownNft from '../assets/own-nft.png';
@@ -10,7 +10,7 @@ import 'react-awesome-slider/dist/styles.css';
 import withAutoplay from 'react-awesome-slider/dist/autoplay';
 
 import * as React from 'react';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const AutoplaySlider = withAutoplay(AwesomeSlider, { Infinity: false });
 
@@ -42,7 +42,7 @@ const Mob: React.FC<IProps> = ({ title, img }) => {
 };
 
 export const MobCarousel = () => {
-	const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const carouselData = [
     { title: "Connect to the Aleo Blockchain", img: connectWallet },
@@ -61,11 +61,11 @@ export const MobCarousel = () => {
   ];
   return (
     <>
-      <div style={{height: '100vh', backgroundColor: '#111111' }}>
+      <div style={{ height: '100vh', backgroundColor: '#111111' }}>
         <AutoplaySlider
           play={true}
           bullets={false}
-          style={{height: '100vh'}}
+          style={{ height: '100vh' }}
           infinite={false}
           mobileTouch={true}
           interval={4000}
@@ -99,12 +99,12 @@ export const MobCarousel = () => {
           >
             Create Wallet
           </Button>
-          <Button sx={{mt: 3}} fullWidth variant='outlined'>
+          <Button sx={{ mt: 3 }} fullWidth variant='outlined'>
             Add an existing wallet
           </Button>
           <Typography variant='body1' mt={4} color='#9d9d9d' fontWeight={700}>
             By signing up you agree to Avail’s{' '}
-            <span style={{color: '#01f0a0'}}>
+            <span style={{ color: '#01f0a0' }}>
               Terms of Service and Privacy policy.
             </span>
           </Typography>
