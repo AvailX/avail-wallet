@@ -8,38 +8,36 @@ import homeIcon from "../assets/home-icon.svg";
 import splashImg from "../assets/green-splash.svg";
 import { useNavigate } from "react-router-dom";
 
-interface IProps extends PropsWithChildren { }
+interface IProps extends PropsWithChildren {}
 
-const DashboardLayout: FC<IProps> = ({ children }) => {
+const BrowserLayout: FC<IProps> = ({ children }) => {
   const MOBILE_TAB = [
     { icon: homeIcon, path: "/" },
     {
       icon: anchorIcon,
       link: "anchor",
-      path: "/dapps",
     },
     {
       icon: diamondIcon,
       link: "diamond",
-      path: "/quests",
     },
   ];
   const navigate = useNavigate();
 
   return (
     <Box height="100vh" position="relative">
-      <Box position="absolute" width="100%" top={0}>
+      {/* <Box position="absolute" width="100%" top={0}>
         <img src={splashImg} width="100%" />
-      </Box>
+      </Box> */}
       {/* <Button onClick={() => navigate("/dashboard")}>Back</Button> */}
       <Box
         bgcolor="black"
         textAlign="center"
         color="#fff"
-        pt="10vh" ///Had to comment out to make Campaigns look better
+        pt="5vh"
         height="100%"
         width="100%"
-        px={3} ///Had to comment out to make Campaigns look better
+        px={0}
         sx={{ overflowY: "auto" }}
       >
         {children}
@@ -69,21 +67,19 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
           justifyContent="space-between"
           pt={1}
         >
-          {
-            MOBILE_TAB.map(({ icon, link, path }) => (
-              <img
-                src={icon}
-                key={link}
-                onClick={() => {
-                  navigate(path || "");
-                }}
-              />
-            ))
-          }
-        </Box >
-      </Box >
-    </Box >
+          {MOBILE_TAB.map(({ icon, link }) => (
+            <img
+              src={icon}
+              key={link}
+              onClick={() => {
+                navigate(link || "");
+              }}
+            />
+          ))}
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
-export default DashboardLayout;
+export default BrowserLayout;

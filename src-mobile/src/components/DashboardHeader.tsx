@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import avatarImg from "../assets/avatar-img.svg";
 import scanIcon from "../assets/scan-icon.svg";
 import { FC } from "react";
@@ -26,12 +26,9 @@ const DashboardHeader: FC<IProps> = ({ onProfileClick }) => {
         </Box>
       </Box>
 
-      <img
-        src={scanIcon}
-        onClick={() => {
-          navigate("/qr-code");
-        }}
-      />
+      <IconButton onClick={() => navigate("/qr-code")}>
+        <img src={scanIcon} />
+      </IconButton>
     </Box>
   );
 };
