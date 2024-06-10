@@ -57,7 +57,7 @@ import { scan_blocks } from "../../../src/services/scans/blocks";
 import GeneralSettings from "../components/settings/GeneralSettings";
 import KeysSettings from "../components/settings/KeysSettings";
 import SecretPhrase from "../components/settings/SecretPhrase";
-import SecurityPrivacy from "../components/settings/SecurityPrivacy"
+import SecurityPrivacy from "../components/settings/SecurityPrivacy";
 
 const SETTINGS_DETAIL = [
   {
@@ -363,7 +363,7 @@ function Settings() {
                         }}
                       >
                         <AccordionSummary
-                          expandIcon={<ExpandMore />}
+                          expandIcon={<ExpandMore sx={{ color: "white" }} />}
                           aria-controls="panel1-content"
                           id="panel1-header"
                         >
@@ -378,7 +378,9 @@ function Settings() {
                           {title === "General" && <GeneralSettings />}{" "}
                           {title === "Keys" && <KeysSettings />}{" "}
                           {title === "Secret Phrase" && <SecretPhrase />}{" "}
-                          {title === "Secret Phrase" && <SecurityPrivacy />}{" "}
+                          {title === "Security and Privacy" && (
+                            <SecurityPrivacy />
+                          )}{" "}
                         </AccordionDetails>
                       </Accordion>
                     )}

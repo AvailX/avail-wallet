@@ -41,25 +41,36 @@ function GeneralSettings() {
       <form>
         <Stack spacing={2}>
           <Stack direction="column" spacing={2}>
-            <TextField
-              label="Username (Optional)"
-              name="username"
-              value={username}
-              onChange={handleChange}
-              optional
-            />
+            <Stack direction="column" spacing={0}>
+              <Typography color="#fff" fontSize="15px" fontWeight={200}>
+                Username (optional)
+              </Typography>
+              <TextField
+                name="username"
+                value={username}
+                onChange={handleChange}
+                optional
+                sx={{ bgcolor: "#264139", borderRadius: "10px" }}
+              />
+            </Stack>
             <FormControl fullWidth>
-              <InputLabel id="language-label">Language</InputLabel>
+              <Typography color="#fff" fontSize="15px" fontWeight={200}>
+                Language
+              </Typography>
               <Select
-                labelId="language-label"
                 id="language"
                 name="language"
                 value={language}
                 onChange={handleChange}
                 label="Language"
+                sx={{ bgcolor: "#264139", borderRadius: "10px" }}
               >
                 {languages.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
+                  <MenuItem
+                    key={option.value}
+                    value={option.value}
+                    sx={{ color: "#264139", borderRadius: "10px" }}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
@@ -68,14 +79,16 @@ function GeneralSettings() {
           </Stack>
           <Stack direction="column" spacing={2}>
             <FormControl fullWidth>
-              <InputLabel id="network-label">Network</InputLabel>
+              <Typography color="#fff" fontSize="15px" fontWeight={200}>
+                Network
+              </Typography>
               <Select
-                labelId="network-label"
                 id="network"
                 name="network"
                 value={network}
                 onChange={handleChange}
                 label="Network"
+                sx={{ bgcolor: "#264139", borderRadius: "10px" }}
               >
                 {networks.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -84,12 +97,22 @@ function GeneralSettings() {
                 ))}
               </Select>
             </FormControl>
-            <TextField
-              label="Address"
-              name="address"
-              placeholder="aleo10gv8wduhc9weciu89uw9..."
-              disabled
-            />
+            <Stack direction="column" spacing={0}>
+              <Typography color="#fff" fontSize="15px" fontWeight={200}>
+                Address
+              </Typography>
+              <TextField
+                name="address"
+                placeholder="aleo10gv8wduhc9weciu89uw9..."
+                sx={{
+                  bgcolor: "#264139",
+                  borderRadius: "10px",
+                  "& .MuiInputBase-placeholder": {
+                    color: "#fff", // Change placeholder color to white
+                  },
+                }}
+              />
+            </Stack>
           </Stack>
           {/* <Button variant="contained" type="submit">
             Save Changes

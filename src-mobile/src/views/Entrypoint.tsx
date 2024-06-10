@@ -7,7 +7,7 @@ function EntryPoint() {
   const navigate = useNavigate();
   React.useEffect(() => {
     setTimeout(() => {
-      navigate("/settings");
+      navigate("/dashboard");
     }, 2000);
   }, []);
   return (
