@@ -10,24 +10,12 @@ import {
   ExpandLess,
   ExpandMore,
   Settings as SettingIcon,
-  VpnKey,
-  Lock,
-  Info,
-  Security,
-  Polyline,
-  RemoveCircleOutline,
 } from "@mui/icons-material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Fade from "@mui/material/Fade";
 
 // //temporary
 import { useTheme } from "@mui/material/styles";
-import FullscreenDialog from "@mui/material/DialogContent";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-
-import MiniDrawer from "../../../src/components/sidebar";
 
 import generalIcon from "../assets/settings/general-icon.svg";
 import keysIcon from "../assets/settings/keys-icon.svg";
@@ -45,7 +33,7 @@ import removeIcon from "../assets/settings/remove-icon.svg";
 import SettingsSwitch from "../components/AvailSwitch";
 
 //Settings
-import GeneralSettings from "../../../src/components/settings/general";
+// import GeneralSettings from "../components/settings/GeneralSettings"
 // global state
 import { useScan } from "../../../src/context/ScanContext";
 // Services
@@ -59,10 +47,17 @@ import {
   updateBackupFlag,
   getBackupFlag,
 } from "../../../src/services/storage/persistent";
+import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
+
 import { sign, verify } from "../../../src/services/util/sign";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { scan_blocks } from "../../../src/services/scans/blocks";
+
+import GeneralSettings from "../components/settings/GeneralSettings";
+import KeysSettings from "../components/settings/KeysSettings";
+import SecretPhrase from "../components/settings/SecretPhrase";
+import SecurityPrivacy from "../components/settings/SecurityPrivacy"
 
 const SETTINGS_DETAIL = [
   {
@@ -91,40 +86,6 @@ const SETTINGS_DETAIL = [
     ],
   },
 ];
-
-// const MenuSection: React.FC<{
-//   title: string;
-//   IconComponent: React.ReactNode;
-//   children?: React.ReactNode;
-// }> = ({ title, IconComponent, children }) => {
-//   const [open, setOpen] = React.useState(false);
-
-//   const handleClick = () => {
-//     setOpen(!open);
-//   };
-
-//   return (
-//     <>
-//       <mui.ListItemButton
-//         onClick={handleClick}
-//         sx={{ p: 2, "&:hover": { bgcolor: "#3a3a3a" } }}
-//       >
-//         <mui.ListItemIcon>{IconComponent}</mui.ListItemIcon>
-//         <mui.ListItemText primary={title} sx={{ color: "#FFF" }} />
-//         {open ? (
-//           <ExpandLess sx={{ color: "#fff" }} />
-//         ) : (
-//           <ExpandMore sx={{ color: "#fff" }} />
-//         )}
-//       </mui.ListItemButton>
-//       <mui.Collapse in={open} timeout="auto" unmountOnExit>
-//         <mui.List component="div" disablePadding>
-//           {children}
-//         </mui.List>
-//       </mui.Collapse>
-//     </>
-//   );
-// };
 
 const ProfileDisplay = () => {
   return (
@@ -377,28 +338,50 @@ function Settings() {
                   showSwitch?: boolean;
                 }) => (
                   <Box width="90%" mx="auto">
-                    <Box
-                      borderBottom="1px solid #353535"
-                      p={1}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      onClick={() => handleOpen()}
-                    >
-                      <Box display="flex" alignItems="center">
-                        <img src={icon} />
-                        <Typography ml={2} color="#fff" fontSize="17px">
-                          {title}
-                        </Typography>
-                      </Box>
-                      {showSwitch ? (
+                    {showSwitch ? (
+                      <Box
+                        borderBottom="1px solid #353535"
+                        p={1}
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        onClick={() => handleOpen()}
+                      >
+                        <Box display="flex" alignItems="center">
+                          <img src={icon} />
+                          <Typography ml={2} color="#fff" fontSize="17px">
+                            {title}
+                          </Typography>
+                        </Box>
                         <SettingsSwitch />
-                      ) : (
-                        <IconButton>
-                          <ChevronRightIcon sx={{ color: "#B0B0B0" }} />
-                        </IconButton>
-                      )}
-                    </Box>
+                      </Box>
+                    ) : (
+                      <Accordion
+                        sx={{
+                          bgcolor: "#2A2A2A",
+                          borderBottom: "1px solid #353535",
+                        }}
+                      >
+                        <AccordionSummary
+                          expandIcon={<ExpandMore />}
+                          aria-controls="panel1-content"
+                          id="panel1-header"
+                        >
+                          <Box display="flex" alignItems="center">
+                            <img src={icon} alt={title} />
+                            <Typography ml={2} color="#fff" fontSize="17px">
+                              {title}
+                            </Typography>
+                          </Box>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          {title === "General" && <GeneralSettings />}{" "}
+                          {title === "Keys" && <KeysSettings />}{" "}
+                          {title === "Secret Phrase" && <SecretPhrase />}{" "}
+                          {title === "Secret Phrase" && <SecurityPrivacy />}{" "}
+                        </AccordionDetails>
+                      </Accordion>
+                    )}
                   </Box>
                 )
               )}
@@ -407,7 +390,7 @@ function Settings() {
         ))}
       </Box>
 
-      <Dialog
+      {/* <Dialog
         fullScreen
         open={open}
         onClose={handleClose}
@@ -421,11 +404,10 @@ function Settings() {
         </DialogContent>
         <DialogActions>
           <IconButton autoFocus onClick={handleClose}>
-            {/* Adjust the button text as needed */}
             <Typography variant="button">Close</Typography>
           </IconButton>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </DashboardLayout>
   );
 }

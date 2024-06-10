@@ -422,7 +422,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "avail-common"
 version = "0.13.0"
-source = "git+https://github.com/availx/avail-lib#0b342478d8c94fb6d8f626fd42a7516b0dfa6f97?branch=feat/delegate-proving#86b7ac3544a2d91e3b3ede0c114a8ec912349448"
+source = "git+https://github.com/availx/avail-lib#0b342478d8c94fb6d8f626fd42a7516b0dfa6f97?branch=feat/delegate-proving#34cef7f3baf1a8d1eb23f7da1d234f06a36a57fa"
 dependencies = [
  "aes-gcm",
  "app_dirs2",
