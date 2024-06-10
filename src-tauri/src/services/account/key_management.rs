@@ -6,3 +6,4 @@ pub mod android;
 
 #[cfg(target_os = "ios")]
 pub mod iOS;
+pub mod faceid;

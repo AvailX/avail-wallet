@@ -6,6 +6,10 @@ import SwipeableEdgeDrawer from "../../components/SwipeableDrawer";
 import {useNavigate} from "react-router-dom";
 
 const SecretRecovery = () => {
+  const navigate = useNavigate();
+  const goToOther = () => {
+    navigate('/points');
+  };
   const recoveryPhase = [
     "Babayaga",
     "One",
@@ -25,7 +29,6 @@ const SecretRecovery = () => {
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
   };
-  const navigate = useNavigate();
 
   return (
     <Box
@@ -130,14 +133,17 @@ const SecretRecovery = () => {
           </Typography>
 
           <Box
-            sx={{
-              mx: "auto",
-              display: "flex",
-              alignItems: "center",
-            }}
-            mt={10}
+              sx={{
+                mx: "auto",
+                display: "flex",
+                alignItems: "center",
+              }}
+              mt={10}
           >
-            <Button sx={{ mx: "auto", fontSize: "20px" }}>Continue</Button>
+            <button onClick={goToOther}>
+              Next page
+            </button>
+            <Button sx={{mx: "auto", fontSize: "20px"}}>Continue</Button>
           </Box>
         </Box>
       </SwipeableEdgeDrawer>
