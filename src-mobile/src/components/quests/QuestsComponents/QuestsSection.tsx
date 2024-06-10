@@ -4,7 +4,7 @@ import NavigateNextOutlinedIcon from "@mui/icons-material/NavigateNextOutlined";
 import { Campaign } from "../../../types/quests/quest_types";
 
 interface DappsSectionProps {
-  campaign: Campaign[];
+  campaign: Campaign;
 }
 
 const QuestsSection: React.FC<DappsSectionProps> = ({  campaign }) => {
@@ -39,7 +39,7 @@ const QuestsSection: React.FC<DappsSectionProps> = ({  campaign }) => {
           }}
         >
           <img
-            src={campaign[0].box_image}
+            src={campaign.box_image}
             alt="Connected Dapp"
             style={{ width: "100%", height: "auto" }}
           />
@@ -56,14 +56,14 @@ const QuestsSection: React.FC<DappsSectionProps> = ({  campaign }) => {
             variant="body1"
             sx={{ fontSize: "17px", fontWeight: "normal" }}
           >
-            {campaign[0].title}
+            {campaign.title}
             {/* Use the 'name' property of the 'dapp' prop */}
           </Typography>
           <Typography
             variant="body1"
             sx={{ fontSize: "10px", fontWeight: "normal" }}
           >
-            {campaign[0].subtitle}
+            {campaign.subtitle}
           </Typography>
         </Box>
       </Box>

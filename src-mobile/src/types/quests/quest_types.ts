@@ -96,9 +96,9 @@ export const testCampaign: Campaign[] = [{
 	points_image: 'https://i.imgur.com/vVySQ4o.png',
     project_name: 'Avail',
 },{
-	id: '1',
-	title: 'Disruptors',
-	subtitle: 'Avail - Privacy unlocked.',
+	id: '2',
+	title: 'Aleo Wizards',
+	subtitle: 'NFTs on Aleo.',
 	description: {
 		part1: 'Complete Weekly',
 		main: 'Quests',
@@ -112,9 +112,9 @@ export const testCampaign: Campaign[] = [{
 	points_image: 'https://i.imgur.com/vVySQ4o.png',
     project_name: 'Avail',
 }, {
-	id: '1',
-	title: 'Disruptors',
-	subtitle: 'Avail - Privacy unlocked.',
+	id: '3',
+	title: 'Beta Staking',
+	subtitle: 'Staking on Aleo',
 	description: {
 		part1: 'Complete Weekly',
 		main: 'Quests',

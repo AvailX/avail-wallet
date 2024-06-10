@@ -47,7 +47,7 @@ const Divider = styled(MuiDivider)({
   backgroundColor: "#00FFAA",
 });
 
-const Quests: React.FC = () => {
+const QuestsCampaign: React.FC = () => {
   const [openTasks, setOpenTasks] = React.useState(false);
   const [quest, setQuest] = React.useState<Quest>(quests[3]);
   const [selectedQuest, setSelectedQuest] = React.useState(null);
@@ -102,7 +102,7 @@ const Quests: React.FC = () => {
   );
 };
 
-export default Quests;
+export default QuestsCampaign;
 
 // Sample campaign data
 export const campaign: Campaign[] = [

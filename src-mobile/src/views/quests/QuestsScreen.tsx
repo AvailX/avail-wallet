@@ -8,19 +8,28 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import DappsSection from "../../components/dapps/DappsSection";
 import QuestsAppBar from "../../components/quests/QuestsComponents/QuestsAppBar";
-import { Campaign } from "../../types/quests/quest_types";
+import { type Campaign, testCampaign } from "../../types/quests/quest_types";
 import QuestsAppBarScroll from "../../components/quests/QuestsComponents/QuestsAppBarScroll";
 import QuestsSection from "../../components/quests/QuestsComponents/QuestsSection";
 import ConnectedQuestsGrid from "../../components/quests/QuestsComponents/QuestsGrid";
+import { getCampaigns } from "../../services/quests/quests";
 
-interface QuestsPageProps {
-  campaign: Campaign[];
-}
+const QuestsScreen: React.FC = () => {
+  const [campaigns, setCampaigns] = React.useState<Campaign[]>([]);
 
-const QuestsScreen: React.FC<QuestsPageProps> = ({ campaign }) => {
+  React.useEffect(() => {
+    getCampaigns()
+      .then((campaigns) => {
+        setCampaigns(campaigns);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   const renderHorizontalScrollContainers = () => {
-    return campaign.map((campaign, index) => (
-      <QuestsAppBarScroll key={index} campaign={campaign} />
+    return campaigns.map((campaigns, index) => (
+      <QuestsAppBarScroll key={index} campaign={campaigns} />
     ));
   };
   const [activeTab, setActiveTab] = useState("quests");
@@ -105,7 +114,7 @@ const QuestsScreen: React.FC<QuestsPageProps> = ({ campaign }) => {
                 sx={{
                   position: "relative",
                   width: "340px",
-                  maxHeight: `${48 * campaign.length}px`, // Calculate the height dynamically based on the number of items
+                  maxHeight: `${48 * campaigns.length}px`, // Calculate the height dynamically based on the number of items
                   overflowX: "auto",
                   background: "#2A2A2A",
                   padding: "10px",
@@ -116,9 +125,10 @@ const QuestsScreen: React.FC<QuestsPageProps> = ({ campaign }) => {
                 }}
               >
                 {/*This is the Row section of the container. placed at the bottom */}
-                <QuestsSection campaign={campaign} />
-                <QuestsSection campaign={campaign} />
-                <QuestsSection campaign={campaign} />
+
+                {campaigns.map((campaign) => (
+                  <QuestsSection campaign={campaign} />
+                ))}
               </Box>
             </Box>
 
@@ -149,8 +159,9 @@ const QuestsScreen: React.FC<QuestsPageProps> = ({ campaign }) => {
                   justifyContent: "flex-end",
                 }}
               >
-                <QuestsSection campaign={campaign} />
-                <QuestsSection campaign={campaign} />
+                {campaigns.map((campaign) => (
+                  <QuestsSection campaign={campaign} />
+                ))}
               </Box>
             </Box>
 
@@ -181,7 +192,9 @@ const QuestsScreen: React.FC<QuestsPageProps> = ({ campaign }) => {
                   justifyContent: "flex-end",
                 }}
               >
-                <QuestsSection campaign={campaign} />
+                {campaigns.map((campaign) => (
+                  <QuestsSection campaign={campaign} />
+                ))}
               </Box>
             </Box>
           </Box>
@@ -190,7 +203,7 @@ const QuestsScreen: React.FC<QuestsPageProps> = ({ campaign }) => {
         {/* Connected screen */}
         {activeTab === "launch-a-quest" && (
           <ConnectedQuestsGrid
-            campaigns={campaign}
+            campaigns={campaigns}
             activeTab="launch-a-quest"
           />
         )}

@@ -24,7 +24,7 @@ import Settings from "./views/Settings";
 import ChooseMethod from "./views/add-an-existing-account/ChooseMethod";
 import SeedLogin from "./views/add-an-existing-account/InputSeedPhrase";
 import PrivateKeyLogin from "./views/add-an-existing-account/InputPrivateKey";
-import Quests from "./views/quests/QuestsCampaign";
+import QuestsCampaign from "./views/quests/QuestsCampaign";
 import QuestsScreen from "./views/quests/QuestsScreen";
 import DappsPage from "./views/dapps/Dapps";
 
@@ -51,8 +51,8 @@ const App: React.FC = () => {
     /* --Dapp Flow-- */
     { path: "/dapps", element: <DappsPage /> },
     /* --Quest Flow-- */
-    { path: "/quests", element: <QuestsScreen campaign={testCampaign} /> },
-    { path: "/campaign", element: <Quests /> },
+    { path: "/quests", element: <QuestsScreen /> },
+    { path: "/campaign", element: <QuestsCampaign /> },
   ]);
 
   return <RouterProvider router={router} />;

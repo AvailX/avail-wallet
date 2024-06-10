@@ -44,7 +44,7 @@ const QuestsScrollContainer: React.FC<QuestsScrollContainerProps> = ({
           }}
         >
           <img
-            src={img}
+            src={campaign.box_image}
             alt="Connected Dapp"
             style={{ width: "100%", height: "auto" }}
           />
