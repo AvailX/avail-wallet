@@ -1,7 +1,10 @@
 use std::str::FromStr;
 
 use avail_common::models::encrypted_data::EncryptedDataTypeCommon;
+use avail_common::service_clients::SESSION;
 use chrono::{DateTime, Utc};
+
+use crate::services::authentication::session::{get_session, get_session_after_creation};
 use uuid::Uuid;
 
 use crate::api::client::get_quest_client_with_session;
@@ -26,6 +29,10 @@ use super::aleo_client::setup_client;
 /* GET ALL CAMPAIGNS */
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_campaigns() -> AvailResult<Vec<Campaign>> {
+    /// REMOVE SESSSION AFETR - TEST FOR DOMINION
+    let session_get = get_session(Some("tylerDurden@0xf5".to_string())).await?;
+    println!("Session: {:?}", session_get);
+    SESSION.set_session_token(session_get);
     let res = match get_quest_client_with_session(reqwest::Method::GET, "campaigns")?
         .send()
         .await
