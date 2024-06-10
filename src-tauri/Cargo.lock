@@ -470,7 +470,7 @@ checksum = "0c4b4d0bd25bd0b74681c0ad21497610ce1b7c91b1022cd21c80c6fbdd9476b0"
 [[package]]
 name = "avail-common"
 version = "0.13.0"
-source = "git+https://github.com/availx/avail-lib#0b342478d8c94fb6d8f626fd42a7516b0dfa6f97?branch=feat/delegate-proving#8a318b7ad6d8bdbe055d4af82f4a01e2b6c85314"
+source = "git+https://github.com/availx/avail-lib#0b342478d8c94fb6d8f626fd42a7516b0dfa6f97?branch=feat/delegate-proving#34cef7f3baf1a8d1eb23f7da1d234f06a36a57fa"
 dependencies = [
  "aes-gcm",
  "app_dirs2",
@@ -498,59 +498,6 @@ dependencies = [
  "ureq",
  "url",
  "uuid",
-]
-
-[[package]]
-name = "avail_wallet"
-version = "0.2.9"
-dependencies = [
- "app_dirs2",
- "avail-common",
- "bs58",
- "chrono",
- "colored",
- "core-foundation",
- "curl-sys",
- "dirs 5.0.1",
- "dotenv",
- "fix-path-env",
- "futures 0.3.30",
- "jni",
- "keyring",
- "libc",
- "log",
- "ndk-context",
- "once_cell",
- "openssl",
- "rand 0.8.5",
- "rayon",
- "rstest",
- "rusqlite",
- "security-framework 2.9.1",
- "security-framework-sys 2.9.0",
- "serde",
- "serde_json",
- "simplelog",
- "snarkvm",
- "ssss",
- "tail",
- "tauri",
- "tauri-build",
- "tauri-plugin",
- "tauri-plugin-deep-link",
- "tauri-plugin-fs",
- "tauri-plugin-http",
- "tauri-plugin-process",
- "tauri-plugin-updater",
- "tauri-utils",
- "tid-rs",
- "tiny-bip39",
- "tokio",
- "tokio-rayon",
- "ureq",
- "uuid",
- "whoami",
- "zeroize",
 ]
 
 [[package]]
@@ -7254,6 +7201,59 @@ checksum = "29790946404f91d9c5d06f9874efddea1dc06c5efe94541a7d6863108e3a5e4b"
 dependencies = [
  "same-file",
  "winapi-util",
+]
+
+[[package]]
+name = "wallet"
+version = "0.2.9"
+dependencies = [
+ "app_dirs2",
+ "avail-common",
+ "bs58",
+ "chrono",
+ "colored",
+ "core-foundation",
+ "curl-sys",
+ "dirs 5.0.1",
+ "dotenv",
+ "fix-path-env",
+ "futures 0.3.30",
+ "jni",
+ "keyring",
+ "libc",
+ "log",
+ "ndk-context",
+ "once_cell",
+ "openssl",
+ "rand 0.8.5",
+ "rayon",
+ "rstest",
+ "rusqlite",
+ "security-framework 2.9.1",
+ "security-framework-sys 2.9.0",
+ "serde",
+ "serde_json",
+ "simplelog",
+ "snarkvm",
+ "ssss",
+ "tail",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin",
+ "tauri-plugin-deep-link",
+ "tauri-plugin-fs",
+ "tauri-plugin-http",
+ "tauri-plugin-process",
+ "tauri-plugin-updater",
+ "tauri-utils",
+ "tid-rs",
+ "tiny-bip39",
+ "tokio",
+ "tokio-rayon",
+ "ureq",
+ "uuid",
+ "whoami",
+ "zeroize",
 ]
 
 [[package]]
