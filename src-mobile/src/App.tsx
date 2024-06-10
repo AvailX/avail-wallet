@@ -22,6 +22,12 @@ import Send from "./views/send/Send";
 import InputRecipient from "./views/send/InputRecipient";
 import QrCode from "./views/QrCode";
 import Settings from "./views/Settings";
+import ChooseMethod from "./views/add-an-existing-account/ChooseMethod";
+import PrivateKeyLogin from "./views/add-an-existing-account/InputPrivateKey";
+import SeedLogin from "./views/add-an-existing-account/InputSeedPhrase";
+import DappsPage from "./views/dapps/Dapps";
+import QuestsCampaign from "./views/quests/QuestsCampaign";
+import QuestsScreen from "./views/quests/QuestsScreen";
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
