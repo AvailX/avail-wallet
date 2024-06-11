@@ -2,7 +2,7 @@ import { Box, Button, TextField } from "@mui/material";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 //import { registerSeedPhrase } from "../../services/auth";
-import { register_seed_phrase } from "../../../src/services/authentication/register";
+import { register_seed_phrase } from "../../../../src/services/authentication/register";
 import { Languages } from "../../../../src/types/languages";
 
 const Password = () => {

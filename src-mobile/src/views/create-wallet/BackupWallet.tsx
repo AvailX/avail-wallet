@@ -1,6 +1,7 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 
 import backupHand from "../../assets/backup-hand.png";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { useNavigate } from "react-router-dom";
 
 const BackupWallet = () => {
@@ -14,6 +15,27 @@ const BackupWallet = () => {
       bgcolor='#111111'
       color='#fff'
     >
+      {/* !TODO: Fix this */}
+      <Box display='flex' alignItems='center' justifyContent='flex-start'>
+        <IconButton
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <Box
+            display='flex'
+            alignItems='center'
+            justifyContent='center'
+            bgcolor='#393939'
+            width='35px'
+            height='35px'
+            borderRadius='50%'
+            p={3}
+          >
+            <ArrowBackIosNewIcon sx={{ color: "#BDBDBD" }} />
+          </Box>
+        </IconButton>
+      </Box>
       <Typography
         fontSize='60px'
         textAlign='center'
