@@ -2,7 +2,7 @@
   "productName": "Avail",
   "identifier": "com.avail.wallet",
   "build": {
-    "beforeDevCommand": "npm i && npm run dev",
+    "beforeDevCommand": "cd src-mobile && npm i && npm run dev",
     "beforeBuildCommand": "npm i && npm run build",
     "devUrl": "http://192.168.195.145:5173/",
     "frontendDist": "../src-mobile/"
