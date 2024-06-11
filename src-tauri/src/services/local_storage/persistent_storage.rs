@@ -43,7 +43,7 @@ pub fn initial_user_preferences(
             last_backup_sync TIMESTAMP,
             address TEXT NOT NULL,
             backup BOOLEAN NOT NULL DEFAULT FALSE,
-            delegate BOOLEAN NOT NULL DEFAULT FALSE,
+            address TEXT NOT NULL,
             base_url TEXT NOT NULL
         )",
     )?;
@@ -69,11 +69,10 @@ pub fn initial_user_preferences(
             &Some(Utc::now()),
             &address,
             &backup,
-            &delegate,
             &"obscura"
-         ],
-         "INSERT INTO user_preferences (theme, language, network, auth_type, username, tag, last_sync, last_tx_sync, last_backup_sync, address, backup, delegate, base_url) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,?10, ?11, ?12, ?13)".to_string(),
-     )?;
+        ],
+        "INSERT INTO user_preferences (theme, language, network, auth_type, username, tag, last_sync, last_tx_sync, last_backup_sync, address, backup, base_url) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,?10, ?11, ?12)".to_string(),
+    )?;
 
     Ok(())
 }

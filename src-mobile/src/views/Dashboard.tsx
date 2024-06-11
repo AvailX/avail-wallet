@@ -22,6 +22,10 @@ import DashboardCarousel from "../components/DashboardCarousel";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const goToOther = () => {
+    navigate("/secret-recovery");
+  };
   const DASHBOARD_ITEMS = [
     { icon: diamondShinyIcon },
     { icon: sendIcon, path: "/send" },
@@ -68,8 +72,6 @@ const Dashboard = () => {
     ],
   };
 
-  const navigate = useNavigate();
-
   return (
     <>
       <DashboardLayout>
@@ -96,7 +98,7 @@ const Dashboard = () => {
           width='90%'
           mx='auto'
         >
-          {DASHBOARD_ITEMS.map(({ icon, path }, i) => (
+          {DASHBOARD_ITEMS.map(({ icon }, i) => (
             <Box
               borderRadius='9px'
               p={1}
@@ -108,18 +110,13 @@ const Dashboard = () => {
               bgcolor='#2A2A2A'
               key={i}
             >
-              <IconButton
-                onClick={() => {
-                  path && navigate(path);
-                }}
-              >
-                <img src={icon} />
-              </IconButton>
+              <img src={icon} />
             </Box>
           ))}
         </Box>
 
         <Box display='flex' mb={2}>
+          <button onClick={goToOther}>Next page</button>
           <Typography
             fontWeight={500}
             borderBottom={activeTab === "assets" ? "1px solid #FFFFFF" : ""}

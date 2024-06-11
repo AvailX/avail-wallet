@@ -12,6 +12,10 @@ import React from "react";
 import {useNavigate} from "react-router-dom";
 
 const VerifySaved = () => {
+  const navigate = useNavigate();
+  const goToOther = () => {
+    navigate('/data-pointers');
+  };
   const recoveryPhase = [
     "Babayaga",
     "One",
@@ -31,8 +35,6 @@ const VerifySaved = () => {
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
   };
-
-  const navigate = useNavigate();
 
   return (
     <>
@@ -156,6 +158,11 @@ const VerifySaved = () => {
               </Typography>
             </Box>
 
+            <Box>
+              <button onClick={goToOther}>
+                Next page
+              </button>
+            </Box>
             <Button
               fullWidth
               sx={{
