@@ -3,16 +3,16 @@ import { Box, Button, Typography } from "@mui/material";
 import img from "../../assets/data-pointers.png";
 import SwipeableEdgeDrawer from "../../components/SwipeableDrawer";
 import React from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const DataPointers = () => {
   const navigate = useNavigate();
   const goToOther = () => {
-    navigate('/dashboard');
+    navigate("/dashboard");
   };
   const [open, setOpen] = React.useState<boolean>(true);
   const toggleDrawer = (newOpen: boolean) => (): void => {
-    setOpen(newOpen);
+    setOpen(!newOpen);
   };
   return (
     <Box
@@ -80,27 +80,26 @@ const DataPointers = () => {
 
       <SwipeableEdgeDrawer toggleDrawer={() => toggleDrawer(true)} open={open}>
         <Typography
-            textAlign='center'
-            fontSize='25px'
-            fontWeight={700}
-            color='#fff'
+          textAlign='center'
+          fontSize='25px'
+          fontWeight={700}
+          color='#fff'
         >
           Backup or not?
         </Typography>
-        <Typography color='#D8D4D4' textAlign='center' mt={4}>
+        <Typography color='#D8D4D4' textAlign='left' mt={4}>
           If you choose to backup, the pointers will be encrypted with your
           viewing key and stored on our database system. When you recover your
           Avail wallet like this you instantly get access to all your record and
           past transaction history.
         </Typography>
 
-        <button onClick={goToOther}>
-          Next page
-        </button>
         <Button
-            sx={{mt: 3, bgcolor: "#3E3E3E", color: "#fff", border: "0px"}}
-            fullWidth
-            //   variant='outlined'
+          sx={{ mt: 3, bgcolor: "#3E3E3E", color: "#fff", border: "0px" }}
+          fullWidth
+          onClick={() => {
+            navigate(-1);
+          }}
         >
           Back
         </Button>

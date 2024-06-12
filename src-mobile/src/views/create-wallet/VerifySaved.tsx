@@ -7,9 +7,10 @@ import {
 } from "@mui/material";
 import SwipeableEdgeDrawer from "../../components/SwipeableDrawer";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import GoBack from "../../shared/GoBack";
 
 const VerifySaved = () => {
@@ -22,12 +23,45 @@ const VerifySaved = () => {
 
   const { phrase }: { phrase: string[] } = location.state || {};
 
+  function shuffleArray(array: string[]) {
+    let shuffledArray = array.slice();
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledArray[i], shuffledArray[j]] = [
+        shuffledArray[j],
+        shuffledArray[i],
+      ];
+    }
+    return shuffledArray;
+  }
+
   const recoveryPhase: string[] = phrase;
 
-  const [open, setOpen] = React.useState<boolean>(true);
+  console.log("recoveryPhrase", recoveryPhase);
+
+  const [open, setOpen] = React.useState<boolean>(!true);
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(!newOpen);
   };
+
+  const [pastedItems, setPastedItems] = useState<string[]>([]);
+
+  function areArraysEqual(array1: string[], array2: string[]) {
+    if (array1.length !== array2.length) {
+      return false;
+    }
+    for (let i = 0; i < array1.length; i++) {
+      if (array1[i] !== array2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  async function pasteItems() {
+    const itemsToPaste = await navigator.clipboard.readText();
+    setPastedItems(itemsToPaste.split(","));
+  }
 
   return (
     <>
@@ -48,18 +82,68 @@ const VerifySaved = () => {
           Tap the words below in order to confirm you have saved{" "}
         </Typography>
 
+        {areArraysEqual(phrase, pastedItems) && (
+          <Box mb={5}>
+            <Typography color='red'>Correct</Typography>
+          </Box>
+        )}
+
         <Box>
           <Box
             mt={3}
+            p={3}
             height='30vh'
             display='flex'
-            alignItems='flex-end'
             justifyContent='center'
             border='2px solid #00FFAA'
             borderRadius='9px'
             boxShadow='0px 4px 4px 0px #00000040'
+            position='relative'
           >
-            <Typography color='#00FFAA'>Paste</Typography>
+            <Box
+              display='grid'
+              justifyContent='space-between'
+              gridTemplateColumns='1fr 1fr 1fr'
+              gap={1}
+              height='auto'
+            >
+              {pastedItems.map((item, i) => (
+                <Box
+                  px={1}
+                  py={1}
+                  height='40px'
+                  bgcolor='#3E3E3E'
+                  borderRadius='9px'
+                  key={i}
+                >
+                  <Typography width='100%' fontSize='14px' fontWeight={600}>
+                    {i + 1}. {item}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+            <Box
+              display='flex'
+              position='absolute'
+              sx={{ bottom: "5px", pt: 10 }}
+            >
+              <Typography
+                onClick={() => pasteItems()}
+                sx={{ bottom: "5px" }}
+                color='#00FFAA'
+              >
+                Paste
+              </Typography>
+              <Typography
+                onClick={() => {
+                  setPastedItems([]);
+                }}
+                color='red'
+                sx={{ ml: 1 }}
+              >
+                Clear
+              </Typography>
+            </Box>
           </Box>
         </Box>
 
@@ -71,13 +155,24 @@ const VerifySaved = () => {
           mx='auto'
           mt={3}
         >
-          {recoveryPhase.map((phr, i) => (
-            <Box px={1} py={1} bgcolor='#3E3E3E' borderRadius='9px' key={i}>
-              <Typography width='100%' fontSize='14px' fontWeight={600}>
-                {phr}
-              </Typography>
-            </Box>
-          ))}
+          {shuffleArray(recoveryPhase)
+            .filter((x) => !pastedItems.includes(x))
+            .map((phr, i) => (
+              <Box
+                onClick={() => {
+                  setPastedItems([...pastedItems, phr]);
+                }}
+                px={1}
+                py={1}
+                bgcolor='#3E3E3E'
+                borderRadius='9px'
+                key={i}
+              >
+                <Typography width='100%' fontSize='14px' fontWeight={600}>
+                  {phr}
+                </Typography>
+              </Box>
+            ))}
         </Box>
 
         <Box
@@ -98,6 +193,13 @@ const VerifySaved = () => {
                 "linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA",
               py: 1,
               fontSize: "20px",
+            }}
+            onClick={() => {
+              if (areArraysEqual(pastedItems, phrase)) {
+                setOpen(true);
+              } else {
+                toast.error("Didn't match order");
+              }
             }}
             variant='contained'
             type='submit'
@@ -159,6 +261,7 @@ const VerifySaved = () => {
               fullWidth
               onClick={() => {
                 setOpen(false);
+                navigate("/data-pointers");
               }}
               sx={{
                 background:
@@ -174,6 +277,9 @@ const VerifySaved = () => {
               sx={{ mt: 3, bgcolor: "#3E3E3E !important" }}
               fullWidth
               variant='outlined'
+              onClick={() => {
+                navigate(-1);
+              }}
             >
               Back
             </Button>
