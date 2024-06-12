@@ -1,33 +1,42 @@
 import { ContentCopy } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import SwipeableEdgeDrawer from "../../components/SwipeableDrawer";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+
+import { toast } from "react-toastify";
 
 const SecretRecovery = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { phrase }: { phrase: string } = location.state || {};
+
+  useEffect(() => {
+    console.log("Location phrase", phrase);
+  }, []);
+
   const goToOther = () => {
     navigate("/points");
   };
-  const recoveryPhase = [
-    "Babayaga",
-    "One",
-    "Takeover",
-    "Champion",
-    "Privacy",
-    "Fear",
-    "Donkey",
-    "Puzzle",
-    "Ultra",
-    "Horse",
-    "Frontline",
-    "Cold",
-  ];
+  const recoveryPhase = phrase.split(" ");
 
   const [open, setOpen] = React.useState<boolean>(true);
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
+  };
+
+  const handleCopyToClipboard = () => {
+    navigator.clipboard
+      .writeText(recoveryPhase.toString())
+      .then(() => {
+        toast.success("Copied to clipboard"); // Use toast.success for success message
+      })
+      .catch((err) => {
+        toast.error("Failed to copy to clipboard"); // Handle errors with toast.error
+        console.error("Clipboard write error:", err);
+      });
   };
 
   return (
@@ -56,7 +65,7 @@ const SecretRecovery = () => {
         mt={3}
       >
         {recoveryPhase.map((phrase, i) => (
-          <Box px={2} py={1} bgcolor='#3E3E3E' borderRadius='9px'>
+          <Box px={2} py={1} key={i} bgcolor='#3E3E3E' borderRadius='9px'>
             <Typography width='100%' fontWeight={600}>
               {i + 1}. {phrase}
             </Typography>
@@ -86,13 +95,14 @@ const SecretRecovery = () => {
           variant='contained'
           type='submit'
           onClick={() => {
-            navigate("/verify-saved");
+            navigate("/verify-saved", { state: { phrase: recoveryPhase } });
           }}
         >
           Next
         </Button>
         <IconButton
           sx={{ bgcolor: "#3E3E3E", width: "57px", borderRadius: "9px" }}
+          onClick={handleCopyToClipboard}
         >
           <ContentCopy sx={{ color: "#00FFAA" }} />
         </IconButton>

@@ -9,31 +9,24 @@ import SwipeableEdgeDrawer from "../../components/SwipeableDrawer";
 
 import React from "react";
 
-import {useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import GoBack from "../../shared/GoBack";
 
 const VerifySaved = () => {
   const navigate = useNavigate();
   const goToOther = () => {
-    navigate('/data-pointers');
+    navigate("/data-pointers");
   };
-  const recoveryPhase = [
-    "Babayaga",
-    "One",
-    "Takeover",
-    "Champion",
-    "Privacy",
-    "Fear",
-    "Donkey",
-    "Puzzle",
-    "Ultra",
-    "Horse",
-    "Frontline",
-    "Cold",
-  ];
+
+  const location = useLocation();
+
+  const { phrase }: { phrase: string[] } = location.state || {};
+
+  const recoveryPhase: string[] = phrase;
 
   const [open, setOpen] = React.useState<boolean>(true);
   const toggleDrawer = (newOpen: boolean) => (): void => {
-    setOpen(newOpen);
+    setOpen(!newOpen);
   };
 
   return (
@@ -47,6 +40,7 @@ const VerifySaved = () => {
         color='#fff'
         textAlign='center'
       >
+        <GoBack />
         <Typography fontWeight={700} fontSize='25px'>
           Verify it’s saved correctly
         </Typography>
@@ -77,10 +71,10 @@ const VerifySaved = () => {
           mx='auto'
           mt={3}
         >
-          {recoveryPhase.map((phrase, i) => (
+          {recoveryPhase.map((phr, i) => (
             <Box px={1} py={1} bgcolor='#3E3E3E' borderRadius='9px' key={i}>
               <Typography width='100%' fontSize='14px' fontWeight={600}>
-                {phrase}
+                {phr}
               </Typography>
             </Box>
           ))}
@@ -159,12 +153,13 @@ const VerifySaved = () => {
             </Box>
 
             <Box>
-              <button onClick={goToOther}>
-                Next page
-              </button>
+              <button onClick={goToOther}>Next page</button>
             </Box>
             <Button
               fullWidth
+              onClick={() => {
+                setOpen(false);
+              }}
               sx={{
                 background:
                   "linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA",

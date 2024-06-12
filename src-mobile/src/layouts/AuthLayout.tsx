@@ -1,8 +1,9 @@
 import { Box, IconButton } from "@mui/material";
 import splashImg from "../assets/green-splash.svg";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import GoBack from "../shared/GoBack";
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
@@ -21,26 +22,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
         px={3}
         sx={{ overflowY: "auto" }}
       >
-        <Box display='flex' alignItems='center' justifyContent='flex-start'>
-          <IconButton
-            onClick={() => {
-              navigate(-1);
-            }}
-          >
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent='center'
-              bgcolor='#393939'
-              width='35px'
-              height='35px'
-              borderRadius='50%'
-              p={3}
-            >
-              <ArrowBackIosNewIcon sx={{ color: "#BDBDBD" }} />
-            </Box>
-          </IconButton>
-        </Box>
+        <GoBack />
         {children}
       </Box>
     </Box>
