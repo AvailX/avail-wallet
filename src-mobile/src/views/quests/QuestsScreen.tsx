@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { Dapp } from "../../types/dapps/types";
@@ -15,24 +15,30 @@ import ConnectedQuestsGrid from "../../components/quests/QuestsComponents/Quests
 import { getCampaigns } from "../../services/quests/quests";
 
 const QuestsScreen: React.FC = () => {
-  const [campaigns, setCampaigns] = React.useState<Campaign[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [activeTab, setActiveTab] = useState("quests");
 
-  React.useEffect(() => {
-    getCampaigns()
-      .then((campaigns) => {
-        setCampaigns(campaigns);
-      })
-      .catch((err) => {
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      try {
+        console.log("starting computation");
+        const campaignData = await getCampaigns();
+        setCampaigns(campaignData);
+        console.log("done");
+        console.log(campaignData.toString);
+      } catch (err) {
         console.log(err);
-      });
+      }
+    };
+
+    fetchCampaigns();
   }, []);
 
   const renderHorizontalScrollContainers = () => {
-    return campaigns.map((campaigns, index) => (
-      <QuestsAppBarScroll key={index} campaign={campaigns} />
+    return campaigns.map((campaign) => (
+      <QuestsAppBarScroll key={campaign.id} campaign={campaign} />
     ));
   };
-  const [activeTab, setActiveTab] = useState("quests");
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -72,9 +78,10 @@ const QuestsScreen: React.FC = () => {
           top: "17%",
           left: "3%",
           width: "100%",
-
-          maxHeight: "calc(100vh - 17%)", // Adjust the height to fill the remaining viewport height
-          overflowY: "auto", // Enable vertical scrolling if content exceeds the container height
+          // Adjust the height to fill the remaining viewport height
+          maxHeight: "calc(100vh - 17%)",
+          // Enable vertical scrolling if content exceeds the container height
+          overflowY: "auto",
         }}
       >
         {/* Quests screen */}
@@ -127,7 +134,7 @@ const QuestsScreen: React.FC = () => {
                 {/*This is the Row section of the container. placed at the bottom */}
 
                 {campaigns.map((campaign) => (
-                  <QuestsSection campaign={campaign} />
+                  <QuestsSection key={campaign.id} campaign={campaign} />
                 ))}
               </Box>
             </Box>
@@ -160,7 +167,7 @@ const QuestsScreen: React.FC = () => {
                 }}
               >
                 {campaigns.map((campaign) => (
-                  <QuestsSection campaign={campaign} />
+                  <QuestsSection key={campaign.id} campaign={campaign} />
                 ))}
               </Box>
             </Box>
@@ -193,7 +200,7 @@ const QuestsScreen: React.FC = () => {
                 }}
               >
                 {campaigns.map((campaign) => (
-                  <QuestsSection campaign={campaign} />
+                  <QuestsSection key={campaign.id} campaign={campaign} />
                 ))}
               </Box>
             </Box>

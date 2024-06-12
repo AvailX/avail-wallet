@@ -23,6 +23,7 @@ const DappsPage = () => {
       <HorizontalScrollContainer key={index} dapp={dapp} />
     ));
   };
+
   const [activeTab, setActiveTab] = useState("explore");
 
   const handleTabChange = (tab: string) => {
@@ -102,21 +103,21 @@ const DappsPage = () => {
               {/* Container for the exchange item */}
 
               <Box
-               sx={{
-                position: "relative",
-                width: "340px",
-                overflowX: "auto",
-                background: "#2A2A2A",
-                padding: "10px",
-                borderRadius: "22px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-end",
-              }}
+                sx={{
+                  position: "relative",
+                  width: "340px",
+                  overflowX: "auto",
+                  background: "#2A2A2A",
+                  padding: "10px",
+                  borderRadius: "22px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                }}
               >
                 {/*This is the Row section of the container. placed at the bottom */}
                 {dapps.map((dapp, index) => (
-                  <DappsSection title="Exchanges" dapp={dapp} />
+                  <DappsSection key={index} title="Exchanges" dapp={dapp} />
                 ))}
               </Box>
             </Box>
@@ -150,7 +151,7 @@ const DappsPage = () => {
               >
                 {/*This is the Row section of the container. placed at the bottom */}
                 {dapps.map((dapp, index) => (
-                  <DappsSection title="Exchanges" dapp={dapp} />
+                  <DappsSection key={index} title="Exchanges" dapp={dapp} />
                 ))}
               </Box>
             </Box>
