@@ -66,8 +66,6 @@ use avail_common::{
 
 use super::decrypt_transition::DecryptTransition;
 
-use super::scan_utils::convert_txn_to_confirmed_txn;
-
 /// Gets all tags from a given block height to the latest block height
 pub fn get_tags<N: Network>(min_block_height: u32) -> AvailResult<Vec<String>> {
     let api_client = setup_client::<N>()?;
@@ -1590,7 +1588,12 @@ pub fn sync_transaction<N: Network>(
     timestamp: DateTime<Local>,
     message: Option<String>,
     from: Option<String>,
-) -> AvailResult<(Vec<AvailRecord<N>>, Vec<EncryptedData>, bool)> {
+) -> AvailResult<(
+    Option<EncryptedData>,
+    Vec<AvailRecord<N>>,
+    Vec<EncryptedData>,
+    bool,
+)> {
     let view_key = VIEWSESSION.get_instance::<N>()?;
     let address = view_key.to_address();
 
@@ -1599,6 +1602,8 @@ pub fn sync_transaction<N: Network>(
 
     let mut execution_transitions: Vec<ExecutedTransition<N>> = vec![];
     let mut found_flag = false;
+
+    let state = check_transaction_state::<N>(transaction)?;
 
     for transition in transaction.transitions() {
         let ownership_check = match DecryptTransition::owns_transition(
@@ -1654,7 +1659,8 @@ pub fn sync_transaction<N: Network>(
 
     let execution_transaction = match !execution_transitions.is_empty() {
         true => {
-            let fee = match transaction.fee_amount() {
+            let inner_tx = transaction.transaction();
+            let fee = match inner_tx.fee_amount() {
                 Ok(fee) => *fee as f64 / 1000000.0,
                 Err(_) => {
                     return Err(AvailError::new(
@@ -1666,8 +1672,6 @@ pub fn sync_transaction<N: Network>(
             };
 
             println!("Fee found from external execution: {:?}", fee);
-
-            let state = check_transaction_state::<N>(&transaction)?;
 
             let execution_tx = TransactionPointer::<N>::new(
                 None,
@@ -1697,7 +1701,12 @@ pub fn sync_transaction<N: Network>(
         false => None,
     };
 
-    Ok((record_pointers, encrypted_transition_pointers, found_flag))
+    Ok((
+        execution_transaction,
+        record_pointers,
+        encrypted_transition_pointers,
+        found_flag,
+    ))
 }
 
 pub fn check_transaction_state<N: Network>(

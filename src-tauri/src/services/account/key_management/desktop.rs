@@ -145,6 +145,18 @@ pub fn delete_key<N: Network>(password: &str) -> AvailResult<String> {
     Ok("Key Deleted".to_string())
 }
 
+pub fn delete_key_for_recovery<N: Network>(password: &str) -> AvailResult<String> {
+    let p_entry = Entry::new("com.avail.wallet.p", "avl-p")?;
+    p_entry.delete_password()?;
+
+    let v_entry = Entry::new("com.avail.wallet.v", "avl-v")?;
+    v_entry.delete_password()?;
+
+    let s_entry = Entry::new("com.avail.wallet.phrase", "avl-s")?;
+    s_entry.delete_password()?;
+
+    Ok("Key Deleted".to_string())
+}
 #[cfg(test)]
 mod windows_linux_key_management_tests {
     use super::*;

@@ -1,25 +1,578 @@
 use chrono::Local;
 use futures::lock::MutexGuard;
-use snarkvm::prelude::{Network, Plaintext, Record};
+use snarkvm::{
+    circuit::group::add,
+    console::program::Itertools,
+    ledger::Block,
+    prelude::{ConfirmedTransaction, Network, Plaintext, Record},
+};
+use std::ops::Sub;
+use tauri::{Manager, Window};
+
+use rayon::prelude::*;
+use std::sync::{
+    atomic::{AtomicBool, AtomicUsize, Ordering},
+    Arc, Mutex,
+};
+use std::time::Duration;
 
 use crate::{
-    helpers::utils::{get_timestamp_from_i64, get_timestamp_from_i64_utc},
+    api::{
+        aleo_client::{setup_client, setup_local_client},
+        backup_recovery::update_sync_height,
+    },
+    helpers::utils::get_timestamp_from_i64,
     models::wallet_connect::records::{GetRecordsRequest, RecordFilterType, RecordsFilter},
-    services::local_storage::{
-        encrypted_data::{
-            handle_block_scan_failure, update_encrypted_transaction_confirmed_by_id,
-            update_encrypted_transaction_state_by_id,
+    services::{
+        local_storage::{
+            encrypted_data::{
+                handle_block_scan_failure, update_encrypted_transaction_confirmed_by_id,
+                update_encrypted_transaction_state_by_id,
+            },
+            persistent_storage::{get_address_string, update_last_sync},
+            session::view::VIEWSESSION,
+            storage_api::{
+                deployment::{find_encrypt_store_deployments, get_deployment_pointer},
+                records::{get_record_pointers, get_record_pointers_for_record_type},
+                transaction::{
+                    check_unconfirmed_transactions, get_transaction_pointer, get_tx_ids_from_date,
+                    get_unconfirmed_and_failed_transaction_ids,
+                },
+            },
         },
-        persistent_storage::{get_address_string, update_last_sync},
-        storage_api::records::{get_record_pointers, get_record_pointers_for_record_type},
+        record_handling::utils::{
+            get_executed_transitions, handle_deployment_confirmed, handle_deployment_rejection,
+            handle_transaction_confirmed, handle_transaction_rejection, input_spent_check,
+            sync_transaction, transition_to_record_pointer,
+        },
     },
 };
 
 use avail_common::{
     aleo_tools::program_manager::Credits,
     errors::{AvailError, AvailErrorType, AvailResult},
-    models::encrypted_data::RecordTypeCommon,
+    models::encrypted_data::{EncryptedData, RecordTypeCommon, TransactionState},
 };
+
+/// Scans the blockchain for new records, distills record pointers, transition pointer and tags, and returns them
+pub fn get_records<N: Network>(
+    last_sync: u32,
+    height: u32,
+    window: Option<Window>,
+) -> AvailResult<bool> {
+    let view_key = VIEWSESSION.get_instance::<N>()?;
+    let address = view_key.to_address();
+
+    let api_client = setup_client::<N>()?;
+
+    let step_size = 49;
+
+    let amount_to_scan = height.sub(last_sync);
+    let latest_height = height;
+
+    let last_sync_block = api_client.get_block(last_sync)?;
+    let last_sync_timestamp = get_timestamp_from_i64(last_sync_block.timestamp())?;
+
+    // checks if unconfirmed transactions have expired and updates their state to failed
+    check_unconfirmed_transactions::<N>()?;
+
+    let stored_transaction_ids = get_tx_ids_from_date::<N>(last_sync_timestamp)?;
+
+    println!("Stored transaction ids: {:?}", stored_transaction_ids);
+
+    let unconfirmed_and_failed_ids = get_unconfirmed_and_failed_transaction_ids::<N>()?;
+
+    println!(
+        "Unconfirmed and failed ids: {:?}",
+        unconfirmed_and_failed_ids
+    );
+
+    let unconfirmed_and_failed_transaction_ids = unconfirmed_and_failed_ids
+        .iter()
+        .map(|(id, _)| *id)
+        .collect::<Vec<N::TransactionID>>();
+
+    let stored_transaction_ids = stored_transaction_ids
+        .iter()
+        .filter(|id| !unconfirmed_and_failed_transaction_ids.contains(id))
+        .cloned()
+        .collect_vec();
+
+    println!(
+        "Stored transaction ids without unconfirmed and failed: {:?}",
+        stored_transaction_ids
+    );
+
+    let mut end_height = last_sync.saturating_add(step_size);
+    let mut start_height = last_sync;
+
+    if end_height > latest_height {
+        end_height = latest_height;
+    }
+
+    let mut found_flag = false;
+
+    for _ in (last_sync..latest_height).step_by(step_size as usize) {
+        let mut blocks = match api_client.get_blocks(start_height, end_height) {
+            Ok(blocks) => blocks,
+            Err(e) => {
+                println!("Error getting blocks: {:?}", e.to_string());
+
+                if &e.to_string() == "zero txs error" {
+                    start_height = end_height;
+                    end_height = start_height.saturating_add(step_size);
+                    if end_height > latest_height {
+                        end_height = latest_height;
+                    };
+
+                    continue;
+                }
+
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    e.to_string(),
+                    "Error getting blocks".to_string(),
+                ));
+            }
+        };
+
+        for block in blocks {
+            // Check for deployment transactions
+            let transactions = block.transactions();
+            let timestamp = get_timestamp_from_i64(block.clone().timestamp())?;
+            let height = block.height();
+
+            match find_encrypt_store_deployments(
+                transactions,
+                height,
+                timestamp,
+                address,
+                stored_transaction_ids.clone(),
+            ) {
+                Ok(_) => {}
+                Err(e) => {
+                    handle_block_scan_failure::<N>(height)?;
+
+                    return Err(AvailError::new(
+                        AvailErrorType::Internal,
+                        e.to_string(),
+                        "Error scanning deployment transactions.".to_string(),
+                    ));
+                }
+            }
+
+            for transaction in transactions.iter() {
+                let transaction_id = transaction.id();
+
+                let unconfirmed_transaction_id = match transaction.to_unconfirmed_transaction_id() {
+                    Ok(id) => id,
+                    Err(_) => {
+                        handle_block_scan_failure::<N>(height)?;
+
+                        return Err(AvailError::new(
+                            AvailErrorType::SnarkVm,
+                            "Error getting unconfirmed transaction id".to_string(),
+                            "Issue getting unconfirmed transaction id".to_string(),
+                        ));
+                    }
+                };
+
+                if stored_transaction_ids.contains(&transaction_id)
+                    || stored_transaction_ids.contains(&unconfirmed_transaction_id)
+                {
+                    continue;
+                }
+
+                if let Some((tx_id, pointer_id)) =
+                    unconfirmed_and_failed_ids.iter().find(|(tx_id, _)| {
+                        tx_id == &transaction_id || tx_id == &unconfirmed_transaction_id
+                    })
+                {
+                    let inner_tx = transaction.transaction();
+                    let fee = match inner_tx.fee_amount() {
+                        Ok(fee) => *fee as f64 / 1000000.0,
+                        Err(_) => {
+                            handle_block_scan_failure::<N>(height)?;
+
+                            return Err(AvailError::new(
+                                AvailErrorType::SnarkVm,
+                                "Error calculating fee".to_string(),
+                                "Issue calculating fee".to_string(),
+                            ));
+                        }
+                    };
+
+                    if let ConfirmedTransaction::<N>::AcceptedExecute(_, _, _) = transaction {
+                        let executed_transitions =
+                            match get_executed_transitions::<N>(inner_tx, height) {
+                                Ok(transitions) => transitions,
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::SnarkVm,
+                                        e.to_string(),
+                                        "Error getting executed transitions".to_string(),
+                                    ));
+                                }
+                            };
+
+                        match handle_transaction_confirmed(
+                            pointer_id.as_str(),
+                            *tx_id,
+                            executed_transitions,
+                            height,
+                            timestamp,
+                            Some(fee),
+                            address,
+                        ) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                handle_block_scan_failure::<N>(height)?;
+
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    e.to_string(),
+                                    "Error handling confirmed transaction".to_string(),
+                                ));
+                            }
+                        };
+
+                        continue;
+                    } else if let ConfirmedTransaction::<N>::AcceptedDeploy(_, _, _) = transaction {
+                        if let Some(fee_transition) = transaction.fee_transition() {
+                            let transition = fee_transition.transition();
+
+                            match input_spent_check(transition, true) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error checking spent input".to_string(),
+                                    ));
+                                }
+                            };
+
+                            match transition_to_record_pointer(
+                                *tx_id,
+                                transition.clone(),
+                                height,
+                                view_key,
+                            ) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error finding records from transition".to_string(),
+                                    ));
+                                }
+                            };
+                        }
+
+                        match handle_deployment_confirmed(
+                            pointer_id.as_str(),
+                            *tx_id,
+                            height,
+                            Some(fee),
+                            address,
+                        ) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                handle_block_scan_failure::<N>(height)?;
+
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    e.to_string(),
+                                    "Error handling confirmed deployment".to_string(),
+                                ));
+                            }
+                        };
+
+                        continue;
+                    } else if let ConfirmedTransaction::<N>::RejectedDeploy(_, fee_tx, _, _) =
+                        transaction
+                    {
+                        let deployment_pointer =
+                            match get_deployment_pointer::<N>(pointer_id.as_str()) {
+                                Ok(pointer) => pointer,
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error getting deployment pointer".to_string(),
+                                    ));
+                                }
+                            };
+
+                        if let Some(fee_transition) = fee_tx.fee_transition() {
+                            let transition = fee_transition.transition();
+
+                            match input_spent_check(transition, true) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error checking spent input".to_string(),
+                                    ));
+                                }
+                            };
+
+                            match transition_to_record_pointer(
+                                *tx_id,
+                                transition.clone(),
+                                height,
+                                view_key,
+                            ) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error finding records from transition".to_string(),
+                                    ));
+                                }
+                            };
+                        }
+
+                        match handle_deployment_rejection(
+                            deployment_pointer,
+                            pointer_id.as_str(),
+                            *tx_id,
+                            height,
+                            Some(fee),
+                            address,
+                        ) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                handle_block_scan_failure::<N>(height)?;
+
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    e.to_string(),
+                                    "Error handling rejected deployment".to_string(),
+                                ));
+                            }
+                        };
+
+                        continue;
+                    } else if let ConfirmedTransaction::<N>::RejectedExecute(
+                        _,
+                        fee_tx,
+                        rejected_tx,
+                        _,
+                    ) = transaction
+                    {
+                        let transaction_pointer =
+                            match get_transaction_pointer::<N>(pointer_id.as_str()) {
+                                Ok(pointer) => pointer,
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error getting transaction pointer".to_string(),
+                                    ));
+                                }
+                            };
+
+                        if let Some(fee_transition) = fee_tx.fee_transition() {
+                            let transition = fee_transition.transition();
+
+                            match input_spent_check(transition, true) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error checking spent input".to_string(),
+                                    ));
+                                }
+                            };
+
+                            match transition_to_record_pointer(
+                                *tx_id,
+                                transition.clone(),
+                                height,
+                                view_key,
+                            ) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error finding records from transition".to_string(),
+                                    ));
+                                }
+                            };
+                        }
+
+                        if let Some(rejected_execution) = rejected_tx.execution() {
+                            match handle_transaction_rejection(
+                                transaction_pointer,
+                                pointer_id.as_str(),
+                                Some(rejected_execution.clone()),
+                                Some(*tx_id),
+                                height,
+                                Some(fee),
+                                address,
+                            ) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    handle_block_scan_failure::<N>(height)?;
+
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error handling rejected transaction".to_string(),
+                                    ));
+                                }
+                            };
+
+                            continue;
+                        }
+
+                        match handle_transaction_rejection(
+                            transaction_pointer,
+                            pointer_id.as_str(),
+                            None,
+                            Some(*tx_id),
+                            height,
+                            Some(fee),
+                            address,
+                        ) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                handle_block_scan_failure::<N>(height)?;
+
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    e.to_string(),
+                                    "Error handling rejected transaction".to_string(),
+                                ));
+                            }
+                        };
+
+                        continue;
+                    }
+                    continue;
+                }
+
+                let (_, _, _, bool_flag) =
+                    match sync_transaction::<N>(transaction, height, timestamp, None, None) {
+                        Ok(transaction_result) => transaction_result,
+
+                        Err(e) => {
+                            match handle_block_scan_failure::<N>(height) {
+                                Ok(_) => {}
+                                Err(e) => {
+                                    return Err(AvailError::new(
+                                        AvailErrorType::Internal,
+                                        e.to_string(),
+                                        "Error syncing transaction".to_string(),
+                                    ));
+                                }
+                            }
+
+                            return Err(AvailError::new(
+                                AvailErrorType::Internal,
+                                e.to_string(),
+                                "Error syncing transaction".to_string(),
+                            ));
+                        }
+                    };
+
+                if !found_flag {
+                    found_flag = bool_flag;
+                }
+            }
+
+            match update_last_sync(height) {
+                Ok(_) => {
+                    println!("Synced {}", height);
+                }
+                Err(e) => {
+                    match handle_block_scan_failure::<N>(height) {
+                        Ok(_) => {}
+                        Err(e) => {
+                            return Err(AvailError::new(
+                                AvailErrorType::Internal,
+                                e.to_string(),
+                                "Error syncing transaction".to_string(),
+                            ));
+                        }
+                    }
+
+                    return Err(AvailError::new(
+                        AvailErrorType::Internal,
+                        e.to_string(),
+                        "Error updating last synced block height".to_string(),
+                    ));
+                }
+            };
+
+            let percentage =
+                (((height - last_sync) as f32 / amount_to_scan as f32) * 10000.0).round() / 100.0;
+
+            let percentage = if percentage > 100.0 {
+                100.0
+            } else {
+                percentage
+            };
+
+            // update progress bar
+            if let Some(window) = window.clone() {
+                match window.emit("scan_progress", percentage) {
+                    Ok(_) => {}
+                    Err(e) => {
+                        match handle_block_scan_failure::<N>(height) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                return Err(AvailError::new(
+                                    AvailErrorType::Internal,
+                                    e.to_string(),
+                                    "Error syncing transaction".to_string(),
+                                ));
+                            }
+                        }
+
+                        return Err(AvailError::new(
+                            AvailErrorType::Internal,
+                            e.to_string(),
+                            "Error updating progress bar".to_string(),
+                        ));
+                    }
+                };
+            }
+        }
+
+        // Search in reverse order from the latest block to the earliest block
+        start_height = end_height;
+        end_height = start_height.saturating_add(step_size);
+        if end_height > latest_height {
+            end_height = latest_height;
+        };
+    }
+
+    Ok(found_flag)
+}
 
 /// Fetches an aleo credits record to spend
 pub fn find_aleo_credits_record_to_spend<N: Network>(
@@ -221,7 +774,7 @@ async fn split_records<N: Network>(
 #[cfg(test)]
 mod record_handling_test {
     use super::*;
-    use crate::api::aleo_client::setup_client;
+    use crate::services::local_storage::persistent_storage::get_last_sync;
     use snarkvm::prelude::{AleoID, Field, Testnet3};
     use std::str::FromStr;
 
@@ -260,21 +813,31 @@ mod record_handling_test {
         }
     }
 
+    /*
+    #[test]
+    fn test_nova() {
+        let _res = get_nova_records::<Testnet3>(372243).unwrap();
+
+        println!("res: {:?}", _res);
+    }
+    */
+
+    #[test]
+    fn test_get_records() {
+        let api_client = setup_client::<Testnet3>().unwrap();
+
+        let latest_height = api_client.latest_height().unwrap();
+        let last_sync = get_last_sync().unwrap();
+
+        let _res = get_records::<Testnet3>(last_sync, latest_height, None).unwrap();
+
+        println!("res: {:?}", _res);
+    }
+
     #[test]
     fn find_aleo_credits_record_to_spend_test() {
         let _res = find_aleo_credits_record_to_spend::<Testnet3>(&10000, vec![]).unwrap();
 
         println!("res: {:?}", _res);
     }
-
-    /*
-        #[tokio::test]
-        async fn handle_unconfirmed_transactions_test() {
-            VIEWSESSION
-            .set_view_session("AViewKey1h4qXQ8kP2JT7Vo7pBuhtMrHz7R81RJUHLc2LTQfrCt3R")
-            .unwrap();
-
-           handle_unconfirmed_transactions::<Testnet3>().await.unwrap();
-        }
-    */
 }

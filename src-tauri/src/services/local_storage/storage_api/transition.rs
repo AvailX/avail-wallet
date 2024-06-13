@@ -78,7 +78,6 @@ pub fn is_transition_stored(transition_id: &str) -> AvailResult<bool> {
         Err(_) => Ok(false),
     }
 }
-
 #[cfg(test)]
 mod transitions_storage_api_tests {
     use super::*;

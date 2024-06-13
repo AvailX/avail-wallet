@@ -265,7 +265,7 @@ pub fn delete_local_for_recovery(password: &str) -> AvailResult<()> {
 
     let val: Identifier<Testnet3> = Identifier::<Testnet3>::from_str("test")?;
 
-    match key_manager.delete_key(Some(password), val) {
+    match key_manager.delete_key_for_recovery(Some(password), val) {
         Ok(_) => {}
         Err(e) => {}
     };

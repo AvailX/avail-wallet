@@ -308,7 +308,6 @@ pub fn get_unconfirmed_and_failed_transaction_ids<N: Network>(
             EncryptedDataTypeCommon::Deployment => {
                 let deployment: DeploymentPointer<N> =
                     encrypted_struct.decrypt(VIEWSESSION.get_instance::<N>()?)?;
-
                 if let Some(tx_id) = deployment.id {
                     if let Some(id) = encrypted_transaction.id {
                         transaction_ids.push((tx_id, id.to_string()));
@@ -452,7 +451,6 @@ pub fn handle_deployment_failed<N: Network>(pointer_id: &str) -> AvailResult<()>
 
     Ok(())
 }
-
 /// Check if transaction pointer is already stored via transaction id
 pub fn is_transcation_stored(transaction_id: &str) -> AvailResult<bool> {
     match get_encrypted_data_by_transaction_id(transaction_id) {
@@ -460,7 +458,6 @@ pub fn is_transcation_stored(transaction_id: &str) -> AvailResult<bool> {
         Err(_) => Ok(false),
     }
 }
-
 #[cfg(test)]
 mod tx_out_storage_api_tests {
     use super::*;
