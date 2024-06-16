@@ -36,7 +36,7 @@ const QuestsScreen: React.FC = () => {
 
   const renderHorizontalScrollContainers = () => {
     return campaigns.map((campaign) => (
-      <QuestsAppBarScroll key={campaign.id} campaign={campaign} />
+      <QuestsAppBarScroll  campaign={campaign} />
     ));
   };
 
@@ -134,7 +134,7 @@ const QuestsScreen: React.FC = () => {
                 {/*This is the Row section of the container. placed at the bottom */}
 
                 {campaigns.map((campaign) => (
-                  <QuestsSection key={campaign.id} campaign={campaign} />
+                  <QuestsSection  campaign={campaign} />
                 ))}
               </Box>
             </Box>
@@ -167,7 +167,7 @@ const QuestsScreen: React.FC = () => {
                 }}
               >
                 {campaigns.map((campaign) => (
-                  <QuestsSection key={campaign.id} campaign={campaign} />
+                  <QuestsSection  campaign={campaign} />
                 ))}
               </Box>
             </Box>
@@ -200,7 +200,7 @@ const QuestsScreen: React.FC = () => {
                 }}
               >
                 {campaigns.map((campaign) => (
-                  <QuestsSection key={campaign.id} campaign={campaign} />
+                  <QuestsSection  campaign={campaign} />
                 ))}
               </Box>
             </Box>
