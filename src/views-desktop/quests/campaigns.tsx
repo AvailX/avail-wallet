@@ -12,11 +12,13 @@ import {LargeTitleText} from '../../components/typography/typography';
 
 // Testing
 import {type Campaign, testCampaign} from '../../types/quests/quest_types';
+import {useNavigate} from 'react-router-dom';
 
 // Services
 import {getCampaigns} from '../../services/quests/quests';
 
 function Campaigns() {
+	const navigate = useNavigate();
 	const [campaigns, setCampaigns] = React.useState<Campaign[]>([]);
 
 	React.useEffect(() => {
@@ -33,6 +35,14 @@ function Campaigns() {
 			<mui.Box sx={{display: 'flex', flexDirection: 'column', p: '3%', justifyContent: 'center', alignItems: 'center', background: 'url(' + greenGlow + ') no-repeat ', paddingBottom: '7%'}}>
 				<LargeTitleText sx={{color: '#FFF'}}> Web3 Privacy</LargeTitleText>
 				<LargeTitleText sx={{color: '#00FFAA', textShadow: '0 0 10px #00FFAA'}}> Quests </LargeTitleText>
+				<mui.Stack>
+					<mui.Button>Explore now</mui.Button>
+					<mui.Button
+						onClick={() => {
+							navigate('/quests');
+						}}
+					>Create a quest</mui.Button>
+				</mui.Stack>
 			</mui.Box>
 			<mui.Box sx={{display: 'flex', flexDirection: 'column', mt: '3%'}}>
 				{campaigns.map(campaign => (
