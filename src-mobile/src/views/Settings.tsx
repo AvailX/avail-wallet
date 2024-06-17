@@ -391,25 +391,6 @@ function Settings() {
           </Box>
         ))}
       </Box>
-
-      {/* <Dialog
-        fullScreen
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="responsive-dialog-title"
-      >
-        <DialogTitle id="responsive-dialog-title">
-          {selectedOption && selectedOption}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>renderOptionContent</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <IconButton autoFocus onClick={handleClose}>
-            <Typography variant="button">Close</Typography>
-          </IconButton>
-        </DialogActions>
-      </Dialog> */}
     </DashboardLayout>
   );
 }
