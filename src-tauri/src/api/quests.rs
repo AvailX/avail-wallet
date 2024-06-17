@@ -8,6 +8,7 @@ use crate::api::client::get_quest_client_with_session;
 use crate::models::pointers::{
     deployment::DeploymentPointer, transaction::TransactionPointer, transition::TransitionPointer,
 };
+use crate::services::authentication::session;
 use crate::services::local_storage::persistent_storage::get_network;
 use crate::services::local_storage::session::view::VIEWSESSION;
 use crate::services::local_storage::storage_api::transaction::get_transaction_ids_for_quest_verification;
@@ -22,6 +23,7 @@ use tauri_plugin_http::reqwest;
 use snarkvm::prelude::{Network, Testnet3, Transaction};
 
 use super::aleo_client::setup_client;
+use super::client::SESSION;
 
 /* GET ALL CAMPAIGNS */
 #[tauri::command(rename_all = "snake_case")]
@@ -518,7 +520,38 @@ pub async fn get_whitelists() -> AvailResult<Vec<WhitelistResponse>> {
 
 // ======= QaaS API =======
 #[tauri::command(rename_all = "snake_case")]
-pub async fn create_campaign(campaign: Campaign) -> AvailResult<Campaign> {
+pub async fn create_campaign(
+    title: String,
+    subtitle: String,
+    desc_1: String,
+    desc_main: String,
+    desc_2: String,
+    inner_desc: String,
+    box_image: String,
+    bg_image: String,
+    profile_image: String,
+    color: String,
+    points_image: String,
+    project_name: String,
+) -> AvailResult<Campaign> {
+    let campaign = Campaign {
+        id: Uuid::new_v4(),
+        title,
+        subtitle,
+        description: CampaignDescription {
+            part1: desc_1,
+            main: desc_main,
+            part2: desc_2,
+        },
+        inner_description: inner_desc,
+        box_image,
+        bg_image,
+        profile_image,
+        color,
+        points_image,
+        project_name,
+    };
+
     let res = match get_quest_client_with_session(reqwest::Method::POST, "campaign")?
         .json(&campaign)
         .send()
@@ -526,13 +559,15 @@ pub async fn create_campaign(campaign: Campaign) -> AvailResult<Campaign> {
     {
         Ok(res) => res,
         Err(e) => {
+            println!("Error creating campaign: {:?}", e);
             return Err(AvailError::new(
                 AvailErrorType::External,
                 e.to_string(),
                 "Error creating campaign".to_string(),
-            ))
+            ));
         }
     };
+    println!("Response: {:?}", res);
     if res.status() == 200 {
         let campaign: Campaign = match res.json().await {
             Ok(res) => res,
@@ -562,7 +597,38 @@ pub async fn create_campaign(campaign: Campaign) -> AvailResult<Campaign> {
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub async fn update_campaign(campaign: Campaign) -> AvailResult<Campaign> {
+pub async fn update_campaign(
+    id: Uuid,
+    title: String,
+    subtitle: String,
+    desc_1: String,
+    desc_main: String,
+    desc_2: String,
+    inner_desc: String,
+    box_image: String,
+    bg_image: String,
+    profile_image: String,
+    color: String,
+    points_image: String,
+    project_name: String,
+) -> AvailResult<Campaign> {
+    let campaign = Campaign {
+        id,
+        title,
+        subtitle,
+        description: CampaignDescription {
+            part1: desc_1,
+            main: desc_main,
+            part2: desc_2,
+        },
+        inner_description: inner_desc,
+        box_image,
+        bg_image,
+        profile_image,
+        color,
+        points_image,
+        project_name,
+    };
     let path = format!("campaign/{}", campaign.id);
     let res = match get_quest_client_with_session(reqwest::Method::PUT, &path)?
         .json(&campaign)

@@ -15,8 +15,10 @@ use services::local_storage::persistent_storage::{
 };
 
 use api::quests::{
-    check_quest_completion, get_campaigns, get_collections, get_points, get_quests_for_campaign,
-    get_whitelists, is_task_verified, verify_task,
+    check_quest_completion, create_campaign, create_collection, create_quest, delete_campaign,
+    delete_collection, delete_quest, distribute_rewards, get_campaigns, get_collections,
+    get_points, get_quests_for_campaign, get_whitelists, is_task_verified, update_campaign,
+    update_collection, update_quest, verify_task,
 };
 use api::{
     aleo_client::switch_to_obscura,
@@ -113,6 +115,17 @@ pub fn run() {
             is_task_verified,
             check_quest_completion,
             get_collections,
+            /* --QaaS-- */
+            create_campaign,
+            update_campaign,
+            delete_campaign,
+            create_quest,
+            update_quest,
+            delete_quest,
+            create_collection,
+            update_collection,
+            delete_collection,
+            distribute_rewards,
             /* --Wallet Connect Api */
             get_event,
             get_events,

@@ -42,7 +42,7 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
     let client = reqwest::Client::new();
 
     let res = match client
-        .post(format!("{}/auth/login/", api))
+        .post(format!("http://0.0.0.0:8001/auth/login/"))
         .json(&verify_request)
         .send()
         .await
@@ -104,7 +104,7 @@ pub async fn get_session_after_creation<N: Network>(
     let api = env!("API");
 
     let res = match reqwest::Client::new()
-        .post(format!("{}/auth/login/", api))
+        .post(format!("http://0.0.0.0:8001/auth/login/"))
         .json(&verify_request)
         .send()
         .await
@@ -165,7 +165,7 @@ pub async fn request_hash(address: &str) -> AvailResult<server_auth::CreateSessi
     let api = env!("API");
 
     let res = match client
-        .post(format!("{}/auth/request/", api))
+        .post(format!("http://0.0.0.0:8001/auth/request/"))
         .header("Content-Type", "application/json")
         .json(&request)
         .send()
@@ -238,7 +238,7 @@ pub async fn get_session_only(request: VerifySessionResponse) -> AvailResult<Str
     let client = reqwest::Client::new();
 
     let res = match client
-        .post("https://test-api.avail.global/auth/login/")
+        .post("http://0.0.0.0:8001/auth/login/")
         .json(&request.to_request())
         .send()
         .await

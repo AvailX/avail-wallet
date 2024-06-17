@@ -27,7 +27,8 @@ pub fn get_quest_client_with_session(
     };
 
     let cookie_value = format!("{}={}", cookie_name, session);
-    let url = format!("{}/quests/{}", api, path);
+    // let url = format!("{}/quests/{}", api, path);
+    let url = format!("http://0.0.0.0:8000/quests/{}", path);
 
     let request = client
         .request(method, url)
@@ -116,7 +117,9 @@ pub fn get_um_client_with_session(
 
     let cookie_value = format!("{}={}", cookie_name, session);
 
-    let url = format!("{}/{}", api, path);
+    // let url = format!("{}/{}", api, path);
+    let url = format!("http://0.0.0.0:8001/{}", path);
+
     let request = client
         .request(method, url)
         .header(reqwest::header::COOKIE, cookie_value);
