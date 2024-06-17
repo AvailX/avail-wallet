@@ -706,7 +706,27 @@ pub async fn delete_campaign(campaign_id: &str) -> AvailResult<()> {
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub async fn create_quest(quest: Quest) -> AvailResult<Quest> {
+pub async fn create_quest(
+    title: String,
+    description: String,
+    display_image: String,
+    tasks: Vec<Task>,
+    reward: Reward,
+    expires_on: DateTime<Utc>,
+    created_on: DateTime<Utc>,
+    campaign_id: Uuid,
+) -> AvailResult<Quest> {
+    let quest = Quest {
+        id: Uuid::new_v4(),
+        title,
+        description,
+        display_image,
+        tasks,
+        reward,
+        expires_on,
+        created_on,
+        campaign_id,
+    };
     let res = match get_quest_client_with_session(reqwest::Method::POST, "create")?
         .json(&quest)
         .send()
@@ -750,8 +770,30 @@ pub async fn create_quest(quest: Quest) -> AvailResult<Quest> {
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub async fn update_quest(quest: Quest) -> AvailResult<Quest> {
-    let path = format!("update/{}", quest.id);
+pub async fn update_quest(
+    id: Uuid,
+    title: String,
+    description: String,
+    display_image: String,
+    tasks: Vec<Task>,
+    reward: Reward,
+    expires_on: DateTime<Utc>,
+    created_on: DateTime<Utc>,
+    campaign_id: Uuid,
+) -> AvailResult<Quest> {
+    let path = format!("update/{}", id);
+    let quest = Quest {
+        id,
+        title,
+        description,
+        display_image,
+        tasks,
+        reward,
+        expires_on,
+        created_on,
+        campaign_id,
+    };
+
     let res = match get_quest_client_with_session(reqwest::Method::PUT, &path)?
         .json(&quest)
         .send()
@@ -828,7 +870,23 @@ pub async fn delete_quest(quest_id: &str) -> AvailResult<()> {
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub async fn create_collection(collection: Collection) -> AvailResult<Collection> {
+pub async fn create_collection(
+    name: String,
+    whitelist_img: String,
+    description: String,
+    inner_img: Option<String>,
+    twitter_link: Option<String>,
+    discord_link: Option<String>,
+) -> AvailResult<Collection> {
+    let collection = Collection {
+        id: Uuid::new_v4(),
+        name,
+        whitelist_img,
+        description,
+        inner_img,
+        twitter_link,
+        discord_link,
+    };
     let res = match get_quest_client_with_session(reqwest::Method::POST, "collection")?
         .json(&collection)
         .send()
@@ -872,8 +930,25 @@ pub async fn create_collection(collection: Collection) -> AvailResult<Collection
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub async fn update_collection(collection: Collection) -> AvailResult<Collection> {
-    let path = format!("collection/{}", collection.id);
+pub async fn update_collection(
+    id: Uuid,
+    name: String,
+    whitelist_img: String,
+    description: String,
+    inner_img: Option<String>,
+    twitter_link: Option<String>,
+    discord_link: Option<String>,
+) -> AvailResult<Collection> {
+    let collection = Collection {
+        id,
+        name,
+        whitelist_img,
+        description,
+        inner_img,
+        twitter_link,
+        discord_link,
+    };
+    let path = format!("collection/{}", id);
     let res = match get_quest_client_with_session(reqwest::Method::PUT, &path)?
         .json(&collection)
         .send()
