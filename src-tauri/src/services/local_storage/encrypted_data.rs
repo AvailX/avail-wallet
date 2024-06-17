@@ -3,7 +3,7 @@ use std::str::FromStr;
 use avail_common::models::encrypted_data::Data;
 use chrono::{DateTime, Utc};
 use rusqlite::{params_from_iter, ToSql};
-use snarkvm::prelude::{Network, Testnet3};
+use snarkvm::prelude::{Network, TestnetV0};
 
 use crate::models;
 use crate::models::pointers::record;
@@ -627,11 +627,11 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
     for encrypted_record_pointer in data.record_pointers {
         let e_r = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
-                AvailRecord::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+                AvailRecord::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                     encrypted_record_pointer,
                 )?
             }
-            _ => AvailRecord::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+            _ => AvailRecord::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                 encrypted_record_pointer,
             )?,
         };
@@ -644,11 +644,11 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
     for encrypted_transaction in data.transactions {
         let e_t = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
-                TransactionPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+                TransactionPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                     encrypted_transaction,
                 )?
             }
-            _ => TransactionPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+            _ => TransactionPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                 encrypted_transaction,
             )?,
         };
@@ -658,11 +658,11 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
     for encrypted_deployment in data.deployments {
         let e_t = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
-                DeploymentPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+                DeploymentPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                     encrypted_deployment,
                 )?
             }
-            _ => DeploymentPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+            _ => DeploymentPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                 encrypted_deployment,
             )?,
         };
@@ -672,11 +672,11 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
     for encrypted_transition in data.transitions {
         let e_t = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
-                TransitionPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+                TransitionPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                     encrypted_transition,
                 )?
             }
-            _ => TransitionPointer::<Testnet3>::to_encrypted_data_from_record_after_recovery(
+            _ => TransitionPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                 encrypted_transition,
             )?,
         };
@@ -689,9 +689,9 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
 }
 
 fn aggregate_private_tokens(e_data: EncryptedData) -> AvailResult<()> {
-    let e_struct = e_data.clone().to_enrypted_struct::<Testnet3>()?;
-    let view_key = VIEWSESSION.get_instance::<Testnet3>()?;
-    let avail_record: AvailRecord<Testnet3> = e_struct.decrypt(view_key)?;
+    let e_struct = e_data.clone().to_enrypted_struct::<TestnetV0>()?;
+    let view_key = VIEWSESSION.get_instance::<TestnetV0>()?;
+    let avail_record: AvailRecord<TestnetV0> = e_struct.decrypt(view_key)?;
     let record = avail_record.to_record()?;
     if e_data.clone().record_type == Some(RecordTypeCommon::Tokens)
         || e_data.clone().record_type == Some(RecordTypeCommon::AleoCredits)
@@ -711,9 +711,9 @@ pub fn process_private_tokens(data: Data) -> AvailResult<()> {
     for encrypted_record_pointer in data.record_pointers {
         let e_data = match SupportedNetworks::from_str(&network)? {
             SupportedNetworks::Testnet3 => {
-                AvailRecord::<Testnet3>::to_encrypted_data_from_record(encrypted_record_pointer)?
+                AvailRecord::<TestnetV0>::to_encrypted_data_from_record(encrypted_record_pointer)?
             }
-            _ => AvailRecord::<Testnet3>::to_encrypted_data_from_record(encrypted_record_pointer)?,
+            _ => AvailRecord::<TestnetV0>::to_encrypted_data_from_record(encrypted_record_pointer)?,
         };
         aggregate_private_tokens(e_data)?;
         // check if the e_r.record_type is a token and store the token
@@ -771,13 +771,13 @@ mod encrypted_data_tests {
         encrypt_and_store_records, get_test_record_pointer,
     };
 
-    use snarkvm::prelude::{PrivateKey, Testnet3, ToBytes, ViewKey};
+    use snarkvm::prelude::{PrivateKey, TestnetV0, ToBytes, ViewKey};
 
     use avail_common::models::constants::*;
 
     fn test_setup_prerequisites() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let view_key = ViewKey::<Testnet3>::try_from(&pk).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::try_from(&pk).unwrap();
 
         delete_user_encrypted_data().unwrap();
 
@@ -804,7 +804,7 @@ mod encrypted_data_tests {
         test_setup_prerequisites();
 
         let test_pointer = get_test_record_pointer();
-        let address = get_address::<Testnet3>().unwrap();
+        let address = get_address::<TestnetV0>().unwrap();
 
         let encrypted_record = encrypt_and_store_records(vec![test_pointer], address).unwrap();
 
@@ -822,17 +822,17 @@ mod encrypted_data_tests {
 
         let res = get_encrypted_data_by_flavour(EncryptedDataTypeCommon::Record).unwrap();
 
-        let v_key = VIEWSESSION.get_instance::<Testnet3>().unwrap();
+        let v_key = VIEWSESSION.get_instance::<TestnetV0>().unwrap();
 
         let records = res
             .iter()
             .map(|x| {
-                let encrypted_data = x.to_enrypted_struct::<Testnet3>().unwrap();
-                let block: AvailRecord<Testnet3> = encrypted_data.decrypt(v_key).unwrap();
+                let encrypted_data = x.to_enrypted_struct::<TestnetV0>().unwrap();
+                let block: AvailRecord<TestnetV0> = encrypted_data.decrypt(v_key).unwrap();
 
                 block
             })
-            .collect::<Vec<AvailRecord<Testnet3>>>();
+            .collect::<Vec<AvailRecord<TestnetV0>>>();
 
         for record in records {
             println!("{:?}\n", record);
@@ -853,7 +853,7 @@ mod encrypted_data_tests {
         test_setup_prerequisites();
 
         let test_pointer = get_test_record_pointer();
-        let address = get_address::<Testnet3>().unwrap();
+        let address = get_address::<TestnetV0>().unwrap();
 
         let encrypted_record = encrypt_and_store_records(vec![test_pointer], address).unwrap();
 
@@ -868,7 +868,7 @@ mod encrypted_data_tests {
 
         let test_pointer = get_test_record_pointer();
 
-        let address = get_address::<Testnet3>().unwrap();
+        let address = get_address::<TestnetV0>().unwrap();
 
         let encrypted_record = encrypt_and_store_records(vec![test_pointer], address).unwrap();
 
@@ -886,7 +886,7 @@ mod encrypted_data_tests {
         test_setup_prerequisites();
 
         let test_pointer = get_test_record_pointer();
-        let address = get_address::<Testnet3>().unwrap();
+        let address = get_address::<TestnetV0>().unwrap();
 
         let encrypted_record = encrypt_and_store_records(vec![test_pointer], address).unwrap();
 
@@ -913,7 +913,7 @@ mod encrypted_data_tests {
         test_setup_prerequisites();
 
         let test_pointer = get_test_record_pointer();
-        let address = get_address::<Testnet3>().unwrap();
+        let address = get_address::<TestnetV0>().unwrap();
 
         let encrypted_record = encrypt_and_store_records(vec![test_pointer], address).unwrap();
 

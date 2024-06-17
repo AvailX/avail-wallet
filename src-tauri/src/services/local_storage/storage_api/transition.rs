@@ -82,48 +82,51 @@ pub fn is_transition_stored(transition_id: &str) -> AvailResult<bool> {
 mod transitions_storage_api_tests {
     use super::*;
     use snarkvm::{
-        prelude::{Field, Group, Identifier, Input, Output, ProgramID, Testnet3, Transition},
+        prelude::{Field, Group, Identifier, Input, Output, ProgramID, TestnetV0, Transition},
         utilities::{TestRng, Uniform},
     };
     use std::str::FromStr;
 
     #[test]
     fn test_get_transitions() {
-        let transitions = get_transitions::<Testnet3>().unwrap();
+        let transitions = get_transitions::<TestnetV0>().unwrap();
 
         print!("Transitions \n {:?}", transitions)
     }
     #[test]
     fn test_get_transitions_ids() {
-        let transition_ids = get_transition_ids::<Testnet3>().unwrap();
+        let transition_ids = get_transition_ids::<TestnetV0>().unwrap();
 
         print!("Transition IDs \n {:?}", transition_ids)
     }
 
-    fn initialise_test_transition() -> Transition<Testnet3> {
+    fn initialise_test_transition() -> Transition<TestnetV0> {
         let mut rng = TestRng::default();
 
-        let field = Field::<Testnet3>::new(Uniform::rand(&mut rng));
-        let program_identifier = Identifier::<Testnet3>::from_str("test_program_id").unwrap();
-        let domain_identifier = Identifier::<Testnet3>::from_str("aleo").unwrap();
+        let field = Field::<TestnetV0>::new(Uniform::rand(&mut rng));
+        let program_identifier = Identifier::<TestnetV0>::from_str("test_program_id").unwrap();
+        let domain_identifier = Identifier::<TestnetV0>::from_str("aleo").unwrap();
 
         let program_id =
-            ProgramID::<Testnet3>::try_from((program_identifier, domain_identifier)).unwrap();
+            ProgramID::<TestnetV0>::try_from((program_identifier, domain_identifier)).unwrap();
 
-        let function_name = Identifier::<Testnet3>::from_str("test").unwrap();
+        let function_name = Identifier::<TestnetV0>::from_str("test").unwrap();
 
-        let input = Input::<Testnet3>::Constant(field, None);
-        let output = Output::<Testnet3>::Constant(field, None);
+        let input = Input::<TestnetV0>::Constant(field, None);
+        let output = Output::<TestnetV0>::Constant(field, None);
 
-        let tpk = Group::<Testnet3>::new(Uniform::rand(&mut rng));
-        let tcm = Field::<Testnet3>::new(Uniform::rand(&mut rng));
-        let transition = Transition::<Testnet3>::new(
+        let tpk = Group::<TestnetV0>::new(Uniform::rand(&mut rng));
+        let tcm = Field::<TestnetV0>::new(Uniform::rand(&mut rng));
+        let scm = Field::<TestnetV0>::new(Uniform::rand(&mut rng));
+
+        let transition = Transition::<TestnetV0>::new(
             program_id,
             function_name,
             vec![input],
             vec![output],
             tpk,
             tcm,
+            scm,
         )
         .unwrap();
 
