@@ -96,7 +96,7 @@ function Login() {
 			{/* New Account Dialog */}
 			<NewAccountDialog isOpen={newAccountDialog} onRequestClose={() => {
 				setNewAccountDialog(false);
-			}} />
+			}}/>
 
 			<mui.Box sx={{display: 'flex', flexDirection: 'row', width: '100%'}}>
 

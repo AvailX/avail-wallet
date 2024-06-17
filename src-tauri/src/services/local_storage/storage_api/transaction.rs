@@ -9,8 +9,8 @@ use crate::models::{
     },
 };
 use crate::services::local_storage::encrypted_data::{
-    get_encrypted_data_by_id, handle_encrypted_data_query, handle_encrypted_data_query_params,
-    update_encrypted_transaction_state_by_id,
+    get_encrypted_data_by_id, get_encrypted_data_by_transaction_id, handle_encrypted_data_query,
+    handle_encrypted_data_query_params, update_encrypted_transaction_state_by_id,
 };
 use crate::services::local_storage::{
     encrypted_data::get_encrypted_data_by_flavour,
@@ -451,7 +451,13 @@ pub fn handle_deployment_failed<N: Network>(pointer_id: &str) -> AvailResult<()>
 
     Ok(())
 }
-
+/// Check if transaction pointer is already stored via transaction id
+pub fn is_transcation_stored(transaction_id: &str) -> AvailResult<bool> {
+    match get_encrypted_data_by_transaction_id(transaction_id) {
+        Ok(_) => Ok(true),
+        Err(_) => Ok(false),
+    }
+}
 #[cfg(test)]
 mod tx_out_storage_api_tests {
     use super::*;
