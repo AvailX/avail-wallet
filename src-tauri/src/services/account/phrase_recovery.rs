@@ -1,5 +1,5 @@
 use chrono::{DateTime, Local, Utc};
-use snarkvm::prelude::{Testnet3, ToBytes};
+use snarkvm::prelude::{TestnetV0, ToBytes};
 
 use crate::{
     api::backup_recovery::{get_backup_timestamp, get_sync_height},
@@ -32,7 +32,7 @@ pub async fn recover_wallet_from_seed_phrase(
     access_type: bool,
     language: Languages,
 ) -> AvailResult<()> {
-    let avail_wallet = BetterAvailWallet::<Testnet3>::from_seed_phrase(
+    let avail_wallet = BetterAvailWallet::<TestnetV0>::from_seed_phrase(
         seed_phrase,
         Languages::to_bip39_language(&language),
     )?;
@@ -54,7 +54,7 @@ pub async fn recover_wallet_from_seed_phrase(
 
     key_manager.store_key(password, &avail_wallet)?;
 
-    get_session_after_creation::<Testnet3>(&avail_wallet.private_key).await?;
+    get_session_after_creation::<TestnetV0>(&avail_wallet.private_key).await?;
 
     let (username, tag, backup) = match get_user().await {
         Ok(user) => (user.username, user.tag, user.backup),
@@ -128,18 +128,18 @@ pub async fn recover_wallet_from_seed_phrase(
 #[tokio::test]
 async fn test_fn() {
     use chrono::Utc;
-    let api_client = crate::api::aleo_client::setup_local_client::<Testnet3>();
+    let api_client = crate::api::aleo_client::setup_local_client::<TestnetV0>();
 
     let sender_address =
-        crate::services::local_storage::persistent_storage::get_address::<Testnet3>().unwrap();
+        crate::services::local_storage::persistent_storage::get_address::<TestnetV0>().unwrap();
 
-    let private_key = crate::services::local_storage::utils::get_private_key::<Testnet3>(Some(
+    let private_key = crate::services::local_storage::utils::get_private_key::<TestnetV0>(Some(
         "tylerDurden@0xf5".to_string(),
     ))
     .unwrap();
 
     // //extend session auth
-    let _session_task = get_session_after_creation::<Testnet3>(&private_key)
+    let _session_task = get_session_after_creation::<TestnetV0>(&private_key)
         .await
         .unwrap();
     crate::api::backup_recovery::update_sync_height(

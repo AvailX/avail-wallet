@@ -676,7 +676,7 @@ mod encrypted_data_api_tests {
     use crate::models::storage::languages::Languages;
 
     use avail_common::models::encrypted_data::EncryptedDataTypeCommon;
-    use snarkvm::prelude::{PrivateKey, Testnet3, ToBytes, ViewKey};
+    use snarkvm::prelude::{PrivateKey, TestnetV0, ToBytes, ViewKey};
 
     use avail_common::models::constants::*;
 
@@ -685,7 +685,7 @@ mod encrypted_data_api_tests {
     async fn test_get_new_transaction_messages() {
         let address = get_address_string().unwrap();
         println!("{}", address);
-        let result = get_new_transaction_messages::<Testnet3>().await.unwrap();
+        let result = get_new_transaction_messages::<TestnetV0>().await.unwrap();
         println!("{:?}", result);
     }
 
@@ -850,8 +850,8 @@ mod encrypted_data_api_tests {
     }
 
     fn test_setup_prerequisites() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let view_key = ViewKey::<Testnet3>::try_from(&pk).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::try_from(&pk).unwrap();
 
         delete_user_encrypted_data().unwrap();
 
@@ -876,7 +876,7 @@ mod encrypted_data_api_tests {
     async fn test_import_encrypted_data() {
         test_setup_prerequisites();
         let test_pointer = get_test_record_pointer();
-        let address = get_address::<Testnet3>().unwrap();
+        let address = get_address::<TestnetV0>().unwrap();
 
         encrypt_and_store_records(vec![test_pointer], address).unwrap();
 

@@ -161,53 +161,53 @@ pub fn delete_key_for_recovery<N: Network>(password: &str) -> AvailResult<String
 mod windows_linux_key_management_tests {
     use super::*;
     use rand::thread_rng;
-    use snarkvm::console::network::Testnet3;
+    use snarkvm::console::network::TestnetV0;
 
     use avail_common::models::constants::{STRONG_PASSWORD, WEAK_PASSWORD};
 
     #[test]
     fn test_store_strong_password() {
         let mut rng = thread_rng();
-        let p_key = PrivateKey::<Testnet3>::new(&mut rng).unwrap();
-        let v_key = ViewKey::<Testnet3>::try_from(&p_key).unwrap();
+        let p_key = PrivateKey::<TestnetV0>::new(&mut rng).unwrap();
+        let v_key = ViewKey::<TestnetV0>::try_from(&p_key).unwrap();
 
-        let avail_wallet = BetterAvailWallet::<Testnet3>::try_from(p_key).unwrap();
+        let avail_wallet = BetterAvailWallet::<TestnetV0>::try_from(p_key).unwrap();
 
-        store::<Testnet3>(&avail_wallet, STRONG_PASSWORD).unwrap();
+        store::<TestnetV0>(&avail_wallet, STRONG_PASSWORD).unwrap();
     }
 
     #[test]
     fn test_store_weak_password() {
         let mut rng = thread_rng();
-        let p_key = PrivateKey::<Testnet3>::new(&mut rng).unwrap();
-        let v_key = ViewKey::<Testnet3>::try_from(&p_key).unwrap();
-        let avail_wallet = BetterAvailWallet::<Testnet3>::try_from(p_key.to_string()).unwrap();
+        let p_key = PrivateKey::<TestnetV0>::new(&mut rng).unwrap();
+        let v_key = ViewKey::<TestnetV0>::try_from(&p_key).unwrap();
+        let avail_wallet = BetterAvailWallet::<TestnetV0>::try_from(p_key.to_string()).unwrap();
         let access_type = true;
 
-        store::<Testnet3>(&avail_wallet, WEAK_PASSWORD).unwrap();
+        store::<TestnetV0>(&avail_wallet, WEAK_PASSWORD).unwrap();
     }
 
     #[test]
     fn read_key_test() {
         let mut rng = thread_rng();
-        let p_key = PrivateKey::<Testnet3>::new(&mut rng).unwrap();
-        let v_key = ViewKey::<Testnet3>::try_from(&p_key).unwrap();
-        let avail_wallet = BetterAvailWallet::<Testnet3>::try_from(p_key.to_string()).unwrap();
+        let p_key = PrivateKey::<TestnetV0>::new(&mut rng).unwrap();
+        let v_key = ViewKey::<TestnetV0>::try_from(&p_key).unwrap();
+        let avail_wallet = BetterAvailWallet::<TestnetV0>::try_from(p_key.to_string()).unwrap();
         println!("Original Private Key: {:?}", p_key);
         println!("Original Viewing Key: {:?}", v_key);
 
-        store::<Testnet3>(&avail_wallet, STRONG_PASSWORD).unwrap();
+        store::<TestnetV0>(&avail_wallet, STRONG_PASSWORD).unwrap();
 
-        let read_p_key = read_key::<Testnet3>(STRONG_PASSWORD, "avl-p")
+        let read_p_key = read_key::<TestnetV0>(STRONG_PASSWORD, "avl-p")
             .unwrap()
             .is_private_key()
             .unwrap();
-        let read_v_key = read_key::<Testnet3>(STRONG_PASSWORD, "avl-v")
+        let read_v_key = read_key::<TestnetV0>(STRONG_PASSWORD, "avl-v")
             .unwrap()
             .is_view_key()
             .unwrap();
 
-        delete_key::<Testnet3>(STRONG_PASSWORD).unwrap();
+        delete_key::<TestnetV0>(STRONG_PASSWORD).unwrap();
 
         println!("Fetched Private Key: {:?}", read_p_key);
         println!("Fetched Viewing Key: {:?}", read_v_key);
@@ -219,13 +219,13 @@ mod windows_linux_key_management_tests {
     #[test]
     fn delete_key_test() {
         let mut rng = thread_rng();
-        let p_key = PrivateKey::<Testnet3>::new(&mut rng).unwrap();
-        let v_key = ViewKey::<Testnet3>::try_from(&p_key).unwrap();
-        let avail_wallet = BetterAvailWallet::<Testnet3>::try_from(p_key.to_string()).unwrap();
+        let p_key = PrivateKey::<TestnetV0>::new(&mut rng).unwrap();
+        let v_key = ViewKey::<TestnetV0>::try_from(&p_key).unwrap();
+        let avail_wallet = BetterAvailWallet::<TestnetV0>::try_from(p_key.to_string()).unwrap();
 
-        store::<Testnet3>(&avail_wallet, STRONG_PASSWORD).unwrap();
+        store::<TestnetV0>(&avail_wallet, STRONG_PASSWORD).unwrap();
 
-        delete_key::<Testnet3>(STRONG_PASSWORD).unwrap();
+        delete_key::<TestnetV0>(STRONG_PASSWORD).unwrap();
     }
 
     #[test]
@@ -235,9 +235,9 @@ mod windows_linux_key_management_tests {
         let password = "password";
 
         let ciphertext =
-            encrypt_seed_phrase_with_password::<Testnet3>(password, seed_phrase).unwrap();
+            encrypt_seed_phrase_with_password::<TestnetV0>(password, seed_phrase).unwrap();
         let decrypted_seed_phrase =
-            decrypt_seed_phrase_with_password::<Testnet3>(ciphertext, password).unwrap();
+            decrypt_seed_phrase_with_password::<TestnetV0>(ciphertext, password).unwrap();
 
         assert_eq!(seed_phrase, decrypted_seed_phrase);
     }

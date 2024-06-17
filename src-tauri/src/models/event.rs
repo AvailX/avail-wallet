@@ -319,7 +319,7 @@ impl Network {
 
     pub fn from_str(s: &str) -> Option<Self> {
         match s {
-            "testnet3" => Some(Network::AleoTestnet),
+            "testnet" => Some(Network::AleoTestnet),
             "devnet" => Some(Network::AleoDevnet),
             "mainnet" => Some(Network::AleoMainnet),
             _ => None,

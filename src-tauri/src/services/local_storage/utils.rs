@@ -13,7 +13,7 @@ use crate::services::local_storage::{
 };
 use avail_common::models::constants::VIEW_KEY;
 use snarkvm::prelude::{
-    Ciphertext, Field, Identifier, Network, PrivateKey, Signature, Testnet3, ViewKey,
+    Ciphertext, Field, Identifier, Network, PrivateKey, Signature, TestnetV0, ViewKey,
 };
 
 use crate::services::account::key_management::key_controller::{
@@ -33,7 +33,7 @@ pub fn get_private_key_tauri(password: Option<String>) -> AvailResult<String> {
 
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet3 => {
-            let key = get_private_key::<Testnet3>(password)?;
+            let key = get_private_key::<TestnetV0>(password)?;
             Ok(key.to_string())
         }
         _ => Err(AvailError::new(
@@ -100,7 +100,7 @@ pub fn get_seed_phrase(password: Option<String>) -> AvailResult<String> {
                 }
             };
 
-            let val: Identifier<Testnet3> = Identifier::<Testnet3>::from_str("test")?;
+            let val: Identifier<TestnetV0> = Identifier::<TestnetV0>::from_str("test")?;
 
             let seed_phrase = match password {
                 Some(password) => key_manager.read_phrase(&password, val),
@@ -125,7 +125,7 @@ pub fn get_view_key_tauri(password: Option<String>) -> AvailResult<String> {
 
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet3 => {
-            let key = get_view_key::<Testnet3>(password)?;
+            let key = get_view_key::<TestnetV0>(password)?;
             VIEWSESSION.set_view_session(&key.to_string())?;
 
             Ok(key.to_string())
@@ -219,7 +219,7 @@ pub async fn delete_util(password: &str) -> AvailResult<String> {
         }
     };
 
-    let val: Identifier<Testnet3> = Identifier::<Testnet3>::from_str("test")?;
+    let val: Identifier<TestnetV0> = Identifier::<TestnetV0>::from_str("test")?;
 
     match key_manager.delete_key(Some(password), val) {
         Ok(_) => {}
@@ -263,7 +263,7 @@ pub fn delete_local_for_recovery(password: &str) -> AvailResult<()> {
         }
     };
 
-    let val: Identifier<Testnet3> = Identifier::<Testnet3>::from_str("test")?;
+    let val: Identifier<TestnetV0> = Identifier::<TestnetV0>::from_str("test")?;
 
     match key_manager.delete_key_for_recovery(Some(password), val) {
         Ok(_) => {}
@@ -331,9 +331,9 @@ mod test_utils {
 
     #[test]
     fn test_several_pk_bytes() {
-        let pk1 = PrivateKey::<Testnet3>::new(&mut rand::thread_rng()).unwrap();
+        let pk1 = PrivateKey::<TestnetV0>::new(&mut rand::thread_rng()).unwrap();
 
-        let pk2 = PrivateKey::<Testnet3>::new(&mut rand::thread_rng()).unwrap();
+        let pk2 = PrivateKey::<TestnetV0>::new(&mut rand::thread_rng()).unwrap();
 
         let pk1_bytes = pk1.to_bytes_le().unwrap();
 

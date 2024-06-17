@@ -7,7 +7,7 @@ use crate::api::aleo_client::{network_status, Status};
 use crate::services::local_storage::persistent_storage::get_network;
 use avail_common::models::network::SupportedNetworks;
 
-use snarkvm::prelude::Testnet3;
+use snarkvm::prelude::TestnetV0;
 
 pub fn generate_discriminant() -> u32 {
     let mut rng = rand::thread_rng();
@@ -68,7 +68,7 @@ pub async fn network_status_check() -> AvailResult<(Status)> {
     let network = get_network()?;
 
     match SupportedNetworks::from_str(network.as_str())? {
-        SupportedNetworks::Testnet3 => network_status::<Testnet3>(),
+        SupportedNetworks::Testnet3 => network_status::<TestnetV0>(),
     }
 }
 
