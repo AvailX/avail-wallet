@@ -72,6 +72,9 @@ const DataPointers = () => {
         <Button
           sx={{ mt: 3, bgcolor: "#3E3E3E", color: "#fff", border: "0px" }}
           fullWidth
+          onClick={() => {
+            navigate("/dashboard");
+          }}
           //   variant='outlined'
         >
           Don't Backup

@@ -11,6 +11,7 @@ import withAutoplay from "react-awesome-slider/dist/autoplay";
 
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import NewAccountDialog from "components/dialogs/NewAccount";
 
 const AutoplaySlider = withAutoplay(AwesomeSlider, { Infinity: false });
 
@@ -60,8 +61,15 @@ export const MobCarousel = () => {
       img: powerApps,
     },
   ];
+  const [openDialog, setOpenDialog] = React.useState(false);
   return (
     <>
+      <NewAccountDialog
+        isOpen={openDialog}
+        onRequestClose={() => {
+          setOpenDialog(false);
+        }}
+      />
       <div style={{ height: "100vh", backgroundColor: "#111111" }}>
         <AutoplaySlider
           play={true}
@@ -88,7 +96,10 @@ export const MobCarousel = () => {
         >
           <Button
             fullWidth
-            onClick={(): void => navigate("/username")}
+            onClick={(): void => {
+              setOpenDialog(true);
+              //;
+            }}
             sx={{
               background:
                 "linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA",
@@ -99,7 +110,14 @@ export const MobCarousel = () => {
           >
             Create Wallet
           </Button>
-          <Button sx={{ mt: 3 }} fullWidth variant='outlined'>
+          <Button
+            onClick={() => {
+              navigate("/login");
+            }}
+            sx={{ mt: 3 }}
+            fullWidth
+            variant='outlined'
+          >
             Add an existing wallet
           </Button>
           <Typography variant='body1' mt={4} color='#9d9d9d' fontWeight={700}>

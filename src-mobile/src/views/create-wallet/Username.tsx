@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,8 +15,11 @@ import AuthLayout from "../../layouts/AuthLayout";
 import { register_seed_phrase } from "../../../../src/services/authentication/register";
 import { Languages } from "../../../../src/types/languages";
 
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+
 const schema = yup.object().shape({
-  username: yup.string().required("Username is required"),
+  username: yup.string().optional(),
   password: yup.string().required("Password is required"),
   confirmPassword: yup
     .string()
@@ -23,6 +32,9 @@ const Username = () => {
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [passwordHidden, setPasswordHidden] = useState(true);
+
   const {
     control,
     handleSubmit,
@@ -33,6 +45,7 @@ const Username = () => {
 
   const clickStuff = async (data: any) => {
     try {
+      setIsLoading(true);
       const response = await register_seed_phrase(
         setError,
         setMessage,
@@ -42,10 +55,14 @@ const Username = () => {
         Languages.English,
         12
       );
+      setIsLoading(false);
       console.log("response xxx", response);
-      navigate("/secret-recovery", { state: { phrase: response } });
+      if (response) {
+        navigate("/secret-recovery", { state: { phrase: response } });
+      }
     } catch (e) {
       console.log("Error xxx", e);
+      setIsLoading(false);
     }
   };
 
@@ -94,7 +111,7 @@ const Username = () => {
               <TextField
                 {...field}
                 fullWidth
-                type='password'
+                type={passwordHidden ? "password" : "text"}
                 placeholder='Password'
                 error={!!errors.password}
                 helperText={errors.password ? errors.password.message : ""}
@@ -113,6 +130,27 @@ const Username = () => {
                   border: "1px solid #00FFAA",
                   borderRadius: "8px",
                 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      {passwordHidden ? (
+                        <VisibilityOffIcon
+                          style={{ color: "#FFF", cursor: "pointer" }}
+                          onClick={() => {
+                            setPasswordHidden(false);
+                          }}
+                        />
+                      ) : (
+                        <VisibilityIcon
+                          style={{ color: "#FFF" }}
+                          onClick={() => {
+                            setPasswordHidden(true);
+                          }}
+                        />
+                      )}
+                    </InputAdornment>
+                  ),
+                }}
               />
             )}
           />
@@ -123,7 +161,7 @@ const Username = () => {
             render={({ field }) => (
               <TextField
                 {...field}
-                type='password'
+                type={passwordHidden ? "password" : "text"}
                 placeholder='Confirm Password'
                 fullWidth
                 error={!!errors.confirmPassword}
@@ -145,6 +183,28 @@ const Username = () => {
                   border: "1px solid #00FFAA",
                   borderRadius: "8px",
                 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      {passwordHidden ? (
+                        <VisibilityOffIcon
+                          sx={{ color: "white" }}
+                          style={{ color: "#ff", cursor: "pointer" }}
+                          onClick={() => {
+                            setPasswordHidden(false);
+                          }}
+                        />
+                      ) : (
+                        <VisibilityIcon
+                          style={{ color: "#fff" }}
+                          onClick={() => {
+                            setPasswordHidden(true);
+                          }}
+                        />
+                      )}
+                    </InputAdornment>
+                  ),
+                }}
               />
             )}
           />
@@ -156,7 +216,7 @@ const Username = () => {
           )}
 
           <Button sx={{ mt: 4, mb: 2, py: 2, width: "100%" }} type='submit'>
-            Continue
+            {isLoading ? "Loading...." : "Continue"}
           </Button>
         </form>
       </Box>
