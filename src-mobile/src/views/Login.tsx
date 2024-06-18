@@ -22,6 +22,7 @@ function Login() {
       .then((res) => {
         console.log("Login Successful", res);
         setIsLoading(false);
+        navigate("/dashboard");
       })
       .catch((err: any) => {
         console.log("Error in Login", err);
