@@ -1,5 +1,7 @@
 import * as React from "react";
 import * as mui from "@mui/material";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import EditIcon from "@mui/icons-material/Edit";
 
 // Components
 import Layout from "../../views-desktop/reusable/layout";
@@ -89,8 +91,6 @@ const CreateQuests: React.FC = () => {
     LeaderBoard = "LeaderBoard",
     FCFS = "FCFS",
   }
-
-  // Sample quests data
   const quests: Quest[] = [
     {
       id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
@@ -249,48 +249,74 @@ const CreateQuests: React.FC = () => {
   const lg = mui.useMediaQuery("(min-width:1750px)");
   const lgxl = mui.useMediaQuery("(min-width:1950px)");
 
+  const handleClick = () => {
+    console.log("INFO: Edit button is pressed");
+  };
+
   if (!campaign) {
     return <div>Error: Campaign data is missing</div>;
   }
 
   return (
-    <>
-      <Layout>
-        <ErrorAlert
-          errorAlert={error}
-          setErrorAlert={setError}
-          message={message}
-        />
-        <SuccessAlert
-          successAlert={success}
-          setSuccessAlert={setSuccess}
-          message={message}
-        />
-        <SideMenu />
+    <Layout>
+      <ErrorAlert
+        errorAlert={error}
+        setErrorAlert={setError}
+        message={message}
+      />
+      <SuccessAlert
+        successAlert={success}
+        setSuccessAlert={setSuccess}
+        message={message}
+      />
+      <SideMenu />
 
+      <mui.Box
+        sx={{
+          ml: md ? "5%" : "7%",
+          display: "flex",
+          flexDirection: "column",
+          width: md ? "95%" : "93%",
+        }}
+      >
         <mui.Box
           sx={{
-            ml: md ? "5%" : "7%",
-            display: "flex",
-            flexDirection: "column",
-            width: md ? "95%" : "93%",
+            background: `url(${campaign[0].bg_image})`,
+            color: campaign[0].color,
+            backgroundPosition: lgxl ? "center" : "bottom",
+            height: lgxl ? "380px" : "320px",
+            backgroundSize: "cover",
           }}
         >
           <mui.Box
             sx={{
-              background: `url(${campaign[0].bg_image})`,
-              color: campaign[0].color,
-              backgroundPosition: lgxl ? "center" : "bottom",
-              height: lgxl ? "380px" : "320px",
-              backgroundSize: "cover",
+              borderRadius: "100%",
+              border: "1px solid #696969",
+              p: 1.5,
+              width: "200px",
+              mt: lgxl
+                ? "10%"
+                : lg
+                  ? "8%"
+                  : lgsx
+                    ? "10%"
+                    : mdlg
+                      ? "10%"
+                      : md
+                        ? "13%"
+                        : mdsx
+                          ? "14%"
+                          : "17%",
+              ml: "5%",
             }}
           >
             <mui.Box
               sx={{
-                borderRadius: "100%",
+                borderRadius: "50%", // Make the container circular
                 border: "1px solid #696969",
                 p: 1.5,
-                width: "200px",
+                width: "150px",
+                height: "150px", // Ensure width and height are equal for a perfect circle
                 mt: lgxl
                   ? "10%"
                   : lg
@@ -305,62 +331,84 @@ const CreateQuests: React.FC = () => {
                             ? "14%"
                             : "17%",
                 ml: "5%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#D3D3D3",
               }}
             >
-              <mui.Box
-                component="img"
-                src={campaign[0].profile_image}
-                sx={{ borderRadius: 0, maxWidth: "100%" }}
-              />
+              <mui.IconButton sx={{ backgroundColor: "#696969", p: 2 }}>
+                <CameraAltIcon sx={{ color: "#FFFFFF" }} />
+              </mui.IconButton>
             </mui.Box>
-            <mui.Box
-              component="img"
-              src={verified}
-              sx={{
-                borderRadius: 0,
-                ml: lgxl
-                  ? "11%"
-                  : lg
-                    ? "13%"
-                    : lgsx
-                      ? "15%"
-                      : mdlg
-                        ? "17%"
-                        : md
-                          ? "20%"
-                          : "23%",
-                mt: lg ? "-8%" : lgsx ? "-10%" : "-12%",
-              }}
-            />
-          </mui.Box>
-          <mui.Box sx={{ ml: "2%", mt: "5%" }}>
-            <mui.Typography variant="h3" color="#FFF">
-              {campaign[0].title}
-            </mui.Typography>
-            <BodyText500 color="#A3A3A3">
-              {campaign[0].inner_description}
-            </BodyText500>
-          </mui.Box>
-          <mui.Divider
-            sx={{ width: "100%", height: "1px", bgcolor: "#00FFAA", mt: "3%" }}
-            orientation="horizontal"
-          />
-          <mui.Box
-            sx={{
-              marginTop: "20px",
-              alignItems: "center",
-              mb: "5%",
-              bgcolor: "#111111",
-              alignSelf: "center",
-              width: "90%",
-              justifyContent: "space-around",
-            }}
-          >
-            <CreateQuestsBox />
           </mui.Box>
         </mui.Box>
-      </Layout>
-    </>
+        <mui.Box sx={{ ml: "2%", mt: "5%" }}>
+          {/* Project's Title to edit */}
+          <mui.Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+            onClick={handleClick}
+          >
+            <mui.Typography fontSize={"30px"} color="#FFF" fontWeight={"bold"}>
+              {`Project Name`}
+            </mui.Typography>
+            <mui.IconButton
+              sx={{
+                color: "#FFF",
+                marginRight: "8px",
+                textSizeAdjust: "auto",
+              }}
+            >
+              <EditIcon />
+            </mui.IconButton>
+          </mui.Box>
+
+          {/* Projects description to edit */}
+          <mui.Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+            onClick={handleClick}
+          >
+            <BodyText500 color="#A3A3A3" fontSize={"10px"}>
+              {`Tap to edit the bio of your project`}
+            </BodyText500>
+            <mui.IconButton
+              sx={{
+                color: "#FFF",
+                marginRight: "8px",
+                textSizeAdjust: "auto",
+              }}
+            >
+              <EditIcon />
+            </mui.IconButton>
+          </mui.Box>
+        </mui.Box>
+        <mui.Divider
+          sx={{ width: "100%", height: "1px", bgcolor: "#00FFAA", mt: "3%" }}
+          orientation="horizontal"
+        />
+        <mui.Box
+          sx={{
+            marginTop: "20px",
+            alignItems: "center",
+            mb: "5%",
+            bgcolor: "#111111",
+            alignSelf: "center",
+            width: "90%",
+            justifyContent: "space-around",
+          }}
+        >
+          <CreateQuestsBox />
+        </mui.Box>
+      </mui.Box>
+    </Layout>
   );
 };
 
