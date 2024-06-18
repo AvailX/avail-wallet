@@ -471,7 +471,7 @@ mod events_tests {
     use std::str::FromStr;
 
     use super::*;
-    use snarkvm::prelude::{PrivateKey, Testnet3, ToBytes, ViewKey};
+    use snarkvm::prelude::{PrivateKey, TestnetV0, ToBytes, ViewKey};
 
     use crate::{
         models::wallet_connect::get_event::EventsFilter,
@@ -481,7 +481,7 @@ mod events_tests {
 
     #[test]
     fn test_get_event_raw() {
-        let event = get_event_raw::<Testnet3>(
+        let event = get_event_raw::<TestnetV0>(
             String::from("5aa9d8f2-7d74-40fc-ae64-457dc188d598").as_str(),
         )
         .unwrap();
@@ -490,7 +490,7 @@ mod events_tests {
 
     #[test]
     fn test_get_avail_event_raw() {
-        let event = get_avail_event_raw::<Testnet3>(
+        let event = get_avail_event_raw::<TestnetV0>(
             String::from("5aa9d8f2-7d74-40fc-ae64-457dc188d598").as_str(),
         )
         .unwrap();
@@ -509,7 +509,7 @@ mod events_tests {
             page: Some(0),
         };
 
-        let event = get_events_raw::<Testnet3>(request).unwrap();
+        let event = get_events_raw::<TestnetV0>(request).unwrap();
         println!("{:?}", event);
     }
 
@@ -518,7 +518,7 @@ mod events_tests {
         VIEWSESSION
             .set_view_session("AViewKey1dRUJgozQcBf2rntQqoGYfViNy4A3Khx9RZVwuX3kSNCx")
             .unwrap();
-        let event = get_avail_events_raw::<Testnet3>(GetEventsRequest::default()).unwrap();
+        let event = get_avail_events_raw::<TestnetV0>(GetEventsRequest::default()).unwrap();
         println!("{:?}", event);
     }
 
@@ -527,7 +527,8 @@ mod events_tests {
         VIEWSESSION
             .set_view_session("AViewKey1dRUJgozQcBf2rntQqoGYfViNy4A3Khx9RZVwuX3kSNCx")
             .unwrap();
-        let event = get_succinct_avail_events_raw::<Testnet3>(GetEventsRequest::default()).unwrap();
+        let event =
+            get_succinct_avail_events_raw::<TestnetV0>(GetEventsRequest::default()).unwrap();
         println!("{:?}", event);
     }
 
