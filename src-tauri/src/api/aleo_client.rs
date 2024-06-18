@@ -17,7 +17,7 @@ use crate::services::local_storage::persistent_storage::{
 /* --Client Setup functions-- */
 pub fn setup_local_client<N: Network>() -> AleoAPIClient<N> {
     let dev_node_ip = env!("DEV_NODE_IP");
-    AleoAPIClient::<N>::local_testnet3("3030", dev_node_ip)
+    AleoAPIClient::<N>::local_testnet("3030", dev_node_ip)
 }
 
 pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
@@ -138,7 +138,7 @@ impl<N: Network> AleoClient<N> {
         })
     }
 
-    pub fn testnet3() -> AvailResult<Self> {
+    pub fn testnet() -> AvailResult<Self> {
         let node_api_obscura = env!("TESTNET_API_OBSCURA");
 
         let base_url = format!(
@@ -154,9 +154,9 @@ impl<N: Network> AleoClient<N> {
     pub fn switch_network(network: &str) -> AvailResult<()> {
         // Based on the network string, decide which network to switch to
         let new_client = match network {
-            "testnet3" => {
+            "testnet" => {
                 update_network(EventNetwork::AleoTestnet);
-                AleoClient::<TestnetV0>::testnet3()?
+                AleoClient::<TestnetV0>::testnet()?
             }
             //"devnet" => AleoClient::<Devnet>::devnet()?,
             //"mainnet" => AleoClient::<Mainnet>::mainnet()?,
@@ -180,7 +180,7 @@ impl<N: Network> AleoClient<N> {
         let dev_node_ip = env!("DEV_NODE_IP");
 
         Ok(Self {
-            client: AleoAPIClient::local_testnet3("3030", dev_node_ip),
+            client: AleoAPIClient::local_testnet("3030", dev_node_ip),
         })
     }
 
@@ -191,7 +191,7 @@ impl<N: Network> AleoClient<N> {
 
 //TODO - Make this compatible with different network types for mainnet.
 pub static ALEO_CLIENT: Lazy<RwLock<AleoClient<TestnetV0>>> =
-    Lazy::new(|| RwLock::new(AleoClient::<TestnetV0>::testnet3().unwrap()));
+    Lazy::new(|| RwLock::new(AleoClient::<TestnetV0>::testnet().unwrap()));
 
 #[test]
 fn test_new_client() {

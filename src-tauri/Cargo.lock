@@ -421,7 +421,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "avail-common"
 version = "0.6.0"
-source = "git+https://github.com/availx/avail-lib?rev=93a39d874cc5a57e725948773e09fc77b9762dac#93a39d874cc5a57e725948773e09fc77b9762dac"
+source = "git+https://github.com/availx/avail-lib?rev=130c38b611648422a3ce07b1ed4b7f266f049255#130c38b611648422a3ce07b1ed4b7f266f049255"
 dependencies = [
  "aes-gcm",
  "app_dirs2",
@@ -451,7 +451,7 @@ dependencies = [
 
 [[package]]
 name = "avail_wallet"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "app_dirs2",
  "avail-common",

@@ -32,7 +32,7 @@ pub fn get_private_key_tauri(password: Option<String>) -> AvailResult<String> {
     let network = get_network()?;
 
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
+        SupportedNetworks::Testnet => {
             let key = get_private_key::<TestnetV0>(password)?;
             Ok(key.to_string())
         }
@@ -84,7 +84,7 @@ pub fn get_seed_phrase(password: Option<String>) -> AvailResult<String> {
     let network = get_network()?;
 
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
+        SupportedNetworks::Testnet => {
             let key_manager = {
                 #[cfg(target_os = "macos")]
                 {
@@ -124,7 +124,7 @@ pub fn get_view_key_tauri(password: Option<String>) -> AvailResult<String> {
     let network = get_network()?;
 
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
+        SupportedNetworks::Testnet => {
             let key = get_view_key::<TestnetV0>(password)?;
             VIEWSESSION.set_view_session(&key.to_string())?;
 

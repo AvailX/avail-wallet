@@ -68,7 +68,7 @@ pub async fn network_status_check() -> AvailResult<(Status)> {
     let network = get_network()?;
 
     match SupportedNetworks::from_str(network.as_str())? {
-        SupportedNetworks::Testnet3 => network_status::<TestnetV0>(),
+        SupportedNetworks::Testnet => network_status::<TestnetV0>(),
     }
 }
 

@@ -77,7 +77,7 @@ pub fn get_balance(request: BalanceRequest) -> AvailResult<BalanceResponse> {
     };
 
     let balance = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => get_token_balance::<TestnetV0>(&asset_id)?,
+        SupportedNetworks::Testnet => get_token_balance::<TestnetV0>(&asset_id)?,
         _ => get_token_balance::<TestnetV0>(&asset_id)?, //SupportedNetworks::Mainnet => get_aleo_balance::<Mainnet>()?,
     };
 
@@ -92,7 +92,7 @@ pub async fn request_create_event(
 ) -> AvailResult<CreateEventResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
+        SupportedNetworks::Testnet => {
             request_create_event_raw::<TestnetV0, AleoTestnetV0>(request, fee_private, Some(window))
                 .await
         }
@@ -433,7 +433,7 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
 pub async fn get_records(request: GetRecordsRequest) -> AvailResult<GetRecordsResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => match get_records_raw::<TestnetV0>(request) {
+        SupportedNetworks::Testnet => match get_records_raw::<TestnetV0>(request) {
             Ok((records, page_count)) => {
                 Ok(GetRecordsResponse::new(records, Some(page_count), None))
             }
@@ -480,7 +480,7 @@ pub fn sign(request: SignatureRequest, window: Window) -> AvailResult<SignatureR
     let network = get_network()?;
 
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
+        SupportedNetworks::Testnet => {
             match sign_message::<TestnetV0>(&request.get_message(), None) {
                 Ok((signature, message_field)) => Ok(SignatureResponse::new(
                     Some(signature.to_string()),
@@ -543,7 +543,7 @@ pub fn verify(message: &str, address: &str, signature: &str) -> AvailResult<bool
     let network = get_network()?;
 
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => verify_signature::<TestnetV0>(message, address, signature),
+        SupportedNetworks::Testnet => verify_signature::<TestnetV0>(message, address, signature),
         _ => verify_signature::<TestnetV0>(message, address, signature),
     }
 }
@@ -569,12 +569,10 @@ fn verify_signature<N: Network>(
 pub fn decrypt_records(request: DecryptRequest) -> AvailResult<DecryptResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
-            match decrypt_records_raw::<TestnetV0>(request.ciphertexts) {
-                Ok(plaintexts) => Ok(DecryptResponse::new(plaintexts, None)),
-                Err(error) => Ok(DecryptResponse::new(vec![], Some(error.external_msg))),
-            }
-        }
+        SupportedNetworks::Testnet => match decrypt_records_raw::<TestnetV0>(request.ciphertexts) {
+            Ok(plaintexts) => Ok(DecryptResponse::new(plaintexts, None)),
+            Err(error) => Ok(DecryptResponse::new(vec![], Some(error.external_msg))),
+        },
         _ => match decrypt_records_raw::<TestnetV0>(request.ciphertexts) {
             Ok(plaintexts) => Ok(DecryptResponse::new(plaintexts, None)),
             Err(error) => Ok(DecryptResponse::new(vec![], Some(error.external_msg))),
@@ -609,7 +607,7 @@ pub fn decrypt_records_raw<N: Network>(ciphertext: Vec<String>) -> AvailResult<V
 pub async fn get_events(request: GetEventsRequest) -> AvailResult<GetEventsResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => match get_events_raw::<TestnetV0>(request) {
+        SupportedNetworks::Testnet => match get_events_raw::<TestnetV0>(request) {
             Ok(events) => Ok(GetEventsResponse::new(events, None, None)),
             Err(error) => Ok(GetEventsResponse::new(
                 vec![],
@@ -633,7 +631,7 @@ pub async fn get_events(request: GetEventsRequest) -> AvailResult<GetEventsRespo
 pub fn get_event(request: GetEventRequest) -> AvailResult<GetEventResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => match get_event_raw::<TestnetV0>(&request.id) {
+        SupportedNetworks::Testnet => match get_event_raw::<TestnetV0>(&request.id) {
             Ok(event) => Ok(GetEventResponse::new(Some(event), None)),
             Err(error) => Ok(GetEventResponse::new(None, Some(error.external_msg))),
         },
@@ -650,7 +648,7 @@ pub fn get_event(request: GetEventRequest) -> AvailResult<GetEventResponse> {
 pub fn get_avail_events(request: GetEventsRequest) -> AvailResult<Vec<AvailEvent>> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => get_avail_events_raw::<TestnetV0>(request),
+        SupportedNetworks::Testnet => get_avail_events_raw::<TestnetV0>(request),
         _ => get_avail_events_raw::<TestnetV0>(request), //SupportedNetworks::Mainnet => get_events_raw::<Mainnet>(request),
     }
 }
@@ -661,7 +659,7 @@ pub fn get_succinct_avail_events(
 ) -> AvailResult<Vec<SuccinctAvailEvent>> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => get_succinct_avail_events_raw::<TestnetV0>(request),
+        SupportedNetworks::Testnet => get_succinct_avail_events_raw::<TestnetV0>(request),
         _ => get_succinct_avail_events_raw::<TestnetV0>(request),
     }
     //SupportedNetworks::Mainnet => get_events_raw::<Mainnet>(request),
@@ -671,7 +669,7 @@ pub fn get_succinct_avail_events(
 pub fn get_succinct_avail_event(id: &str) -> AvailResult<SuccinctAvailEvent> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => get_succinct_avail_event_raw::<TestnetV0>(id),
+        SupportedNetworks::Testnet => get_succinct_avail_event_raw::<TestnetV0>(id),
         _ => get_succinct_avail_event_raw::<TestnetV0>(id),
     }
     //SupportedNetworks::Mainnet => get_event_raw::<Mainnet>(request),
@@ -681,7 +679,7 @@ pub fn get_succinct_avail_event(id: &str) -> AvailResult<SuccinctAvailEvent> {
 pub fn get_avail_event(id: &str) -> AvailResult<AvailEvent> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => get_avail_event_raw::<TestnetV0>(id),
+        SupportedNetworks::Testnet => get_avail_event_raw::<TestnetV0>(id),
         _ => get_avail_event_raw::<TestnetV0>(id), //SupportedNetworks::Mainnet => get_event_raw::<Mainnet>(request),
     }
 }

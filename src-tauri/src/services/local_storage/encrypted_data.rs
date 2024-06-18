@@ -624,7 +624,7 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
 
     for encrypted_record_pointer in data.record_pointers {
         let e_r = match SupportedNetworks::from_str(&network)? {
-            SupportedNetworks::Testnet3 => {
+            SupportedNetworks::Testnet => {
                 AvailRecord::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                     encrypted_record_pointer,
                 )?
@@ -641,7 +641,7 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
 
     for encrypted_transaction in data.transactions {
         let e_t = match SupportedNetworks::from_str(&network)? {
-            SupportedNetworks::Testnet3 => {
+            SupportedNetworks::Testnet => {
                 TransactionPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                     encrypted_transaction,
                 )?
@@ -655,7 +655,7 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
     println!("Transaction pointers stored");
     for encrypted_deployment in data.deployments {
         let e_t = match SupportedNetworks::from_str(&network)? {
-            SupportedNetworks::Testnet3 => {
+            SupportedNetworks::Testnet => {
                 DeploymentPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                     encrypted_deployment,
                 )?
@@ -669,7 +669,7 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
     println!("Deployment pointers stored");
     for encrypted_transition in data.transitions {
         let e_t = match SupportedNetworks::from_str(&network)? {
-            SupportedNetworks::Testnet3 => {
+            SupportedNetworks::Testnet => {
                 TransitionPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
                     encrypted_transition,
                 )?
@@ -708,7 +708,7 @@ pub fn process_private_tokens(data: Data) -> AvailResult<()> {
     let network = get_network()?;
     for encrypted_record_pointer in data.record_pointers {
         let e_data = match SupportedNetworks::from_str(&network)? {
-            SupportedNetworks::Testnet3 => {
+            SupportedNetworks::Testnet => {
                 AvailRecord::<TestnetV0>::to_encrypted_data_from_record(encrypted_record_pointer)?
             }
             _ => AvailRecord::<TestnetV0>::to_encrypted_data_from_record(encrypted_record_pointer)?,

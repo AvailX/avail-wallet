@@ -645,7 +645,7 @@ pub fn get_all_nft_data() -> AvailResult<Vec<String>> {
     let network = get_network()?;
 
     match SupportedNetworks::from_str(network.as_str())? {
-        SupportedNetworks::Testnet3 => {
+        SupportedNetworks::Testnet => {
             let nft_data = get_all_nft_raw::<TestnetV0>()?;
             println!("===> NFT Data {:?}", nft_data);
             Ok(nft_data)
@@ -1923,7 +1923,7 @@ where
                         execution_vec,
                         program_id.to_string(),
                         function_id.to_string(),
-                        SupportedNetworks::Testnet3,
+                        SupportedNetworks::Testnet,
                     );
                     println!("Sending a request to Avail's Fee Estimation Microservice to add the fee data");
                     let result: String = create_record(request).await?;

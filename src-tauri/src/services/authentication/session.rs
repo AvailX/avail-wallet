@@ -26,7 +26,7 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
     let network = get_network()?;
 
     let (sig, _) = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
+        SupportedNetworks::Testnet => {
             sign_message::<TestnetV0>(&session_request.hash, password.clone())?
         }
         _ => sign_message::<TestnetV0>(&session_request.hash, password.clone())?,
@@ -221,7 +221,7 @@ pub fn sign_hash(
     let network = get_network()?;
 
     let (sig, _) = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => sign_message::<TestnetV0>(&request.hash, password)?,
+        SupportedNetworks::Testnet => sign_message::<TestnetV0>(&request.hash, password)?,
         _ => sign_message::<TestnetV0>(&request.hash, password)?,
     };
 
