@@ -489,58 +489,6 @@ dependencies = [
 ]
 
 [[package]]
-<<<<<<< HEAD
-=======
-name = "avail_wallet"
-version = "0.4.0"
-dependencies = [
- "app_dirs2",
- "avail-common",
- "bs58",
- "chrono",
- "core-foundation",
- "dirs 5.0.1",
- "dotenv",
- "fix-path-env",
- "futures",
- "jni",
- "keyring",
- "libc",
- "log",
- "ndk-context",
- "once_cell",
- "openssl",
- "rand 0.8.5",
- "rayon",
- "rstest",
- "rusqlite",
- "security-framework 2.9.1",
- "security-framework-sys 2.9.0",
- "serde",
- "serde_json",
- "snarkvm",
- "ssss",
- "tauri",
- "tauri-build",
- "tauri-plugin",
- "tauri-plugin-deep-link",
- "tauri-plugin-fs",
- "tauri-plugin-http",
- "tauri-plugin-process",
- "tauri-plugin-updater",
- "tauri-utils",
- "tid-rs",
- "tiny-bip39",
- "tokio",
- "tokio-rayon",
- "ureq",
- "uuid",
- "whoami",
- "zeroize",
-]
-
-[[package]]
->>>>>>> 98975eeca3e1b01ec36a5b1e87f0068c79177252
 name = "backtrace"
 version = "0.3.72"
 source = "registry+https://github.com/rust-lang/crates.io-index"
