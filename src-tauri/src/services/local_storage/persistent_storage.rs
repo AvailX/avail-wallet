@@ -43,7 +43,6 @@ pub fn initial_user_preferences(
             last_backup_sync TIMESTAMP,
             address TEXT NOT NULL,
             backup BOOLEAN NOT NULL DEFAULT FALSE,
-            address TEXT NOT NULL,
             base_url TEXT NOT NULL
         )",
     )?;
