@@ -1561,7 +1561,7 @@ mod transfer_tests {
             "aleo1cnczr0y0qarqkc6k6jz2vswdmplw2ln4rqll92gyh8sfjd3hm5qqk45vt9",
         )
         .unwrap();
-        let sender = get_address::<Testnet3>().unwrap();
+        let sender = get_address::<TestnetV0>().unwrap();
         let transaction_id = program_manager
             .transfer(
                 1000000000,

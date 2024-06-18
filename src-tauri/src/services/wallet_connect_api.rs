@@ -947,15 +947,15 @@ mod test {
         // );
 
         // let request = GetRecordsRequest::new(None, Some(records_filter), None);
-        // let (res, _page_count) = get_records_raw::<Testnet3>(request).unwrap();
+        // let (res, _page_count) = get_records_raw::<TestnetV0>(request).unwrap();
 
         let mut ciphertexts: Vec<String> = vec![];
 
         // for value in res.into_iter() {
         ciphertexts.push("record1qyqspf8mhl4qxfladwsn8yku7dp6vdwzn20p7axnvwn9wpj2m9fydwswqyxx66trwfhkxun9v35hguerqqpqzqp7exfqu67w0g6wjv6mydaesv5h4f042gmllwglj2ps7qyv24m4pat5eds62a8khyxzesvcnkg39ggwcjq2hlet7ga7hh6w05e2nu8suqdq6ts".to_string());
         // }
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let vk = ViewKey::<Testnet3>::try_from(&pk).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let vk = ViewKey::<TestnetV0>::try_from(&pk).unwrap();
         VIEWSESSION.set_view_session(&vk.to_string()).unwrap();
 
         let request = DecryptRequest::new(ciphertexts);
