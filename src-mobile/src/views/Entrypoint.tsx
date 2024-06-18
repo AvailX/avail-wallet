@@ -30,7 +30,7 @@ function EntryPoint() {
           // TODO - Desktop login
         }
 
-        if (error.error_type.toString() === "Unauthorized") {
+        if (error.error_type.toString() === "Unauthorized" || error.error_type.toString() === "Invalid Data") {
           navigate("/login");
         } else {
           navigate("/username");
