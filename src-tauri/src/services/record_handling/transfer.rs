@@ -44,7 +44,7 @@ pub async fn transfer(request: TransferRequest, window: Window) -> AvailResult<S
     let network = get_network()?;
 
     let transfer_task_res = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
+        SupportedNetworks::Testnet => {
             tokio::task::spawn_blocking(move || transfer_raw::<TestnetV0>(request, Some(window)))
                 .await?
         }
@@ -1573,7 +1573,7 @@ mod transfer_tests {
                 None,
                 &program_id,
                 sender.to_string(),
-                SupportedNetworks::Testnet3,
+                SupportedNetworks::Testnet,
                 false,
             )
             .await

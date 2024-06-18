@@ -457,8 +457,13 @@ checksum = "0c4b4d0bd25bd0b74681c0ad21497610ce1b7c91b1022cd21c80c6fbdd9476b0"
 
 [[package]]
 name = "avail-common"
+<<<<<<< HEAD
 version = "0.13.0"
 source = "git+https://github.com/availx/avail-lib?rev=e47766b#e47766b06557f6dee8a72348fd74bb1a754e5af4"
+=======
+version = "0.6.0"
+source = "git+https://github.com/availx/avail-lib?rev=130c38b611648422a3ce07b1ed4b7f266f049255#130c38b611648422a3ce07b1ed4b7f266f049255"
+>>>>>>> 98975eeca3e1b01ec36a5b1e87f0068c79177252
 dependencies = [
  "aes-gcm",
  "app_dirs2",
@@ -489,6 +494,58 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
+=======
+name = "avail_wallet"
+version = "0.4.0"
+dependencies = [
+ "app_dirs2",
+ "avail-common",
+ "bs58",
+ "chrono",
+ "core-foundation",
+ "dirs 5.0.1",
+ "dotenv",
+ "fix-path-env",
+ "futures",
+ "jni",
+ "keyring",
+ "libc",
+ "log",
+ "ndk-context",
+ "once_cell",
+ "openssl",
+ "rand 0.8.5",
+ "rayon",
+ "rstest",
+ "rusqlite",
+ "security-framework 2.9.1",
+ "security-framework-sys 2.9.0",
+ "serde",
+ "serde_json",
+ "snarkvm",
+ "ssss",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin",
+ "tauri-plugin-deep-link",
+ "tauri-plugin-fs",
+ "tauri-plugin-http",
+ "tauri-plugin-process",
+ "tauri-plugin-updater",
+ "tauri-utils",
+ "tid-rs",
+ "tiny-bip39",
+ "tokio",
+ "tokio-rayon",
+ "ureq",
+ "uuid",
+ "whoami",
+ "zeroize",
+]
+
+[[package]]
+>>>>>>> 98975eeca3e1b01ec36a5b1e87f0068c79177252
 name = "backtrace"
 version = "0.3.72"
 source = "registry+https://github.com/rust-lang/crates.io-index"

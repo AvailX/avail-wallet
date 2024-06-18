@@ -140,7 +140,7 @@ mod tests {
             exec_obj,
             "testing.aleo".to_string(),
             "testing_7".to_string(),
-            SupportedNetworks::Testnet3,
+            SupportedNetworks::Testnet,
         );
         println!("Sending req....");
         let result: String = create_record(req).await.unwrap();

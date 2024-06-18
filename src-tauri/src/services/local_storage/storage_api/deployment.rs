@@ -98,7 +98,7 @@ pub fn decrypt_deployments<N: Network>(
     let network = get_network()?;
 
     let v_key = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => VIEWSESSION.get_instance::<TestnetV0>()?,
+        SupportedNetworks::Testnet => VIEWSESSION.get_instance::<TestnetV0>()?,
         _ => VIEWSESSION.get_instance::<TestnetV0>()?,
     };
 
@@ -106,7 +106,7 @@ pub fn decrypt_deployments<N: Network>(
         .iter()
         .map(|x| {
             let encrypted_data = match SupportedNetworks::from_str(&network)? {
-                SupportedNetworks::Testnet3 => x.to_enrypted_struct::<TestnetV0>()?,
+                SupportedNetworks::Testnet => x.to_enrypted_struct::<TestnetV0>()?,
                 _ => x.to_enrypted_struct::<TestnetV0>()?,
             };
 
