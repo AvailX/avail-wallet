@@ -12,7 +12,7 @@ use snarkvm::prelude::Program;
 use chrono::{DateTime, Local};
 use log::info;
 use snarkvm::circuit::Aleo;
-use snarkvm::console::network::Testnet;
+use snarkvm::console::network::TestnetV0;
 use snarkvm::ledger::query::{self, Query};
 use snarkvm::ledger::store::helpers::memory::BlockMemory;
 use snarkvm::ledger::transactions::ConfirmedTransaction;

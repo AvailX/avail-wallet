@@ -1144,7 +1144,7 @@ mod transfer_tests {
 
     use snarkvm::{
         ledger::{query::Query, store::helpers::memory::BlockMemory},
-        prelude::{Identifier, Testnet3},
+        prelude::{Identifier, TestnetV0},
     };
 
     #[cfg(target_os = "linux")]
