@@ -216,7 +216,7 @@ pub fn prepare_context() -> bool {
 mod tests {
     use super::*;
     use avail_common::models::constants::STRONG_PASSWORD;
-    use snarkvm::prelude::{PrivateKey, Testnet3};
+    use snarkvm::prelude::{PrivateKey, TestnetV0};
 
     #[test]
     fn test_store_key_local_password() {

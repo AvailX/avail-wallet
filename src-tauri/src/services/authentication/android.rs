@@ -1,4 +1,4 @@
-use snarkvm::prelude::{Testnet3, ToBytes};
+use snarkvm::prelude::{TestnetV0, ToBytes};
 use std::str::FromStr;
 
 use crate::{
