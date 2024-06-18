@@ -9,7 +9,7 @@ import TaskDrawer from "../../components/quests/tasks_drawer";
 
 // Types
 import { type CampaignDetailPageProps } from "../../types/quests/quest_types";
-import { type Quest } from "../../types/quests/quest_types";
+import { type Quest, Reward, Campaign } from "../../types/quests/quest_types";
 
 // Images
 import verified from "../../assets/icons/verified.svg";
@@ -25,9 +25,215 @@ import { useLocation } from "react-router-dom";
 
 // Alerts
 import { SuccessAlert, ErrorAlert } from "../../components/snackbars/alerts";
+import CreateQuestsBox from "./create_quests_box";
 
-const Quests: React.FC = () => {
-  const { campaign, quests } = useLocation().state as CampaignDetailPageProps;
+const CreateQuests: React.FC = () => {
+  //dummy data
+
+  const campaign: Campaign[] = [
+    {
+      id: "1",
+      title: "Disruptors",
+      subtitle: "Avail - Privacy unlocked.",
+      description: {
+        part1: "Complete Weekly",
+        main: "Quests",
+        part2: "Win Disruptors",
+      },
+      inner_description:
+        "The Disruptors are the official NFT of the Avail Wallet.",
+      box_image: "https://i.imgur.com/IzWdTWR.png",
+      bg_image: "https://i.imgur.com/bPfHEJt.png",
+      profile_image: "https://i.imgur.com/gXfvvaJ.png",
+      color: "#00FFAA",
+      // points_image: 'https://i.imgur.com/vVySQ4o.png',
+      // project_name: 'Avail',
+    },
+    {
+      id: "2",
+      title: "Aleo Wizards",
+      subtitle: "NFTs on Aleo.",
+      description: {
+        part1: "Complete Weekly",
+        main: "Quests",
+        part2: "Win Disruptors",
+      },
+      inner_description:
+        "The Disruptors are the official NFT of the Avail Wallet.",
+      box_image: "https://i.imgur.com/IzWdTWR.png",
+      bg_image: "https://i.imgur.com/bPfHEJt.png",
+      profile_image: "https://i.imgur.com/gXfvvaJ.png",
+      color: "#00FFAA",
+      // points_image: 'https://i.imgur.com/vVySQ4o.png',
+      //   project_name: 'Avail',
+    },
+    {
+      id: "3",
+      title: "Beta Staking",
+      subtitle: "Staking on Aleo",
+      description: {
+        part1: "Complete Weekly",
+        main: "Quests",
+        part2: "Win Disruptors",
+      },
+      inner_description:
+        "The Disruptors are the official NFT of the Avail Wallet.",
+      box_image: "https://i.imgur.com/IzWdTWR.png",
+      bg_image: "https://i.imgur.com/bPfHEJt.png",
+      profile_image: "https://i.imgur.com/gXfvvaJ.png",
+      color: "#00FFAA",
+    },
+  ];
+  enum RewardMethod {
+    LuckyDraw = "LuckyDraw",
+    LeaderBoard = "LeaderBoard",
+    FCFS = "FCFS",
+  }
+
+  // Sample quests data
+  const quests: Quest[] = [
+    {
+      id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+      title: "Mission 1",
+      description: "Complete a transaction on the Avail Wallet.",
+      display_image: "https://i.imgur.com/XhV1X68.png",
+      tasks: [
+        {
+          id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+          title: "Complete a transaction on the Avail Wallet.",
+          description: "Complete a transaction on the Avail Wallet.",
+          transaction: true,
+          program_id: "credits.aleo",
+          function_id: "transfer_private",
+          points: 100,
+        },
+      ],
+      reward: {
+        id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+        collection_name: "Disruptors",
+        amount: 100,
+        method: RewardMethod.FCFS,
+      },
+      expires_on: new Date(),
+      created_on: new Date(),
+      campaign_id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+    },
+    {
+      id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+      title: "Mission 2",
+      description: "Complete a transaction on the Avail Wallet.",
+      display_image: "https://i.imgur.com/XhV1X68.png",
+      tasks: [
+        {
+          id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+          title: "Complete a transaction on the Avail Wallet.",
+          description: "Complete a transaction on the Avail Wallet.",
+          transaction: true,
+          program_id: "credits.aleo",
+          function_id: "transfer_private",
+          points: 100,
+        },
+      ],
+      reward: {
+        id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+        collection_name: "Disruptors",
+        amount: 100,
+        method: RewardMethod.FCFS,
+      },
+      expires_on: new Date(),
+      created_on: new Date(),
+      campaign_id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+    },
+    {
+      id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+      title: "Mission 3",
+      description: "Complete a transaction on the Avail Wallet.",
+      display_image: "https://i.imgur.com/XhV1X68.png",
+      tasks: [
+        {
+          id: "1",
+          title: "Complete a transaction on the Avail Wallet.",
+          description: "Complete a transaction on the Avail Wallet.",
+          transaction: true,
+          program_id: "credits.aleo",
+          function_id: "transfer_private",
+          points: 100,
+        },
+      ],
+      reward: {
+        id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+        collection_name: "Disruptors",
+        amount: 100,
+        method: RewardMethod.FCFS,
+      },
+      expires_on: new Date(),
+      created_on: new Date(),
+      campaign_id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+    },
+    {
+      id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+      title: "Mission 4",
+      description: "Complete a transaction on the Avail Wallet.",
+      display_image: "https://i.imgur.com/XhV1X68.png",
+      tasks: [
+        {
+          id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+          title: "Complete a transaction on the Avail Wallet.",
+          description: "Complete a transaction on the Avail Wallet.",
+          transaction: true,
+          program_id: "credits.aleo",
+          function_id: "transfer_private",
+          dapp_url: "https://app.arcane.finance",
+          points: 100,
+        },
+        {
+          id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+          title: "Complete a transaction on the Avail Wallet.",
+          description: "Complete a transaction on the Avail Wallet.",
+          transaction: true,
+          program_id: "credits.aleo",
+          function_id: "transfer_private",
+          dapp_url: "https://app.arcane.finance",
+          points: 100,
+        },
+        {
+          id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+          title: "Complete a transaction on the Avail Wallet.",
+          description: "Complete a transaction on the Avail Wallet.",
+          transaction: true,
+          program_id: "credits.aleo",
+          function_id: "transfer_private",
+          dapp_url: "https://app.arcane.finance",
+          points: 100,
+        },
+        {
+          id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+          title: "Complete a transaction on the Avail Wallet.",
+          description: "Complete a transaction on the Avail Wallet.",
+          transaction: true,
+          program_id: "credits.aleo",
+          function_id: "transfer_private",
+          dapp_url: "https://app.arcane.finance",
+          points: 100,
+        },
+      ],
+      reward: {
+        id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+        collection_name: "Disruptors",
+        amount: 100,
+        method: RewardMethod.FCFS || {},
+      },
+      expires_on: new Date(),
+      created_on: new Date(),
+      campaign_id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",
+    },
+  ];
+
+  const location = useLocation();
+  const state = location.state as CampaignDetailPageProps | undefined;
+  // const campaign = state?.campaign;
+  // const quests = state?.quests || [];
+
   const [quest, setQuest] = React.useState<Quest>(quests[0]);
   const [openTasks, setOpenTasks] = React.useState(false);
   const [questCompleted, setQuestCompleted] = React.useState(false);
@@ -43,130 +249,119 @@ const Quests: React.FC = () => {
   const lg = mui.useMediaQuery("(min-width:1750px)");
   const lgxl = mui.useMediaQuery("(min-width:1950px)");
 
+  if (!campaign) {
+    return <div>Error: Campaign data is missing</div>;
+  }
+
   return (
-    <Layout>
-      <ErrorAlert
-        errorAlert={error}
-        setErrorAlert={setError}
-        message={message}
-      />
-      <SuccessAlert
-        successAlert={success}
-        setSuccessAlert={setSuccess}
-        message={message}
-      />
-      <SideMenu />
-      <TaskDrawer
-        open={openTasks}
-        onClose={() => {
-          setOpenTasks(false);
-        }}
-        quest={quest}
-      />
-      <mui.Box
-        sx={{
-          ml: md ? "5%" : "7%",
-          display: "flex",
-          flexDirection: "column",
-          width: md ? "95%" : "93%",
-        }}
-      >
+    <>
+      <Layout>
+        <ErrorAlert
+          errorAlert={error}
+          setErrorAlert={setError}
+          message={message}
+        />
+        <SuccessAlert
+          successAlert={success}
+          setSuccessAlert={setSuccess}
+          message={message}
+        />
+        <SideMenu />
+
         <mui.Box
           sx={{
-            background: `url(${campaign.bg_image})`,
-            color: campaign.color,
-            backgroundPosition: lgxl ? "center" : "bottom",
-            height: lgxl ? "380px" : "320px",
-            backgroundSize: "cover",
+            ml: md ? "5%" : "7%",
+            display: "flex",
+            flexDirection: "column",
+            width: md ? "95%" : "93%",
           }}
         >
           <mui.Box
             sx={{
-              borderRadius: "100%",
-              border: "1px solid #696969",
-              p: 1.5,
-              width: "200px",
-              mt: lgxl
-                ? "10%"
-                : lg
-                  ? "8%"
-                  : lgsx
-                    ? "10%"
-                    : mdlg
-                      ? "10%"
-                      : md
-                        ? "13%"
-                        : mdsx
-                          ? "14%"
-                          : "17%",
-              ml: "5%",
+              background: `url(${campaign[0].bg_image})`,
+              color: campaign[0].color,
+              backgroundPosition: lgxl ? "center" : "bottom",
+              height: lgxl ? "380px" : "320px",
+              backgroundSize: "cover",
             }}
           >
             <mui.Box
+              sx={{
+                borderRadius: "100%",
+                border: "1px solid #696969",
+                p: 1.5,
+                width: "200px",
+                mt: lgxl
+                  ? "10%"
+                  : lg
+                    ? "8%"
+                    : lgsx
+                      ? "10%"
+                      : mdlg
+                        ? "10%"
+                        : md
+                          ? "13%"
+                          : mdsx
+                            ? "14%"
+                            : "17%",
+                ml: "5%",
+              }}
+            >
+              <mui.Box
+                component="img"
+                src={campaign[0].profile_image}
+                sx={{ borderRadius: 0, maxWidth: "100%" }}
+              />
+            </mui.Box>
+            <mui.Box
               component="img"
-              src={campaign.profile_image}
-              sx={{ borderRadius: 0, maxWidth: "100%" }}
+              src={verified}
+              sx={{
+                borderRadius: 0,
+                ml: lgxl
+                  ? "11%"
+                  : lg
+                    ? "13%"
+                    : lgsx
+                      ? "15%"
+                      : mdlg
+                        ? "17%"
+                        : md
+                          ? "20%"
+                          : "23%",
+                mt: lg ? "-8%" : lgsx ? "-10%" : "-12%",
+              }}
             />
           </mui.Box>
-          <mui.Box
-            component="img"
-            src={verified}
-            sx={{
-              borderRadius: 0,
-              ml: lgxl
-                ? "11%"
-                : lg
-                  ? "13%"
-                  : lgsx
-                    ? "15%"
-                    : mdlg
-                      ? "17%"
-                      : md
-                        ? "20%"
-                        : "23%",
-              mt: lg ? "-8%" : lgsx ? "-10%" : "-12%",
-            }}
+          <mui.Box sx={{ ml: "2%", mt: "5%" }}>
+            <mui.Typography variant="h3" color="#FFF">
+              {campaign[0].title}
+            </mui.Typography>
+            <BodyText500 color="#A3A3A3">
+              {campaign[0].inner_description}
+            </BodyText500>
+          </mui.Box>
+          <mui.Divider
+            sx={{ width: "100%", height: "1px", bgcolor: "#00FFAA", mt: "3%" }}
+            orientation="horizontal"
           />
+          <mui.Box
+            sx={{
+              marginTop: "20px",
+              alignItems: "center",
+              mb: "5%",
+              bgcolor: "#111111",
+              alignSelf: "center",
+              width: "90%",
+              justifyContent: "space-around",
+            }}
+          >
+            <CreateQuestsBox />
+          </mui.Box>
         </mui.Box>
-        <mui.Box sx={{ ml: "2%", mt: "5%" }}>
-          <mui.Typography variant="h3" color="#FFF">
-            {campaign.title}
-          </mui.Typography>
-          <BodyText500 color="#A3A3A3">
-            {campaign.inner_description}
-          </BodyText500>
-        </mui.Box>
-        <mui.Divider
-          sx={{ width: "100%", height: "1px", bgcolor: "#00FFAA", mt: "3%" }}
-          orientation="horizontal"
-        />
-        <mui.Grid
-          container
-          spacing={2}
-          sx={{
-            marginTop: "20px",
-            alignItems: "center",
-            mb: "5%",
-            paddingLeft: "2%",
-            bgcolor: "#111111",
-            alignSelf: "center",
-            width: "100%",
-            justifyContent: "space-around",
-          }}
-        >
-          {quests.map((quest) => (
-            <QuestBox
-              key={quest.id}
-              quest={quest}
-              openTasks={openTasks}
-              setOpenTasks={setOpenTasks}
-              setQuest={setQuest}
-            />
-          ))}
-        </mui.Grid>
-      </mui.Box>
-    </Layout>
+      </Layout>
+    </>
   );
 };
 
-export default Quests;
+export default CreateQuests;
