@@ -22,6 +22,7 @@ import InputRecipient from "./views/send/InputRecipient";
 import QrCode from "./views/QrCode";
 import Settings from "./views/Settings";
 import PrivacyPolicy from "./views/PrivacyPolicy";
+import TermsAndConditions from "./views/TermsandService";
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
@@ -44,6 +45,7 @@ const App: React.FC = () => {
     { path: "/qr-code", element: <QrCode /> },
     { path: "/settings", element: <Settings /> },
     { path: "/privacy-policy", element: <PrivacyPolicy /> },
+    { path: "/terms-of-service", element: <TermsAndConditions /> },
     /* --Existing Wallet Flow-- */
     /* --Dapp Flow-- */
     /* --Quest Flow-- */

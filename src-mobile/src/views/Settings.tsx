@@ -375,7 +375,16 @@ function Settings() {
                           </Box>
                         </AccordionSummary>
                         <AccordionDetails>
-                          {title === "General" && <GeneralSettings />}{" "}
+                          {title === "General" && (
+                            <GeneralSettings
+                              username={username}
+                              setUsername={setUsername}
+                              language={language}
+                              setLanguage={setLanguage}
+                              network={network}
+                              address={address}
+                            />
+                          )}
                           {title === "Keys" && <KeysSettings />}{" "}
                           {title === "Secret Phrase" && <SecretPhrase />}{" "}
                           {title === "Security and Privacy" && (
