@@ -24,7 +24,7 @@ import Settings from "./views/Settings";
 import Username from "./views/create-wallet/Username";
 import Password from "./views/create-wallet/Password";
 
-import Login from "views/Login";
+import Login from "./views/Login";
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
