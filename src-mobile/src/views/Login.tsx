@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import NewAccountDialog from "components/dialogs/NewAccount";
+import NewAccountDialog from "../components/dialogs/NewAccount";
 
 function Login() {
   const navigate = useNavigate();

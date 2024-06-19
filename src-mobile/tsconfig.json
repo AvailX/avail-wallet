@@ -19,7 +19,8 @@
       "shared/*": ["src/shared/*"],
       "types/*": ["src/types/*"],
       "theme/*": ["src/theme/*"],
-      "public/*": ["public/*"]
+      "public/*": ["public/*"],
+      "views/*": ["src/views/*"]
     },
 
     /* Bundler mode */
