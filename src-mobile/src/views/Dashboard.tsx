@@ -116,7 +116,6 @@ const Dashboard = () => {
         </Box>
 
         <Box display='flex' mb={2}>
-          <button onClick={goToOther}>Next page</button>
           <Typography
             fontWeight={500}
             borderBottom={activeTab === "assets" ? "1px solid #FFFFFF" : ""}

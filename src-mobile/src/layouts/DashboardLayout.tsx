@@ -31,19 +31,6 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
       </Box>
 
       <Box
-        bgcolor='black'
-        textAlign='center'
-        color='#fff'
-        pt='10vh'
-        height='100%'
-        width='100%'
-        px={3}
-        sx={{ overflowY: "auto" }}
-      >
-        <Button onClick={() => navigate("/dashboard")}>Backsss</Button>
-        {children}
-      </Box>
-      <Box
         height='10vh'
         bgcolor='#2A2A2A'
         px={4}

@@ -107,6 +107,7 @@ const VerifySaved = () => {
               gridTemplateColumns='1fr 1fr 1fr'
               gap={1}
               height='auto'
+              sx={{ overflowY: "auto" }}
             >
               {pastedItems.map((item, i) => (
                 <Box
@@ -155,6 +156,7 @@ const VerifySaved = () => {
           width='100%'
           mx='auto'
           mt={3}
+          sx={{ overflowY: "auto", height: "200px" }}
         >
           {shuffleArray(recoveryPhase)
             .filter((x) => !pastedItems.includes(x))
@@ -163,8 +165,10 @@ const VerifySaved = () => {
                 onClick={() => {
                   setPastedItems([...pastedItems, phr]);
                 }}
-                px={1}
-                py={1}
+                p={2}
+                display='flex'
+                alignItems='center'
+                justifyContent='center'
                 bgcolor='#3E3E3E'
                 borderRadius='9px'
                 key={i}
@@ -208,85 +212,59 @@ const VerifySaved = () => {
             Verify
           </Button>
         </Box>
-
-        <SwipeableEdgeDrawer
-          open={open}
-          toggleDrawer={() => toggleDrawer(true)}
-        >
-          <Box>
-            <Typography color='#FFFFFF' fontSize='25px' fontWeight={700}>
-              Confirm you’ve saved it well
-            </Typography>
-            <Box display='flex' alignItems='flex-start' mb={3} mt={1}>
-              <Checkbox
-                sx={{
-                  [`&, &.${checkboxClasses.checked}`]: {
-                    color: "#00FFAA",
-                  },
-                }}
-              />
-              <Typography
-                ml={1}
-                color='#A7A7A7'
-                fontSize='18px'
-                lineHeight='20.88px'
-              >
-                I understand that if I lose my phone or wallet I will need my
-                secret recovery phrase to retrieve my wallet.
-              </Typography>
-            </Box>
-
-            <Box display='flex' alignItems='flex-start' mb={3} mt={1}>
-              <Checkbox
-                sx={{
-                  [`&, &.${checkboxClasses.checked}`]: {
-                    color: "#00FFAA",
-                  },
-                }}
-              />
-              <Typography
-                ml={1}
-                color='#A7A7A7'
-                fontSize='18px'
-                lineHeight='20.88px'
-              >
-                I understand that if I lose my phone or wallet I will need my
-                secret recovery phrase to retrieve my wallet.
-              </Typography>
-            </Box>
-
-            <Box>
-              <button onClick={goToOther}>Next page</button>
-            </Box>
-            <Button
-              fullWidth
-              onClick={() => {
-                setOpen(false);
-                navigate("/data-pointers");
-              }}
-              sx={{
-                background:
-                  "linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA",
-                py: 2,
-              }}
-              variant='contained'
-              type='submit'
-            >
-              Confirm
-            </Button>
-            <Button
-              sx={{ mt: 3, bgcolor: "#3E3E3E !important" }}
-              fullWidth
-              variant='outlined'
-              onClick={() => {
-                navigate(-1);
-              }}
-            >
-              Back
-            </Button>
-          </Box>
-        </SwipeableEdgeDrawer>
       </Box>
+      <SwipeableEdgeDrawer open={open} toggleDrawer={() => toggleDrawer(true)}>
+        <Box>
+          <Typography color='#FFFFFF' fontSize='25px' fontWeight={700}>
+            Confirm you’ve saved it well
+          </Typography>
+          <Box display='flex' alignItems='flex-start' mb={3} mt={1}>
+            <Checkbox
+              sx={{
+                [`&, &.${checkboxClasses.checked}`]: {
+                  color: "#00FFAA",
+                },
+              }}
+            />
+            <Typography
+              ml={1}
+              color='#A7A7A7'
+              fontSize='18px'
+              lineHeight='20.88px'
+            >
+              I understand that if I lose my phone or wallet I will need my
+              secret recovery phrase to retrieve my wallet.
+            </Typography>
+          </Box>
+
+          <Button
+            fullWidth
+            onClick={() => {
+              setOpen(false);
+              navigate("/data-pointers");
+            }}
+            sx={{
+              background:
+                "linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA",
+              py: 2,
+            }}
+            variant='contained'
+            type='submit'
+          >
+            Confirm
+          </Button>
+          <Button
+            sx={{ mt: 3, bgcolor: "#3E3E3E !important" }}
+            fullWidth
+            variant='outlined'
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            Back
+          </Button>
+        </Box>
+      </SwipeableEdgeDrawer>
     </>
   );
 };
