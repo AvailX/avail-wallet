@@ -49,11 +49,11 @@ export default function STButton({ text, onClick }: CtaButtonProperties) {
     <Button
       fullWidth
       sx={{
-        bgcolor: "#2A3331",
+        bgcolor: "#264139",
         border: "0px",
         color: "#fff",
-        my: 2,
-        borderRadius: "20px",
+        // my: 2,
+        borderRadius: "10px",
         bgcolor: text === "Delete Account" ? "#D21C1C" : "#00FFAA",
         "&:hover": {
           bgcolor: text === "Delete Account" ? "#D21C1C" : "#00FFAA",

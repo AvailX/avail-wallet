@@ -8,16 +8,24 @@ function SecurityPrivacy() {
   return (
     <Stack direction="column" spacing={2}>
       <Stack direction="column" spacing={0}>
-        <Typography
-          color="#fff"
-          fontSize="15px"
-          fontWeight={200}
+        <Typography color="#fff" fontSize="15px" fontWeight={200}>
+          Privacy Policy
+        </Typography>
+        <Button
+          fullWidth
+          sx={{
+            bgcolor: "#264139",
+            border: "0px",
+            color: "#fff",
+            // my: 2,
+            borderRadius: "10px",
+          }}
           onClick={() => {
             navigate("/privacy-policy");
           }}
         >
           Privacy Policy
-        </Typography>
+        </Button>
         {/* <Button
           fullWidth
           onClick={() => {
@@ -27,14 +35,7 @@ function SecurityPrivacy() {
         /> */}
       </Stack>
       <Stack direction="column" spacing={0}>
-        <Typography
-          color="#fff"
-          fontSize="15px"
-          fontWeight={200}
-          onClick={() => {
-            navigate("/terms-of-service");
-          }}
-        >
+        <Typography color="#fff" fontSize="15px" fontWeight={200}>
           Terms of Service
         </Typography>
         {/* <TextField
@@ -43,6 +44,21 @@ function SecurityPrivacy() {
           name="privateKey"
           sx={{ bgcolor: "#264139", borderRadius: "10px" }}
         /> */}
+        <Button
+          fullWidth
+          sx={{
+            bgcolor: "#264139",
+            border: "0px",
+            color: "#fff",
+            // my: 2,
+            borderRadius: "10px",
+          }}
+          onClick={() => {
+            navigate("/terms-of-service");
+          }}
+        >
+          Terms of Service
+        </Button>
       </Stack>
     </Stack>
   );

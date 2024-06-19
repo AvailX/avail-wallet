@@ -1,7 +1,7 @@
 import React from "react";
 import * as mui from "@mui/material";
 import { listen } from "@tauri-apps/api/event";
-import STButton from "../../../../src/components/buttons/settings-button";
+import STButton from "../settings/settings-button";
 
 import { TextField, Typography, Stack, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
