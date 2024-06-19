@@ -1092,3 +1092,300 @@ pub async fn distribute_rewards(quest_id: &str) -> AvailResult<()> {
 //         ))
 //     }
 // }
+
+// write test cases for all the abve functions
+// write test cases for all the abve functions
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::Utc;
+    use session::get_session;
+    use snarkvm::prelude::TestnetV0;
+
+    async fn session_setup() {
+        let sessiontoken = get_session(Some("tylerDurden@0xf5".to_string()))
+            .await
+            .unwrap();
+        println!("Session Token: {:?}", sessiontoken);
+        SESSION.set_session_token(sessiontoken);
+    }
+
+    #[tokio::test]
+    async fn test_verify_task() {
+        let start_time = Utc::now();
+        let end_time = Utc::now();
+        let task_id = "f1b3b3b3-1b3b-4b3b-8b3b-1b3b3b3b3b3b";
+        let program_id = "f1b3b3b3-1b3b-4b3b-8b3b-1b3b3b3b3b3b";
+        let function_id = "f1b3b3b3-1b3b-4b3b-8b3b-1b3b3b3b3b3b";
+
+        let result = verify_task(start_time, end_time, task_id, program_id, function_id)
+            .await
+            .unwrap();
+
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_get_campaigns() {
+        session_setup().await;
+        let result = get_campaigns().await.unwrap();
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_get_collections() {
+        let result = get_collections().await.unwrap();
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_get_quests_for_campaign() {
+        let campaign_id = "f1b3b3b3-1b3b-4b3b-8b3b-1b3b3b3b3b3b";
+        let result = get_quests_for_campaign(campaign_id).await.unwrap();
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_check_quest_completion() {
+        let quest_id = "f1b3b3b3-1b3b-4b3b-8b3b-1b3b3b3b3b3b";
+        let result = check_quest_completion(quest_id).await.unwrap();
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_is_task_verified() {
+        let task_id = Uuid::new_v4();
+        let result = is_task_verified(task_id).await.unwrap();
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_get_points() {
+        let result = get_points().await.unwrap();
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_get_whitelists() {
+        let result = get_whitelists().await.unwrap();
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_create_campaign() {
+        let title = "Test Campaign".to_string();
+        let subtitle = "Test Campaign".to_string();
+        let desc_1 = "Test Campaign".to_string();
+        let desc_main = "Test Campaign".to_string();
+        let desc_2 = "Test Campaign".to_string();
+        let inner_desc = "Test Campaign".to_string();
+        let box_image = "Test Campaign".to_string();
+        let bg_image = "Test Campaign".to_string();
+        let profile_image = "Test Campaign".to_string();
+        let color = "Test Campaign".to_string();
+        let points_image = "Test Campaign".to_string();
+        let project_name = "Test Campaign".to_string();
+
+        let result = create_campaign(
+            title,
+            subtitle,
+            desc_1,
+            desc_main,
+            desc_2,
+            inner_desc,
+            box_image,
+            bg_image,
+            profile_image,
+            color,
+            points_image,
+            project_name,
+        )
+        .await
+        .unwrap();
+
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_update_campaign() {
+        let id = Uuid::new_v4();
+        let title = "Test Campaign".to_string();
+        let subtitle = "Test Campaign".to_string();
+        let desc_1 = "Test Campaign".to_string();
+        let desc_main = "Test Campaign".to_string();
+        let desc_2 = "Test Campaign".to_string();
+        let inner_desc = "Test Campaign".to_string();
+        let box_image = "Test Campaign".to_string();
+        let bg_image = "Test Campaign".to_string();
+        let profile_image = "Test Campaign".to_string();
+        let color = "Test Campaign".to_string();
+        let points_image = "Test Campaign".to_string();
+        let project_name = "Test Campaign".to_string();
+
+        let result = update_campaign(
+            id,
+            title,
+            subtitle,
+            desc_1,
+            desc_main,
+            desc_2,
+            inner_desc,
+            box_image,
+            bg_image,
+            profile_image,
+            color,
+            points_image,
+            project_name,
+        )
+        .await
+        .unwrap();
+
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_delete_campaign() {
+        let campaign_id = "f1b3b3b3-1b3b-4b3b-8b3b-1b3b3b3b3b3b";
+        let result = delete_campaign(campaign_id).await.unwrap();
+        assert_eq!(result, ());
+    }
+
+    #[tokio::test]
+    async fn test_create_quest() {
+        let title = "Test Quest".to_string();
+        let description = "Test Quest".to_string();
+        let display_image = "Test Quest".to_string();
+        let tasks = vec![];
+        let reward = Reward {
+            id: Uuid::new_v4(),
+            collection_name: "Test collection".to_string(),
+            amount: 10i32,
+            method: RewardMethodCommon::FCFS,
+        };
+        let expires_on = Utc::now();
+        let created_on = Utc::now();
+        let campaign_id = Uuid::new_v4();
+
+        let result = create_quest(
+            title,
+            description,
+            display_image,
+            tasks,
+            reward,
+            expires_on,
+            created_on,
+            campaign_id,
+        )
+        .await
+        .unwrap();
+
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+
+    async fn test_update_quest() {
+        let id = Uuid::new_v4();
+        let title = "Test Quest".to_string();
+        let description = "Test Quest".to_string();
+        let display_image = "Test Quest".to_string();
+        let tasks = vec![];
+        let reward = Reward {
+            id: Uuid::new_v4(),
+            collection_name: "Test collection".to_string(),
+            amount: 10i32,
+            method: RewardMethodCommon::FCFS,
+        };
+        let expires_on = Utc::now();
+        let created_on = Utc::now();
+        let campaign_id = Uuid::new_v4();
+
+        let result = update_quest(
+            id,
+            title,
+            description,
+            display_image,
+            tasks,
+            reward,
+            expires_on,
+            created_on,
+            campaign_id,
+        )
+        .await
+        .unwrap();
+
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_delete_quest() {
+        let quest_id = "f1b3b3b3-1b3b-4b3b-8b3b-1b3b3b3b3b3b";
+        let result = delete_quest(quest_id).await.unwrap();
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_create_collection() {
+        let name = "Test Collection".to_string();
+        let whitelist_img = "Test Collection".to_string();
+        let description = "Test Collection".to_string();
+        let inner_img = Some("Test Collection".to_string());
+        let twitter_link = Some("Test Collection".to_string());
+        let discord_link = Some("Test Collection".to_string());
+
+        let result = create_collection(
+            name,
+            whitelist_img,
+            description,
+            inner_img,
+            twitter_link,
+            discord_link,
+        )
+        .await
+        .unwrap();
+
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_update_collection() {
+        let id = Uuid::new_v4();
+        let name = "Test Collection".to_string();
+        let whitelist_img = "Test Collection".to_string();
+        let description = "Test Collection".to_string();
+        let inner_img = Some("Test Collection".to_string());
+        let twitter_link = Some("Test Collection".to_string());
+        let discord_link = Some("Test Collection".to_string());
+
+        let result = update_collection(
+            id,
+            name,
+            whitelist_img,
+            description,
+            inner_img,
+            twitter_link,
+            discord_link,
+        )
+        .await
+        .unwrap();
+
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_delete_collection() {
+        let collection_id = "f1b3b3b3-1b3b-4b3b-8b3b-1b3b3b3b3b3b";
+        let result = delete_collection(collection_id).await.unwrap();
+        println!("Result: {:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_distribute_rewards() {
+        let quest_id = "f1b3b3b3-1b3b-4b3b-8b3b-1b3b3b3b3b3b";
+        let result = distribute_rewards(quest_id).await.unwrap();
+        println!("Result: {:?}", result);
+    }
+
+    // #[tokio::test]
+}

@@ -249,13 +249,18 @@ const CreateQuests: React.FC = () => {
   const lg = mui.useMediaQuery("(min-width:1750px)");
   const lgxl = mui.useMediaQuery("(min-width:1950px)");
 
-  const handleClick = () => {
-    console.log("INFO: Edit button is pressed");
-  };
+ 
+   // code popup to edit the campaign name
+    const [newCampaignName, setNewCampaignName] = React.useState("");
 
-  if (!campaign) {
-    return <div>Error: Campaign data is missing</div>;
-  }
+    const handleCampaignNameEntry = (event: React.ChangeEvent<HTMLInputElement>) => {
+      
+      setNewCampaignName(event.target.value);
+    };
+
+    // ...
+
+    
 
   return (
     <Layout>
@@ -351,7 +356,7 @@ const CreateQuests: React.FC = () => {
               alignItems: "center",
               cursor: "pointer",
             }}
-            onClick={handleClick}
+            onClick={handleCampaignNameEntry}
           >
             <mui.Typography fontSize={"30px"} color="#FFF" fontWeight={"bold"}>
               {`Project Name`}
@@ -374,7 +379,7 @@ const CreateQuests: React.FC = () => {
               alignItems: "center",
               cursor: "pointer",
             }}
-            onClick={handleClick}
+            onClick={handleCampaignNameEntry}
           >
             <BodyText500 color="#A3A3A3" fontSize={"10px"}>
               {`Tap to edit the bio of your project`}
