@@ -1,45 +1,49 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+
 import { TextField, Typography, Stack, Button } from "@mui/material";
 
 function SecurityPrivacy() {
-  const [publicKey, setPublicKey] = React.useState("");
-  const [privateKey, setPrivateKey] = React.useState("");
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    if (name === "publicKey") {
-      setPublicKey(value);
-    } else if (name === "privateKey") {
-      setPrivateKey(value);
-    }
-  };
+  const navigate = useNavigate();
   return (
     <Stack direction="column" spacing={2}>
       <Stack direction="column" spacing={0}>
-        <Typography color="#fff" fontSize="15px" fontWeight={200}>
+        <Typography
+          color="#fff"
+          fontSize="15px"
+          fontWeight={200}
+          onClick={() => {
+            navigate("/privacy-policy");
+          }}
+        >
           Privacy Policy
         </Typography>
-        <TextField
+        {/* <Button
           fullWidth
-          value={publicKey}
-          onChange={handleChange}
-          name="publicKey"
+          onClick={() => {
+            navigate("/privacy-policy");
+          }}
           sx={{ bgcolor: "#264139", borderRadius: "10px" }}
-        />
+        /> */}
       </Stack>
       <Stack direction="column" spacing={0}>
-        <Typography color="#fff" fontSize="15px" fontWeight={200}>
+        <Typography
+          color="#fff"
+          fontSize="15px"
+          fontWeight={200}
+          onClick={() => {
+            navigate("/terms-of-service");
+          }}
+        >
           Terms of Service
         </Typography>
-        <TextField
+        {/* <TextField
           fullWidth
           disabled
-          value={privateKey}
           name="privateKey"
           sx={{ bgcolor: "#264139", borderRadius: "10px" }}
-        />
+        /> */}
       </Stack>
-      {/* <Button variant="outlined">View</Button> */}
     </Stack>
   );
 }
