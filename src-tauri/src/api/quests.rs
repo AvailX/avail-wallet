@@ -1174,18 +1174,20 @@ mod tests {
 
     #[tokio::test]
     async fn test_create_campaign() {
-        let title = "Test Campaign".to_string();
-        let subtitle = "Test Campaign".to_string();
-        let desc_1 = "Test Campaign".to_string();
-        let desc_main = "Test Campaign".to_string();
-        let desc_2 = "Test Campaign".to_string();
-        let inner_desc = "Test Campaign".to_string();
-        let box_image = "Test Campaign".to_string();
-        let bg_image = "Test Campaign".to_string();
-        let profile_image = "Test Campaign".to_string();
-        let color = "Test Campaign".to_string();
-        let points_image = "Test Campaign".to_string();
-        let project_name = "Test Campaign".to_string();
+        session_setup().await;
+
+        let title = "Qaas T1".to_string();
+        let subtitle = "Test Creation".to_string();
+        let desc_1 = "Test".to_string();
+        let desc_main = "Test".to_string();
+        let desc_2 = "Test".to_string();
+        let inner_desc = "Test".to_string();
+        let box_image = "Test".to_string();
+        let bg_image = "Test".to_string();
+        let profile_image = "Test".to_string();
+        let color = "Test".to_string();
+        let points_image = "Test".to_string();
+        let project_name = "Test".to_string();
 
         let result = create_campaign(
             title,
