@@ -2,7 +2,7 @@ import React from "react";
 import { TextField, Typography, Stack, Button } from "@mui/material";
 import * as mui from "@mui/material";
 import { listen } from "@tauri-apps/api/event";
-import STButton from "../../../../src/components/buttons/settings-button";
+import STButton from "../settings/settings-button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {

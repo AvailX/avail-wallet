@@ -150,17 +150,8 @@ function KeysSettings() {
     </mui.Box>
   );
 
-  const [publicKey, setPublicKey] = React.useState("");
-  const [privateKey, setPrivateKey] = React.useState("");
-
-  // const handleChange = (event) => {
-  //   const { name, value } = event.target;
-  //   if (name === "publicKey") {
-  //     setPublicKey(value);
-  //   } else if (name === "privateKey") {
-  //     setPrivateKey(value);
-  //   }
-  // };
+  // const [publicKey, setPublicKey] = React.useState("");
+  // const [privateKey, setPrivateKey] = React.useState("");
 
   return (
     <div>
