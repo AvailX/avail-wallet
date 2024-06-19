@@ -21,6 +21,12 @@ import {
   SuccessAlert,
 } from "../../../../src/components/snackbars/alerts";
 
+import DeleteDialog from "../../../../src/components/dialogs/delete";
+import ViewKeyDialog from "../../../../src/components/dialogs/keys/get_viewing_key";
+import PrivateKeyDialog from "../../../../src/components/dialogs/keys/get_private_key";
+import SeedPhraseDialog from "../../../../src/components/dialogs/keys/get_seed_phrase";
+import ReAuthDialog from "../../../../src/components/dialogs/reauth";
+
 type Language = {
   symbol: string;
   name: string;
@@ -42,6 +48,12 @@ const GeneralSettings: React.FC<{
   const [message, setMessage] = React.useState("");
   const [originalUsername, setOriginalUsername] = React.useState(username);
   const [UsernameDialogOpen, setUsernameDialogOpen] = React.useState(false);
+
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const [vkOpen, setVkOpen] = React.useState(false);
+  const [pkOpen, setPkOpen] = React.useState(false);
+  const [spOpen, setSpOpen] = React.useState(false);
+  const [reAuthDialog, setReAuthDialog] = React.useState(false);
 
   const { t } = useTranslation();
 
@@ -66,31 +78,6 @@ const GeneralSettings: React.FC<{
     }
   }, []);
 
-  // const [username, setUsername] = React.useState("");
-  // const [language, setLanguage] = React.useState("");
-  // const [network, setNetwork] = React.useState("");
-
-  // const languages = [
-  //   { value: "en", label: "English" },
-  //   { value: "es", label: "Spanish" },
-  //   { value: "fr", label: "French" },
-  // ];
-
-  // const networks = [
-  //   { value: "testnet3", label: "Testnet 3" },
-  //   { value: "mainnet", label: "Mainnet" },
-  // ];
-
-  // const handleChange = (event) => {
-  //   const { name, value } = event.target;
-  //   if (name === "username") {
-  //     setUsername(value);
-  //   } else if (name === "language") {
-  //     setLanguage(value);
-  //   } else if (name === "network") {
-  //     setNetwork(value);
-  //   }
-  // };
   return (
     <div>
       <ErrorAlert
@@ -102,6 +89,18 @@ const GeneralSettings: React.FC<{
         successAlert={success}
         setSuccessAlert={setSuccess}
         message={message}
+      />
+      <DeleteDialog
+        isOpen={deleteOpen}
+        onRequestClose={() => {
+          setDeleteOpen(false);
+        }}
+      />
+      <ReAuthDialog
+        isOpen={reAuthDialog}
+        onRequestClose={() => {
+          setReAuthDialog(false);
+        }}
       />
       <Stack spacing={2}>
         <Stack direction="column" spacing={2}>

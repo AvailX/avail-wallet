@@ -13,7 +13,17 @@ import {
   BodyText500,
   SmallText400,
 } from "../../../../src/components/typography/typography";
+
+import {
+  ErrorAlert,
+  SuccessAlert,
+} from "../../../../src/components/snackbars/alerts";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import DeleteDialog from "../../../../src/components/dialogs/delete";
+import ViewKeyDialog from "../../../../src/components/dialogs/keys/get_viewing_key";
+import PrivateKeyDialog from "../../../../src/components/dialogs/keys/get_private_key";
+import SeedPhraseDialog from "../../../../src/components/dialogs/keys/get_seed_phrase";
+import ReAuthDialog from "../../../../src/components/dialogs/reauth";
 
 function SecretPhrase() {
   const [success, setSuccess] = React.useState<boolean>(false);
@@ -21,6 +31,8 @@ function SecretPhrase() {
   const [error, setError] = React.useState<boolean>(false);
   const [info, setInfo] = React.useState<boolean>(false);
   const [message, setMessage] = React.useState<string>("");
+  const [errorAlert, setErrorAlert] = React.useState(false);
+  const [UsernameDialogOpen, setUsernameDialogOpen] = React.useState(false);
 
   // General States
   const [username, setUsername] = React.useState<string>("");
@@ -103,70 +115,35 @@ function SecretPhrase() {
           </mui.IconButton>
         )}
       </mui.Box>
-      <mui.Box
-        sx={{
-          mt: "2%",
-          borderRadius: "10px",
-          bgcolor: "#1E1D1D",
-          justifyContent: "space-between",
-          mb: "1%",
-          alignItems: "center",
-          position: "relative",
-          padding: 2,
-          display: "flex",
-          flexDirection: "row",
-        }}
-      >
-        {/* Overlay with blur effect */}
-        {!revealAll && (
-          <mui.Box
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              bgcolor: "rgba(0, 0, 0, 0.5)", // Dark overlay
-              backdropFilter: "blur(4px)", // Blur effect
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "10px", // Match the parent's border radius
-            }}
-          ></mui.Box>
-        )}
-        <SmallText400 sx={{ color: "#FFF" }}>{param}</SmallText400>
-      </mui.Box>
     </mui.Box>
   );
 
-  const [publicKey, setPublicKey] = React.useState("");
-  const [privateKey, setPrivateKey] = React.useState("");
-
-  // const handleChange = (event) => {
-  //   const { name, value } = event.target;
-  //   if (name === "publicKey") {
-  //     setPublicKey(value);
-  //   } else if (name === "privateKey") {
-  //     setPrivateKey(value);
-  //   }
-  // };
-
-  // const [publicKey, setPublicKey] = React.useState("");
-
-  // const handleChange = (event) => {
-  //   const { name, value } = event.target;
-  //   if (name === "viewingkey") {
-  //     setPublicKey(value);
-  //   }
-  // };
   return (
-    <Stack direction="column" spacing={0}>
-      <Typography color="#fff" fontSize="15px" fontWeight={200}>
-        Viewing Key
-      </Typography>
-      <HiddenItem param={seedPhrase} label="Secret Phrase" />
-    </Stack>
+    <div>
+      <ErrorAlert
+        errorAlert={errorAlert}
+        setErrorAlert={setErrorAlert}
+        message={message}
+      />
+      <SuccessAlert
+        successAlert={success}
+        setSuccessAlert={setSuccess}
+        message={message}
+      />
+      <SeedPhraseDialog
+        isOpen={spOpen}
+        onRequestClose={() => {
+          setSpOpen(false);
+        }}
+        setSeedPhrase={setSeedPhrase}
+      />
+      <Stack direction="column" spacing={0}>
+        <Typography color="#fff" fontSize="15px" fontWeight={200}>
+          Viewing Key
+        </Typography>
+        <HiddenItem param={seedPhrase} label="Secret Phrase" />
+      </Stack>
+    </div>
   );
 }
 

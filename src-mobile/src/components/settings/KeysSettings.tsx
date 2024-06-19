@@ -14,7 +14,16 @@ import {
   BodyText500,
   SmallText400,
 } from "../../../../src/components/typography/typography";
+import {
+  ErrorAlert,
+  SuccessAlert,
+} from "../../../../src/components/snackbars/alerts";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import DeleteDialog from "../../../../src/components/dialogs/delete";
+import ViewKeyDialog from "../../../../src/components/dialogs/keys/get_viewing_key";
+import PrivateKeyDialog from "../../../../src/components/dialogs/keys/get_private_key";
+import SeedPhraseDialog from "../../../../src/components/dialogs/keys/get_seed_phrase";
+import ReAuthDialog from "../../../../src/components/dialogs/reauth";
 
 function KeysSettings() {
   const [success, setSuccess] = React.useState<boolean>(false);
@@ -154,37 +163,54 @@ function KeysSettings() {
   // };
 
   return (
-    <Stack direction="column" spacing={2}>
-      <Stack direction="column" spacing={0}>
-        <Typography color="#fff" fontSize="15px" fontWeight={200}>
-          Public Key
-        </Typography>
-        {/* <TextField
+    <div>
+      <SuccessAlert
+        successAlert={success}
+        setSuccessAlert={setSuccess}
+        message={message}
+      />
+      <ErrorAlert
+        errorAlert={error}
+        setErrorAlert={setError}
+        message={message}
+      />
+      <ViewKeyDialog
+        isOpen={vkOpen}
+        onRequestClose={() => {
+          setVkOpen(false);
+        }}
+        setViewKey={setVk}
+      />
+      <PrivateKeyDialog
+        isOpen={pkOpen}
+        onRequestClose={() => {
+          setPkOpen(false);
+        }}
+        setPrivateKey={setPk}
+      />
+      <Stack direction="column" spacing={2}>
+        <Stack direction="column" spacing={0}>
+          <Typography color="#fff" fontSize="15px" fontWeight={200}>
+            Public Key
+          </Typography>
+          {/* <TextField
           fullWidth
           value={publicKey}
           onChange={handleChange}
           name="publicKey"
           sx={{ bgcolor: "#264139", borderRadius: "10px" }}
         /> */}
-        <HiddenItem param={vk} label="Viewing Key" />
+          <HiddenItem param={vk} label="Viewing Key" />
+        </Stack>
+        <Stack direction="column" spacing={0}>
+          <Typography color="#fff" fontSize="15px" fontWeight={200}>
+            Private Key
+          </Typography>
+          {/* edit the hiddden Item to remove the dark box */}
+          <HiddenItem param={pk} label="Private Key" />
+        </Stack>
       </Stack>
-      <Stack direction="column" spacing={0}>
-        <Typography color="#fff" fontSize="15px" fontWeight={200}>
-          Private Key
-        </Typography>
-        {/* <TextField
-          fullWidth
-          disabled
-          value={privateKey}
-          name="privateKey"
-          sx={{ bgcolor: "#264139", borderRadius: "10px" }}
-        /> */}
-
-        {/* edit the hiddden Item to remove the dark box */}
-        <HiddenItem param={pk} label="Private Key" />
-      </Stack>
-      {/* <Button variant="outlined">View</Button> */}
-    </Stack>
+    </div>
   );
 }
 
