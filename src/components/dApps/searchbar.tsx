@@ -48,7 +48,7 @@ const SearchBox: React.FC = () => {
 		}
 
 		if (dappUrl === 'ans') {
-			urlModified = 'https://testnet3.aleonames.id/account';
+			urlModified = 'https://testnet.aleonames.id/account';
 		}
 
 		if (dappUrl === 'shadow finance') {

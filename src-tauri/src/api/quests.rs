@@ -267,7 +267,7 @@ pub async fn verify_task(
     let network = get_network()?;
 
     match SupportedNetworks::from_str(network.as_str())? {
-        SupportedNetworks::Testnet3 => {
+        SupportedNetworks::Testnet => {
             verify_task_raw::<TestnetV0>(start_time, end_time, task_id, program_id, function_id)
                 .await
         }

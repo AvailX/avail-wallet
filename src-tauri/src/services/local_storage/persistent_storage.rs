@@ -43,7 +43,6 @@ pub fn initial_user_preferences(
             last_backup_sync TIMESTAMP,
             address TEXT NOT NULL,
             backup BOOLEAN NOT NULL DEFAULT FALSE,
-            address TEXT NOT NULL,
             base_url TEXT NOT NULL
         )",
     )?;
@@ -60,7 +59,7 @@ pub fn initial_user_preferences(
             &"dark",
             &language.to_string_short(),
             // TODO - V2 change default to mainnet
-            &"testnet3",
+            &"testnet",
             &auth_type,
             &username,
             &tag,
@@ -530,7 +529,7 @@ fn test_get_network() {
     let res = get_network().unwrap();
 
     print!("{}", res);
-    assert_eq!(res, "testnet3".to_string());
+    assert_eq!(res, "testnet".to_string());
 }
 
 #[test]
