@@ -337,7 +337,7 @@ function Settings() {
                   icon?: any;
                   showSwitch?: boolean;
                 }) => (
-                  <Box width="90%" mx="auto">
+                  <Box width="100%" mx="auto" bgcolor="#2A2A2A">
                     {showSwitch ? (
                       <Box
                         borderBottom="1px solid #353535"
@@ -347,7 +347,7 @@ function Settings() {
                         justifyContent="space-between"
                         onClick={() => handleOpen()}
                       >
-                        <Box display="flex" alignItems="center">
+                        <Box display="flex" alignItems="center" padding={1}>
                           <img src={icon} />
                           <Typography ml={2} color="#fff" fontSize="17px">
                             {title}
@@ -360,6 +360,8 @@ function Settings() {
                         sx={{
                           bgcolor: "#2A2A2A",
                           borderBottom: "1px solid #353535",
+                          width: "100%",
+                          margin: 0,
                         }}
                       >
                         <AccordionSummary
