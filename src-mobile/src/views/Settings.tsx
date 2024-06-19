@@ -87,26 +87,6 @@ const SETTINGS_DETAIL = [
   },
 ];
 
-const ProfileDisplay = () => {
-  return (
-    <Box display="flex" alignItems="center" my={3}>
-      <Box
-        borderRadius="50%"
-        bgcolor="#979797"
-        width="45px"
-        height="45px"
-        mr={2}
-      ></Box>
-      <Box textAlign="left">
-        <Typography fontWeight={700} fontSize="17px">
-          Normal Lowell
-        </Typography>
-        <Typography color="#A7A7A7">aleo7843ab4...3894</Typography>
-      </Box>
-    </Box>
-  );
-};
-
 function Settings() {
   //temporary sidebar states
   const [open, setOpen] = useState(false);
@@ -158,6 +138,28 @@ function Settings() {
 
   const { t } = useTranslation();
   const shouldRunEffect = React.useRef(true);
+
+  const ProfileDisplay = () => {
+    return (
+      <Box display="flex" alignItems="center" my={3}>
+        <Box
+          borderRadius="50%"
+          bgcolor="#979797"
+          width="45px"
+          height="45px"
+          mr={2}
+        ></Box>
+        <Box textAlign="left">
+          <Typography fontWeight={700} fontSize="17px">
+            {/* {setUsername} */}
+            Normal Lowell
+          </Typography>
+          {/* {setAddress} */}
+          <Typography color="#A7A7A7">aleo7843ab4...3894</Typography>
+        </Box>
+      </Box>
+    );
+  };
 
   // Scanning state
   {
@@ -347,7 +349,7 @@ function Settings() {
                         justifyContent="space-between"
                         onClick={() => handleOpen()}
                       >
-                        <Box display="flex" alignItems="center" padding={1}>
+                        <Box display="flex" alignItems="center" paddingX={1}>
                           <img src={icon} />
                           <Typography ml={2} color="#fff" fontSize="17px">
                             {title}

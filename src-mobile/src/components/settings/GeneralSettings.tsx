@@ -3,7 +3,7 @@ import * as mui from "@mui/material";
 import { useTranslation } from "react-i18next";
 import i18n from "../../../../src/i18next-config";
 import { languages } from "../../../../src/components/select/language";
-import { updateUsername } from "../../../../src/services/storage/persistent";
+// import { updateUsername } from "../../../../src/services/storage/persistent";
 import UsernameDialog from "../../../../src/components/dialogs/username";
 import {
   TextField,
@@ -20,7 +20,16 @@ import {
   ErrorAlert,
   SuccessAlert,
 } from "../../../../src/components/snackbars/alerts";
-
+import {
+  getUsername,
+  updateUsername,
+  get_address,
+  getLastSync,
+  getLanguage,
+  getNetwork,
+  updateBackupFlag,
+  getBackupFlag,
+} from "../../../../src/services/storage/persistent";
 import DeleteDialog from "../../../../src/components/dialogs/delete";
 import ViewKeyDialog from "../../../../src/components/dialogs/keys/get_viewing_key";
 import PrivateKeyDialog from "../../../../src/components/dialogs/keys/get_private_key";

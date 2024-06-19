@@ -26,13 +26,6 @@ function SecurityPrivacy() {
         >
           Privacy Policy
         </Button>
-        {/* <Button
-          fullWidth
-          onClick={() => {
-            navigate("/privacy-policy");
-          }}
-          sx={{ bgcolor: "#264139", borderRadius: "10px" }}
-        /> */}
       </Stack>
       <Stack direction="column" spacing={0}>
         <Typography color="#fff" fontSize="15px" fontWeight={200}>
