@@ -1,4 +1,4 @@
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import { FC, PropsWithChildren } from "react";
 
 import anchorIcon from "../assets/anchor-icon.svg";
@@ -6,11 +6,13 @@ import diamondIcon from "../assets/diamond-icon.svg";
 import homeIcon from "../assets/home-icon.svg";
 
 import splashImg from "../assets/green-splash.svg";
+
 import { useNavigate } from "react-router-dom";
 
 interface IProps extends PropsWithChildren {}
 
 const DashboardLayout: FC<IProps> = ({ children }) => {
+  const navigate = useNavigate();
   const MOBILE_TAB = [
     { icon: homeIcon, path: "/dashboard" },
     {
@@ -22,23 +24,23 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
       path: "/settings",
     },
   ];
-  const navigate = useNavigate();
-
   return (
-    <Box height='100vh' position='relative'>
+    <Box height='100vh'>
       <Box position='absolute' width='100%' top={0}>
         <img src={splashImg} width='100%' />
       </Box>
-
       <Box
-        height='10vh'
-        bgcolor='#2A2A2A'
-        px={4}
-        position='absolute'
-        width='100%'
-        bottom={0}
-        sx={{ position: "fixed" }}
+        bgcolor='black'
+        textAlign='center'
+        color='#fff'
+        pt='10vh'
+        height='90vh'
+        px={3}
+        sx={{ overflowY: "auto" }}
       >
+        {children}
+      </Box>
+      <Box height='15vh' bgcolor='#2A2A2A' px={4} position='fixed' width='100%'>
         <Box
           width='100%'
           mx='auto'

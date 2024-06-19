@@ -118,7 +118,7 @@ function Login() {
                 width: "100%",
                 bgcolor: "#50505091",
                 border: "0px solid ",
-                color: "#00FFAA",
+                color: isLoading ? "#000" : "#00FFAA",
                 py: 2,
                 fontSize: "20px",
                 "&:focused": {

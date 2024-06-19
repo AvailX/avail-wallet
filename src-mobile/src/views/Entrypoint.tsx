@@ -26,11 +26,15 @@ function EntryPoint() {
 
         const error = error_ as AvailError;
 
-        if (error.error_type === AvailErrorType.Network) {
+        if (error?.error_type === AvailErrorType.Network) {
+          console.log("network error");
           // TODO - Desktop login
         }
 
-        if (error.error_type.toString() === "Unauthorized" || error.error_type.toString() === "Invalid Data") {
+        if (
+          error?.error_type?.toString() === "Unauthorized" ||
+          error?.error_type?.toString() === "Invalid Data"
+        ) {
           navigate("/login");
         } else {
           navigate("/username");
