@@ -8,6 +8,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import NewAccountDialog from "../components/dialogs/NewAccount";
 
+import bgLogin from "../assets/sign-up-bg.png";
+
 function Login() {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
