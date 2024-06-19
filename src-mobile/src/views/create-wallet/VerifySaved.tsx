@@ -73,6 +73,7 @@ const VerifySaved = () => {
         bgcolor='#111111'
         color='#fff'
         textAlign='center'
+        sx={{ overflowY: "auto" }}
       >
         <GoBack />
         <Typography fontWeight={700} fontSize='25px'>

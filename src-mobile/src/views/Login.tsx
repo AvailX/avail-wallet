@@ -1,6 +1,4 @@
 import { Box, Button, Input, TextField, Typography } from "@mui/material";
-import bgLogin from "../assets/sign-up-bg.png";
-import { mobile_session_and_local_auth } from "services/auth";
 
 import { session_and_local_auth } from "../../../src/services/authentication/auth";
 import { useState } from "react";
@@ -66,6 +64,7 @@ function Login() {
             sx={{ border: "1px solid #00FFAA", borderRadius: "10px", p: 2 }}
             disableUnderline
             placeholder='Password'
+            type={passwordHidden ? "password" : "text"}
             value={password}
             onChange={(e) => setPassword(e?.target?.value)}
             inputProps={{
