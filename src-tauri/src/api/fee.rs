@@ -120,8 +120,8 @@ mod tests {
         network::SupportedNetworks,
     };
     use snarkvm::{
-        circuit::AleoV0,
-        prelude::{Address, Execution, PrivateKey, Testnet3},
+        circuit::AleoTestnetV0,
+        prelude::{Address, Execution, PrivateKey, TestnetV0},
     };
 
     use crate::api::aleo_client::setup_local_client;
@@ -132,7 +132,7 @@ mod tests {
     async fn test_create_record() {
         let new_exec = get_execution_object().await.unwrap();
         // let new_exec = Execution::<Testnet3>::new();
-        let exec_obj: Vec<u8> = FeeRequest::to_bytes_execution_object::<Testnet3>(new_exec)
+        let exec_obj: Vec<u8> = FeeRequest::to_bytes_execution_object::<TestnetV0>(new_exec)
             .await
             .unwrap();
         // println!("{:?}", exec_obj);
@@ -140,7 +140,7 @@ mod tests {
             exec_obj,
             "testing.aleo".to_string(),
             "testing_7".to_string(),
-            SupportedNetworks::Testnet3,
+            SupportedNetworks::Testnet,
         );
         println!("Sending req....");
         let result: String = create_record(req).await.unwrap();
@@ -156,18 +156,18 @@ mod tests {
         println!("{:?}", result);
     }
 
-    async fn get_execution_object() -> AvailResult<Execution<Testnet3>> {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
-        let api_client = setup_local_client::<Testnet3>();
-        let recipient = Address::<Testnet3>::from_str(TESTNET3_ADDRESS).unwrap();
+    async fn get_execution_object() -> AvailResult<Execution<TestnetV0>> {
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
+        let api_client = setup_local_client::<TestnetV0>();
+        let recipient = Address::<TestnetV0>::from_str(TESTNET3_ADDRESS).unwrap();
 
         let program = api_client.get_program("credits.aleo").unwrap();
 
         let program_manager =
-            ProgramManager::<Testnet3>::new(Some(pk), None, Some(api_client), None).unwrap();
+            ProgramManager::<TestnetV0>::new(Some(pk), None, Some(api_client), None).unwrap();
 
         let (total, (_, _), execution) = program_manager
-            .estimate_execution_fee::<AleoV0>(
+            .estimate_execution_fee::<AleoTestnetV0>(
                 &program,
                 "transfer_public_to_private",
                 vec![recipient.to_string(), "10000u64".to_string()].iter(),
@@ -186,17 +186,17 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_execution_object() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
-        let api_client = setup_local_client::<Testnet3>();
-        let recipient = Address::<Testnet3>::from_str(TESTNET3_ADDRESS).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
+        let api_client = setup_local_client::<TestnetV0>();
+        let recipient = Address::<TestnetV0>::from_str(TESTNET3_ADDRESS).unwrap();
 
         let program = api_client.get_program("credits.aleo").unwrap();
 
         let program_manager =
-            ProgramManager::<Testnet3>::new(Some(pk), None, Some(api_client), None).unwrap();
+            ProgramManager::<TestnetV0>::new(Some(pk), None, Some(api_client), None).unwrap();
 
         let (total, (_x, _y), _execution) = program_manager
-            .estimate_execution_fee::<AleoV0>(
+            .estimate_execution_fee::<AleoTestnetV0>(
                 &program,
                 "transfer_public_to_private",
                 vec![recipient.to_string(), "10000u64".to_string()].iter(),

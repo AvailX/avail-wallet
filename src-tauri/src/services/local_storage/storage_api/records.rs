@@ -4,7 +4,7 @@ use avail_common::errors::AvailError;
 use snarkvm::circuit::integers::Integer;
 use snarkvm::circuit::{Identifier, Inject};
 use snarkvm::prelude::{
-    bail, Address, AleoID, Entry, Field, Literal, Network, Plaintext, Testnet3, ToField,
+    bail, Address, AleoID, Entry, Field, Literal, Network, Plaintext, TestnetV0, ToField,
 };
 
 use crate::api::encrypted_data::update_data;
@@ -400,17 +400,17 @@ pub async fn update_records_spent_backup<N: Network>(ids: Vec<String>) -> AvailR
 }
 
 ///For Testing purposes
-pub fn get_test_record_pointer() -> AvailRecord<Testnet3> {
-    let test_transaction_id = AleoID::<Field<Testnet3>, TX_PREFIX>::from_str(
+pub fn get_test_record_pointer() -> AvailRecord<TestnetV0> {
+    let test_transaction_id = AleoID::<Field<TestnetV0>, TX_PREFIX>::from_str(
         "at1zux4zw83dayxtndd58skuy7qq7xg0d6ez86ak9zlqh2zru4kgggqjys70g",
     )
     .unwrap();
-    let test_transition_id = AleoID::<Field<Testnet3>, TRANSITION_PREFIX>::from_str(
+    let test_transition_id = AleoID::<Field<TestnetV0>, TRANSITION_PREFIX>::from_str(
         "au1070w2eknk90ldz2rs88p8erdjq5we4787hr702pf3lmzxsr4kg8sr5lran",
     )
     .unwrap();
 
-    let test_record_pointer: AvailRecord<Testnet3> = AvailRecord {
+    let test_record_pointer: AvailRecord<TestnetV0> = AvailRecord {
         pointer: Pointer {
             block_height: 10u32,
             transaction_id: test_transaction_id,
@@ -453,8 +453,8 @@ mod records_storage_api_tests {
     use snarkvm::prelude::{PrivateKey, ToBytes, ViewKey};
 
     fn test_setup_prerequisites() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let view_key = ViewKey::<Testnet3>::try_from(&pk).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::try_from(&pk).unwrap();
 
         delete_user_encrypted_data().unwrap();
         delete_user_preferences().unwrap();
@@ -476,8 +476,8 @@ mod records_storage_api_tests {
 
     #[test]
     fn test_store_view_session() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let view_key = ViewKey::<Testnet3>::try_from(&pk).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::try_from(&pk).unwrap();
 
         VIEWSESSION.set_view_session(&view_key.to_string()).unwrap();
     }
@@ -486,11 +486,11 @@ mod records_storage_api_tests {
     fn test_encrypt_and_store_records() {
         test_setup_prerequisites();
 
-        let address = Address::<Testnet3>::from_str(TESTNET_ADDRESS).unwrap();
+        let address = Address::<TestnetV0>::from_str(TESTNET_ADDRESS).unwrap();
         let test_record_pointer = get_test_record_pointer();
 
         let encrypted_records =
-            encrypt_and_store_records::<Testnet3>(vec![test_record_pointer], address).unwrap();
+            encrypt_and_store_records::<TestnetV0>(vec![test_record_pointer], address).unwrap();
 
         print!("{:?}", encrypted_records);
         assert_eq!(encrypted_records.len(), 1);
@@ -514,7 +514,7 @@ mod records_storage_api_tests {
         );
 
         let request = GetRecordsRequest::new(None, Some(record_filter), None);
-        let (pointers, _ids) = get_record_pointers::<Testnet3>(request).unwrap();
+        let (pointers, _ids) = get_record_pointers::<TestnetV0>(request).unwrap();
 
         print!("Pointers {:?}", pointers);
 
@@ -524,10 +524,10 @@ mod records_storage_api_tests {
     #[test]
     fn test_get_record_pointers_for_record_type() {
         test_store_view_session();
-        let address = Address::<Testnet3>::from_str(TESTNET_ADDRESS).unwrap();
+        let address = Address::<TestnetV0>::from_str(TESTNET_ADDRESS).unwrap();
         let test_record_pointer = get_test_record_pointer();
 
-        let pointers = get_record_pointers_for_record_type::<Testnet3>(
+        let pointers = get_record_pointers_for_record_type::<TestnetV0>(
             RecordTypeCommon::AleoCredits,
             &address.to_string(),
         )
@@ -542,7 +542,7 @@ mod records_storage_api_tests {
     fn test_get_record_pointer_for_program_id() {
         test_store_view_session();
         let test_record_pointer = get_test_record_pointer();
-        let address = Address::<Testnet3>::from_str(TESTNET_ADDRESS).unwrap();
+        let address = Address::<TestnetV0>::from_str(TESTNET_ADDRESS).unwrap();
 
         let record_filter = RecordsFilter::new(
             vec!["credits.aleo".to_string()],
@@ -553,7 +553,7 @@ mod records_storage_api_tests {
 
         let request = GetRecordsRequest::new(Some(address.to_string()), Some(record_filter), None);
 
-        let (pointers, _ids) = get_record_pointers::<Testnet3>(request).unwrap();
+        let (pointers, _ids) = get_record_pointers::<TestnetV0>(request).unwrap();
 
         print!("Pointers \n {:?}", pointers);
 
@@ -564,7 +564,7 @@ mod records_storage_api_tests {
     fn test_get_record_pointer_for_program_id_and_function_id() {
         test_store_view_session();
         let test_record_pointer = get_test_record_pointer();
-        let address = Address::<Testnet3>::from_str(TESTNET_ADDRESS).unwrap();
+        let address = Address::<TestnetV0>::from_str(TESTNET_ADDRESS).unwrap();
 
         let record_filter = RecordsFilter::new(
             vec!["credits.aleo".to_string()],
@@ -575,7 +575,7 @@ mod records_storage_api_tests {
 
         let request = GetRecordsRequest::new(Some(address.to_string()), Some(record_filter), None);
 
-        let (pointers, _ids) = get_record_pointers::<Testnet3>(request).unwrap();
+        let (pointers, _ids) = get_record_pointers::<TestnetV0>(request).unwrap();
 
         print!("Pointers \n {:?}", pointers);
 
@@ -586,7 +586,7 @@ mod records_storage_api_tests {
     fn test_get_record_pointer_for_program_id_and_record_name() {
         test_store_view_session();
         let test_record_pointer = get_test_record_pointer();
-        let address = Address::<Testnet3>::from_str(TESTNET_ADDRESS).unwrap();
+        let address = Address::<TestnetV0>::from_str(TESTNET_ADDRESS).unwrap();
         let record_filter = RecordsFilter::new(
             vec!["credits.aleo".to_string()],
             None,
@@ -595,7 +595,7 @@ mod records_storage_api_tests {
         );
 
         let request = GetRecordsRequest::new(Some(address.to_string()), Some(record_filter), None);
-        let (pointers, _ids) = get_record_pointers::<Testnet3>(request).unwrap();
+        let (pointers, _ids) = get_record_pointers::<TestnetV0>(request).unwrap();
 
         print!("Pointers \n {:?}", pointers);
         drop_encrypted_data_table().unwrap();
@@ -613,13 +613,13 @@ mod records_storage_api_tests {
         test_setup_prerequisites();
 
         let test_pointer = get_test_record_pointer();
-        let address = get_address::<Testnet3>().unwrap();
+        let address = get_address::<TestnetV0>().unwrap();
 
         let encrypted_record = encrypt_and_store_records(vec![test_pointer], address).unwrap();
 
         post_encrypted_data(encrypted_record.clone()).await.unwrap();
 
-        let res = update_records_spent_backup::<Testnet3>(vec![encrypted_record[0]
+        let res = update_records_spent_backup::<TestnetV0>(vec![encrypted_record[0]
             .id
             .unwrap()
             .to_string()])
@@ -636,7 +636,7 @@ mod records_storage_api_tests {
             .set_view_session("AViewKey1myvhAr2nes8MF1y8gPV19azp4evwsBR4CqyzAi62nufW")
             .unwrap();
 
-        let res = check_if_record_exists::<Testnet3>("").unwrap();
+        let res = check_if_record_exists::<TestnetV0>("").unwrap();
         println!("{:?}", res);
     }
 }

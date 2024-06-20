@@ -273,46 +273,46 @@ mod test_tokens {
 
     #[test]
     fn test_init() {
-        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
+        let api_client: AleoAPIClient<TestnetV0> = setup_client::<TestnetV0>().unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let vk = ViewKey::<TestnetV0>::try_from(pk).unwrap();
         let res =
-            init_token::<Testnet3>("testnew111.record", "diff.aleo", TESTNET_ADDRESS, "100u64")
+            init_token::<TestnetV0>("testnew111.record", "diff.aleo", TESTNET_ADDRESS, "100u64")
                 .unwrap();
     }
     #[test]
     fn test_pid() {
-        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
+        let api_client: AleoAPIClient<TestnetV0> = setup_client::<TestnetV0>().unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let vk = ViewKey::<TestnetV0>::try_from(pk).unwrap();
         let res = get_program_id_for_token("testnew111.record").unwrap();
         println!("{:?}", res);
     }
     #[test]
     fn test_add_balance() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let vk = ViewKey::<TestnetV0>::try_from(pk).unwrap();
         let res = add_balance("test_token", "100u64", vk).unwrap();
         println!("{:?}", res);
     }
 
     #[test]
     fn test_subtract_balance() {
-        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
+        let api_client: AleoAPIClient<TestnetV0> = setup_client::<TestnetV0>().unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let vk = ViewKey::<TestnetV0>::try_from(pk).unwrap();
         let res = subtract_balance("token1", "100u64", vk).unwrap();
         println!("{:?}", res);
     }
 
     #[test]
     fn test_get_balance() {
-        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
+        let api_client: AleoAPIClient<TestnetV0> = setup_client::<TestnetV0>().unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
         //let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
 
         let vk =
-            ViewKey::<Testnet3>::from_str("AViewKey1fVv19tVg53L7vcUKTUTx2VUJTX69d4TsXGpi6TWAkgYR")
+            ViewKey::<TestnetV0>::from_str("AViewKey1fVv19tVg53L7vcUKTUTx2VUJTX69d4TsXGpi6TWAkgYR")
                 .unwrap();
 
         let res = get_balance("credits.record", vk).unwrap();
@@ -321,7 +321,7 @@ mod test_tokens {
 
     #[test]
     fn test_record_exists() {
-        let api_client: AleoAPIClient<Testnet3> = setup_client::<Testnet3>().unwrap();
+        let api_client: AleoAPIClient<TestnetV0> = setup_client::<TestnetV0>().unwrap();
         let res = if_token_exists("credits.record").unwrap();
         println!("{:?}", res);
     }

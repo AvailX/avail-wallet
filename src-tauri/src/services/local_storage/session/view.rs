@@ -47,13 +47,13 @@ mod test_view_session {
 
     use super::*;
     use avail_common::models::constants::*;
-    use snarkvm::prelude::Testnet3;
+    use snarkvm::prelude::TestnetV0;
 
     #[test]
     fn test_view_session() {
-        let view_key = ViewKey::<Testnet3>::from_str(TESTNET3_VIEW_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::from_str(TESTNET3_VIEW_KEY).unwrap();
         VIEWSESSION.set_view_session(&view_key.to_string()).unwrap();
-        let view_key = VIEWSESSION.get_instance::<Testnet3>().unwrap();
+        let view_key = VIEWSESSION.get_instance::<TestnetV0>().unwrap();
         assert_eq!(view_key.to_string(), TESTNET3_VIEW_KEY);
     }
 }

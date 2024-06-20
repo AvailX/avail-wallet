@@ -172,14 +172,14 @@ impl<N: Network> TryFrom<PrivateKey<N>> for BetterAvailWallet<N> {
 mod tests {
     use super::*;
     use rstest::rstest;
-    use snarkvm::prelude::Testnet3;
+    use snarkvm::prelude::TestnetV0;
 
     const PRIVATE_KEY: &str = "APrivateKey1zkpDqSfXcDcHdsvjkQhzF4NHTPPC63CBRHyaarTP3NAcHvg";
     const PHRASE: &str = "brave pass marine truly lecture fancy rail exotic destroy health always thunder wife decide situate index secret enter cruise prosper pudding about barely quit";
 
     #[rstest]
     fn test_create_random_avail_wallet(#[values(12, 15, 18, 21, 24)] seed_phrase_len: usize) {
-        let wallet = BetterAvailWallet::<Testnet3>::new(seed_phrase_len, &Languages::English);
+        let wallet = BetterAvailWallet::<TestnetV0>::new(seed_phrase_len, &Languages::English);
 
         assert!(wallet.is_ok());
 
@@ -201,7 +201,7 @@ mod tests {
 
         assert_eq!(bytes.len(), 32);
 
-        let wallet = BetterAvailWallet::<Testnet3>::from_mnemonic_seed(seed, mnemonic);
+        let wallet = BetterAvailWallet::<TestnetV0>::from_mnemonic_seed(seed, mnemonic);
 
         assert!(wallet.is_ok());
     }
@@ -210,7 +210,7 @@ mod tests {
     /// Test that a wallet can be created from the seed phrase.
     fn test_get_seed_bytes(#[values(12, 15, 18, 21, 24)] seed_phrase_len: usize) {
         let wallet =
-            BetterAvailWallet::<Testnet3>::new(seed_phrase_len, &Languages::English).unwrap();
+            BetterAvailWallet::<TestnetV0>::new(seed_phrase_len, &Languages::English).unwrap();
         let seed_bytes = wallet.get_seed_bytes().unwrap();
 
         assert_eq!(seed_bytes.len(), 32);
@@ -223,7 +223,7 @@ mod tests {
 
         let seed_phrase = mnemonic.phrase();
 
-        let wallet = BetterAvailWallet::<Testnet3>::from_seed_phrase(
+        let wallet = BetterAvailWallet::<TestnetV0>::from_seed_phrase(
             seed_phrase,
             Languages::to_bip39_language(&Languages::English),
         );
@@ -238,7 +238,7 @@ mod tests {
     #[rstest]
     /// Test that the private key string can be retrieved from the avail wallet.
     fn test_get_private_key() {
-        let wallet = BetterAvailWallet::<Testnet3>::try_from(PRIVATE_KEY).unwrap();
+        let wallet = BetterAvailWallet::<TestnetV0>::try_from(PRIVATE_KEY).unwrap();
         let private_key = wallet.get_private_key();
 
         assert_eq!(private_key, PRIVATE_KEY);
@@ -247,7 +247,7 @@ mod tests {
     #[rstest]
     /// Test that the address string can be retrieved from the avail wallet.
     fn test_get_view_key() {
-        let wallet = BetterAvailWallet::<Testnet3>::try_from(PRIVATE_KEY).unwrap();
+        let wallet = BetterAvailWallet::<TestnetV0>::try_from(PRIVATE_KEY).unwrap();
         let view_key = wallet.get_view_key();
 
         assert_eq!(
@@ -258,7 +258,7 @@ mod tests {
 
     #[rstest]
     fn test_get_address() {
-        let wallet = BetterAvailWallet::<Testnet3>::try_from(PRIVATE_KEY).unwrap();
+        let wallet = BetterAvailWallet::<TestnetV0>::try_from(PRIVATE_KEY).unwrap();
         let address = wallet.get_address();
 
         assert_eq!(

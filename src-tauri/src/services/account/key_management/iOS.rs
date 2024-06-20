@@ -123,7 +123,7 @@ pub fn delete_ios(password: Option<&str>) -> AvailResult<String> {
     let network = get_network()?;
     // verify password is correct before deletion
     let _validation = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => search::<Testnet3>(password, "avl-v")?,
+        SupportedNetworks::Testnet => search::<Testnet3>(password, "avl-v")?,
     };
 
     match passwords::delete_generic_password("com.avail", "avail-user-view", "avl-v") {

@@ -15,6 +15,7 @@ import {Title2Text, SubtitleText, SubMainTitleText, LargeTitleText} from '../com
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 import { open_url } from '../services/util/open';
+import {RiseLoader} from 'react-spinners';
 
 // Types
 import {type INft, disruptorWhitelist} from '../types/nfts/nft';
@@ -38,6 +39,7 @@ function Nfts() {
 	const [success, setSuccessAlert] = React.useState(false);
 	const [errorAlert, setErrorAlert] = React.useState(false);
 	const [message, setMessage] = React.useState('');
+	const [loading, setLoading] = React.useState(true);
 
 	const [selectedAirdropNft, setSelectedAirdropNft] = React.useState<Collection>(testCollection);
 
@@ -46,6 +48,9 @@ function Nfts() {
 	const handleWhitelistCollectionCheck = (whitelist: WhitelistResponse, collections: Collection[]) => {
 		collections.forEach(collection => {
 			if (collection.name === whitelist.collection_name) {
+				console.log('Adding airdrop nft');
+				console.log(collection);
+				console.log(airdropNfts);
 				setAirdropNfts([...airdropNfts, collection]);
 			}
 		});
@@ -53,9 +58,17 @@ function Nfts() {
 
 	const checkWhitelists = (whitelists: WhitelistResponse[], collections: Collection[]) => {
 		console.log(whitelists);
+		const selectedCollections: Collection[] = [];
 		whitelists.forEach(whitelist => {
-			handleWhitelistCollectionCheck(whitelist, collections);
+			collections.forEach(collection => {
+				if (collection.name === whitelist.collection_name) {
+					selectedCollections.push(collection);
+				}
+			},
+			);
 		});
+
+		setAirdropNfts(selectedCollections);
 	};
 
 	const handleXlink = async (url: string) => {
@@ -69,7 +82,10 @@ function Nfts() {
 			getCollections().then(async collections => {
 				console.log(collections);
 				const whitelists = await getWhitelists();
+				console.log(whitelists);
+
 				checkWhitelists(whitelists, collections);
+				setLoading(false);
 			}).catch(err => {
 				const error = err as AvailError;
 
@@ -137,7 +153,7 @@ function Nfts() {
 					)}
 
 					{/* No NFTs */}
-					{nfts.length === 0 && airdropNfts.length === 0 && (
+					{nfts.length === 0 && airdropNfts.length === 0 && !loading && (
 						<mui.Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', mt: '5%'}}>
 							<mui.Box sx={{display: 'flex', flexDirection: 'column', bgcolor: '#2A2A2A', width: md ? '120%' : '100%', alignSelf: 'center', borderRadius: '15px'}}>
 								<mui.Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center', bgcolor: '#00FFAA', width: '100%', borderRadius: '15px', py: 1}}>
@@ -151,6 +167,15 @@ function Nfts() {
 							</mui.Box>
 						</mui.Box>
 					)}
+
+					{loading && (
+						<mui.Box sx={{
+							display: 'flex', flexDirection: 'column', width: '100%', alignSelf: 'center', justifyContent: 'center', alignItems: 'center', height: '100%', marginTop: '10%',
+						}}>
+							<RiseLoader color={'#00FFAA'} loading={true} size={45} />
+						</mui.Box>
+					)
+					}
 				</mui.Box>
 			</mui.Box>
 		</Layout>

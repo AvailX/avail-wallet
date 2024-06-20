@@ -9,15 +9,19 @@ use super::ios::{delete_ios, search, store_keys_local};
 
 use snarkvm::prelude::{Identifier, Network, PrivateKey, ViewKey};
 
-use super::desktop::{delete_key, read_key, read_seed_phrase, store};
+use super::desktop::{delete_key, delete_key_for_recovery, read_key, read_seed_phrase, store};
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 
 /// This trait is used as a standard interface for the key management service.
 /// The key_type field refers to the private key type when true and the viewing key type when false.
 pub trait KeyController<N: Network> {
     fn store_key(&self, password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String>;
-
     fn delete_key(&self, password: Option<&str>, ext: Identifier<N>) -> AvailResult<String>;
+    fn delete_key_for_recovery(
+        &self,
+        password: Option<&str>,
+        ext: Identifier<N>,
+    ) -> AvailResult<String>;
     fn read_key(&self, password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>>;
     fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String>;
 }
@@ -106,6 +110,23 @@ impl<N: Network> KeyController<N> for macKeyController {
         }
     }
 
+    fn delete_key_for_recovery(
+        &self,
+        password: Option<&str>,
+        _ext: Identifier<N>,
+    ) -> AvailResult<String> {
+        match password {
+            Some(password) => delete_key_for_recovery::<N>(password),
+            None => {
+                return Err(AvailError::new(
+                    AvailErrorType::InvalidData,
+                    "Password is required".to_string(),
+                    "Password is required".to_string(),
+                ))
+            }
+        }
+    }
+
     fn read_key(&self, password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>> {
         match password {
             Some(password) => read_key(password, key_type),
@@ -136,6 +157,23 @@ impl<N: Network> KeyController<N> for linuxKeyController {
     fn delete_key(&self, password: Option<&str>, _ext: Identifier<N>) -> AvailResult<String> {
         match password {
             Some(password) => delete_key::<N>(password),
+            None => {
+                return Err(AvailError::new(
+                    AvailErrorType::InvalidData,
+                    "Password is required".to_string(),
+                    "Password is required".to_string(),
+                ))
+            }
+        }
+    }
+
+    fn delete_key_for_recovery(
+        &self,
+        password: Option<&str>,
+        _ext: Identifier<N>,
+    ) -> AvailResult<String> {
+        match password {
+            Some(password) => delete_key_for_recovery::<N>(password),
             None => {
                 return Err(AvailError::new(
                     AvailErrorType::InvalidData,
@@ -177,6 +215,23 @@ impl<N: Network> KeyController<N> for windowsKeyController {
     fn delete_key(&self, password: Option<&str>, ext: Identifier<N>) -> AvailResult<String> {
         match password {
             Some(password) => delete_key::<N>(password),
+            None => {
+                return Err(AvailError::new(
+                    AvailErrorType::InvalidData,
+                    "Password is required".to_string(),
+                    "Password is required".to_string(),
+                ))
+            }
+        }
+    }
+
+    fn delete_key_for_recovery(
+        &self,
+        password: Option<&str>,
+        _ext: Identifier<N>,
+    ) -> AvailResult<String> {
+        match password {
+            Some(password) => delete_key_for_recovery::<N>(password),
             None => {
                 return Err(AvailError::new(
                     AvailErrorType::InvalidData,

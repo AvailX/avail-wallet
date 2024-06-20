@@ -321,6 +321,7 @@ impl DecryptTransition {
             decrypted_outputs,
             *transition.tpk(),
             *transition.tcm(),
+            *transition.scm(),
         )?;
 
         let transition_output = serde_json::to_string(&decrypted_transition)?;
@@ -453,7 +454,7 @@ pub fn find_amount_from_public_transfer<N: Network>(inputs: &[Input<N>]) -> Opti
 mod tests {
     use std::str::FromStr;
 
-    use snarkvm::console::network::Testnet3;
+    use snarkvm::console::network::TestnetV0;
     use snarkvm::prelude::PrivateKey;
 
     use super::*;
@@ -537,13 +538,13 @@ mod tests {
 
     #[test]
     fn test_decrypt_transition() {
-        let private_key = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let view_key = ViewKey::<Testnet3>::try_from(private_key).unwrap();
+        let private_key = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::try_from(private_key).unwrap();
 
         let decrypted_transition_str =
             DecryptTransition::decrypt_transition(view_key, TRANSITION2).unwrap();
 
-        let decrypted_transition: Transition<Testnet3> =
+        let decrypted_transition: Transition<TestnetV0> =
             serde_json::from_str(&decrypted_transition_str.clone()).unwrap();
 
         println!("Decrypted Transition {:?}", decrypted_transition);
@@ -575,7 +576,7 @@ mod tests {
     }
 
     fn test_decrypt_ciphertext_input() {
-        let view_key = ViewKey::<Testnet3>::from_str(VIEW_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::from_str(VIEW_KEY).unwrap();
 
         // Try decrypting private input
         let plaintext = DecryptTransition::decrypt_ciphertext(
@@ -593,7 +594,7 @@ mod tests {
 
     #[test]
     fn test_decrypt_ciphertext_output() {
-        let view_key = ViewKey::<Testnet3>::from_str(VIEW_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::from_str(VIEW_KEY).unwrap();
 
         // Try decrypting private output
         let plaintext = DecryptTransition::decrypt_ciphertext(
@@ -611,15 +612,15 @@ mod tests {
 
     #[test]
     fn test_owns_transition_true() {
-        let view_key = ViewKey::<Testnet3>::from_str(VIEW_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::from_str(VIEW_KEY).unwrap();
 
         let owns_transition = DecryptTransition::owns_transition(
             view_key,
-            Group::<Testnet3>::from_str(
+            Group::<TestnetV0>::from_str(
                 "3681563105640905751787370687361466941855498391730203508101562167054325552256group",
             )
             .unwrap(),
-            Field::<Testnet3>::from_str(
+            Field::<TestnetV0>::from_str(
                 "3205548165782039452146864733009325261935114902820697593223360259711032449007field",
             )
             .unwrap(),
@@ -631,15 +632,15 @@ mod tests {
 
     #[test]
     fn test_owns_transition_false() {
-        let view_key = ViewKey::<Testnet3>::from_str(INCORRECT_VIEW_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::from_str(INCORRECT_VIEW_KEY).unwrap();
 
         let owns_transition = DecryptTransition::owns_transition(
             view_key,
-            Group::<Testnet3>::from_str(
+            Group::<TestnetV0>::from_str(
                 "3681563105640905751787370687361466941855498391730203508101562167054325552256group",
             )
             .unwrap(),
-            Field::<Testnet3>::from_str(
+            Field::<TestnetV0>::from_str(
                 "3205548165782039452146864733009325261935114902820697593223360259711032449007field",
             )
             .unwrap(),

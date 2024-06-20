@@ -1,7 +1,7 @@
 use avail_common::models::encrypted_data::EncryptedDataTypeCommon;
 use chrono::{DateTime, Local};
 use snarkvm::circuit::Aleo;
-use snarkvm::console::network::Testnet3;
+use snarkvm::console::network::TestnetV0;
 use snarkvm::ledger::transactions::ConfirmedTransaction;
 use snarkvm::prelude::{
     Address, Ciphertext, Entry, Execution, Field, GraphKey, Identifier, Itertools, Literal,
@@ -645,8 +645,8 @@ pub fn get_all_nft_data() -> AvailResult<Vec<String>> {
     let network = get_network()?;
 
     match SupportedNetworks::from_str(network.as_str())? {
-        SupportedNetworks::Testnet3 => {
-            let nft_data = get_all_nft_raw::<Testnet3>()?;
+        SupportedNetworks::Testnet => {
+            let nft_data = get_all_nft_raw::<TestnetV0>()?;
             println!("===> NFT Data {:?}", nft_data);
             Ok(nft_data)
         }
@@ -1923,7 +1923,7 @@ where
                         execution_vec,
                         program_id.to_string(),
                         function_id.to_string(),
-                        SupportedNetworks::Testnet3,
+                        SupportedNetworks::Testnet,
                     );
                     println!("Sending a request to Avail's Fee Estimation Microservice to add the fee data");
                     let result: String = create_record(request).await?;
@@ -1965,7 +1965,7 @@ mod test {
     use crate::{models::pointers::record::Metadata, services::local_storage::tokens::get_balance};
 
     use super::*;
-    use snarkvm::prelude::Testnet3;
+    use snarkvm::prelude::TestnetV0;
     #[tokio::test]
     async fn test_get_all_nft_data() {
         // AViewKey1cbThXosaWwor5t5F87m22K1hSRA4BWL5HrsNxRik15Rq

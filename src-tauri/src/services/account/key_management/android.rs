@@ -393,7 +393,7 @@ pub fn keystore_init<N: Network>(
             let network = get_network()?;
             print!("Got here son");
             let ciphertext_p = match SupportedNetworks::from_str(&network)? {
-                SupportedNetworks::Testnet3 => {
+                SupportedNetworks::Testnet => {
                     match encrypt_with_password::<N>(password, PKey(*p_key)) {
                         Ok(c) => c,
                         Err(e) => {
@@ -409,7 +409,7 @@ pub fn keystore_init<N: Network>(
             };
 
             let ciphertext_v = match SupportedNetworks::from_str(&network)? {
-                SupportedNetworks::Testnet3 => {
+                SupportedNetworks::Testnet => {
                     match encrypt_with_password::<N>(password, VKey(*v_key)) {
                         Ok(c) => c,
                         Err(e) => {
@@ -599,7 +599,7 @@ pub fn keystore_delete(password: Option<&str>) -> AvailResult<String> {
     let network = get_network()?;
 
     let _validation = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => keystore_load::<Testnet3>(password, "avl-v")?,
+        SupportedNetworks::Testnet => keystore_load::<Testnet3>(password, "avl-v")?,
     };
 
     let (jvm, activity) = prepare_jvm()?;

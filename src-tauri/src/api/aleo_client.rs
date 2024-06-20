@@ -2,9 +2,12 @@ use avail_common::errors::{AvailError, AvailResult};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::sync::RwLock;
-
+// https://aleo-testnetbeta.obscura.network/v1/92acf30f-5cea-4679-880c-f06e9a7e8465/testnet/latest/height
 use avail_common::aleo_tools::api::AleoAPIClient;
-use snarkvm::{console::network::Testnet3, prelude::Network};
+use snarkvm::{
+    console::network::{MainnetV0, TestnetV0},
+    prelude::Network,
+};
 
 use crate::models::event::Network as EventNetwork;
 use crate::services::local_storage::persistent_storage::{
@@ -14,14 +17,14 @@ use crate::services::local_storage::persistent_storage::{
 /* --Client Setup functions-- */
 pub fn setup_local_client<N: Network>() -> AleoAPIClient<N> {
     let dev_node_ip = env!("DEV_NODE_IP");
-    AleoAPIClient::<N>::local_testnet3("3030", dev_node_ip)
+    AleoAPIClient::<N>::local_testnet("3030", dev_node_ip)
 }
 
 pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
     let node_api_obscura = env!("TESTNET_API_OBSCURA");
     let base_url = match get_base_url()?.as_str() {
         "obscura" => format!(
-            "https://aleo-testnet3.obscura.build/v1/{}",
+            "https://aleo-testnetbeta.obscura.network/v1/{}",
             node_api_obscura
         ),
         "aleo" => "https://api.explorer.aleo.org/v1".to_string(),
@@ -36,7 +39,7 @@ pub fn setup_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
 
     println!("Base URL: {:?}", base_url);
 
-    let api_client = AleoAPIClient::<N>::new(&base_url, "testnet3")?;
+    let api_client = AleoAPIClient::<N>::new(&base_url, "testnet")?;
 
     Ok(api_client)
 }
@@ -45,18 +48,18 @@ pub fn setup_obscura_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
     let node_api_obscura = env!("TESTNET_API_OBSCURA");
 
     let base_url = format!(
-        "https://aleo-testnet3.obscura.build/v1/{}",
+        "https://aleo-testnetbeta.obscura.network/v1/{}",
         node_api_obscura
     );
 
-    let api_client = AleoAPIClient::<N>::new(&base_url, "testnet3")?;
+    let api_client = AleoAPIClient::<N>::new(&base_url, "testnet")?;
 
     Ok(api_client)
 }
 
 pub fn network_status<N: Network>() -> AvailResult<Status> {
     let obscura_client = setup_obscura_client::<N>()?;
-    let aleo_client = AleoAPIClient::<N>::new("https://api.explorer.aleo.org/v1", "testnet3")?;
+    let aleo_client = AleoAPIClient::<N>::new("https://api.explorer.aleo.org/v1", "testnet")?;
 
     let mut obscura_heights: Vec<u32> = vec![];
     //let mut aleo_heights: Vec<u32> = vec![];
@@ -115,7 +118,10 @@ impl<N: Network> AleoClient<N> {
     pub fn new() -> AvailResult<Self> {
         let node_api_obscura = env!("MAINNET_API_OBSCURA");
 
-        let base_url = format!("https://aleo-mainnet.obscura.build/v1/{}", node_api_obscura);
+        let base_url = format!(
+            "https://aleo-mainnet.obscura.network/v1/{}",
+            node_api_obscura
+        );
 
         Ok(Self {
             client: AleoAPIClient::<N>::new(&base_url, "mainnet")?,
@@ -132,25 +138,25 @@ impl<N: Network> AleoClient<N> {
         })
     }
 
-    pub fn testnet3() -> AvailResult<Self> {
+    pub fn testnet() -> AvailResult<Self> {
         let node_api_obscura = env!("TESTNET_API_OBSCURA");
 
         let base_url = format!(
-            "https://aleo-testnet3.obscura.build/v1/{}",
+            "https://aleo-testnetbeta.obscura.network/v1/{}",
             node_api_obscura
         );
 
         Ok(Self {
-            client: AleoAPIClient::<N>::new(&base_url, "testnet3")?,
+            client: AleoAPIClient::<N>::new(&base_url, "testnet")?,
         })
     }
 
     pub fn switch_network(network: &str) -> AvailResult<()> {
         // Based on the network string, decide which network to switch to
         let new_client = match network {
-            "testnet3" => {
+            "testnet" => {
                 update_network(EventNetwork::AleoTestnet);
-                AleoClient::<Testnet3>::testnet3()?
+                AleoClient::<TestnetV0>::testnet()?
             }
             //"devnet" => AleoClient::<Devnet>::devnet()?,
             //"mainnet" => AleoClient::<Mainnet>::mainnet()?,
@@ -174,7 +180,7 @@ impl<N: Network> AleoClient<N> {
         let dev_node_ip = env!("DEV_NODE_IP");
 
         Ok(Self {
-            client: AleoAPIClient::local_testnet3("3030", dev_node_ip),
+            client: AleoAPIClient::local_testnet("3030", dev_node_ip),
         })
     }
 
@@ -183,12 +189,13 @@ impl<N: Network> AleoClient<N> {
     }
 }
 
-pub static ALEO_CLIENT: Lazy<RwLock<AleoClient<Testnet3>>> =
-    Lazy::new(|| RwLock::new(AleoClient::<Testnet3>::testnet3().unwrap()));
+//TODO - Make this compatible with different network types for mainnet.
+pub static ALEO_CLIENT: Lazy<RwLock<AleoClient<TestnetV0>>> =
+    Lazy::new(|| RwLock::new(AleoClient::<TestnetV0>::testnet().unwrap()));
 
 #[test]
 fn test_new_client() {
-    let api_client = setup_local_client::<Testnet3>();
+    let api_client = setup_local_client::<TestnetV0>();
     let height = api_client.latest_height().unwrap();
 
     println!("Height: {:?}", height);
@@ -196,6 +203,6 @@ fn test_new_client() {
 
 #[test]
 fn test_network_status() {
-    let status = network_status::<Testnet3>().unwrap();
+    let status = network_status::<TestnetV0>().unwrap();
     println!("Status: {:?}", status);
 }

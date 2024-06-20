@@ -1,4 +1,4 @@
-use snarkvm::{console::prelude::*, prelude::Testnet3};
+use snarkvm::prelude::*;
 
 use crate::models::storage::languages::Languages;
 use crate::services::account::{
@@ -34,7 +34,7 @@ pub async fn create_seed_phrase_wallet(
     language: Languages,
     length: usize,
 ) -> AvailResult<String> {
-    let avail_wallet = BetterAvailWallet::<Testnet3>::new(length, &language)?;
+    let avail_wallet = BetterAvailWallet::<TestnetV0>::new(length, &language)?;
 
     let tag = username.clone().map(|_| generate_discriminant());
 
@@ -101,7 +101,7 @@ pub async fn import_wallet(
     backup: bool,
     language: Languages,
 ) -> AvailResult<String> {
-    let avail_wallet = BetterAvailWallet::<Testnet3>::try_from(private_key.to_string())?;
+    let avail_wallet = BetterAvailWallet::<TestnetV0>::try_from(private_key.to_string())?;
 
     let tag = username.clone().map(|_| generate_discriminant());
 
