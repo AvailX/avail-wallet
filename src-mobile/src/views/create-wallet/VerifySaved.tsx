@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import SwipeableEdgeDrawer from "../../components/SwipeableDrawer";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -15,9 +15,6 @@ import GoBack from "../../shared/GoBack";
 
 const VerifySaved = () => {
   const navigate = useNavigate();
-  const goToOther = () => {
-    navigate("/data-pointers");
-  };
 
   const location = useLocation();
 
@@ -156,7 +153,7 @@ const VerifySaved = () => {
           width='100%'
           mx='auto'
           mt={3}
-          sx={{ overflowY: "auto", height: "200px" }}
+          sx={{ height: "200px" }}
         >
           {shuffleArray(recoveryPhase)
             .filter((x) => !pastedItems.includes(x))
@@ -165,6 +162,7 @@ const VerifySaved = () => {
                 onClick={() => {
                   setPastedItems([...pastedItems, phr]);
                 }}
+                sx={{ overflowY: "hidden" }}
                 p={2}
                 display='flex'
                 alignItems='center'

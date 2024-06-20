@@ -1,11 +1,24 @@
 import * as React from "react";
 import * as mui from "@mui/material";
 import logo from "../assets/logos/avail-black-icon.svg";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { session_and_local_auth } from "../../../src/services/authentication/auth";
 import { AvailError, AvailErrorType } from "../../../src/types/errors";
 import { ErrorAlert } from "../../../src/components/snackbars/alerts";
+
+const boxStyles: mui.SxProps = {
+  display: "flex",
+  alignItems: "center",
+  alignContent: "center",
+  height: "100vh",
+  justifyContent: "center",
+  bgcolor: "#00FFAA",
+  width: "100vw",
+  overflow: "hidden",
+  m: 0,
+  p: 0,
+};
 
 function EntryPoint() {
   const navigate = useNavigate();
@@ -13,35 +26,42 @@ function EntryPoint() {
   const [alertMessage, setAlertMessage] = React.useState<string>("");
 
   React.useEffect(() => {
-    setTimeout(() => {
-      /* -- Local + Session Auth -- */
-      session_and_local_auth(
-        undefined,
-        navigate,
-        setAlert,
-        setAlertMessage,
-        true
-      ).catch(async (error_) => {
-        console.log(error_);
-
+    const authenticateUser = async () => {
+      try {
+        const res = await session_and_local_auth(
+          undefined,
+          navigate,
+          setAlert,
+          setAlertMessage,
+          true
+        );
+        if (res) {
+          navigate("/login");
+        }
+      } catch (error_) {
         const error = error_ as AvailError;
 
-        if (error?.error_type === AvailErrorType.Network) {
-          console.log("network error");
-          // TODO - Desktop login
+        switch (error?.error_type) {
+          case AvailErrorType.Network:
+            console.log("network error");
+            // TODO - Desktop login
+            break;
+          case AvailErrorType.Unauthorized:
+          case AvailErrorType.InvalidData:
+            navigate("/login");
+            break;
+          default:
+            navigate("/username");
         }
+      }
+    };
 
-        if (
-          error?.error_type?.toString() === "Unauthorized" ||
-          error?.error_type?.toString() === "Invalid Data"
-        ) {
-          navigate("/login");
-        } else {
-          navigate("/username");
-        }
-      });
+    const timer = setTimeout(() => {
+      authenticateUser();
     }, 3000);
-  }, []);
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
   return (
     <>
       <ErrorAlert
@@ -49,21 +69,12 @@ function EntryPoint() {
         setErrorAlert={setAlert}
         message={alertMessage}
       />
-      <mui.Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          alignContent: "center",
-          height: "100vh",
-          justifyContent: "center",
-          bgcolor: "#00FFAA",
-          width: "100vw",
-          overflow: "hidden",
-          m: 0,
-          p: 0,
-        }}
-      >
-        <img src={logo} style={{ width: "30%", alignSelf: "center" }} />
+      <mui.Box component={Link} to='/dashboard' sx={boxStyles}>
+        <img
+          src={logo}
+          alt='Logo'
+          style={{ width: "30%", alignSelf: "center" }}
+        />
       </mui.Box>
     </>
   );
