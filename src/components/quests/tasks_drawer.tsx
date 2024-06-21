@@ -23,7 +23,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({open, onClose, quest}) => {
 	const [questCompleted, setQuestCompleted] = React.useState(false);
 
 	React.useEffect(() => {
-		isQuestCompleted(quest.id).then(res => {
+		isQuestCompleted(quest?.id).then(res => {
 			if (res) {
 				setQuestCompleted(true);
 			}
@@ -62,7 +62,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({open, onClose, quest}) => {
 			<SubMainTitleText sx={{color: '#fff', ml: '5%'}}>Tasks</SubMainTitleText>
 
 			{/* Quest title */}
-			{quest.tasks.map(task => (
+			{quest?.tasks?.map(task => (
 				<TaskBox key={task.id} task={task} quest={quest} questCompleted={questCompleted} />
 			))}
 
