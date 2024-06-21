@@ -164,7 +164,12 @@ pub async fn txs_sync_raw<N: Network>() -> AvailResult<TxScanResponse> {
 #[tauri::command(rename_all = "snake_case")]
 pub async fn blocks_sync(height: u32, window: Window) -> AvailResult<bool> {
     let network = get_network()?;
-    let last_sync = get_last_sync()?;
+    // TEMPORARY - Solution to handle full resync
+    let last_sync = if get_last_sync()? == 0 {
+        1u32
+    } else {
+        get_last_sync()? as u32
+    };
 
     print!("From Last Sync: {:?} to height: {:?}", last_sync, height);
 
