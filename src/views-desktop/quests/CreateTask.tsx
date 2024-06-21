@@ -102,7 +102,15 @@ const CreateTasks: React.FC = () => {
             onClick={(event) => handleChange(event, 2)}
           />
         </mui.Box>
-        <mui.Box sx={{ padding: 2 }}>
+
+        <mui.Box
+          sx={{
+            padding: 2,
+            display: "flex",
+            width: "60%",
+            margin: 2,
+          }}
+        >
           {tabValue === 0 && <StartQuests />}
           {tabValue === 1 && <TasksQuests />}
           {tabValue === 2 && <RewardsQuests />}

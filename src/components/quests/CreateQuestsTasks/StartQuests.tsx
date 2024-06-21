@@ -3,9 +3,21 @@ import * as mui from "@mui/material";
 
 const StartQuests: React.FC = () => {
   return (
-    <mui.Box>
-      <mui.Typography variant="h4">Start</mui.Typography>
-      <mui.Typography variant="body1">This is the start tab content.</mui.Typography>
+    <mui.Box
+      sx={{
+        display: "flex",
+        width: "100%",
+      }}
+    >
+      <mui.Box
+        sx={{
+          alignContent: "start",
+        }}
+      >
+        <mui.Typography variant="h3" color={"white"}>
+          Title
+        </mui.Typography>
+      </mui.Box>
     </mui.Box>
   );
 };
