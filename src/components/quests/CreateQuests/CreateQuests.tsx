@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as mui from "@mui/material";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
 // Components
 import Layout from "../../../views-desktop/reusable/layout";
@@ -25,6 +24,7 @@ import { useLocation } from "react-router-dom";
 
 // Alerts
 import { SuccessAlert, ErrorAlert } from "../../../components/snackbars/alerts";
+import ProfileImage from "./CreateProfilePicture";
 
 const CreateQuests: React.FC = () => {
   const location = useLocation();
@@ -35,18 +35,14 @@ const CreateQuests: React.FC = () => {
   const [newCampaignBio, setNewCampaignBio] = React.useState("Project Bio");
   const [isEditingBio, setIsEditingBio] = React.useState(false);
   const [newCoverImage, setNewCoverImage] = React.useState("");
+  const [newPPImage, setNewPPImage] = React.useState("");
   const [isEditingCover, setIsEditingCover] = React.useState(false);
+  const [isEditingPP, setIsEditingPP] = React.useState(false);
   const [coverImageError, setCoverImageError] = React.useState(false);
+  const [ppImageError, setPPImageError] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
   const [message, setMessage] = React.useState("You changes has been saved");
-
-  const mdsx = mui.useMediaQuery("(min-width:850px)");
-  const md = mui.useMediaQuery("(min-width:950px)");
-  const mdlg = mui.useMediaQuery("(min-width:1150px)");
-  const lgsx = mui.useMediaQuery("(min-width:1550px)");
-  const lg = mui.useMediaQuery("(min-width:1750px)");
-  const lgxl = mui.useMediaQuery("(min-width:1950px)");
 
   const handleSaveNameClick = (newString: string) => {
     setNewCampaignName(newString);
@@ -72,19 +68,29 @@ const CreateQuests: React.FC = () => {
   const handleSaveCoverClick = (imageLink: string) => {
     if (isValidUrl(imageLink)) {
       console.log("Your change has been saved!");
-      setMessage("Bio has been updated!");
+      setMessage("Your image url been saved!");
       setSuccess(true);
-      // Update cover image logic here
       setIsEditingCover(false);
-      
     } else {
       setCoverImageError(true);
-      // setIsEditingCover(true);
+    }
+  };
+  const handleSavePPClick = (imageLink: string) => {
+    if (isValidUrl(imageLink)) {
+      console.log("Your profile picture url has been saved!");
+      setMessage("Your profile picture url has been saved!");
+      setSuccess(true);
+      setIsEditingPP(false);
+    } else {
+      setPPImageError(true);
     }
   };
 
   const handleEditCoverClick = () => {
     setIsEditingCover(true);
+  };
+  const handleEditPPClick = () => {
+    setIsEditingPP(true);
   };
 
   var isValidUrl = (url: string): boolean => {
@@ -117,6 +123,9 @@ const CreateQuests: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setNewCoverImage(event.target.value);
+  };
+  const handlePPImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPPImage(event.target.value);
   };
 
   return (
@@ -159,7 +168,7 @@ const CreateQuests: React.FC = () => {
             }}
           >
             {/* Profile Image Component */}
-            <mui.Box
+            {/* <mui.Box
               sx={{
                 borderRadius: "100%",
                 border: "1px solid #696969",
@@ -197,7 +206,14 @@ const CreateQuests: React.FC = () => {
                   <CameraAltIcon sx={{ color: "#FFFFFF" }} />
                 </mui.IconButton>
               </mui.Box>
-            </mui.Box>
+            </mui.Box> */}
+
+            <ProfileImage
+              imageUrl={campaign[0].bg_image}
+              onEditClick={handleEditPPClick}
+              onSaveClick={handleSavePPClick}
+              error={ppImageError}
+            />
             {/* Edit Cover Component */}
             <CoverImage
               imageUrl={campaign[0].bg_image}
