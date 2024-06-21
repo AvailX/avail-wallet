@@ -1,7 +1,7 @@
-import {invoke} from '@tauri-apps/api/core';
-import {v4 as uuidv4} from 'uuid';
+import { invoke } from '@tauri-apps/api/core';
+import { v4 as uuidv4 } from 'uuid';
 
-import {type Campaign, type Quest, type WhitelistResponse, type PointsResponse, type Collection} from '../../types/quests/quest_types';
+import { type Campaign, type Quest, type WhitelistResponse, type PointsResponse, type Collection } from '../../types/quests/quest_types';
 import { Console } from 'console';
 
 export async function getCampaigns() {
@@ -22,7 +22,7 @@ export async function createCampaign(
 	points_image: string,
 	project_name: string) {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	return invoke<Campaign>('create_campaign', {title, subtitle, desc_1, desc_main, desc_2, inner_desc, box_image, bg_image, profile_image, color, points_image, project_name});
+	return invoke<Campaign>('create_campaign', { title, subtitle, desc_1, desc_main, desc_2, inner_desc, box_image, bg_image, profile_image, color, points_image, project_name });
 }
 
 export async function updateCampaign(
@@ -40,47 +40,47 @@ export async function updateCampaign(
 	points_image: string,
 	project_name: string) {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	return invoke<Campaign>('update_campaign', {campaign_id: campaignId, title, subtitle, desc_1, desc_main, desc_2, inner_desc, box_image, bg_image, profile_image, color, points_image, project_name});
+	return invoke<Campaign>('update_campaign', { campaign_id: campaignId, title, subtitle, desc_1, desc_main, desc_2, inner_desc, box_image, bg_image, profile_image, color, points_image, project_name });
 }
 
 export async function deleteCampaign(campaignId: string) {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	return invoke<boolean>('delete_campaign', {campaign_id: campaignId});
+	return invoke<boolean>('delete_campaign', { campaign_id: campaignId });
 }
 export async function createQuest(
 	title: string,
-    description: string,
-    display_image: string,
-    tasks: string,
-    reward_collection_name: string,
-    reward_amount: string,
-    reward_method: string,
-    expires_on: Date,
-    created_on: Date,
-    campaign_id: string) {
+	description: string,
+	display_image: string,
+	tasks: string,
+	reward_collection_name: string,
+	reward_amount: string,
+	reward_method: string,
+	expires_on: Date,
+	created_on: Date,
+	campaign_id: string) {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	return invoke<Quest>('create_quest', { title, description, display_image, tasks, reward_collection_name, reward_amount, reward_method, expires_on, created_on, campaign_id });
 }
 
 export async function getQuests(campaignId: string) {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	return invoke<Quest[]>('get_quests_for_campaign', {campaign_id: campaignId});
+	return invoke<Quest[]>('get_quests_for_campaign', { campaign_id: campaignId });
 }
 
 export async function isQuestCompleted(questId: string) {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	return invoke<boolean>('check_quest_completion', {quest_id: questId});
+	return invoke<boolean>('check_quest_completion', { quest_id: questId });
 }
 
 export async function isTaskCompleted(taskId: string) {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	return invoke<boolean>('is_task_verified', {task_id: taskId});
+	return invoke<boolean>('is_task_verified', { task_id: taskId });
 }
 
 // eslint-disable-next-line max-params
 export async function verifyTask(taskId: string, startTime: Date, endTime: Date, programId: string, functionId: string) {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	return invoke<boolean>('verify_task', {start_time: startTime, end_time: endTime, task_id: taskId, program_id: programId, function_id: functionId});
+	return invoke<boolean>('verify_task', { start_time: startTime, end_time: endTime, task_id: taskId, program_id: programId, function_id: functionId });
 }
 
 export async function getPoints() {
