@@ -1,13 +1,24 @@
 import * as React from "react";
 import * as mui from "@mui/material";
+import PickReward from "./RewardsQuests/PickReward";
+import SelectWinners from "./RewardsQuests/SelectWinners";
+import Allocation from "./RewardsQuests/Allocation";
 
-const RewardsQuests: React.FC = () => {
+const Rewards: React.FC = () => {
   return (
-    <mui.Box>
-      <mui.Typography variant="h4">Rewards</mui.Typography>
-      <mui.Typography variant="body1">This is the rewards tab content.</mui.Typography>
+    <mui.Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        position: "relative",
+      }}
+    >
+      <PickReward></PickReward>
+      <SelectWinners></SelectWinners>
+      <Allocation></Allocation>
     </mui.Box>
   );
 };
 
-export default RewardsQuests;
+export default Rewards;

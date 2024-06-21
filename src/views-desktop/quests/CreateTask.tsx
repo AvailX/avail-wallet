@@ -8,7 +8,7 @@ import EmojiEventsOutlinedIcon from "@mui/icons-material/EmojiEventsOutlined";
 
 import Layout from "../reusable/layout";
 import SideMenu from "../../components/sidebar";
-import StartQuests from "../../../src/components/quests/CreateQuestsTasks/StartQuests";
+import StartQuests from "../../components/quests/CreateQuestsTasks/StartQuests";
 import TasksQuests from "../../../src/components/quests/CreateQuestsTasks/TaskQuest";
 import RewardsQuests from "../../../src/components/quests/CreateQuestsTasks/RewardQuest";
 
