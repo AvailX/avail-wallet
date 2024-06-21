@@ -6,6 +6,7 @@ use crate::services::local_storage::{
     session::password::PASS,
     utils::{sign_message, sign_message_w_key},
 };
+use avail_common::models::server_auth::Session;
 use snarkvm::prelude::*;
 use tauri_plugin_http::reqwest;
 
@@ -16,6 +17,7 @@ use avail_common::{
         server_auth::{self, VerifySessionRequest},
     },
 };
+use uuid::Uuid;
 
 /// Authenticates user both locally and on server.
 #[tauri::command(rename_all = "snake_case")]
@@ -211,6 +213,32 @@ pub async fn request_hash(address: &str) -> AvailResult<server_auth::CreateSessi
     }
 }
 
+pub async fn get_user_id(session: String) -> AvailResult<(String, Uuid)> {
+    let session_str = SESSION.get_session_token().unwrap();
+    println!("Session string: {:?}", session_str);
+    let session = Session::from_str(&session)?;
+    println!("Session: {:?}", session);
+
+    let client = reqwest::Client::new();
+
+    let response = client
+        .post("http://0.0.0.0:8001/auth/verify_expiry")
+        .json(&session.session_id)
+        .send()
+        .await
+        .unwrap();
+
+    if response.status().is_success() {
+        Ok((session.address, session.user_id))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Session Expired".to_string(),
+            "Session Expired".to_string(),
+        ))
+    }
+}
+
 /* -- Not used -- */
 
 ///Function 2
@@ -347,11 +375,11 @@ mod tests {
         let session = get_session(Some(STRONG_PASSWORD.to_string()))
             .await
             .unwrap();
-        print!("{}", session);
+        println!("{}", session);
 
-        get_new_transaction_messages::<TestnetV0>().await.unwrap();
+        let res = get_user_id(session).await.unwrap();
 
-        println!("Successful fetch");
+        println!("Successful fetch{:?}", res);
 
         //let address =name_to_address::<Testnet3>(&username).await.unwrap();
         //let user = get_user().await.unwrap();
