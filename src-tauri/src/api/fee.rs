@@ -131,7 +131,7 @@ mod tests {
     #[tokio::test]
     async fn test_create_record() {
         let new_exec = get_execution_object().await.unwrap();
-        // let new_exec = Execution::<Testnet3>::new();
+        // let new_exec = Execution::<TestnetV0>::new();
         let exec_obj: Vec<u8> = FeeRequest::to_bytes_execution_object::<TestnetV0>(new_exec)
             .await
             .unwrap();
@@ -140,7 +140,7 @@ mod tests {
             exec_obj,
             "testing.aleo".to_string(),
             "testing_7".to_string(),
-            SupportedNetworks::Testnet3,
+            SupportedNetworks::Testnet,
         );
         println!("Sending req....");
         let result: String = create_record(req).await.unwrap();

@@ -1,49 +1,59 @@
-import {Box, Button, Typography} from '@mui/material';
+import { Box, Button, IconButton, Typography } from "@mui/material";
 
-import backupHand from '../../assets/backup-hand.png';
-import {useNavigate} from 'react-router-dom';
+import backupHand from "../../assets/backup-hand.png";
+import { useNavigate } from "react-router-dom";
 import React from "react";
-import {invoke} from "@tauri-apps/api/core";
-import {Languages} from "../../../../src/types/languages";
-import type {AvailError} from "../../../../src/types/errors";
+import { invoke } from "@tauri-apps/api/core";
+import { Languages } from "../../../../src/types/languages";
+import type { AvailError } from "../../../../src/types/errors";
+
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 
 const BackupWallet = () => {
-  const [account, setAccount] = React.useState<string>('');
-  const [key, setKey] = React.useState<string>('');
-  const [label, setLabel] = React.useState<string>('');
-  const [resultMessage, setResultMessage] = React.useState<string>('');
-  const [resultMessage2, setResultMessage2] = React.useState<string>('');
+  const [account, setAccount] = React.useState<string>("");
+  const [key, setKey] = React.useState<string>("");
+  const [label, setLabel] = React.useState<string>("");
+  const [resultMessage, setResultMessage] = React.useState<string>("");
+  const [resultMessage2, setResultMessage2] = React.useState<string>("");
 
   async function setKeysIos() {
-    await invoke('store_keys_ios', {
+    await invoke("store_keys_ios", {
       service: "com.avail.wallet.p",
-        account,
-        key,
-        label
-    }).then((res) => {
-      setResultMessage(`Store keys success: ${res}`);
-    }).catch((err: AvailError) => {
-      setResultMessage(`Failed to store keys: ${err.internal_msg} | ${err.external_msg}`);
-      console.log(err);
-    });
+      account,
+      key,
+      label,
+    })
+      .then((res) => {
+        setResultMessage(`Store keys success: ${res}`);
+      })
+      .catch((err: AvailError) => {
+        setResultMessage(
+          `Failed to store keys: ${err.internal_msg} | ${err.external_msg}`
+        );
+        console.log(err);
+      });
   }
 
   async function getKeyIos() {
-    await invoke('get_key_ios', {
+    await invoke("get_key_ios", {
       service: "com.avail.wallet.p",
       account,
-      label
-    }).then((res) => {
-      setResultMessage2(`Get keys success: ${res}`);
-    }).catch((err: AvailError) => {
-      setResultMessage2(`Failed to get keys: ${err.internal_msg} | ${err.external_msg}`);
-      console.log(err);
-    });
+      label,
+    })
+      .then((res) => {
+        setResultMessage2(`Get keys success: ${res}`);
+      })
+      .catch((err: AvailError) => {
+        setResultMessage2(
+          `Failed to get keys: ${err.internal_msg} | ${err.external_msg}`
+        );
+        console.log(err);
+      });
   }
 
   const navigate = useNavigate();
   const goToOther = () => {
-    navigate('/verify-saved');
+    navigate("/verify-saved");
   };
   return (
     <Box
@@ -54,10 +64,26 @@ const BackupWallet = () => {
       bgcolor='#111111'
       color='#fff'
     >
-      <Box>
-        <button onClick={goToOther}>
-          Next page
-        </button>
+      {/* !TODO: Fix this */}
+      <Box display='flex' alignItems='center' justifyContent='flex-start'>
+        <IconButton
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <Box
+            display='flex'
+            alignItems='center'
+            justifyContent='center'
+            bgcolor='#393939'
+            width='35px'
+            height='35px'
+            borderRadius='50%'
+            p={3}
+          >
+            <ArrowBackIosNewIcon sx={{ color: "#BDBDBD" }} />
+          </Box>
+        </IconButton>
       </Box>
       <Typography
         fontSize='60px'
@@ -90,50 +116,45 @@ const BackupWallet = () => {
       {/*>*/}
       {/*  <img src={backupHand} width='166px' />*/}
       {/*</Box>*/}
-      <Box
-        display="flex"
-        flexDirection={"column"}
-        gap={2}
-      >
+      <Box display='flex' flexDirection={"column"} gap={2}>
         <input
-            type="text"
-            value={label}
-            onChange={e => setLabel(e.target.value)}
-            placeholder={"Label"}
+          type='text'
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          placeholder={"Label"}
         />
         <input
-            type="text"
-            value={account}
-            onChange={e => setAccount(e.target.value)}
-            placeholder={"Account"}
+          type='text'
+          value={account}
+          onChange={(e) => setAccount(e.target.value)}
+          placeholder={"Account"}
         />
         <input
-            type="text"
-            value={key}
-            onChange={e => setKey(e.target.value)}
-            placeholder={"Key"}
+          type='text'
+          value={key}
+          onChange={(e) => setKey(e.target.value)}
+          placeholder={"Key"}
         />
-        <button onClick={() => setKeysIos()}>
-          Store Keys
-        </button>
-        {resultMessage && <p style={{color: 'white'}}>{resultMessage}</p>}
-        <button onClick={() => getKeyIos()}>
-          Get Keys
-        </button>
-        {resultMessage2 && <p style={{color: 'white'}}>{resultMessage2}</p>}
+        <button onClick={() => setKeysIos()}>Store Keys</button>
+        {resultMessage && <p style={{ color: "white" }}>{resultMessage}</p>}
+        <button onClick={() => getKeyIos()}>Get Keys</button>
+        {resultMessage2 && <p style={{ color: "white" }}>{resultMessage2}</p>}
       </Box>
 
       <Box
-          width='100%'
-          position='absolute'
-          p={2}
-          left={0}
-          bottom={50}
-          height='auto'
+        width='100%'
+        position='absolute'
+        p={2}
+        left={0}
+        bottom={50}
+        height='auto'
         zIndex={10}
       >
         <Button
           fullWidth
+          onClick={() => {
+            navigate("/secret-recovery");
+          }}
           sx={{
             background:
               "linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA",

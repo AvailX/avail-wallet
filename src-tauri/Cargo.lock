@@ -458,7 +458,7 @@ checksum = "0c4b4d0bd25bd0b74681c0ad21497610ce1b7c91b1022cd21c80c6fbdd9476b0"
 [[package]]
 name = "avail-common"
 version = "0.13.0"
-source = "git+https://github.com/availx/avail-lib?branch=feat/delegate-proving#34cef7f3baf1a8d1eb23f7da1d234f06a36a57fa"
+source = "git+https://github.com/availx/avail-lib?rev=e47766b#e47766b06557f6dee8a72348fd74bb1a754e5af4"
 dependencies = [
  "aes-gcm",
  "app_dirs2",
@@ -3135,7 +3135,7 @@ version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d3262e75e648fce39813cb56ac41f3c3e3f65217ebf3844d818d1f9398cfb0dc"
 dependencies = [
- "hashbrown 0.14.0",
+ "hashbrown 0.14.5",
 ]
 
 [[package]]
@@ -5629,7 +5629,7 @@ name = "snarkvm-ledger-committee"
 version = "0.16.19"
 source = "git+https://github.com/AleoNet/snarkVM?branch=testnet-beta#140ff26f87697c2e9d18212cce2cc831fc4b146a"
 dependencies = [
- "indexmap 2.0.0",
+ "indexmap 2.2.6",
  "rayon",
  "serde_json",
  "snarkvm-console",
@@ -5667,7 +5667,7 @@ name = "snarkvm-ledger-narwhal-batch-header"
 version = "0.16.19"
 source = "git+https://github.com/AleoNet/snarkVM?branch=testnet-beta#140ff26f87697c2e9d18212cce2cc831fc4b146a"
 dependencies = [
- "indexmap 2.0.0",
+ "indexmap 2.2.6",
  "rayon",
  "serde_json",
  "snarkvm-console",
@@ -5730,7 +5730,7 @@ dependencies = [
  "aleo-std",
  "anyhow",
  "bincode",
- "indexmap 2.0.0",
+ "indexmap 2.2.6",
  "lru",
  "once_cell",
  "parking_lot",
@@ -5749,7 +5749,7 @@ source = "git+https://github.com/AleoNet/snarkVM?branch=testnet-beta#140ff26f876
 dependencies = [
  "anyhow",
  "colored",
- "indexmap 2.0.0",
+ "indexmap 2.2.6",
  "rand 0.8.5",
  "rand_chacha 0.3.1",
  "rayon",
@@ -5828,7 +5828,7 @@ source = "git+https://github.com/AleoNet/snarkVM?branch=testnet-beta#140ff26f876
 dependencies = [
  "aleo-std",
  "anyhow",
- "indexmap 2.0.0",
+ "indexmap 2.2.6",
  "itertools",
  "lru",
  "parking_lot",
@@ -5934,8 +5934,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-wasm"
 version = "0.16.19"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "855355d94b5dff2e52ebf740439fad667c0f12b45f27b0f0decd9190aecfa5f4"
+source = "git+https://github.com/AleoNet/snarkVM?branch=testnet-beta#140ff26f87697c2e9d18212cce2cc831fc4b146a"
 dependencies = [
  "getrandom 0.2.15",
  "snarkvm-circuit-network",

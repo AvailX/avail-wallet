@@ -12,17 +12,23 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@hookform/resolvers": "^3.6.0",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
     "@tauri-apps/api": ">=2.0.0-beta.0",
+    "@tauri-apps/plugin-barcode-scanner": "^2.0.0-beta.5",
     "@tauri-apps/plugin-shell": ">=2.0.0-beta.0",
     "i18next": "^23.11.4",
     "react": "^18.2.0",
     "react-awesome-slider": "^4.1.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.0"
+    "react-hook-form": "^7.51.5",
+    "react-router-dom": "^6.23.0",
+    "react-toastify": "^10.0.5",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@tauri-apps/api": "^2.0.0-beta.10",
     "@tauri-apps/cli": "^2.0.0-beta.13",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
