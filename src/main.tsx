@@ -40,6 +40,7 @@ import { RecentEventsProvider } from "./context/EventsContext";
 import i18n from "./i18next-config";
 import Faucet from "./views-desktop/faucet";
 import CreateQuests from "./components/quests/CreateQuests/CreateQuests";
+import CreateTasks from "./views-desktop/quests/CreateTask";
 
 // See if language is set in local storage
 const storedLanguage = localStorage.getItem("language");
@@ -73,6 +74,7 @@ const router = createBrowserRouter([
   { path: "/campaigns", element: <Campaigns /> },
   { path: "/quests", element: <Quests /> },
   { path: "/create-quests", element: <CreateQuests /> },
+  { path: "/create-tasks", element: <CreateTasks /> },
 ]);
 
 ReactDOM.createRoot(document.querySelector("#root")!).render(

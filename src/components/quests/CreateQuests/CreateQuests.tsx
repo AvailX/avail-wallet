@@ -167,47 +167,6 @@ const CreateQuests: React.FC = () => {
               justifyContent: "space-between",
             }}
           >
-            {/* Profile Image Component */}
-            {/* <mui.Box
-              sx={{
-                borderRadius: "100%",
-                border: "1px solid #696969",
-                p: 1.5,
-                width: "200px",
-                mt: lgxl
-                  ? "10%"
-                  : lg
-                    ? "8%"
-                    : lgsx
-                      ? "10%"
-                      : mdlg
-                        ? "10%"
-                        : md
-                          ? "13%"
-                          : mdsx
-                            ? "14%"
-                            : "17%",
-                ml: "5%",
-              }}
-            >
-              <mui.Box
-                sx={{
-                  borderRadius: "50%",
-                  border: "1px solid #696969",
-                  width: "200px",
-                  height: "200px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: "#D3D3D3",
-                }}
-              >
-                <mui.IconButton sx={{ backgroundColor: "#696969", p: 2 }}>
-                  <CameraAltIcon sx={{ color: "#FFFFFF" }} />
-                </mui.IconButton>
-              </mui.Box>
-            </mui.Box> */}
-
             <ProfileImage
               imageUrl={campaign[0].bg_image}
               onEditClick={handleEditPPClick}

@@ -1,14 +1,17 @@
 import React from "react";
 import { Box, Button, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
 
 const CreateQuestsBox: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <Box
       sx={{
-        border: "1px solid #D3D3D3", // Lighter grey border
-        backgroundColor: "#808080", // Grey background
-        color: "#FFFFFF", // White text color
+        border: "1px solid #D3D3D3",
+        backgroundColor: "#808080",
+        color: "#FFFFFF",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -17,8 +20,12 @@ const CreateQuestsBox: React.FC = () => {
         borderRadius: "8px",
         cursor: "pointer",
         "&:hover": {
-          backgroundColor: "#696969", // Darker grey on hover
+          backgroundColor: "#696969",
         },
+      }}
+      onClick={() => {
+        navigate("/create-tasks");
+        console.log("INFO: Going to Create Task Screen -- Clicked");
       }}
     >
       <Button
@@ -27,7 +34,7 @@ const CreateQuestsBox: React.FC = () => {
           color: "#FFFFFF",
           textTransform: "none",
           "& .MuiButton-startIcon": {
-            marginRight: "2px", // Space between icon and text
+            marginRight: "2px",
           },
         }}
       >
