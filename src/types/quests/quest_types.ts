@@ -8,9 +8,11 @@ export type Campaign = {
 	bg_image: string;
 	profile_image: string;
 	color: string;
+	points_image: string;
+	project_name: string;
 };
 
-type CampaignDescription = {
+export type CampaignDescription = {
 	part1: string;
 	main: string;
 	part2: string;

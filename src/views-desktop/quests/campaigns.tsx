@@ -27,34 +27,13 @@ function Campaigns() {
     getCampaigns()
       .then((campaigns) => {
         setCampaigns(campaigns);
+        console.log('Campaigns:', campaigns);
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
 
-	const handleCreateCampaign = () => {
-		console.log('Create Campaign Clicked');
-		createCampaign(
-			'New Campaign test',
-			'New Campaign t',
-			'New Campaign t 1',
-			'New Campaign t Main',
-			'New Campaign t 2',
-			'New Campaign t Desc',
-			'https://avail.global/_next/static/media/Avail-Logo-OnDark.3bbffcbf.svg',
-			'https://avail.global/_next/static/media/Avail-Logo-OnDark.3bbffcbf.svg',
-			'https://avail.global/_next/static/media/Avail-Logo-OnDark.3bbffcbf.svg',
-			'000000',
-			'https://avail.global/_next/static/media/Avail-Logo-OnDark.3bbffcbf.svg',
-			'New Campaign Project t'
-		).then(campaign => {
-			console.log('Campaign Created:', campaign);
-			setCampaigns([...campaigns, campaign]);
-		}).catch(err => {
-			console.log(err);
-		});
-	};
 
 
   return (
@@ -146,8 +125,22 @@ function Campaigns() {
               Create a quest
             </mui.Button>
           </mui.Box>
+          
         </mui.Stack>
       </mui.Box>
+      <mui.Box>
+            <mui.Button
+              onClick={() => {navigate('/qaastest')}}
+              sx={{
+                borderRadius: "15px",
+                color: "#01FFAA",
+                fontSize: "12px",
+              }}
+              endIcon={<ChevronRightIcon />}
+            >
+              test qaas flow
+            </mui.Button>
+          </mui.Box>
       <mui.Box sx={{ display: "flex", flexDirection: "column", mt: "3%" }}>
         {campaigns.map((campaign) => (
           <CampaignView {...campaign} key={campaign.id} />

@@ -46,7 +46,8 @@
     "react-pdf": "^7.5.1",
     "react-qr-code": "^2.0.12",
     "react-router-dom": "^6.14.2",
-    "react-spinners": "^0.13.8"
+    "react-spinners": "^0.13.8",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@tauri-apps/api": "^2.0.0-beta.10",

@@ -1,6 +1,8 @@
 import {invoke} from '@tauri-apps/api/core';
+import {v4 as uuidv4} from 'uuid';
 
 import {type Campaign, type Quest, type WhitelistResponse, type PointsResponse, type Collection} from '../../types/quests/quest_types';
+import { Console } from 'console';
 
 export async function getCampaigns() {
 	return invoke<Campaign[]>('get_campaigns');
@@ -44,6 +46,20 @@ export async function updateCampaign(
 export async function deleteCampaign(campaignId: string) {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	return invoke<boolean>('delete_campaign', {campaign_id: campaignId});
+}
+export async function createQuest(
+	title: string,
+    description: string,
+    display_image: string,
+    tasks: string,
+    reward_collection_name: string,
+    reward_amount: string,
+    reward_method: string,
+    expires_on: Date,
+    created_on: Date,
+    campaign_id: string) {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	return invoke<Quest>('create_quest', { title, description, display_image, tasks, reward_collection_name, reward_amount, reward_method, expires_on, created_on, campaign_id });
 }
 
 export async function getQuests(campaignId: string) {
