@@ -11,9 +11,9 @@ function RewardTab() {
           </mui.Typography>
           <mui.TextField
             name="username"
-            value={username}
-            onChange={handleChange}
-            optional
+            // value={username}
+            // onChange={handleChange}
+            // optional
             sx={{ bgcolor: "#264139", borderRadius: "10px" }}
           />
         </mui.Stack>
@@ -23,9 +23,9 @@ function RewardTab() {
           </mui.Typography>
           <mui.TextField
             name="username"
-            value={username}
-            onChange={handleChange}
-            optional
+            // value={username}
+            // onChange={handleChange}
+            // optional
             sx={{ bgcolor: "#264139", borderRadius: "10px" }}
           />
         </mui.Stack>
@@ -35,9 +35,9 @@ function RewardTab() {
           </mui.Typography>
           <mui.TextField
             name="username"
-            value={username}
-            onChange={handleChange}
-            optional
+            // value={username}
+            // onChange={handleChange}
+            // optional
             sx={{
               bgcolor: "#264139",
               borderRadius: "10px",

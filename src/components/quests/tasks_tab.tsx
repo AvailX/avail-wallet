@@ -11,9 +11,9 @@ function TasksTab() {
           </mui.Typography>
           <mui.TextField
             name="addtask"
-            value={addtask}
-            onChange={handleChange}
-            optional
+            // value={addtask}
+            // onChange={handleChange}
+            // optional
             sx={{ bgcolor: "#264139", borderRadius: "10px" }}
           />
         </mui.Stack>
