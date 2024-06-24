@@ -41,7 +41,7 @@ const SelectWinners: React.FC = () => {
               fontWeight: "200",
             }}
           >
-            Age
+            Mechanism
           </InputLabel>
           <Select
             labelId="demo-simple-select-helper-label"
@@ -61,9 +61,9 @@ const SelectWinners: React.FC = () => {
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            <MenuItem value={10}>FCFS</MenuItem>
+            <MenuItem value={20}>Leaderboard</MenuItem>
+            <MenuItem value={30}>LuckyDraw</MenuItem>
           </Select>
         </mui.Stack>
         <mui.Stack direction="row" spacing={1}>
@@ -100,6 +100,7 @@ const SelectWinners: React.FC = () => {
           />
         </mui.Stack>
       </mui.Stack>
+      <mui.Button sx={{ color: "fff" }}>Launch</mui.Button>
     </mui.Box>
   );
 };
