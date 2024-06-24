@@ -1,23 +1,25 @@
 import * as React from "react";
 import * as mui from "@mui/material";
+import TitleField from "./StartQuest/TitleField";
+import DescribeField from "./StartQuest/DescribeField";
+import BannerDesktop from "./StartQuest/BannerDesktop";
+import BannerMobile from "./StartQuest/BannerMobile";
+import QuestDuration from "./StartQuest/QuestDuration";
 
 const StartQuests: React.FC = () => {
   return (
     <mui.Box
       sx={{
         display: "flex",
+        flexDirection: "column",
         width: "100%",
       }}
     >
-      <mui.Box
-        sx={{
-          alignContent: "start",
-        }}
-      >
-        <mui.Typography variant="h3" color={"white"}>
-          Title
-        </mui.Typography>
-      </mui.Box>
+      <TitleField></TitleField>
+      <DescribeField></DescribeField>
+      <BannerDesktop></BannerDesktop>
+      <BannerMobile></BannerMobile>
+      <QuestDuration></QuestDuration>
     </mui.Box>
   );
 };
