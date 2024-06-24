@@ -3,6 +3,7 @@ pub mod helpers;
 pub mod models;
 pub mod services;
 
+use crate::services::authentication::session::get_user_id;
 use crate::services::record_handling::utils::get_all_nft_data;
 use services::account::generation::create_seed_phrase_wallet;
 use services::account::generation::import_wallet;
@@ -126,6 +127,7 @@ pub fn run() {
             update_collection,
             delete_collection,
             distribute_rewards,
+            get_user_id,
             /* --Wallet Connect Api */
             get_event,
             get_events,

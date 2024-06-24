@@ -10,6 +10,7 @@ export type Campaign = {
 	color: string;
 	points_image: string;
 	project_name: string;
+  owner: string;
 };
 
 export type CampaignDescription = {

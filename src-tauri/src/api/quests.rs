@@ -10,7 +10,7 @@ use crate::models::pointers::{
     deployment::DeploymentPointer, transaction::TransactionPointer, transition::TransitionPointer,
 };
 use crate::services::authentication::session;
-use crate::services::local_storage::persistent_storage::get_network;
+use crate::services::local_storage::persistent_storage::{get_address_string, get_network};
 use crate::services::local_storage::session::view::VIEWSESSION;
 use crate::services::local_storage::storage_api::transaction::get_transaction_ids_for_quest_verification;
 use avail_common::{
@@ -551,6 +551,7 @@ pub async fn create_campaign(
         color,
         points_image,
         project_name,
+        owner: get_address_string()?,
     };
 
     let res = match get_quest_client_with_session(reqwest::Method::POST, "campaign")?
@@ -629,6 +630,7 @@ pub async fn update_campaign(
         color,
         points_image,
         project_name,
+        owner: get_address_string()?,
     };
     let path = format!("campaign/{}", campaign.id);
     let res = match get_quest_client_with_session(reqwest::Method::PUT, &path)?

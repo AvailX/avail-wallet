@@ -25,11 +25,12 @@ pub fn get_quest_client_with_session(
             ))
         }
     };
+    println!("Session in cleint: {:?}", session);
 
     let cookie_value = format!("{}={}", cookie_name, session);
     // let url = format!("{}/quests/{}", api, path);
     let url = format!("http://0.0.0.0:8005/quests/{}", path);
-
+    println!("cookie_value: {:?}", cookie_value);
     let request = client
         .request(method, url)
         .header(reqwest::header::COOKIE, cookie_value);

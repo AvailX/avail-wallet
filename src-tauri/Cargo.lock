@@ -421,7 +421,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "avail-common"
 version = "0.6.0"
-source = "git+https://github.com/availx/avail-lib?rev=f38c3a0#f38c3a07676a2f9deabc4ff1498f8b181b452e84"
+source = "git+https://github.com/availx/avail-lib?rev=f4dffed#f4dffed8133b7ac505e6a5f0401a08fdf99a53de"
 dependencies = [
  "aes-gcm",
  "app_dirs2",
@@ -493,6 +493,7 @@ dependencies = [
  "tokio",
  "tokio-rayon",
  "ureq",
+ "urlencoding",
  "uuid",
  "whoami",
  "zeroize",

@@ -10,7 +10,7 @@ import QuestBox from '../../components/quests/quest';
 import TaskDrawer from '../../components/quests/tasks_drawer';
 
 // Types
-import {type CampaignDetailPageProps} from '../../types/quests/quest_types';
+import {campaign, quests, type CampaignDetailPageProps} from '../../types/quests/quest_types';
 import {type Quest} from '../../types/quests/quest_types';
 
 // Images
@@ -29,6 +29,7 @@ import {useLocation} from 'react-router-dom';
 import {SuccessAlert, ErrorAlert} from '../../components/snackbars/alerts';
 import { Campaign, CampaignDescription } from '../../types/quests/quest_types';
 import { time } from 'console';
+import { invoke } from '@tauri-apps/api/core';
 
 const TestQaaS: React.FC = () => {
     const [fields, setFields] = React.useState([{ title:'', description:'', transaction:'', program_id:'', function_id:'', dapp_url:'', points:'' }]);
@@ -193,7 +194,6 @@ const TestQaaS: React.FC = () => {
         // console.log('Created On:', e.target.elements[42].value);
         // console.log('Campaign ID:', e.target.elements[44].value);
         const time = new Date();
-
         // console.log('Title:', e.target.elements);
         createQuest(
             e.target.elements[0].value,
@@ -216,6 +216,16 @@ const TestQaaS: React.FC = () => {
             setMessage('Quest Creation Failed');
         });
     };
+
+    const handleUserTest = () => {
+
+        invoke('get_user_id').then((res) => {
+            console.log(res);
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
+
 
 
 	return (
@@ -312,6 +322,7 @@ const TestQaaS: React.FC = () => {
                     <mui.Button type='submit'>Submit</mui.Button>
                 </form>
             </mui.Box>
+            <mui.Button onClick={handleUserTest}>test user fn</mui.Button>
 		</Layout>
 	);
 };

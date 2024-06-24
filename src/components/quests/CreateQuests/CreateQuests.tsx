@@ -25,6 +25,7 @@ import { useLocation } from "react-router-dom";
 // Alerts
 import { SuccessAlert, ErrorAlert } from "../../../components/snackbars/alerts";
 import ProfileImage from "./CreateProfilePicture";
+import { set } from "date-fns";
 
 const CreateQuests: React.FC = () => {
   const location = useLocation();
@@ -43,6 +44,8 @@ const CreateQuests: React.FC = () => {
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
   const [message, setMessage] = React.useState("You changes has been saved");
+  const [defaultCoverImage, setDefaultCoverImage] = React.useState('');
+  const [defaultProfileImage, setDefaultProfileImage] = React.useState('');
 
   const handleSaveNameClick = (newString: string) => {
     setNewCampaignName(newString);
@@ -66,14 +69,18 @@ const CreateQuests: React.FC = () => {
   };
 
   const handleSaveCoverClick = (imageLink: string) => {
+    console.log(defaultCoverImage);
     if (isValidUrl(imageLink)) {
       console.log("Your change has been saved!");
       setMessage("Your image url been saved!");
       setSuccess(true);
       setIsEditingCover(false);
+      setDefaultCoverImage(imageLink);
     } else {
       setCoverImageError(true);
     }
+    console.log(defaultCoverImage);
+
   };
   const handleSavePPClick = (imageLink: string) => {
     if (isValidUrl(imageLink)) {
@@ -81,6 +88,7 @@ const CreateQuests: React.FC = () => {
       setMessage("Your profile picture url has been saved!");
       setSuccess(true);
       setIsEditingPP(false);
+      setDefaultProfileImage(imageLink);
     } else {
       setPPImageError(true);
     }
@@ -128,6 +136,31 @@ const CreateQuests: React.FC = () => {
     setNewPPImage(event.target.value);
   };
 
+
+
+  const handleCreateCampaign = () => {
+    console.log('Create Campaign Clicked');
+    console.log('Name:', newCampaignName);
+    console.log('Bio:', newCampaignBio);
+    console.log('Cover Image:', defaultCoverImage);
+    console.log('Profile Image:', defaultProfileImage);
+    console.log('Color:', campaign[0].color);
+    console.log('Points Image:', campaign[0].points_image);
+    console.log('Project Name:', campaign[0].project_name);
+    
+    createCampaign(
+        
+    ).then(campaign => {
+        console.log('Campaign Created:', campaign);
+        setSuccess(true);
+        setMessage('Campaign Created');
+    }).catch(err => {
+        console.log(err);
+        setError(true);
+        setMessage('Campaign Creation Failed');
+    });
+};
+
   return (
     <Layout>
       <ErrorAlert
@@ -152,7 +185,7 @@ const CreateQuests: React.FC = () => {
       >
         <mui.Box
           sx={{
-            background: `url(${campaign[0].bg_image})`,
+            background: `url(${defaultCoverImage})`,
             color: campaign[0].color,
             backgroundColor: "grey",
             backgroundPosition: "center",
@@ -167,15 +200,16 @@ const CreateQuests: React.FC = () => {
               justifyContent: "space-between",
             }}
           >
+            
             <ProfileImage
-              imageUrl={campaign[0].bg_image}
+              imageUrl={defaultProfileImage}
               onEditClick={handleEditPPClick}
               onSaveClick={handleSavePPClick}
               error={ppImageError}
             />
             {/* Edit Cover Component */}
             <CoverImage
-              imageUrl={campaign[0].bg_image}
+              imageUrl={defaultCoverImage}
               onEditClick={handleEditCoverClick}
               onSaveClick={handleSaveCoverClick}
               error={coverImageError}
@@ -199,6 +233,7 @@ const CreateQuests: React.FC = () => {
             handleCampaignBioChange={handleCampaignBioChange}
           />
         </mui.Box>
+        <mui.Button onClick={handleCreateCampaign}>Create Campaign</mui.Button>
         <mui.Divider
           sx={{ width: "100%", height: "1px", bgcolor: "#00FFAA", mt: "3%" }}
           orientation="horizontal"

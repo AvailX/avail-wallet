@@ -25,6 +25,8 @@ import {useLocation} from 'react-router-dom';
 
 // Alerts
 import {SuccessAlert, ErrorAlert} from '../../components/snackbars/alerts';
+import { get } from 'http';
+import { get_address } from '../../services/storage/persistent';
 
 const Quests: React.FC = () => {
 	const {campaign, quests} = useLocation().state as CampaignDetailPageProps;
@@ -35,6 +37,7 @@ const Quests: React.FC = () => {
 	const [success, setSuccess] = React.useState(false);
 	const [error, setError] = React.useState(false);
 	const [message, setMessage] = React.useState('');
+	const [ownerAddr, setOwnerAddr] = React.useState('');
 
 	const mdsx = mui.useMediaQuery('(min-width:850px)');
 	const md = mui.useMediaQuery('(min-width:950px)');
@@ -42,7 +45,13 @@ const Quests: React.FC = () => {
 	const lgsx = mui.useMediaQuery('(min-width:1550px)');
 	const lg = mui.useMediaQuery('(min-width:1750px)');
 	const lgxl = mui.useMediaQuery('(min-width:1950px)');
+	const address = get_address().then(res => {
+		setOwnerAddr(res);
+	});
 
+	const handleAddQuest = () => {
+		window.location.href = '/create-quests';
+	};
 	return (
 		<Layout>
 			<ErrorAlert errorAlert={error} setErrorAlert={setError} message={message}/>
@@ -63,10 +72,18 @@ const Quests: React.FC = () => {
 						src={verified}
 						sx={{borderRadius: 0, ml: lgxl ? '11%' : lg ? '13%' : lgsx ? '15%' : mdlg ? '17%' : md ? '20%' : '23%', mt: lg ? '-8%' : lgsx ? '-10%' : '-12%'}}
 					/>
+					
 				</mui.Box>
 				<mui.Box sx={{ml: '2%', mt: '5%'}}>
 					<mui.Typography variant='h3' color='#FFF'>{campaign.title}</mui.Typography>
 					<BodyText500 color='#A3A3A3'>{campaign.inner_description}</BodyText500>
+					<mui.Box>
+						{campaign.owner === ownerAddr && (
+						<mui.Button variant="contained" color="primary" onClick={handleAddQuest}>
+							Add Quest
+						</mui.Button>
+						)}
+					</mui.Box>  
 				</mui.Box>
 				<mui.Divider sx={{width: '100%', height: '1px', bgcolor: '#00FFAA', mt: '3%'}} orientation='horizontal'/>
 				<mui.Grid container spacing={2} sx={{marginTop: '20px', alignItems: 'center', mb: '5%', paddingLeft: '2%', bgcolor: '#111111', alignSelf: 'center', width: '100%', justifyContent: 'space-around'}}>

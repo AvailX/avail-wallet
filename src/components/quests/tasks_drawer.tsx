@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as mui from '@mui/material';
 
 // Types
-import {type Task, type Quest} from 'src/types/quests/quest_types';
+import {type Task, type Quest, campaign} from 'src/types/quests/quest_types';
 import greenGlow from '../../assets/dapps/gglow.png';
 
 // Components
@@ -12,6 +12,7 @@ import {SubMainTitleText} from '../typography/typography';
 
 // Services
 import {isQuestCompleted} from '../../services/quests/quests';
+import { get_address } from '../../services/storage/persistent';
 
 export type TaskDrawerProps = {
 	open: boolean;
@@ -62,6 +63,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({open, onClose, quest}) => {
 			<SubMainTitleText sx={{color: '#fff', ml: '5%'}}>Tasks</SubMainTitleText>
 
 			{/* Quest title */}
+			
 			{quest?.tasks?.map(task => (
 				<TaskBox key={task.id} task={task} quest={quest} questCompleted={questCompleted} />
 			))}

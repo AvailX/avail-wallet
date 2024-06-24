@@ -17,6 +17,7 @@ use avail_common::{
         server_auth::{self, VerifySessionRequest},
     },
 };
+use urlencoding::decode;
 use uuid::Uuid;
 
 /// Authenticates user both locally and on server.
@@ -212,18 +213,27 @@ pub async fn request_hash(address: &str) -> AvailResult<server_auth::CreateSessi
         ))
     }
 }
-
-pub async fn get_user_id(session: String) -> AvailResult<(String, Uuid)> {
-    let session_str = SESSION.get_session_token().unwrap();
+#[tauri::command(rename_all = "snake_case")]
+pub async fn get_user_id() -> AvailResult<(String, Uuid)> {
+    let session_str = match SESSION.get_session_token() {
+        Some(session) => session,
+        None => {
+            return Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Session not found".to_string(),
+                "Session not found".to_string(),
+            ))
+        }
+    };
     println!("Session string: {:?}", session_str);
-    let session = Session::from_str(&session)?;
+    let session = Session::from_str(&session_str)?;
     println!("Session: {:?}", session);
 
     let client = reqwest::Client::new();
 
     let response = client
         .post("http://0.0.0.0:8001/auth/verify_expiry")
-        .json(&session.session_id)
+        .json(&session)
         .send()
         .await
         .unwrap();
@@ -372,12 +382,22 @@ mod tests {
     async fn test_get_session_password() {
         //let username = get_username().unwrap();
         // test_setup_prerequisites();
-        let session = get_session(Some(STRONG_PASSWORD.to_string()))
-            .await
-            .unwrap();
-        println!("{}", session);
+        let cookie_name = "id";
+        // let sessionset = get_session(Some("tylerDurden@0xf5".to_string()))
+        //     .await
+        //     .unwrap();
+        // SESSION.set_session_token(sessionset);
+        let session = match SESSION.get_session_token() {
+            Some(session) => session,
+            None => {
+                println!("Session not found");
+                ("session".to_string())
+            }
+        };
 
-        let res = get_user_id(session).await.unwrap();
+        let cookie_value = format!("{}={}", cookie_name, session);
+        println!("Cookie value: {:?}", cookie_value);
+        let res = get_user_id().await.unwrap();
 
         println!("Successful fetch{:?}", res);
 
