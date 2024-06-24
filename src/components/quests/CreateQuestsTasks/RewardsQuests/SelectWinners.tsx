@@ -1,61 +1,105 @@
 import * as React from "react";
 import * as mui from "@mui/material";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 const SelectWinners: React.FC = () => {
   return (
-    <mui.Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        mb: "5%",
-      }}
-    >
-      <mui.Typography variant="h4" color={"white"} fontWeight={"bold"}>
-        How many winners?
-      </mui.Typography>
-      <mui.Box
-        sx={{
-          display: "flex",
-          height: "50px",
-          width: "100%",
-          backgroundColor: "#2A2C2B",
-          border: "none",
-          borderRadius: "15px",
-          alignItems: "center",
-          fontSize: "12px",
-          justifyContent: "center",
-        }}
-      >
-        <mui.TextField
-          fullWidth // Make TextField take full width of its container
-          label="Number of winners"
-          variant="standard"
-          InputProps={{
-            sx: {
-              ml: "10px",
+    <mui.Box sx={{ width: "100%" }}>
+      <mui.Stack spacing={2}>
+        <mui.Stack direction="column" spacing={0}>
+          <mui.Typography color="#fff" fontSize="15px" fontWeight={200}>
+            Reward Collection Name
+          </mui.Typography>
+          <mui.TextField
+            name="Reward collection Name"
+            // value={rewardName}
+            // onChange={handleChange}
+            sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+          />
+        </mui.Stack>
+        <mui.Stack direction="column" spacing={0}>
+          <mui.Typography color="#fff" fontSize="15px" fontWeight={200}>
+            Reward Amount
+          </mui.Typography>
+          <mui.TextField
+            name="username"
+            // value={username}
+            // onChange={handleChange}
+            // optional
+            sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+          />
+        </mui.Stack>
+        <mui.Stack direction="column" spacing={0}>
+          <InputLabel
+            id="demo-simple-select-helper-label"
+            sx={{
+              color: "#fff",
+              fontSize: "15px",
+              fontWeight: "200",
+            }}
+          >
+            Age
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-helper-label"
+            id="demo-simple-select-helper"
+            // value={age}
+            // label="Age"
+            // onChange={handleChange}
+            sx={{
+              bgcolor: "#2A2C2B",
+              borderRadius: "10px",
+              color: "#fff",
+              fontSize: "15px",
+              fontWeight: "200",
+            }}
+            // sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Select>
+        </mui.Stack>
+        <mui.Stack direction="row" spacing={1}>
+          <mui.TextField
+            fullWidth
+            label="Expires On"
+            type="date"
+            InputLabelProps={{ shrink: true, style: { color: "white" } }}
+            sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+          />
+          {/* to be automated */}
+          <mui.TextField
+            fullWidth
+            label="created On"
+            type="date"
+            InputLabelProps={{ shrink: true, style: { color: "white" } }}
+            // sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+            sx={{
+              bgcolor: "#2A2C2B",
+              borderRadius: "10px",
+              color: "#fff",
+              fontSize: "15px",
+              fontWeight: "200",
+            }}
+          />
+        </mui.Stack>
 
-              color: "#00FFAA",
-              "& .MuiInput-underline:before": {
-                borderBottom: "none", // Remove default underline
-              },
-              "& .MuiInput-underline:hover:before": {
-                borderBottom: "none", // Remove underline on hover
-              },
-              "& .MuiInput-underline:after": {
-                borderBottom: "none", // Remove underline after interaction
-              },
-            },
-            disableUnderline: true, // Alternative way to disable underline
-          }}
-          InputLabelProps={{
-            sx: {
-              color: "#00FFAA", // Change label text color
-              ml: "10px",
-            },
-          }}
-        />
-      </mui.Box>
+        <mui.Stack direction="column" spacing={0}>
+          <mui.TextField
+            label="Campiagn ID"
+            disabled
+            InputLabelProps={{ shrink: true, style: { color: "white" } }}
+            sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+          />
+        </mui.Stack>
+      </mui.Stack>
     </mui.Box>
   );
 };
