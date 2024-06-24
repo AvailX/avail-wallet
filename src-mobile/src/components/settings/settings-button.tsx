@@ -1,10 +1,6 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
-import {
-  BodyText500,
-  SmallText400,
-} from "../../../../src/components/typography/typography";
 import { useScan } from "../../../../src/context/ScanContext";
 
 type CtaButtonProperties = {
@@ -54,13 +50,6 @@ export default function STButton({ text, onClick }: CtaButtonProperties) {
         color: "#fff",
         // my: 2,
         borderRadius: "10px",
-        bgcolor: text === "Delete Account" ? "#D21C1C" : "#00FFAA",
-        "&:hover": {
-          bgcolor: text === "Delete Account" ? "#D21C1C" : "#00FFAA",
-        },
-        "&:focus": {
-          bgcolor: text === "Delete Account" ? "#D21C1C" : "#00FFAA",
-        },
       }}
       onClick={onClick}
       disabled={isDisabled(text)}

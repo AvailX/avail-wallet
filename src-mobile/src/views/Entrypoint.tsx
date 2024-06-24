@@ -26,12 +26,6 @@ function EntryPoint() {
   const [alertMessage, setAlertMessage] = React.useState<string>("");
 
   React.useEffect(() => {
-<<<<<<< HEAD
-    setTimeout(() => {
-      navigate("/dashboard");
-    }, 2000);
-  }, []);
-=======
     const authenticateUser = async () => {
       try {
         const res = await session_and_local_auth(
@@ -68,7 +62,6 @@ function EntryPoint() {
     return () => clearTimeout(timer);
   }, [navigate]);
 
->>>>>>> origin/uiux/mobile-frontend-migrate
   return (
     <>
       <ErrorAlert
@@ -76,10 +69,10 @@ function EntryPoint() {
         setErrorAlert={setAlert}
         message={alertMessage}
       />
-      <mui.Box component={Link} to='/dashboard' sx={boxStyles}>
+      <mui.Box component={Link} to="/dashboard" sx={boxStyles}>
         <img
           src={logo}
-          alt='Logo'
+          alt="Logo"
           style={{ width: "30%", alignSelf: "center" }}
         />
       </mui.Box>

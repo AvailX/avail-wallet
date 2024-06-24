@@ -21,15 +21,12 @@ import Send from "./views/send/Send";
 import InputRecipient from "./views/send/InputRecipient";
 import QrCode from "./views/QrCode";
 import Settings from "./views/Settings";
-<<<<<<< HEAD
 import PrivacyPolicy from "./views/PrivacyPolicy";
 import TermsAndConditions from "./views/TermsandService";
-=======
 import Username from "./views/create-wallet/Username";
 import Password from "./views/create-wallet/Password";
 
 import Login from "./views/Login";
->>>>>>> origin/uiux/mobile-frontend-migrate
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
