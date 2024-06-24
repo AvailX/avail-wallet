@@ -1,4 +1,4 @@
-import { Box, InputAdornment, TextField, Typography } from "@mui/material";
+import { Box, Input as TextField, Typography } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
 import CropFreeIcon from "@mui/icons-material/CropFree";
@@ -37,22 +37,11 @@ function Send() {
         <TextField
           fullWidth
           placeholder='Search avail user or aleo address '
-          variant='standard'
           onChange={(e) => setAddress(e?.target?.value)}
           onKeyDown={handleKeyDown}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment sx={{ fontSize: "40px" }} position='start'>
-                <SearchIcon />
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position='end'>
-                <CropFreeIcon sx={{ fontSize: "40px" }} />
-              </InputAdornment>
-            ),
-            disableUnderline: true,
-          }}
+          startAdornment={<SearchIcon sx={{ color: "#fff", mr: 2 }} />}
+          endAdornment={<CropFreeIcon sx={{ color: "#fff", mr: 2 }} />}
+          disableUnderline
           inputProps={{
             sx: {
               "&::placeholder": {
@@ -63,15 +52,9 @@ function Send() {
             },
           }}
           sx={{
-            "& > .MuiInputBase-root": {
-              bgcolor: "#264139",
-              px: 2,
-              py: 1,
-              borderRadius: "9px",
-            },
-            "&::placeholder": {
-              color: "red",
-            },
+            border: "1px solid #00FFAA",
+            borderRadius: "10px",
+            p: 2,
             mt: 4,
           }}
         />

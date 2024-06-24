@@ -9,8 +9,8 @@ use crate::models::{
     },
 };
 use crate::services::local_storage::encrypted_data::{
-    get_encrypted_data_by_id, handle_encrypted_data_query, handle_encrypted_data_query_params,
-    update_encrypted_transaction_state_by_id,
+    get_encrypted_data_by_id, get_encrypted_data_by_transaction_id, handle_encrypted_data_query,
+    handle_encrypted_data_query_params, update_encrypted_transaction_state_by_id,
 };
 use crate::services::local_storage::{
     encrypted_data::get_encrypted_data_by_flavour,
@@ -451,7 +451,13 @@ pub fn handle_deployment_failed<N: Network>(pointer_id: &str) -> AvailResult<()>
 
     Ok(())
 }
-
+/// Check if transaction pointer is already stored via transaction id
+pub fn is_transcation_stored(transaction_id: &str) -> AvailResult<bool> {
+    match get_encrypted_data_by_transaction_id(transaction_id) {
+        Ok(_) => Ok(true),
+        Err(_) => Ok(false),
+    }
+}
 #[cfg(test)]
 mod tx_out_storage_api_tests {
     use super::*;
@@ -460,7 +466,7 @@ mod tx_out_storage_api_tests {
         encrypted_data::{EventTypeCommon, TransactionState},
     };
     use chrono::Local;
-    use snarkvm::prelude::{Address, AleoID, Field, PrivateKey, Testnet3, ToBytes, ViewKey};
+    use snarkvm::prelude::{Address, AleoID, Field, PrivateKey, TestnetV0, ToBytes, ViewKey};
     use std::str::FromStr;
     use uuid::Uuid;
 
@@ -473,8 +479,8 @@ mod tx_out_storage_api_tests {
 
     #[test]
     fn test_store_view_session() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let view_key = ViewKey::<Testnet3>::try_from(&pk).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::try_from(&pk).unwrap();
 
         VIEWSESSION.set_view_session(&view_key.to_string()).unwrap();
     }
@@ -484,7 +490,7 @@ mod tx_out_storage_api_tests {
         delete_user_encrypted_data().unwrap();
         initialize_encrypted_data_table().unwrap();
 
-        let test_transaction_id = AleoID::<Field<Testnet3>, TX_PREFIX>::from_str(
+        let test_transaction_id = AleoID::<Field<TestnetV0>, TX_PREFIX>::from_str(
             "at1zux4zw83dayxtndd58skuy7qq7xg0d6ez86ak9zlqh2zru4kgggqjys70g",
         )
         .unwrap();
@@ -507,7 +513,7 @@ mod tx_out_storage_api_tests {
             None,
         );
 
-        let address = Address::<Testnet3>::from_str(TESTNET_ADDRESS).unwrap();
+        let address = Address::<TestnetV0>::from_str(TESTNET_ADDRESS).unwrap();
         let id = Uuid::new_v4();
 
         let encrypted_tx_in = test_transaction_out.to_encrypted_data(address).unwrap();
@@ -520,7 +526,7 @@ mod tx_out_storage_api_tests {
         test_store_tx_out();
         test_store_view_session();
 
-        let test_transaction_id = AleoID::<Field<Testnet3>, TX_PREFIX>::from_str(
+        let test_transaction_id = AleoID::<Field<TestnetV0>, TX_PREFIX>::from_str(
             "at1zux4zw83dayxtndd58skuy7qq7xg0d6ez86ak9zlqh2zru4kgggqjys70g",
         )
         .unwrap();
@@ -543,7 +549,7 @@ mod tx_out_storage_api_tests {
             None,
         );
 
-        let transactions_out = get_transactions_exec::<Testnet3>().unwrap();
+        let transactions_out = get_transactions_exec::<TestnetV0>().unwrap();
 
         assert_eq!(vec![test_transaction_out], transactions_out)
     }
@@ -552,7 +558,7 @@ mod tx_out_storage_api_tests {
     fn test_get_unconfirmed_and_failed_transaction_ids() {
         VIEWSESSION.set_view_session("AViewKey1jXL3nQ7ax6ft9qshgtTn8nXrkKNFjSBdbnjueFW5f2Gj");
 
-        let transactions_out = get_unconfirmed_and_failed_transaction_ids::<Testnet3>().unwrap();
+        let transactions_out = get_unconfirmed_and_failed_transaction_ids::<TestnetV0>().unwrap();
 
         println!("{:?}", transactions_out);
     }
@@ -564,7 +570,7 @@ mod tx_out_storage_api_tests {
         let date = Local::now();
         let a_day_ago = date - chrono::Duration::days(1);
 
-        let transactions_out = get_tx_ids_from_date::<Testnet3>(a_day_ago).unwrap();
+        let transactions_out = get_tx_ids_from_date::<TestnetV0>(a_day_ago).unwrap();
 
         println!("{:?}", transactions_out);
     }

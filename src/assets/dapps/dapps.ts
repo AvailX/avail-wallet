@@ -40,7 +40,7 @@ export const dapps: Dapp[] = [
 	{
 		name: 'ANS',
 		description: 'An Aleo domain for your account - ANS is where domain naming meets privacy.',
-		url: 'https://testnet3.aleonames.id/account',
+		url: 'https://testnet.aleonames.id/account',
 		img: dans,
 		tags: ['domains'],
 		style: {marginTop: '14%'},
@@ -112,7 +112,7 @@ export const displayDapps: Dapp[] = [
 	{
 		name: 'ANS',
 		description: 'An Aleo domain for your account - ANS is where domain naming meets privacy.',
-		url: 'https://testnet3.aleonames.id/account',
+		url: 'https://testnet.aleonames.id/account',
 		img: dans,
 		tags: ['domains'],
 		style: {marginTop: '14%', width: '80px', height: '80px'},

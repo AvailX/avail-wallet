@@ -7,24 +7,28 @@ use super::android::{keystore_delete, keystore_init, keystore_load};
 #[cfg(target_os = "ios")]
 use super::iOS::{delete_ios, search, store_keys_local};
 
-use snarkvm::prelude::{Identifier, Network, PrivateKey, ViewKey, FromStr};
+use snarkvm::prelude::{FromStr, Identifier, Network, PrivateKey, ViewKey};
 
-use super::desktop::{delete_key, read_key, read_seed_phrase, store};
-use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
-use avail_common::models::constants::{PRIVATE_KEY, VIEW_KEY};
+use super::desktop::{delete_key, delete_key_for_recovery, read_key, read_seed_phrase, store};
 #[cfg(target_os = "ios")]
-use super::faceid::{store_keys_ios, delete_key_ios, get_key_ios};
+use super::faceid::{delete_key_ios, get_key_ios, store_keys_ios};
 #[cfg(target_os = "ios")]
 use crate::services::local_storage::persistent_storage::get_address_string;
 #[cfg(target_os = "ios")]
 use crate::services::local_storage::persistent_storage::update_address;
+use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
+use avail_common::models::constants::{PRIVATE_KEY, VIEW_KEY};
 
 /// This trait is used as a standard interface for the key management service.
 /// The key_type field refers to the private key type when true and the viewing key type when false.
 pub trait KeyController<N: Network> {
     fn store_key(&self, password: &str, wallet: &BetterAvailWallet<N>) -> AvailResult<String>;
-
     fn delete_key(&self, password: Option<&str>, ext: Identifier<N>) -> AvailResult<String>;
+    fn delete_key_for_recovery(
+        &self,
+        password: Option<&str>,
+        ext: Identifier<N>,
+    ) -> AvailResult<String>;
     fn read_key(&self, password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>>;
     fn read_phrase(&self, password: &str, ext: Identifier<N>) -> AvailResult<String>;
 }
@@ -66,31 +70,72 @@ impl<N: Network> KeyController<N> for iOSKeyController {
                 "Address is different".to_string(),
             ));
         }
-        match store_keys_ios("com.avail.wallet.p", &wallet.address.to_string(), &wallet.private_key.to_string(), PRIVATE_KEY) {
+        match store_keys_ios(
+            "com.avail.wallet.p",
+            &wallet.address.to_string(),
+            &wallet.private_key.to_string(),
+            PRIVATE_KEY,
+        ) {
             Ok(_) => {}
             Err(e) => return Err(e),
         };
-        match store_keys_ios("com.avail.wallet.v", &wallet.address.to_string(), &wallet.view_key.to_string(), VIEW_KEY) {
+        match store_keys_ios(
+            "com.avail.wallet.v",
+            &wallet.address.to_string(),
+            &wallet.view_key.to_string(),
+            VIEW_KEY,
+        ) {
             Ok(_) => {}
-            Err(e) => return Err(AvailError::new(
-                AvailErrorType::InvalidData,
-                e.to_string(),
-                "Failed at storing view key".to_string(),
-            )),
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::InvalidData,
+                    e.to_string(),
+                    "Failed at storing view key".to_string(),
+                ))
+            }
         };
-        match store_keys_ios("com.avail.wallet.phrase", &wallet.address.to_string(), &wallet.mnemonic.clone().unwrap().phrase(), "avl-s") {
+        match store_keys_ios(
+            "com.avail.wallet.phrase",
+            &wallet.address.to_string(),
+            &wallet.mnemonic.clone().unwrap().phrase(),
+            "avl-s",
+        ) {
             Ok(_) => {}
-            Err(e) => return Err(AvailError::new(
-                AvailErrorType::InvalidData,
-                e.to_string(),
-                "Failed at storing seed phrase".to_string(),
-            )),
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::InvalidData,
+                    e.to_string(),
+                    "Failed at storing seed phrase".to_string(),
+                ))
+            }
         };
         Ok("Keys Stored".to_string())
     }
 
     // Delete private key, viewing key and seed phrase for current account
     fn delete_key(&self, _password: Option<&str>, _ext: Identifier<N>) -> AvailResult<String> {
+        // Get address from local storage
+        let address = get_address_string()?;
+        match delete_key_ios("com.avail.wallet.p", &address, PRIVATE_KEY) {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        };
+        match delete_key_ios("com.avail.wallet.v", &address, VIEW_KEY) {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        };
+        match delete_key_ios("com.avail.wallet.phrase", &address, "avl-s") {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        };
+        Ok("Keys Deleted".to_string())
+    }
+
+    fn delete_key_for_recovery(
+        &self,
+        _password: Option<&str>,
+        _ext: Identifier<N>,
+    ) -> AvailResult<String> {
         // Get address from local storage
         let address = get_address_string()?;
         match delete_key_ios("com.avail.wallet.p", &address, PRIVATE_KEY) {
@@ -173,6 +218,23 @@ impl<N: Network> KeyController<N> for macKeyController {
         }
     }
 
+    fn delete_key_for_recovery(
+        &self,
+        password: Option<&str>,
+        _ext: Identifier<N>,
+    ) -> AvailResult<String> {
+        match password {
+            Some(password) => delete_key_for_recovery::<N>(password),
+            None => {
+                return Err(AvailError::new(
+                    AvailErrorType::InvalidData,
+                    "Password is required".to_string(),
+                    "Password is required".to_string(),
+                ))
+            }
+        }
+    }
+
     fn read_key(&self, password: Option<&str>, key_type: &str) -> AvailResult<Keys<N>> {
         match password {
             Some(password) => read_key(password, key_type),
@@ -203,6 +265,23 @@ impl<N: Network> KeyController<N> for linuxKeyController {
     fn delete_key(&self, password: Option<&str>, _ext: Identifier<N>) -> AvailResult<String> {
         match password {
             Some(password) => delete_key::<N>(password),
+            None => {
+                return Err(AvailError::new(
+                    AvailErrorType::InvalidData,
+                    "Password is required".to_string(),
+                    "Password is required".to_string(),
+                ))
+            }
+        }
+    }
+
+    fn delete_key_for_recovery(
+        &self,
+        password: Option<&str>,
+        _ext: Identifier<N>,
+    ) -> AvailResult<String> {
+        match password {
+            Some(password) => delete_key_for_recovery::<N>(password),
             None => {
                 return Err(AvailError::new(
                     AvailErrorType::InvalidData,
@@ -244,6 +323,23 @@ impl<N: Network> KeyController<N> for windowsKeyController {
     fn delete_key(&self, password: Option<&str>, ext: Identifier<N>) -> AvailResult<String> {
         match password {
             Some(password) => delete_key::<N>(password),
+            None => {
+                return Err(AvailError::new(
+                    AvailErrorType::InvalidData,
+                    "Password is required".to_string(),
+                    "Password is required".to_string(),
+                ))
+            }
+        }
+    }
+
+    fn delete_key_for_recovery(
+        &self,
+        password: Option<&str>,
+        _ext: Identifier<N>,
+    ) -> AvailResult<String> {
+        match password {
+            Some(password) => delete_key_for_recovery::<N>(password),
             None => {
                 return Err(AvailError::new(
                     AvailErrorType::InvalidData,

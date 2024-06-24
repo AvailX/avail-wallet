@@ -43,8 +43,8 @@ use std::str::FromStr;
 
 use snarkvm::circuit::Aleo;
 use snarkvm::{
-    circuit::{AleoV0, Environment},
-    prelude::{Address, Ciphertext, Field, Network, Program, Record, Signature, Testnet3},
+    circuit::{AleoTestnetV0, Environment},
+    prelude::{Address, Ciphertext, Field, Network, Program, Record, Signature, TestnetV0},
 };
 
 use tauri::{Manager, Window};
@@ -79,8 +79,8 @@ pub fn get_balance(request: BalanceRequest) -> AvailResult<BalanceResponse> {
     };
 
     let balance = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => get_token_balance::<Testnet3>(&asset_id)?,
-        _ => get_token_balance::<Testnet3>(&asset_id)?, //SupportedNetworks::Mainnet => get_aleo_balance::<Mainnet>()?,
+        SupportedNetworks::Testnet => get_token_balance::<TestnetV0>(&asset_id)?,
+        _ => get_token_balance::<TestnetV0>(&asset_id)?, //SupportedNetworks::Mainnet => get_aleo_balance::<Mainnet>()?,
     };
 
     Ok(BalanceResponse::new(vec![balance], None))
@@ -94,10 +94,14 @@ pub async fn request_create_event(
 ) -> AvailResult<CreateEventResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
-            request_create_event_raw::<Testnet3, AleoV0>(request, fee_private, Some(window)).await
+        SupportedNetworks::Testnet => {
+            request_create_event_raw::<TestnetV0, AleoTestnetV0>(request, fee_private, Some(window))
+                .await
         }
-        _ => request_create_event_raw::<Testnet3, AleoV0>(request, fee_private, Some(window)).await, //SupportedNetworks::Mainnet => request_create_event_raw::<Mainnet>(request),
+        _ => {
+            request_create_event_raw::<TestnetV0, AleoTestnetV0>(request, fee_private, Some(window))
+                .await
+        } //SupportedNetworks::Mainnet => request_create_event_raw::<Mainnet>(request),
     }
 }
 #[tauri::command(rename_all = "snake_case")]
@@ -440,7 +444,7 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
 pub async fn get_records(request: GetRecordsRequest) -> AvailResult<GetRecordsResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => match get_records_raw::<Testnet3>(request) {
+        SupportedNetworks::Testnet => match get_records_raw::<TestnetV0>(request) {
             Ok((records, page_count)) => {
                 Ok(GetRecordsResponse::new(records, Some(page_count), None))
             }
@@ -450,7 +454,7 @@ pub async fn get_records(request: GetRecordsRequest) -> AvailResult<GetRecordsRe
                 Some(error.external_msg),
             )),
         },
-        _ => match get_records_raw::<Testnet3>(request) {
+        _ => match get_records_raw::<TestnetV0>(request) {
             Ok((records, page_count)) => {
                 Ok(GetRecordsResponse::new(records, Some(page_count), None))
             }
@@ -487,8 +491,8 @@ pub fn sign(request: SignatureRequest, window: Window) -> AvailResult<SignatureR
     let network = get_network()?;
 
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
-            match sign_message::<Testnet3>(&request.get_message(), None) {
+        SupportedNetworks::Testnet => {
+            match sign_message::<TestnetV0>(&request.get_message(), None) {
                 Ok((signature, message_field)) => Ok(SignatureResponse::new(
                     Some(signature.to_string()),
                     Some(message_field.to_string()),
@@ -515,7 +519,7 @@ pub fn sign(request: SignatureRequest, window: Window) -> AvailResult<SignatureR
                 }
             }
         }
-        _ => match sign_message::<Testnet3>(&request.get_message(), None) {
+        _ => match sign_message::<TestnetV0>(&request.get_message(), None) {
             Ok((signature, message_field)) => Ok(SignatureResponse::new(
                 Some(signature.to_string()),
                 Some(message_field.to_string()),
@@ -550,8 +554,8 @@ pub fn verify(message: &str, address: &str, signature: &str) -> AvailResult<bool
     let network = get_network()?;
 
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => verify_signature::<Testnet3>(message, address, signature),
-        _ => verify_signature::<Testnet3>(message, address, signature),
+        SupportedNetworks::Testnet => verify_signature::<TestnetV0>(message, address, signature),
+        _ => verify_signature::<TestnetV0>(message, address, signature),
     }
 }
 
@@ -576,11 +580,11 @@ fn verify_signature<N: Network>(
 pub fn decrypt_records(request: DecryptRequest) -> AvailResult<DecryptResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => match decrypt_records_raw::<Testnet3>(request.ciphertexts) {
+        SupportedNetworks::Testnet => match decrypt_records_raw::<TestnetV0>(request.ciphertexts) {
             Ok(plaintexts) => Ok(DecryptResponse::new(plaintexts, None)),
             Err(error) => Ok(DecryptResponse::new(vec![], Some(error.external_msg))),
         },
-        _ => match decrypt_records_raw::<Testnet3>(request.ciphertexts) {
+        _ => match decrypt_records_raw::<TestnetV0>(request.ciphertexts) {
             Ok(plaintexts) => Ok(DecryptResponse::new(plaintexts, None)),
             Err(error) => Ok(DecryptResponse::new(vec![], Some(error.external_msg))),
         }, //SupportedNetworks::Mainnet => decrypt_record_raw::<Mainnet>(ciphertext),
@@ -614,7 +618,7 @@ pub fn decrypt_records_raw<N: Network>(ciphertext: Vec<String>) -> AvailResult<V
 pub async fn get_events(request: GetEventsRequest) -> AvailResult<GetEventsResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => match get_events_raw::<Testnet3>(request) {
+        SupportedNetworks::Testnet => match get_events_raw::<TestnetV0>(request) {
             Ok(events) => Ok(GetEventsResponse::new(events, None, None)),
             Err(error) => Ok(GetEventsResponse::new(
                 vec![],
@@ -622,7 +626,7 @@ pub async fn get_events(request: GetEventsRequest) -> AvailResult<GetEventsRespo
                 Some(error.external_msg),
             )),
         },
-        _ => match get_events_raw::<Testnet3>(request) {
+        _ => match get_events_raw::<TestnetV0>(request) {
             Ok(events) => Ok(GetEventsResponse::new(events, None, None)),
             Err(error) => Ok(GetEventsResponse::new(
                 vec![],
@@ -638,11 +642,11 @@ pub async fn get_events(request: GetEventsRequest) -> AvailResult<GetEventsRespo
 pub fn get_event(request: GetEventRequest) -> AvailResult<GetEventResponse> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => match get_event_raw::<Testnet3>(&request.id) {
+        SupportedNetworks::Testnet => match get_event_raw::<TestnetV0>(&request.id) {
             Ok(event) => Ok(GetEventResponse::new(Some(event), None)),
             Err(error) => Ok(GetEventResponse::new(None, Some(error.external_msg))),
         },
-        _ => match get_event_raw::<Testnet3>(&request.id) {
+        _ => match get_event_raw::<TestnetV0>(&request.id) {
             Ok(event) => Ok(GetEventResponse::new(Some(event), None)),
             Err(error) => Ok(GetEventResponse::new(None, Some(error.external_msg))),
         },
@@ -655,8 +659,8 @@ pub fn get_event(request: GetEventRequest) -> AvailResult<GetEventResponse> {
 pub fn get_avail_events(request: GetEventsRequest) -> AvailResult<Vec<AvailEvent>> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => get_avail_events_raw::<Testnet3>(request),
-        _ => get_avail_events_raw::<Testnet3>(request), //SupportedNetworks::Mainnet => get_events_raw::<Mainnet>(request),
+        SupportedNetworks::Testnet => get_avail_events_raw::<TestnetV0>(request),
+        _ => get_avail_events_raw::<TestnetV0>(request), //SupportedNetworks::Mainnet => get_events_raw::<Mainnet>(request),
     }
 }
 
@@ -666,8 +670,8 @@ pub fn get_succinct_avail_events(
 ) -> AvailResult<Vec<SuccinctAvailEvent>> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => get_succinct_avail_events_raw::<Testnet3>(request),
-        _ => get_succinct_avail_events_raw::<Testnet3>(request),
+        SupportedNetworks::Testnet => get_succinct_avail_events_raw::<TestnetV0>(request),
+        _ => get_succinct_avail_events_raw::<TestnetV0>(request),
     }
     //SupportedNetworks::Mainnet => get_events_raw::<Mainnet>(request),
 }
@@ -676,8 +680,8 @@ pub fn get_succinct_avail_events(
 pub fn get_succinct_avail_event(id: &str) -> AvailResult<SuccinctAvailEvent> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => get_succinct_avail_event_raw::<Testnet3>(id),
-        _ => get_succinct_avail_event_raw::<Testnet3>(id),
+        SupportedNetworks::Testnet => get_succinct_avail_event_raw::<TestnetV0>(id),
+        _ => get_succinct_avail_event_raw::<TestnetV0>(id),
     }
     //SupportedNetworks::Mainnet => get_event_raw::<Mainnet>(request),
 }
@@ -686,8 +690,8 @@ pub fn get_succinct_avail_event(id: &str) -> AvailResult<SuccinctAvailEvent> {
 pub fn get_avail_event(id: &str) -> AvailResult<AvailEvent> {
     let network = get_network()?;
     match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => get_avail_event_raw::<Testnet3>(id),
-        _ => get_avail_event_raw::<Testnet3>(id), //SupportedNetworks::Mainnet => get_event_raw::<Mainnet>(request),
+        SupportedNetworks::Testnet => get_avail_event_raw::<TestnetV0>(id),
+        _ => get_avail_event_raw::<TestnetV0>(id), //SupportedNetworks::Mainnet => get_event_raw::<Mainnet>(request),
     }
 }
 
@@ -723,14 +727,15 @@ mod test {
 
     use avail_common::models::encrypted_data::EncryptedDataTypeCommon;
     use avail_common::{models::constants::*, models::encrypted_data::EventTypeCommon};
-    use snarkvm::prelude::{Address, FromStr, Identifier, PrivateKey, Testnet3, ViewKey};
+    use snarkvm::circuit::AleoTestnetV0;
+    use snarkvm::prelude::{Address, FromStr, Identifier, PrivateKey, TestnetV0, ViewKey};
 
     use crate::services::account::generation::import_wallet;
 
     /*
     #[tokio::test]
     async fn test_setup_prerequisites() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
 
         drop_encrypted_data_table().unwrap();
         delete_user_preferences().unwrap();
@@ -747,7 +752,7 @@ mod test {
         .await
         .unwrap();
 
-        let address = get_address::<Testnet3>().unwrap();
+        let address = get_address::<TestnetV0>().unwrap();
 
         let request = TransferRequest::new(
             address.to_string(),
@@ -760,14 +765,14 @@ mod test {
             "credits".to_string(),
         );
 
-        transfer_raw::<Testnet3>(request, None).await.unwrap();
+        transfer_raw::<TestnetV0>(request, None).await.unwrap();
     }
     */
 
-    fn test_setup_prerequisites() -> PrivateKey<Testnet3> {
+    fn test_setup_prerequisites() -> PrivateKey<TestnetV0> {
         // no records transferred as set up.
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let view_key = ViewKey::<Testnet3>::try_from(&pk).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::try_from(&pk).unwrap();
 
         drop_encrypted_data_table().unwrap();
 
@@ -823,7 +828,7 @@ mod test {
         );
 
         let request = GetRecordsRequest::new(None, Some(records_filter), None);
-        let (res, _page_count) = get_records_raw::<Testnet3>(request).unwrap();
+        let (res, _page_count) = get_records_raw::<TestnetV0>(request).unwrap();
         // println!("res: {:?}", res);
 
         println!("page_count: {:?}", _page_count);
@@ -837,8 +842,8 @@ mod test {
     async fn test_request_create_event() {
         println!(" <<<<<<<<<<<<<<< Testing request_create_event() fn in Wallet Connect Rust API >>>>>>>>>>>>>>>");
         /* -- Has to be called here cause has to await-- */
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let ext = Identifier::<Testnet3>::from_str("test").unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let ext = Identifier::<TestnetV0>::from_str("test").unwrap();
 
         let key_controller = {
             #[cfg(target_os = "linux")]
@@ -878,7 +883,7 @@ mod test {
         .await
         .unwrap();
 
-        let address = get_address::<Testnet3>().unwrap();
+        let address = get_address::<TestnetV0>().unwrap();
 
         let request = TransferRequest::new(
             address.to_string(),
@@ -891,11 +896,12 @@ mod test {
             "credits".to_string(),
         );
 
-        transfer_raw::<Testnet3>(request, None).await.unwrap();
+        transfer_raw::<TestnetV0>(request, None).await.unwrap();
         /* --SETUP COMPLETE */
 
-        let recipient = Address::<Testnet3>::from_str(TESTNET3_ADDRESS).unwrap();
-        let (record, _, _) = find_aleo_credits_record_to_spend::<Testnet3>(&10000, vec![]).unwrap();
+        let recipient = Address::<TestnetV0>::from_str(TESTNET3_ADDRESS).unwrap();
+        let (record, _, _) =
+            find_aleo_credits_record_to_spend::<TestnetV0>(&10000, vec![]).unwrap();
 
         let program_id: &str = "credits.aleo";
         let function_id: &str = "transfer_private";
@@ -919,7 +925,7 @@ mod test {
         PASS.set_pass_session(STRONG_PASSWORD).unwrap();
 
         let result_create_event =
-            request_create_event_raw::<Testnet3, AleoV0>(request, false, None)
+            request_create_event_raw::<TestnetV0, AleoTestnetV0>(request, false, None)
                 .await
                 .unwrap();
         println!("res: {:?}", result_create_event);
@@ -941,15 +947,15 @@ mod test {
         // );
 
         // let request = GetRecordsRequest::new(None, Some(records_filter), None);
-        // let (res, _page_count) = get_records_raw::<Testnet3>(request).unwrap();
+        // let (res, _page_count) = get_records_raw::<TestnetV0>(request).unwrap();
 
         let mut ciphertexts: Vec<String> = vec![];
 
         // for value in res.into_iter() {
         ciphertexts.push("record1qyqspf8mhl4qxfladwsn8yku7dp6vdwzn20p7axnvwn9wpj2m9fydwswqyxx66trwfhkxun9v35hguerqqpqzqp7exfqu67w0g6wjv6mydaesv5h4f042gmllwglj2ps7qyv24m4pat5eds62a8khyxzesvcnkg39ggwcjq2hlet7ga7hh6w05e2nu8suqdq6ts".to_string());
         // }
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let vk = ViewKey::<Testnet3>::try_from(&pk).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let vk = ViewKey::<TestnetV0>::try_from(&pk).unwrap();
         VIEWSESSION.set_view_session(&vk.to_string()).unwrap();
 
         let request = DecryptRequest::new(ciphertexts);
@@ -1003,13 +1009,13 @@ mod test {
 
     #[test]
     fn test_verify_signature() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
 
         let message = "Hello World";
 
-        let (signature, _) = sign_message_w_key::<Testnet3>(message, &pk).unwrap();
+        let (signature, _) = sign_message_w_key::<TestnetV0>(message, &pk).unwrap();
 
-        let address = Address::<Testnet3>::try_from(&pk).unwrap();
+        let address = Address::<TestnetV0>::try_from(&pk).unwrap();
 
         let res = verify(message, &address.to_string(), &signature.to_string()).unwrap();
 

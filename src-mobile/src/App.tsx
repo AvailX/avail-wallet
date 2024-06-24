@@ -21,14 +21,24 @@ import Send from "./views/send/Send";
 import InputRecipient from "./views/send/InputRecipient";
 import QrCode from "./views/QrCode";
 import Settings from "./views/Settings";
+<<<<<<< HEAD
 import PrivacyPolicy from "./views/PrivacyPolicy";
 import TermsAndConditions from "./views/TermsandService";
+=======
+import Username from "./views/create-wallet/Username";
+import Password from "./views/create-wallet/Password";
+
+import Login from "./views/Login";
+>>>>>>> origin/uiux/mobile-frontend-migrate
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
     /* --EntryPoint-- */
     { path: "/", element: <EntryPoint /> },
     /* --Create Wallet Flow-- */
+    { path: "/create-wallet", element: <MobCarousel /> },
+    { path: "/username", element: <Username /> },
+    { path: "/password", element: <Password /> },
     { path: "/wallet-choser", element: <WalletChoser /> },
     { path: "/backup-wallet", element: <BackupWallet /> },
     { path: "/verify-saved", element: <VerifySaved /> },
@@ -36,6 +46,8 @@ const App: React.FC = () => {
     { path: "/dashboard", element: <Dashboard /> },
     { path: "/secret-recovery", element: <SecretRecovery /> },
     { path: "/points", element: <AvailPoints /> },
+
+    { path: "/login", element: <Login /> },
 
     // Route to test wallet connect
     { path: "wallet-connect", element: <WalletConnect /> },
