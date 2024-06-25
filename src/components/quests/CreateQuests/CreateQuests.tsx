@@ -35,8 +35,12 @@ const CreateQuests: React.FC = () => {
   const [isEditingName, setIsEditingName] = React.useState(false);
   const [newCampaignBio, setNewCampaignBio] = React.useState("Project Bio");
   const [isEditingBio, setIsEditingBio] = React.useState(false);
-  const [newCoverImage, setNewCoverImage] = React.useState("");
-  const [newPPImage, setNewPPImage] = React.useState("");
+  const [newCoverImage, setNewCoverImage] = React.useState(
+    campaign[0].bg_image || ""
+  );
+  const [newPPImage, setNewPPImage] = React.useState(
+    campaign[0].profile_image || ""
+  );
   const [isEditingCover, setIsEditingCover] = React.useState(false);
   const [isEditingPP, setIsEditingPP] = React.useState(false);
   const [coverImageError, setCoverImageError] = React.useState(false);
@@ -72,8 +76,9 @@ const CreateQuests: React.FC = () => {
     console.log(defaultCoverImage);
     if (isValidUrl(imageLink)) {
       console.log("Your change has been saved!");
-      setMessage("Your image url been saved!");
+      setMessage("Your image url has been saved!");
       setSuccess(true);
+      setNewCoverImage(imageLink); // Update the cover image state
       setIsEditingCover(false);
       setDefaultCoverImage(imageLink);
     } else {
@@ -82,13 +87,16 @@ const CreateQuests: React.FC = () => {
     console.log(defaultCoverImage);
 
   };
+
   const handleSavePPClick = (imageLink: string) => {
     if (isValidUrl(imageLink)) {
       console.log("Your profile picture url has been saved!");
       setMessage("Your profile picture url has been saved!");
       setSuccess(true);
+      setNewPPImage(imageLink);
       setIsEditingPP(false);
       setDefaultProfileImage(imageLink);
+      setPPImageError(false);
     } else {
       setPPImageError(true);
     }
@@ -97,6 +105,7 @@ const CreateQuests: React.FC = () => {
   const handleEditCoverClick = () => {
     setIsEditingCover(true);
   };
+
   const handleEditPPClick = () => {
     setIsEditingPP(true);
   };
@@ -132,6 +141,7 @@ const CreateQuests: React.FC = () => {
   ) => {
     setNewCoverImage(event.target.value);
   };
+
   const handlePPImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewPPImage(event.target.value);
   };
@@ -185,7 +195,7 @@ const CreateQuests: React.FC = () => {
       >
         <mui.Box
           sx={{
-            background: `url(${defaultCoverImage})`,
+            background: `url(${newCoverImage})`, // Use the updated cover image URL here
             color: campaign[0].color,
             backgroundColor: "grey",
             backgroundPosition: "center",
@@ -202,36 +212,61 @@ const CreateQuests: React.FC = () => {
           >
             
             <ProfileImage
-              imageUrl={defaultProfileImage}
+              imageUrl={newPPImage || campaign[0].box_image}
               onEditClick={handleEditPPClick}
               onSaveClick={handleSavePPClick}
               error={ppImageError}
             />
             {/* Edit Cover Component */}
             <CoverImage
-              imageUrl={defaultCoverImage}
+              imageUrl={newCoverImage || campaign[0].bg_image}
               onEditClick={handleEditCoverClick}
               onSaveClick={handleSaveCoverClick}
               error={coverImageError}
             />
           </mui.Box>
         </mui.Box>
-        <mui.Box sx={{ ml: "2%", mt: "5%" }}>
-          {/* Project's Title Component */}
-          <ProjectTitle
-            title={newCampaignName}
-            onEditClick={handleEditNameClick}
-            onSaveClick={handleSaveNameClick}
-            handleCampaignNameChange={handleCampaignNameChange}
-          />
+        <mui.Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <mui.Box sx={{ ml: "2%", mt: "5%" }}>
+            {/* Project's Title Component */}
+            <ProjectTitle
+              title={newCampaignName}
+              onEditClick={handleEditNameClick}
+              onSaveClick={handleSaveNameClick}
+              handleCampaignNameChange={handleCampaignNameChange}
+            />
 
-          {/* Project's Bio Component */}
-          <ProjectBio
-            bio={newCampaignBio}
-            onEditClick={handleEditBioClick}
-            onSaveClick={handleSaveBioClick}
-            handleCampaignBioChange={handleCampaignBioChange}
-          />
+            {/* Project's Bio Component */}
+            <ProjectBio
+              bio={newCampaignBio}
+              onEditClick={handleEditBioClick}
+              onSaveClick={handleSaveBioClick}
+              handleCampaignBioChange={handleCampaignBioChange}
+            />
+          </mui.Box>
+
+          <mui.Box
+            sx={{
+              backgroundColor: "#fff",
+              height: "40px",
+              width: "150px",
+              mr: "2%",
+              borderRadius: "8px",
+              alignContent: "center",
+              textAlign: "center",
+            }}
+          >
+            <mui.Typography fontSize={"15px"} color="#000" variant="h6">
+              Create Campaign
+            </mui.Typography>
+          </mui.Box>
         </mui.Box>
         <mui.Button onClick={handleCreateCampaign}>Create Campaign</mui.Button>
         <mui.Divider

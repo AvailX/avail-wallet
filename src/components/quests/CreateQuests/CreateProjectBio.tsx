@@ -3,6 +3,7 @@ import * as React from "react";
 import * as mui from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { BodyText500 } from "../../../components/typography/typography";
+import ConfirmDialog from "../CreateQuests/ConfirmDialog";
 
 interface ProjectBioProps {
   bio: string;
@@ -18,10 +19,19 @@ const ProjectBio: React.FC<ProjectBioProps> = ({
 }) => {
   const [newBio, setNewBio] = React.useState(bio);
   const [isEditing, setIsEditing] = React.useState(false);
+  const [isEdited, setIsEdited] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
 
   const handleSaveClick = () => {
+    setOpenDialog(true);
+  };
+
+  const handleConfirmSave = () => {
     onSaveClick(newBio);
     setIsEditing(false);
+    setIsEdited(true);
+    setOpenDialog(false);
+    console.log("You profile bio has been saved");
   };
 
   return (
@@ -79,13 +89,27 @@ const ProjectBio: React.FC<ProjectBioProps> = ({
               color: "#FFF",
               marginRight: "8px",
               textSizeAdjust: "auto",
+              display: isEdited ? "none" : "flex",
             }}
-            onClick={() => setIsEditing(true)}
+            onClick={() => {
+              if (!isEditing) {
+                setIsEditing(true);
+                onEditClick();
+              }
+            }}
           >
             <EditIcon />
           </mui.IconButton>
         </mui.Box>
       )}
+
+      <ConfirmDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onConfirm={handleConfirmSave}
+        title="Confirm Save"
+        content="Are you sure you want to save this edit? This change cannot be changed later."
+      />
     </mui.Box>
   );
 };

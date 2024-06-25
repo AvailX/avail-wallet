@@ -1,7 +1,7 @@
-// src/components/CreateQuests/CoverImage.tsx
 import * as React from "react";
 import * as mui from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import ConfirmDialog from "../CreateQuests/ConfirmDialog";
 
 interface CoverImageProps {
   imageUrl: string;
@@ -9,6 +9,7 @@ interface CoverImageProps {
   onSaveClick: (newUrl: string) => void;
   error: boolean;
 }
+
 const isValidUrl = (url: string): boolean => {
   try {
     new URL(url);
@@ -17,10 +18,10 @@ const isValidUrl = (url: string): boolean => {
   } catch (error) {
     console.log("This is the false");
     console.log(error);
-
     return false;
   }
 };
+
 const CoverImage: React.FC<CoverImageProps> = ({
   imageUrl,
   onEditClick,
@@ -29,13 +30,21 @@ const CoverImage: React.FC<CoverImageProps> = ({
 }) => {
   const [newUrl, setNewUrl] = React.useState(imageUrl);
   const [isEditing, setIsEditing] = React.useState(false);
+  const [isEdited, setIsEdited] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
 
   const handleSaveClick = () => {
-    onSaveClick(newUrl);
     if (isValidUrl(newUrl)) {
-      setIsEditing(false);
-      console.log("This is a url");
+      setOpenDialog(true);
     }
+  };
+
+  const handleConfirmSave = () => {
+    onSaveClick(newUrl);
+    setIsEditing(false);
+    setIsEdited(true);
+    setOpenDialog(false);
+    console.log("Your cover image has been saved");
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,8 +122,10 @@ const CoverImage: React.FC<CoverImageProps> = ({
               textSizeAdjust: "auto",
             }}
             onClick={() => {
-              setIsEditing(true);
-              onEditClick();
+              if (!isEdited) {
+                setIsEditing(true);
+                onEditClick();
+              }
             }}
           >
             <EditIcon />
@@ -124,6 +135,13 @@ const CoverImage: React.FC<CoverImageProps> = ({
           </mui.Typography>
         </mui.Box>
       )}
+      <ConfirmDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)} 
+        onConfirm={handleConfirmSave}
+        title="Confirm Save"
+        content="Are you sure you want to save this edit? This change cannot be changed later."
+      />
     </mui.Box>
   );
 };

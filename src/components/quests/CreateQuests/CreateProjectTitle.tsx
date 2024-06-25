@@ -2,6 +2,7 @@
 import * as React from "react";
 import * as mui from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import ConfirmDialog from "../CreateQuests/ConfirmDialog";
 
 interface ProjectTitleProps {
   title: string;
@@ -20,10 +21,19 @@ const ProjectTitle: React.FC<ProjectTitleProps> = ({
 }) => {
   const [newTitle, setNewTitle] = React.useState(title);
   const [isEditing, setIsEditing] = React.useState(false);
+  const [isEdited, setIsEdited] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
 
   const handleSaveClick = () => {
+    setOpenDialog(true);
+  };
+
+  const handleConfirmSave = () => {
     onSaveClick(newTitle);
     setIsEditing(false);
+    setIsEdited(true);
+    setOpenDialog(false);
+    console.log("Your Project Title has been saved");
   };
 
   React.useEffect(() => {
@@ -87,16 +97,27 @@ const ProjectTitle: React.FC<ProjectTitleProps> = ({
               color: "#FFF",
               marginRight: "8px",
               textSizeAdjust: "auto",
+              display: isEdited ? "none" : "flex",
             }}
             onClick={() => {
-              setIsEditing(true);
-              onEditClick();
+              if (!isEdited) {
+                setIsEditing(true);
+                onEditClick();
+              }
             }}
           >
             <EditIcon />
           </mui.IconButton>
         </mui.Box>
       )}
+
+      <ConfirmDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onConfirm={handleConfirmSave}
+        title="Confirm Save"
+        content="Are you sure you want to save this edit? This change cannot be changed later."
+      />
     </mui.Box>
   );
 };
