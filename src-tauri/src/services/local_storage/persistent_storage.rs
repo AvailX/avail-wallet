@@ -41,8 +41,9 @@ pub fn initial_user_preferences(
             last_sync INTEGER NOT NULL,
             last_tx_sync TIMESTAMP NOT NULL,
             last_backup_sync TIMESTAMP,
-            address TEXT NOT NULL,
+            address TEXT NOT NULL
             backup BOOLEAN NOT NULL DEFAULT FALSE,
+            delegate BOOLEAN NOT NULL DEFAULT FALSE,
             base_url TEXT NOT NULL
         )",
     )?;
@@ -59,7 +60,7 @@ pub fn initial_user_preferences(
             &"dark",
             &language.to_string_short(),
             // TODO - V2 change default to mainnet
-            &"testnet",
+            &"testnet3",
             &auth_type,
             &username,
             &tag,
@@ -68,9 +69,10 @@ pub fn initial_user_preferences(
             &Some(Utc::now()),
             &address,
             &backup,
+            &delegate,
             &"obscura"
         ],
-        "INSERT INTO user_preferences (theme, language, network, auth_type, username, tag, last_sync, last_tx_sync, last_backup_sync, address, backup, base_url) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,?10, ?11, ?12)".to_string(),
+        "INSERT INTO user_preferences (theme, language, network, auth_type, username, tag, last_sync, last_tx_sync, last_backup_sync, address, backup, delegate, base_url) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,?10, ?11, ?12, ?13)".to_string(),
     )?;
 
     Ok(())
@@ -529,12 +531,12 @@ fn test_get_network() {
     let res = get_network().unwrap();
 
     print!("{}", res);
-    assert_eq!(res, "testnet".to_string());
+    assert_eq!(res, "testnet3".to_string());
 }
 
 #[test]
 fn test_get_address() {
-    let address = get_address::<TestnetV0>().unwrap();
+    let address = get_address::<Testnet3>().unwrap();
 
     print!("{}", address);
 }
@@ -579,7 +581,7 @@ async fn test_timestamp_to_blockheight() {
 
     let client = tauri_plugin_http::reqwest::Client::new();
     let query = format!(
-        "https://aleo-testnetbeta.obscura.network/api/{}/blocks/timestamps?start={}&end={}
+        "https://aleo-testnet3.obscura.network/api/{}/blocks/timestamps?start={}&end={}
     ",
         obscura_api_key,
         timestamp.timestamp(),
@@ -588,7 +590,7 @@ async fn test_timestamp_to_blockheight() {
 
     let response = client.get(query).send().await.unwrap();
     println!("{:?}", response);
-    let response: Vec<Block<TestnetV0>> = response.json().await.unwrap();
+    let response: Vec<Block<Testnet3>> = response.json().await.unwrap();
     let latest_height = response[0].height();
 
     println!("Latest height: {}", latest_height);
