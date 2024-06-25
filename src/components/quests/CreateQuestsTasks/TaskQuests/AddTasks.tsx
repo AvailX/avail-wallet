@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/comma-dangle */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/indent */
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/object-curly-spacing */
+/* eslint-disable @typescript-eslint/quotes */
 import * as React from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -65,15 +71,9 @@ const AddTasks: React.FC = () => {
           program_id: "",
           function_id: "",
           dapp_url: "",
-          points: "",
+          points: 0,
         },
       ],
-      rewardCollectionName: "",
-      rewardAmount: "",
-      rewardMethod: "",
-      expiresOn: "",
-      createdOn: "",
-      campaignId: "",
     },
   });
 
@@ -257,8 +257,8 @@ const AddTasks: React.FC = () => {
                       sx={{ my: 2 }}
                       error={Boolean(errors.tasks?.[index]?.title)}
                       helperText={
-                        errors.tasks?.[index]?.title
-                          ? errors.tasks[index].title.message
+                        errors?.tasks?.[index]?.title
+                          ? errors?.tasks?.[index]?.title?.message
                           : ""
                       }
                     />
@@ -275,7 +275,7 @@ const AddTasks: React.FC = () => {
                       error={Boolean(errors.tasks?.[index]?.description)}
                       helperText={
                         errors.tasks?.[index]?.description
-                          ? errors.tasks[index].description.message
+                          ? errors?.tasks?.[index]?.description?.message
                           : ""
                       }
                     />
@@ -292,7 +292,7 @@ const AddTasks: React.FC = () => {
                       error={Boolean(errors.tasks?.[index]?.transaction)}
                       helperText={
                         errors.tasks?.[index]?.transaction
-                          ? errors.tasks[index].transaction.message
+                          ? errors?.tasks?.[index]?.transaction?.message
                           : ""
                       }
                     />
@@ -309,7 +309,7 @@ const AddTasks: React.FC = () => {
                       error={Boolean(errors.tasks?.[index]?.program_id)}
                       helperText={
                         errors.tasks?.[index]?.program_id
-                          ? errors.tasks[index].program_id.message
+                          ? errors?.tasks?.[index]?.program_id?.message
                           : ""
                       }
                     />
@@ -326,7 +326,7 @@ const AddTasks: React.FC = () => {
                       error={Boolean(errors.tasks?.[index]?.function_id)}
                       helperText={
                         errors.tasks?.[index]?.function_id
-                          ? errors.tasks[index].function_id.message
+                          ? errors?.tasks?.[index]?.function_id?.message
                           : ""
                       }
                     />
@@ -343,7 +343,7 @@ const AddTasks: React.FC = () => {
                       error={Boolean(errors.tasks?.[index]?.dapp_url)}
                       helperText={
                         errors.tasks?.[index]?.dapp_url
-                          ? errors.tasks[index].dapp_url.message
+                          ? errors?.tasks?.[index]?.dapp_url?.message
                           : ""
                       }
                     />
@@ -360,7 +360,7 @@ const AddTasks: React.FC = () => {
                       error={Boolean(errors.tasks?.[index]?.points)}
                       helperText={
                         errors.tasks?.[index]?.points
-                          ? errors.tasks[index].points.message
+                          ? errors?.tasks?.[index]?.points?.message
                           : ""
                       }
                     />
@@ -371,7 +371,7 @@ const AddTasks: React.FC = () => {
 
             <mui.Button
               type='button'
-              onClick={() =>
+              onClick={() => {
                 append({
                   title: "",
                   description: "",
@@ -379,105 +379,13 @@ const AddTasks: React.FC = () => {
                   program_id: "",
                   function_id: "",
                   dapp_url: "",
-                  points: "",
-                })
-              }
+                  points: 0,
+                });
+              }}
             >
               Add Field
             </mui.Button>
             <br />
-            <h1 style={{ color: "white" }}>Reward Mechanism</h1>
-            <Controller
-              name='rewardCollectionName'
-              control={control}
-              render={({ field }) => (
-                <mui.TextField
-                  {...field}
-                  label='Reward Collection Name'
-                  sx={{ my: 2 }}
-                  error={Boolean(errors.rewardCollectionName)}
-                  helperText={
-                    errors.rewardCollectionName
-                      ? errors.rewardCollectionName.message
-                      : ""
-                  }
-                />
-              )}
-            />
-            <Controller
-              name='rewardAmount'
-              control={control}
-              render={({ field }) => (
-                <mui.TextField
-                  {...field}
-                  label='Reward Amount'
-                  sx={{ my: 2 }}
-                  error={Boolean(errors.rewardAmount)}
-                  helperText={
-                    errors.rewardAmount ? errors.rewardAmount.message : ""
-                  }
-                />
-              )}
-            />
-            <Controller
-              name='rewardMethod'
-              control={control}
-              render={({ field }) => (
-                <mui.Select
-                  {...field}
-                  label='Reward Method'
-                  sx={{ my: 2 }}
-                  error={Boolean(errors.rewardMethod)}
-                >
-                  <mui.MenuItem value='FCFS'> FCFS</mui.MenuItem>
-                  <mui.MenuItem value='LeaderBoard'>LeaderBoard</mui.MenuItem>
-                  <mui.MenuItem value='LuckyDraw'>LuckyDraw</mui.MenuItem>
-                </mui.Select>
-              )}
-            />
-            <Controller
-              name='expiresOn'
-              control={control}
-              render={({ field }) => (
-                <mui.TextField
-                  {...field}
-                  label='Expires On'
-                  sx={{ my: 2 }}
-                  type='date'
-                  InputLabelProps={{ shrink: true, color: "primary" }}
-                  error={Boolean(errors.expiresOn)}
-                  helperText={errors.expiresOn ? errors.expiresOn.message : ""}
-                />
-              )}
-            />
-            <Controller
-              name='createdOn'
-              control={control}
-              render={({ field }) => (
-                <mui.TextField
-                  {...field}
-                  label='Created On'
-                  sx={{ my: 2 }}
-                  error={Boolean(errors.createdOn)}
-                  helperText={errors.createdOn ? errors.createdOn.message : ""}
-                />
-              )}
-            />
-            <Controller
-              name='campaignId'
-              control={control}
-              render={({ field }) => (
-                <mui.TextField
-                  {...field}
-                  label='Campaign ID'
-                  sx={{ my: 2 }}
-                  error={Boolean(errors.campaignId)}
-                  helperText={
-                    errors.campaignId ? errors.campaignId.message : ""
-                  }
-                />
-              )}
-            />
 
             <mui.Button type='submit'>Submit</mui.Button>
           </form>
