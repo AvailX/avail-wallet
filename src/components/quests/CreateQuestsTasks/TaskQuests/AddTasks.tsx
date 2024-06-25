@@ -1,3 +1,4 @@
+/* eslint-disable capitalized-comments */
 /* eslint-disable @typescript-eslint/comma-dangle */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/indent */
@@ -9,6 +10,9 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import * as mui from "@mui/material";
+
+import MenuItem from "@mui/material/MenuItem";
+
 import { createQuest } from "../../../../services/quests/quests";
 
 const taskSchema = yup.object().shape({
@@ -59,24 +63,25 @@ const AddTasks: React.FC = () => {
   });
 
   const onSubmit = async (data: any) => {
-    try {
-      const time = new Date();
-      const response = await createQuest(
-        data.title,
-        data.description,
-        data.displayImage,
-        JSON.stringify(data.tasks),
-        data.rewardCollectionName,
-        data.rewardAmount,
-        data.rewardMethod,
-        time,
-        time,
-        data.campaignId
-      );
-      console.log("Quest Created:", response);
-    } catch (error) {
-      console.error("Quest Creation Failed", error);
-    }
+    console.log("Submit data", data);
+    // try {
+    //   const time = new Date();
+    //   const response = await createQuest(
+    //     data.title,
+    //     data.description,
+    //     data.displayImage,
+    //     JSON.stringify(data.tasks),
+    //     data.rewardCollectionName,
+    //     data.rewardAmount,
+    //     data.rewardMethod,
+    //     time,
+    //     time,
+    //     data.campaignId
+    //   );
+    //   console.log("Quest Created:", response);
+    // } catch (error) {
+    //   console.error("Quest Creation Failed", error);
+    // }
   };
 
   return (
@@ -91,7 +96,30 @@ const AddTasks: React.FC = () => {
               InputLabelProps: {
                 style: { color: "#fff", opacity: "50%" },
               },
+              InputProps: {
+                style: { color: "#fff" },
+              },
             },
+            styleOverrides: {
+              root: {
+                "&.MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#00FFAA",
+                },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "#00FFAA",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#00FFAA",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#00FFAA",
+                  },
+                },
+              },
+            },
+          },
+          MuiSelect: {
             styleOverrides: {
               root: {
                 "&.MuiOutlinedInput-notchedOutline": {
@@ -179,7 +207,6 @@ const AddTasks: React.FC = () => {
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  borderBottom: "1px solid green",
                 }}
               >
                 <h1 style={{ color: "white" }}>Tasks {index + 1}</h1>
@@ -221,19 +248,36 @@ const AddTasks: React.FC = () => {
                   name={`tasks.${index}.transaction`}
                   control={control}
                   render={({ field }) => (
-                    <mui.TextField
-                      {...field}
-                      label='Transaction'
-                      sx={{ my: 2 }}
+                    <mui.FormControl
+                      sx={{ my: 2, border: "1px solid primary" }}
                       error={Boolean(errors.tasks?.[index]?.transaction)}
-                      helperText={
-                        errors.tasks?.[index]?.transaction
+                    >
+                      <mui.InputLabel sx={{ color: "#696969" }}>
+                        Transaction
+                      </mui.InputLabel>
+                      <mui.Select
+                        sx={{
+                          borderColor: "green",
+                          "&.MuiInputBase-root": {
+                            border: "1px solid #00FFAA",
+                          },
+                          color: "#fff",
+                        }}
+                        {...field}
+                        label='Transaction'
+                      >
+                        <MenuItem value={"true"}>True</MenuItem>
+                        <MenuItem value={"false"}>False</MenuItem>
+                      </mui.Select>
+                      <mui.FormHelperText>
+                        {errors.tasks?.[index]?.transaction
                           ? errors?.tasks?.[index]?.transaction?.message
-                          : ""
-                      }
-                    />
+                          : ""}
+                      </mui.FormHelperText>
+                    </mui.FormControl>
                   )}
                 />
+
                 <Controller
                   name={`tasks.${index}.program_id`}
                   control={control}
