@@ -51,8 +51,10 @@ const Quests: React.FC = () => {
 		setOwnerAddr(res);
 	});
 
+	const campaignId = campaign.id;
+
 	const handleAddQuest = () => {
-		window.location.href = '/create-quests';
+		window.location.href = '/create-tasks';
 	};
 	const handleDeleteCampaign = () => {
 		deleteCampaign(campaign.id).then(res => {
