@@ -26,6 +26,7 @@ import { useLocation } from "react-router-dom";
 import { SuccessAlert, ErrorAlert } from "../../../components/snackbars/alerts";
 import ProfileImage from "./CreateProfilePicture";
 import { set } from "date-fns";
+import { createCampaign } from "../../../services/quests/quests";
 
 const CreateQuests: React.FC = () => {
   const location = useLocation();
@@ -159,6 +160,10 @@ const CreateQuests: React.FC = () => {
     console.log('Project Name:', campaign[0].project_name);
     
     createCampaign(
+        newCampaignName,
+        newCampaignBio,
+        defaultCoverImage,
+        defaultProfileImage,
         
     ).then(campaign => {
         console.log('Campaign Created:', campaign);
@@ -262,13 +267,13 @@ const CreateQuests: React.FC = () => {
               alignContent: "center",
               textAlign: "center",
             }}
+            onClick={handleCreateCampaign}
           >
             <mui.Typography fontSize={"15px"} color="#000" variant="h6">
               Create Campaign
             </mui.Typography>
           </mui.Box>
         </mui.Box>
-        <mui.Button onClick={handleCreateCampaign}>Create Campaign</mui.Button>
         <mui.Divider
           sx={{ width: "100%", height: "1px", bgcolor: "#00FFAA", mt: "3%" }}
           orientation="horizontal"
