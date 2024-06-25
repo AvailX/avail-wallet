@@ -8,6 +8,7 @@ import ProjectTitle from "../CreateQuests/CreateProjectTitle";
 import ProjectBio from "../CreateQuests/CreateProjectBio";
 import CoverImage from "../CreateQuests/CreateCoverImage";
 import CreateQuestsBox from "../create_quests_box";
+import EditableProfileAndTitle from "./EditableProfileAndTitle";
 
 // Types
 import {
@@ -48,9 +49,14 @@ const CreateQuests: React.FC = () => {
   const [ppImageError, setPPImageError] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
-  const [message, setMessage] = React.useState("You changes has been saved");
   const [defaultCoverImage, setDefaultCoverImage] = React.useState('');
   const [defaultProfileImage, setDefaultProfileImage] = React.useState('');
+  const [message, setMessage] = React.useState("Your changes have been saved");
+  const [projectImage, setProjectImage] = React.useState(
+    campaign[0].profile_image || ""
+  );
+  const [projectTitle, setProjectTitle] = React.useState("Project Title"); // New state for project title
+  const [projectName, setProjectName] = React.useState("Campaign Name"); // Separate state for project name
 
   const handleSaveNameClick = (newString: string) => {
     setNewCampaignName(newString);
@@ -175,6 +181,17 @@ const CreateQuests: React.FC = () => {
         setMessage('Campaign Creation Failed');
     });
 };
+  const handleSaveProjectImage = (newImageUrl: string) => {
+    setProjectImage(newImageUrl);
+  };
+
+  const handleSaveProjectName = (newName: string) => {
+    setProjectName(newName);
+  };
+
+  const handleSaveProjectTitle = (newTitle: string) => {
+    setProjectTitle(newTitle);
+  };
 
   return (
     <Layout>
@@ -254,6 +271,12 @@ const CreateQuests: React.FC = () => {
               onEditClick={handleEditBioClick}
               onSaveClick={handleSaveBioClick}
               handleCampaignBioChange={handleCampaignBioChange}
+            />
+            <EditableProfileAndTitle
+              initialImageUrl={projectImage}
+              initialTitle={projectTitle} // Separate state for project title
+              onSaveImage={handleSaveProjectImage}
+              onSaveTitle={handleSaveProjectTitle}
             />
           </mui.Box>
 
