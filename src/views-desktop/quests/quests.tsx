@@ -18,10 +18,10 @@ import verified from '../../assets/icons/verified.svg';
 import {BodyText500} from '../../components/typography/typography';
 
 // Services
-import {isQuestCompleted} from '../../services/quests/quests';
+import {deleteCampaign, isQuestCompleted} from '../../services/quests/quests';
 
 // Hooks
-import {useLocation} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 // Alerts
 import {SuccessAlert, ErrorAlert} from '../../components/snackbars/alerts';
@@ -33,6 +33,8 @@ const Quests: React.FC = () => {
 	const [quest, setQuest] = React.useState<Quest>(quests[0]);
 	const [openTasks, setOpenTasks] = React.useState(false);
 	const [questCompleted, setQuestCompleted] = React.useState(false);
+	const navigate = useNavigate();
+
 
 	const [success, setSuccess] = React.useState(false);
 	const [error, setError] = React.useState(false);
@@ -51,6 +53,14 @@ const Quests: React.FC = () => {
 
 	const handleAddQuest = () => {
 		window.location.href = '/create-quests';
+	};
+	const handleDeleteCampaign = () => {
+		deleteCampaign(campaign.id).then(res => {
+			console.log(res);
+			navigate('/campaigns');
+		}).catch(err => {
+			console.log(err);
+		});
 	};
 	return (
 		<Layout>
@@ -81,6 +91,13 @@ const Quests: React.FC = () => {
 						{campaign.owner === ownerAddr && (
 						<mui.Button variant="contained" color="primary" onClick={handleAddQuest}>
 							Add Quest
+						</mui.Button>
+						)}
+					</mui.Box>  
+					<mui.Box>
+						{campaign.owner === ownerAddr && (
+						<mui.Button variant="contained" color="primary" onClick={handleDeleteCampaign}>
+						Delete Campaign
 						</mui.Button>
 						)}
 					</mui.Box>  

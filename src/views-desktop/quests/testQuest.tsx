@@ -163,8 +163,8 @@ const TestQaaS: React.FC = () => {
             e.target.elements[14].value,
             e.target.elements[16].value,
             e.target.elements[18].value,
+            e.target.elements[22].value,
             e.target.elements[20].value,
-            e.target.elements[22].value
         ).then(campaign => {
             console.log('Campaign Created:', campaign);
             setSuccess(true);
@@ -194,6 +194,8 @@ const TestQaaS: React.FC = () => {
         // console.log('Created On:', e.target.elements[42].value);
         // console.log('Campaign ID:', e.target.elements[44].value);
         const time = new Date();
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
         // console.log('Title:', e.target.elements);
         createQuest(
             e.target.elements[0].value,
@@ -203,7 +205,7 @@ const TestQaaS: React.FC = () => {
             e.target.elements[21].value,
             e.target.elements[23].value,
             e.target.elements[25].value,
-            time,
+            tomorrow,
             time,
             e.target.elements[31].value
         ).then(quest => {

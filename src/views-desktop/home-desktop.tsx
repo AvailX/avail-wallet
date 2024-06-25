@@ -359,6 +359,7 @@ function Home() {
 			});
 
 			getPoints().then(res => {
+				console.log('Points response');
 				console.log(res);
 				setPoints(res);
 			}).catch(error => {

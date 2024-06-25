@@ -571,17 +571,7 @@ pub async fn create_campaign(
     };
     println!("Response: {:?}", res);
     if res.status() == 200 {
-        let campaign: Campaign = match res.json().await {
-            Ok(res) => res,
-            Err(e) => {
-                return Err(AvailError::new(
-                    AvailErrorType::External,
-                    e.to_string(),
-                    "Error creating campaign".to_string(),
-                ))
-            }
-        };
-
+        println!("Campaign created successfully! \n RESPONSE - {:?}", res);
         Ok(campaign)
     } else if res.status() == 401 {
         Err(AvailError::new(
