@@ -28,41 +28,17 @@ const taskSchema = yup.object().shape({
 });
 
 const schema = yup.object().shape({
-  title: yup.string().required("Title is required"),
-  description: yup.string().required("Description is required"),
-  displayImage: yup
-    .string()
-    .url("Must be a valid URL")
-    .required("Display Image is required"),
   tasks: yup.array().of(taskSchema).min(1, "At least one task is required"),
-  rewardCollectionName: yup
-    .string()
-    .required("Reward Collection Name is required"),
-  rewardAmount: yup
-    .number()
-    .positive("Reward Amount must be positive")
-    .required("Reward Amount is required"),
-  rewardMethod: yup
-    .string()
-    .oneOf(["FCFS", "LeaderBoard", "LuckyDraw"], "Select a valid reward method")
-    .required("Reward Method is required"),
-  expiresOn: yup.date().required("Expiration date is required"),
-  createdOn: yup.date().required("Creation date is required"),
-  campaignId: yup.string().required("Campaign ID is required"),
 });
 
 const AddTasks: React.FC = () => {
   const {
     control,
     handleSubmit,
-    register,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      title: "",
-      description: "",
-      displayImage: "",
       tasks: [
         {
           title: "",
@@ -197,56 +173,16 @@ const AddTasks: React.FC = () => {
             onSubmit={handleSubmit(onSubmit)}
             style={{ display: "flex", flexDirection: "column" }}
           >
-            <Controller
-              name='title'
-              control={control}
-              render={({ field }) => (
-                <mui.TextField
-                  {...field}
-                  label='Title'
-                  sx={{ my: 2 }}
-                  error={Boolean(errors.title)}
-                  helperText={errors.title ? errors.title.message : ""}
-                />
-              )}
-            />
-            <Controller
-              name='description'
-              control={control}
-              render={({ field }) => (
-                <mui.TextField
-                  {...field}
-                  label='Description'
-                  sx={{ my: 2 }}
-                  error={Boolean(errors.description)}
-                  helperText={
-                    errors.description ? errors.description.message : ""
-                  }
-                />
-              )}
-            />
-            <Controller
-              name='displayImage'
-              control={control}
-              render={({ field }) => (
-                <mui.TextField
-                  {...field}
-                  label='Display Image'
-                  sx={{ my: 2 }}
-                  error={Boolean(errors.displayImage)}
-                  helperText={
-                    errors.displayImage ? errors.displayImage.message : ""
-                  }
-                />
-              )}
-            />
-
-            <h1 style={{ color: "white" }}>Tasks</h1>
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                style={{ display: "flex", flexDirection: "column" }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  borderBottom: "1px solid green",
+                }}
               >
+                <h1 style={{ color: "white" }}>Tasks {index + 1}</h1>
                 <Controller
                   name={`tasks.${index}.title`}
                   control={control}
