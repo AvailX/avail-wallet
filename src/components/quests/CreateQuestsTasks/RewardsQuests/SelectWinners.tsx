@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState } from "react";
 import * as mui from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -6,6 +7,21 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 const SelectWinners: React.FC = () => {
+  const [rewardName, setRewardName] = useState("");
+  const [username, setUsername] = useState("");
+  const [mechanism, setMechanism] = useState("");
+  const [expiresOn, setExpiresOn] = useState("");
+  const [createdOn, setCreatedOn] = useState(
+    new Date().toISOString().slice(0, 10)
+  );
+  const handleLaunch = () => {
+    console.log("Reward Collection Name:", rewardName);
+    console.log("Reward Amount:", username);
+    console.log("Mechanism:", mechanism);
+    console.log("Expires On:", expiresOn);
+    console.log("Created On:", createdOn);
+  };
+
   return (
     <mui.Box sx={{ width: "100%" }}>
       <mui.Stack spacing={2}>
@@ -14,9 +30,8 @@ const SelectWinners: React.FC = () => {
             Reward Collection Name
           </mui.Typography>
           <mui.TextField
-            name="Reward collection Name"
-            // value={rewardName}
-            // onChange={handleChange}
+            value={rewardName}
+            onChange={(e) => setRewardName(e.target.value)}
             sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
           />
         </mui.Stack>
@@ -26,8 +41,8 @@ const SelectWinners: React.FC = () => {
           </mui.Typography>
           <mui.TextField
             name="username"
-            // value={username}
-            // onChange={handleChange}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             // optional
             sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
           />
@@ -46,9 +61,8 @@ const SelectWinners: React.FC = () => {
           <Select
             labelId="demo-simple-select-helper-label"
             id="demo-simple-select-helper"
-            // value={age}
-            // label="Age"
-            // onChange={handleChange}
+            value={mechanism}
+            onChange={(e) => setMechanism(e.target.value)}
             sx={{
               bgcolor: "#2A2C2B",
               borderRadius: "10px",
@@ -61,9 +75,9 @@ const SelectWinners: React.FC = () => {
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
-            <MenuItem value={10}>FCFS</MenuItem>
-            <MenuItem value={20}>Leaderboard</MenuItem>
-            <MenuItem value={30}>LuckyDraw</MenuItem>
+            <MenuItem value={1}>FCFS</MenuItem>
+            <MenuItem value={2}>Leaderboard</MenuItem>
+            <MenuItem value={3}>LuckyDraw</MenuItem>
           </Select>
         </mui.Stack>
         <mui.Stack direction="row" spacing={1}>
@@ -71,6 +85,8 @@ const SelectWinners: React.FC = () => {
             fullWidth
             label="Expires On"
             type="date"
+            value={expiresOn}
+            onChange={(e) => setExpiresOn(e.target.value)}
             InputLabelProps={{ shrink: true, style: { color: "white" } }}
             sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
           />
@@ -80,7 +96,8 @@ const SelectWinners: React.FC = () => {
             label="created On"
             type="date"
             InputLabelProps={{ shrink: true, style: { color: "white" } }}
-            // sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+            value={createdOn}
+            disabled
             sx={{
               bgcolor: "#2A2C2B",
               borderRadius: "10px",
@@ -100,7 +117,9 @@ const SelectWinners: React.FC = () => {
           />
         </mui.Stack>
       </mui.Stack>
-      <mui.Button sx={{ color: "fff" }}>Launch</mui.Button>
+      <mui.Button sx={{ color: "fff" }} onClick={handleLaunch}>
+        Launch
+      </mui.Button>
     </mui.Box>
   );
 };
