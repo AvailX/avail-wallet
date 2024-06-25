@@ -1,12 +1,22 @@
-/* eslint-disable capitalized-comments */
 /* eslint-disable @typescript-eslint/comma-dangle */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable arrow-parens */
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/array-type */
+
+/* eslint-disable capitalized-comments */
+
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/object-curly-spacing */
 /* eslint-disable @typescript-eslint/quotes */
 import * as React from "react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import {
+  useForm,
+  useFieldArray,
+  Controller,
+  type FieldValues,
+} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import * as mui from "@mui/material";
@@ -14,6 +24,8 @@ import * as mui from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 
 import { createQuest } from "../../../../services/quests/quests";
+
+import CloseIcon from "@mui/icons-material/Close";
 
 const taskSchema = yup.object().shape({
   title: yup.string().required("Title is required"),
@@ -34,6 +46,16 @@ const taskSchema = yup.object().shape({
 const schema = yup.object().shape({
   tasks: yup.array().of(taskSchema).min(1, "At least one task is required"),
 });
+
+type DataObject = {
+  title: string;
+  description: string;
+  transaction: string;
+  program_id: string;
+  function_id: string;
+  points: number;
+  dapp_url: string;
+};
 
 const AddTasks: React.FC = () => {
   const {
@@ -57,26 +79,43 @@ const AddTasks: React.FC = () => {
     },
   });
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "tasks",
   });
 
-  const onSubmit = async (data: any) => {
-    console.log("Submit data", data);
+  function reorderKeys(arr: Partial<DataObject>[]): DataObject[] {
+    const keyOrder: Array<keyof DataObject> = [
+      "title",
+      "description",
+      "transaction",
+      "program_id",
+      "function_id",
+      "points",
+      "dapp_url",
+    ];
+
+    return arr.map((obj: Partial<DataObject>) => {
+      const newObj = {} as DataObject;
+      keyOrder.forEach((key) => {
+        if (obj[key] !== undefined) {
+          newObj[key] = obj[key] as any;
+        }
+      });
+      return newObj;
+    });
+  }
+
+  const onSubmit = async (data: FieldValues) => {
+    console.log(
+      "Submit data",
+      JSON.stringify(reorderKeys(data?.tasks as Partial<DataObject>[]))
+    );
+
     // try {
     //   const time = new Date();
     //   const response = await createQuest(
-    //     data.title,
-    //     data.description,
-    //     data.displayImage,
     //     JSON.stringify(data.tasks),
-    //     data.rewardCollectionName,
-    //     data.rewardAmount,
-    //     data.rewardMethod,
-    //     time,
-    //     time,
-    //     data.campaignId
     //   );
     //   console.log("Quest Created:", response);
     // } catch (error) {
@@ -142,65 +181,29 @@ const AddTasks: React.FC = () => {
         },
       })}
     >
-      <mui.Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          mb: "5%",
-        }}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{ display: "flex", flexDirection: "column" }}
       >
-        <mui.Typography variant='h4' color={"white"} fontWeight={"bold"}>
-          Add Tasks
-        </mui.Typography>
         <mui.Box
           sx={{
             display: "flex",
-            height: "50px",
+            flexDirection: "column",
             width: "100%",
-            backgroundColor: "#2A2C2B",
-            border: "none",
-            borderRadius: "15px",
-            alignItems: "center",
-            fontSize: "12px",
-            justifyContent: "center",
+            mb: "5%",
           }}
         >
-          <mui.TextField
-            fullWidth
-            label='Select Task'
-            variant='standard'
-            InputProps={{
-              sx: {
-                ml: "10px",
-                color: "#00FFAA",
-                "& .MuiInput-underline:before": {
-                  borderBottom: "none",
-                },
-                "& .MuiInput-underline:hover:before": {
-                  borderBottom: "none",
-                },
-                "& .MuiInput-underline:after": {
-                  borderBottom: "none",
-                },
-              },
-              disableUnderline: true,
-            }}
-            InputLabelProps={{
-              sx: {
-                color: "#00FFAA",
-                ml: "10px",
-              },
-            }}
-          />
-        </mui.Box>
-
-        <mui.Box marginLeft='10%'>
-          <h1 style={{ color: "white" }}>Create Quests</h1>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            style={{ display: "flex", flexDirection: "column" }}
+          <mui.Box
+            display='flex'
+            alignItems='center'
+            justifyContent='space-between'
           >
+            <mui.Typography variant='h4' color={"white"} fontWeight={"bold"}>
+              Add Tasks
+            </mui.Typography>
+          </mui.Box>
+
+          <mui.Box>
             {fields.map((field, index) => (
               <div
                 key={field.id}
@@ -209,7 +212,30 @@ const AddTasks: React.FC = () => {
                   flexDirection: "column",
                 }}
               >
-                <h1 style={{ color: "white" }}>Tasks {index + 1}</h1>
+                <mui.Box
+                  display='flex'
+                  alignItems='center'
+                  justifyContent='space-between'
+                >
+                  <mui.Typography
+                    variant='h6'
+                    sx={{ my: 3 }}
+                    color={"white"}
+                    fontWeight={"bold"}
+                  >
+                    Tasks {index + 1}
+                  </mui.Typography>
+                  {index !== 0 && (
+                    <mui.Button
+                      onClick={() => {
+                        remove(index);
+                      }}
+                      variant='outlined'
+                    >
+                      Delete
+                    </mui.Button>
+                  )}
+                </mui.Box>
                 <Controller
                   name={`tasks.${index}.title`}
                   control={control}
@@ -349,8 +375,12 @@ const AddTasks: React.FC = () => {
               </div>
             ))}
 
+            <br />
+
             <mui.Button
-              type='button'
+              variant='outlined'
+              sx={{ textTransform: "inherit", mb: 2 }}
+              fullWidth
               onClick={() => {
                 append({
                   title: "",
@@ -363,14 +393,19 @@ const AddTasks: React.FC = () => {
                 });
               }}
             >
-              Add Field
+              Add new
             </mui.Button>
-            <br />
-
-            <mui.Button type='submit'>Submit</mui.Button>
-          </form>
+            <mui.Button
+              sx={{ textTransform: "inherit" }}
+              variant='contained'
+              type='submit'
+              fullWidth
+            >
+              Submit
+            </mui.Button>
+          </mui.Box>
         </mui.Box>
-      </mui.Box>
+      </form>
     </mui.ThemeProvider>
   );
 };
