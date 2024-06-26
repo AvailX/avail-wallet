@@ -57,7 +57,7 @@ type DataObject = {
   dapp_url: string;
 };
 
-const AddTasks: React.FC = () => {
+const AddTasks: React.FC = ({ setFormField, formField }: any) => {
   const {
     control,
     handleSubmit,
@@ -112,301 +112,302 @@ const AddTasks: React.FC = () => {
       JSON.stringify(reorderKeys(data?.tasks as Partial<DataObject>[]))
     );
 
-    // try {
-    //   const time = new Date();
-    //   const response = await createQuest(
-    //     JSON.stringify(data.tasks),
-    //   );
-    //   console.log("Quest Created:", response);
-    // } catch (error) {
-    //   console.error("Quest Creation Failed", error);
-    // }
+    setFormField({ task: { ...data?.tasks }, formField });
   };
 
   return (
-    <mui.ThemeProvider
-      theme={mui.createTheme({
-        palette: {
-          primary: { main: "#00FFAA" },
-        },
-        components: {
-          MuiTextField: {
-            defaultProps: {
-              InputLabelProps: {
-                style: { color: "#fff", opacity: "50%" },
-              },
-              InputProps: {
-                style: { color: "#fff" },
-              },
-            },
-            styleOverrides: {
-              root: {
-                "&.MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#00FFAA",
-                },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "#00FFAA",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#00FFAA",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#00FFAA",
-                  },
-                },
-              },
-            },
-          },
-          MuiSelect: {
-            styleOverrides: {
-              root: {
-                "&.MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#00FFAA",
-                },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "#00FFAA",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#00FFAA",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#00FFAA",
-                  },
-                },
-              },
-            },
-          },
-        },
-      })}
-    >
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        style={{ display: "flex", flexDirection: "column" }}
+    <>
+      <button
+        onClick={() => {
+          console.log("Context", formField);
+        }}
       >
-        <mui.Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            mb: "5%",
-          }}
+        Hello world box
+      </button>
+      <mui.ThemeProvider
+        theme={mui.createTheme({
+          palette: {
+            primary: { main: "#00FFAA" },
+          },
+          components: {
+            MuiTextField: {
+              defaultProps: {
+                InputLabelProps: {
+                  style: { color: "#fff", opacity: "50%" },
+                },
+                InputProps: {
+                  style: { color: "#fff" },
+                },
+              },
+              styleOverrides: {
+                root: {
+                  "&.MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#00FFAA",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "#00FFAA",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#00FFAA",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#00FFAA",
+                    },
+                  },
+                },
+              },
+            },
+            MuiSelect: {
+              styleOverrides: {
+                root: {
+                  "&.MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#00FFAA",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "#00FFAA",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#00FFAA",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#00FFAA",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        })}
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          style={{ display: "flex", flexDirection: "column" }}
         >
           <mui.Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              mb: "5%",
+            }}
           >
-            <mui.Typography variant='h4' color={"white"} fontWeight={"bold"}>
-              Add Tasks
-            </mui.Typography>
-          </mui.Box>
+            <mui.Box
+              display='flex'
+              alignItems='center'
+              justifyContent='space-between'
+            >
+              <mui.Typography variant='h4' color={"white"} fontWeight={"bold"}>
+                Add Tasks
+              </mui.Typography>
+            </mui.Box>
 
-          <mui.Box>
-            {fields.map((field, index) => (
-              <div
-                key={field.id}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
+            <mui.Box>
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <mui.Box
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='space-between'
+                  >
+                    <mui.Typography
+                      variant='h6'
+                      sx={{ my: 3 }}
+                      color={"white"}
+                      fontWeight={"bold"}
+                    >
+                      Tasks {index + 1}
+                    </mui.Typography>
+                    {index !== 0 && (
+                      <mui.Button
+                        onClick={() => {
+                          remove(index);
+                        }}
+                        variant='outlined'
+                      >
+                        Delete
+                      </mui.Button>
+                    )}
+                  </mui.Box>
+                  <Controller
+                    name={`tasks.${index}.title`}
+                    control={control}
+                    render={({ field }) => (
+                      <mui.TextField
+                        {...field}
+                        label='Task Name'
+                        sx={{ my: 2 }}
+                        error={Boolean(errors.tasks?.[index]?.title)}
+                        helperText={
+                          errors?.tasks?.[index]?.title
+                            ? errors?.tasks?.[index]?.title?.message
+                            : ""
+                        }
+                      />
+                    )}
+                  />
+                  <Controller
+                    name={`tasks.${index}.description`}
+                    control={control}
+                    render={({ field }) => (
+                      <mui.TextField
+                        {...field}
+                        label='Description'
+                        sx={{ my: 2 }}
+                        error={Boolean(errors.tasks?.[index]?.description)}
+                        helperText={
+                          errors.tasks?.[index]?.description
+                            ? errors?.tasks?.[index]?.description?.message
+                            : ""
+                        }
+                      />
+                    )}
+                  />
+                  <Controller
+                    name={`tasks.${index}.transaction`}
+                    control={control}
+                    render={({ field }) => (
+                      <mui.FormControl
+                        sx={{ my: 2, border: "1px solid primary" }}
+                        error={Boolean(errors.tasks?.[index]?.transaction)}
+                      >
+                        <mui.InputLabel sx={{ color: "#696969" }}>
+                          Transaction
+                        </mui.InputLabel>
+                        <mui.Select
+                          sx={{
+                            borderColor: "green",
+                            "&.MuiInputBase-root": {
+                              border: "1px solid #00FFAA",
+                            },
+                            color: "#fff",
+                          }}
+                          {...field}
+                          label='Transaction'
+                        >
+                          <MenuItem value={"true"}>True</MenuItem>
+                          <MenuItem value={"false"}>False</MenuItem>
+                        </mui.Select>
+                        <mui.FormHelperText>
+                          {errors.tasks?.[index]?.transaction
+                            ? errors?.tasks?.[index]?.transaction?.message
+                            : ""}
+                        </mui.FormHelperText>
+                      </mui.FormControl>
+                    )}
+                  />
+
+                  <Controller
+                    name={`tasks.${index}.program_id`}
+                    control={control}
+                    render={({ field }) => (
+                      <mui.TextField
+                        {...field}
+                        label='Program ID'
+                        sx={{ my: 2 }}
+                        error={Boolean(errors.tasks?.[index]?.program_id)}
+                        helperText={
+                          errors.tasks?.[index]?.program_id
+                            ? errors?.tasks?.[index]?.program_id?.message
+                            : ""
+                        }
+                      />
+                    )}
+                  />
+                  <Controller
+                    name={`tasks.${index}.function_id`}
+                    control={control}
+                    render={({ field }) => (
+                      <mui.TextField
+                        {...field}
+                        label='Function ID'
+                        sx={{ my: 2 }}
+                        error={Boolean(errors.tasks?.[index]?.function_id)}
+                        helperText={
+                          errors.tasks?.[index]?.function_id
+                            ? errors?.tasks?.[index]?.function_id?.message
+                            : ""
+                        }
+                      />
+                    )}
+                  />
+                  <Controller
+                    name={`tasks.${index}.dapp_url`}
+                    control={control}
+                    render={({ field }) => (
+                      <mui.TextField
+                        {...field}
+                        label='Dapp URL'
+                        sx={{ my: 2 }}
+                        error={Boolean(errors.tasks?.[index]?.dapp_url)}
+                        helperText={
+                          errors.tasks?.[index]?.dapp_url
+                            ? errors?.tasks?.[index]?.dapp_url?.message
+                            : ""
+                        }
+                      />
+                    )}
+                  />
+                  <Controller
+                    name={`tasks.${index}.points`}
+                    control={control}
+                    render={({ field }) => (
+                      <mui.TextField
+                        {...field}
+                        label='Points'
+                        sx={{ my: 2 }}
+                        error={Boolean(errors.tasks?.[index]?.points)}
+                        helperText={
+                          errors.tasks?.[index]?.points
+                            ? errors?.tasks?.[index]?.points?.message
+                            : ""
+                        }
+                      />
+                    )}
+                  />
+                </div>
+              ))}
+
+              <br />
+
+              <mui.Button
+                variant='outlined'
+                sx={{ textTransform: "inherit", mb: 2 }}
+                fullWidth
+                onClick={() => {
+                  append({
+                    title: "",
+                    description: "",
+                    transaction: "",
+                    program_id: "",
+                    function_id: "",
+                    dapp_url: "",
+                    points: 0,
+                  });
                 }}
               >
-                <mui.Box
-                  display='flex'
-                  alignItems='center'
-                  justifyContent='space-between'
-                >
-                  <mui.Typography
-                    variant='h6'
-                    sx={{ my: 3 }}
-                    color={"white"}
-                    fontWeight={"bold"}
-                  >
-                    Tasks {index + 1}
-                  </mui.Typography>
-                  {index !== 0 && (
-                    <mui.Button
-                      onClick={() => {
-                        remove(index);
-                      }}
-                      variant='outlined'
-                    >
-                      Delete
-                    </mui.Button>
-                  )}
-                </mui.Box>
-                <Controller
-                  name={`tasks.${index}.title`}
-                  control={control}
-                  render={({ field }) => (
-                    <mui.TextField
-                      {...field}
-                      label='Task Name'
-                      sx={{ my: 2 }}
-                      error={Boolean(errors.tasks?.[index]?.title)}
-                      helperText={
-                        errors?.tasks?.[index]?.title
-                          ? errors?.tasks?.[index]?.title?.message
-                          : ""
-                      }
-                    />
-                  )}
-                />
-                <Controller
-                  name={`tasks.${index}.description`}
-                  control={control}
-                  render={({ field }) => (
-                    <mui.TextField
-                      {...field}
-                      label='Description'
-                      sx={{ my: 2 }}
-                      error={Boolean(errors.tasks?.[index]?.description)}
-                      helperText={
-                        errors.tasks?.[index]?.description
-                          ? errors?.tasks?.[index]?.description?.message
-                          : ""
-                      }
-                    />
-                  )}
-                />
-                <Controller
-                  name={`tasks.${index}.transaction`}
-                  control={control}
-                  render={({ field }) => (
-                    <mui.FormControl
-                      sx={{ my: 2, border: "1px solid primary" }}
-                      error={Boolean(errors.tasks?.[index]?.transaction)}
-                    >
-                      <mui.InputLabel sx={{ color: "#696969" }}>
-                        Transaction
-                      </mui.InputLabel>
-                      <mui.Select
-                        sx={{
-                          borderColor: "green",
-                          "&.MuiInputBase-root": {
-                            border: "1px solid #00FFAA",
-                          },
-                          color: "#fff",
-                        }}
-                        {...field}
-                        label='Transaction'
-                      >
-                        <MenuItem value={"true"}>True</MenuItem>
-                        <MenuItem value={"false"}>False</MenuItem>
-                      </mui.Select>
-                      <mui.FormHelperText>
-                        {errors.tasks?.[index]?.transaction
-                          ? errors?.tasks?.[index]?.transaction?.message
-                          : ""}
-                      </mui.FormHelperText>
-                    </mui.FormControl>
-                  )}
-                />
-
-                <Controller
-                  name={`tasks.${index}.program_id`}
-                  control={control}
-                  render={({ field }) => (
-                    <mui.TextField
-                      {...field}
-                      label='Program ID'
-                      sx={{ my: 2 }}
-                      error={Boolean(errors.tasks?.[index]?.program_id)}
-                      helperText={
-                        errors.tasks?.[index]?.program_id
-                          ? errors?.tasks?.[index]?.program_id?.message
-                          : ""
-                      }
-                    />
-                  )}
-                />
-                <Controller
-                  name={`tasks.${index}.function_id`}
-                  control={control}
-                  render={({ field }) => (
-                    <mui.TextField
-                      {...field}
-                      label='Function ID'
-                      sx={{ my: 2 }}
-                      error={Boolean(errors.tasks?.[index]?.function_id)}
-                      helperText={
-                        errors.tasks?.[index]?.function_id
-                          ? errors?.tasks?.[index]?.function_id?.message
-                          : ""
-                      }
-                    />
-                  )}
-                />
-                <Controller
-                  name={`tasks.${index}.dapp_url`}
-                  control={control}
-                  render={({ field }) => (
-                    <mui.TextField
-                      {...field}
-                      label='Dapp URL'
-                      sx={{ my: 2 }}
-                      error={Boolean(errors.tasks?.[index]?.dapp_url)}
-                      helperText={
-                        errors.tasks?.[index]?.dapp_url
-                          ? errors?.tasks?.[index]?.dapp_url?.message
-                          : ""
-                      }
-                    />
-                  )}
-                />
-                <Controller
-                  name={`tasks.${index}.points`}
-                  control={control}
-                  render={({ field }) => (
-                    <mui.TextField
-                      {...field}
-                      label='Points'
-                      sx={{ my: 2 }}
-                      error={Boolean(errors.tasks?.[index]?.points)}
-                      helperText={
-                        errors.tasks?.[index]?.points
-                          ? errors?.tasks?.[index]?.points?.message
-                          : ""
-                      }
-                    />
-                  )}
-                />
-              </div>
-            ))}
-
-            <br />
-
-            <mui.Button
-              variant='outlined'
-              sx={{ textTransform: "inherit", mb: 2 }}
-              fullWidth
-              onClick={() => {
-                append({
-                  title: "",
-                  description: "",
-                  transaction: "",
-                  program_id: "",
-                  function_id: "",
-                  dapp_url: "",
-                  points: 0,
-                });
-              }}
-            >
-              Add new
-            </mui.Button>
-            <mui.Button
-              sx={{ textTransform: "inherit" }}
-              variant='contained'
-              type='submit'
-              fullWidth
-            >
-              Submit
-            </mui.Button>
+                Add new
+              </mui.Button>
+              <mui.Button
+                sx={{ textTransform: "inherit" }}
+                variant='contained'
+                type='submit'
+                fullWidth
+              >
+                Submit
+              </mui.Button>
+            </mui.Box>
           </mui.Box>
-        </mui.Box>
-      </form>
-    </mui.ThemeProvider>
+        </form>
+      </mui.ThemeProvider>
+    </>
   );
 };
 

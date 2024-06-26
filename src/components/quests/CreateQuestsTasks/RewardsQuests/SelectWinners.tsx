@@ -1,7 +1,10 @@
 import * as React from "react";
 import * as mui from "@mui/material";
+import { useFormContext, Controller } from "react-hook-form";
 
 const SelectWinners: React.FC = () => {
+  const { control } = useFormContext();
+
   return (
     <mui.Box
       sx={{
@@ -11,7 +14,7 @@ const SelectWinners: React.FC = () => {
         mb: "5%",
       }}
     >
-      <mui.Typography variant="h4" color={"white"} fontWeight={"bold"}>
+      <mui.Typography variant='h4' color={"white"} fontWeight={"bold"}>
         How many winners?
       </mui.Typography>
       <mui.Box
@@ -27,33 +30,39 @@ const SelectWinners: React.FC = () => {
           justifyContent: "center",
         }}
       >
-        <mui.TextField
-          fullWidth // Make TextField take full width of its container
-          label="Number of winners"
-          variant="standard"
-          InputProps={{
-            sx: {
-              ml: "10px",
-
-              color: "#00FFAA",
-              "& .MuiInput-underline:before": {
-                borderBottom: "none", // Remove default underline
-              },
-              "& .MuiInput-underline:hover:before": {
-                borderBottom: "none", // Remove underline on hover
-              },
-              "& .MuiInput-underline:after": {
-                borderBottom: "none", // Remove underline after interaction
-              },
-            },
-            disableUnderline: true, // Alternative way to disable underline
-          }}
-          InputLabelProps={{
-            sx: {
-              color: "#00FFAA", // Change label text color
-              ml: "10px",
-            },
-          }}
+        <Controller
+          name='winners'
+          control={control}
+          render={({ field }) => (
+            <mui.TextField
+              fullWidth
+              label='Number of winners'
+              variant='standard'
+              {...field}
+              InputProps={{
+                sx: {
+                  ml: "10px",
+                  color: "#00FFAA",
+                  "& .MuiInput-underline:before": {
+                    borderBottom: "none",
+                  },
+                  "& .MuiInput-underline:hover:before": {
+                    borderBottom: "none",
+                  },
+                  "& .MuiInput-underline:after": {
+                    borderBottom: "none",
+                  },
+                },
+                disableUnderline: true,
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: "#00FFAA",
+                  ml: "10px",
+                },
+              }}
+            />
+          )}
         />
       </mui.Box>
     </mui.Box>
