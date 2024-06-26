@@ -8,12 +8,12 @@ interface CreateQuestsCardProps {
   initialTitle: string;
   initialSubtitle: string;
   initialDescription: {
-    part1: string;
-    main: string;
-    part2: string;
+    part1: React.SetStateAction<string>;
+    main: React.SetStateAction<string>;
+    part2: React.SetStateAction<string>;
   };
-  initialColor: string;
-  initialImage: string;
+  initialColor: React.SetStateAction<string>;
+  initialImage: React.SetStateAction<string>;
 }
 
 const CreateQuestsCard: React.FC<CreateQuestsCardProps> = ({
@@ -25,9 +25,13 @@ const CreateQuestsCard: React.FC<CreateQuestsCardProps> = ({
 }) => {
   const [title, setTitle] = React.useState(initialTitle);
   const [subtitle, setSubtitle] = React.useState(initialSubtitle);
-  const [description, setDescription] = React.useState(initialDescription);
-  const [color, setColor] = React.useState(initialColor);
-  const [boxImage, setBoxImage] = React.useState(initialImage);
+  const [description, setDescription] = React.useState<{
+    part1: string;
+    main: string;
+    part2: string;
+  }>({ part1: "Complete Weekly", main: "Quests", part2: "Win Disruptors" });
+  const [color, setColor] = React.useState("#00FFAA");
+  const [boxImage, setBoxImage] = React.useState("https://i.imgur.com/IzWdTWR.png");
 
   const [isEditing, setIsEditing] = React.useState({
     part1: false,
@@ -69,10 +73,16 @@ const CreateQuestsCard: React.FC<CreateQuestsCardProps> = ({
   const handleSaveClick = (field: string) => {
     if (field === "part1" || field === "main" || field === "part2") {
       setDescription((prev) => ({ ...prev, [field]: tempValues[field] }));
+      initialDescription((prev) => ({ ...prev, [field]: tempValues[field] }));
+
     } else if (field === "color") {
       setColor(tempValues.color);
+      initialColor(tempValues.color);
+
     } else if (field === "image") {
       setBoxImage(tempValues.image);
+      initialImage(tempValues.image);
+
     }
     setIsEditing((prev) => ({ ...prev, [field]: false }));
     setIsFieldSaved((prev) => ({ ...prev, [field]: true }));

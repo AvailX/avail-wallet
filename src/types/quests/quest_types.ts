@@ -57,6 +57,10 @@ export type CampaignDetailPageProps = {
 	quests: Quest[];
 };
 
+export type AddQuestTasksProps = {
+	campaign: Campaign;
+};
+
 export type Reward = {
 	id: string;
 	collection_name: string;
@@ -174,7 +178,7 @@ export const campaign: Campaign[] = [
       color: "#00FFAA",
     },
   ];
-
+  export  const questsEmpty: Quest[] = [];
   export  const quests: Quest[] = [
     {
       id: "e3e56506-9bcb-46f6-83a5-27aab7ddeb9d",

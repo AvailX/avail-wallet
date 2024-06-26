@@ -11,13 +11,18 @@ import SideMenu from "../../components/sidebar";
 import StartQuests from "../../components/quests/CreateQuestsTasks/StartQuests";
 import TasksQuests from "../../../src/components/quests/CreateQuestsTasks/TaskQuest";
 import RewardsQuests from "../../../src/components/quests/CreateQuestsTasks/RewardQuest";
+import { AddQuestTasksProps, Campaign} from "../../../src/types/quests/quest_types";
+import { useLocation } from "react-router-dom";
 
 const CreateTasks: React.FC = () => {
+  const {campaign} = useLocation().state as AddQuestTasksProps;
+
   const [tabValue, setTabValue] = useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
+  console.log(campaign.id);
 
   return (
     <Layout>

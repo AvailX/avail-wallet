@@ -6,6 +6,7 @@ import Layout from '../reusable/layout';
 import SideMenu from '../../components/sidebar';
 import QuestBox from '../../components/quests/quest';
 import TaskDrawer from '../../components/quests/tasks_drawer';
+import { AddQuestTasksProps, Campaign} from "../../../src/types/quests/quest_types";
 
 // Types
 import {type CampaignDetailPageProps} from '../../types/quests/quest_types';
@@ -30,7 +31,7 @@ import { get_address } from '../../services/storage/persistent';
 
 const Quests: React.FC = () => {
 	const {campaign, quests} = useLocation().state as CampaignDetailPageProps;
-	const [quest, setQuest] = React.useState<Quest>(quests[0]);
+	const [quest, setQuest] = React.useState<Quest>();
 	const [openTasks, setOpenTasks] = React.useState(false);
 	const [questCompleted, setQuestCompleted] = React.useState(false);
 	const navigate = useNavigate();
@@ -52,9 +53,11 @@ const Quests: React.FC = () => {
 	});
 
 	const campaignId = campaign.id;
-
+	const campaignDetails: AddQuestTasksProps = {
+		campaign,
+	};
 	const handleAddQuest = () => {
-		window.location.href = '/create-tasks';
+		navigate('/create-tasks', { state: campaignDetails });
 	};
 	const handleDeleteCampaign = () => {
 		deleteCampaign(campaign.id).then(res => {
