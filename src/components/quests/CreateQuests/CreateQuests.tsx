@@ -33,6 +33,7 @@ import ProfileImage from './CreateProfilePicture';
 import { set } from 'date-fns';
 import { createCampaign } from '../../../services/quests/quests';
 import { ForkLeft } from '@mui/icons-material';
+import ScanReAuthDialog from '../../../components/dialogs/reauth';
 
 const CreateQuests: React.FC = () => {
 	const location = useLocation();
@@ -40,6 +41,8 @@ const CreateQuests: React.FC = () => {
 	const navigate = useNavigate();
 	const [defaultCoverImage, setDefaultCoverImage] = React.useState('');
 	const [defaultProfileImage, setDefaultProfileImage] = React.useState('');
+  const [reAuthDialogOpen, setReAuthDialogOpen] = React.useState(false);
+
 	const [returnCampaign, setReturnCampaign] = React.useState<Campaign>();
 	// Helper function to convert hex to RGBA
 	const hexToRGBA = (hex: string, alpha: number) => {
@@ -219,8 +222,17 @@ const CreateQuests: React.FC = () => {
 			navigate('/quests', {state: testCampaignDetailPage});
 		}).catch(err => {
 			console.log(err);
-			setError(true);
-			setMessage('Campaign Creation Failed');
+			if (err.error_type.toString() === 'Unauthorized') {
+				// eslint-disable-next-line no-warning-comments
+				// TODO - Re-authenticate and fix execution on re-auth (Bala)
+
+				console.log('Unauthorized, re auth');
+
+				setReAuthDialogOpen(true);
+			} else {
+        setError(true);
+        setMessage(`Campaign Creation Failed: ${err.external_msg}`);
+      }
 		});
 	};
 	const handleSaveProjectImage = (newImageUrl: string) => {
@@ -393,6 +405,10 @@ const CreateQuests: React.FC = () => {
 
           
 				</mui.Box>
+        {/* ReAuth Dialog */}
+			<ScanReAuthDialog isOpen={reAuthDialogOpen} onRequestClose={() => {
+				setReAuthDialogOpen(false);
+			}} />
 			</mui.Box>
 		</Layout>
 	);

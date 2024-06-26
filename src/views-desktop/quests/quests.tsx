@@ -6,8 +6,9 @@ import Layout from '../reusable/layout';
 import SideMenu from '../../components/sidebar';
 import QuestBox from '../../components/quests/quest';
 import TaskDrawer from '../../components/quests/tasks_drawer';
+import ConfirmDialog from "../../components/quests/CreateQuests/ConfirmDialog";
 import { AddQuestTasksProps, Campaign} from "../../../src/types/quests/quest_types";
-
+import ScanReAuthDialog from '../../components/dialogs/reauth';
 // Types
 import {type CampaignDetailPageProps} from '../../types/quests/quest_types';
 import {type Quest} from '../../types/quests/quest_types';
@@ -35,6 +36,9 @@ const Quests: React.FC = () => {
 	const [openTasks, setOpenTasks] = React.useState(false);
 	const [questCompleted, setQuestCompleted] = React.useState(false);
 	const navigate = useNavigate();
+	const [openDialog, setOpenDialog] = React.useState(false);
+	const [reAuthDialogOpen, setReAuthDialogOpen] = React.useState(false);
+
 
 
 	const [success, setSuccess] = React.useState(false);
@@ -64,8 +68,22 @@ const Quests: React.FC = () => {
 			console.log(res);
 			navigate('/campaigns');
 		}).catch(err => {
+			if (err.error_type.toString() === 'Unauthorized') {
+				// eslint-disable-next-line no-warning-comments
+				// TODO - Re-authenticate and fix execution on re-auth (Bala)
+
+				console.log('Unauthorized, re auth');
+
+				setReAuthDialogOpen(true);
+			} else {
+				setError(true);
+				setMessage(`Error deleting campaign: ${err.external_msg}`,);
+			}
 			console.log(err);
 		});
+	};
+	const handleDeleteConfirmation = () =>{
+		setOpenDialog(true);
 	};
 	return (
 		<Layout>
@@ -101,7 +119,7 @@ const Quests: React.FC = () => {
 					</mui.Box>  
 					<mui.Box>
 						{campaign.owner === ownerAddr && (
-						<mui.Button variant="contained" color="primary" onClick={handleDeleteCampaign}>
+						<mui.Button variant="contained" color="primary" onClick={handleDeleteConfirmation}>
 						Delete Campaign
 						</mui.Button>
 						)}
@@ -113,6 +131,17 @@ const Quests: React.FC = () => {
 						<QuestBox key={quest.id} quest={quest} openTasks={openTasks} setOpenTasks={setOpenTasks} setQuest={setQuest}/>
 					))}
 				</mui.Grid>
+				<ConfirmDialog
+					open={openDialog}
+					onClose={() => setOpenDialog(false)}
+					onConfirm={handleDeleteCampaign}
+					title="Confirm Delete Campaign"
+					content="Are you sure you want to delete this campaign? This action is irreversible."
+				/>
+				{/* ReAuth Dialog */}
+			<ScanReAuthDialog isOpen={reAuthDialogOpen} onRequestClose={() => {
+				setReAuthDialogOpen(false);
+			}} />
 			</mui.Box>
 		</Layout>
 	);

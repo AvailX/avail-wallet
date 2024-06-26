@@ -555,7 +555,7 @@ pub async fn create_campaign(
     };
 
     let res = match get_quest_client_with_session(reqwest::Method::POST, "campaign")?
-        .json(&campaign)
+        .json(&campaign.clone())
         .send()
         .await
     {
@@ -571,8 +571,26 @@ pub async fn create_campaign(
     };
     println!("Response: {:?}", res);
     if res.status() == 200 {
-        println!("Campaign created successfully! \n RESPONSE - {:?}", res);
-        Ok(campaign)
+        let campaign_id = res.text().await.unwrap();
+        println!(
+            "Campaign created successfully! \n RESPONSE - {:?}",
+            campaign_id
+        );
+        let campaign_return = Campaign {
+            id: Uuid::parse_str(&campaign_id)?,
+            title: campaign.title,
+            subtitle: campaign.subtitle,
+            description: campaign.description,
+            inner_description: campaign.inner_description,
+            box_image: campaign.box_image,
+            bg_image: campaign.bg_image,
+            profile_image: campaign.profile_image,
+            color: campaign.color,
+            points_image: campaign.points_image,
+            project_name: campaign.project_name,
+            owner: campaign.owner,
+        };
+        Ok(campaign_return)
     } else if res.status() == 401 {
         Err(AvailError::new(
             AvailErrorType::Unauthorized,
@@ -638,18 +656,26 @@ pub async fn update_campaign(
         }
     };
     if res.status() == 200 {
-        let campaign: Campaign = match res.json().await {
-            Ok(res) => res,
-            Err(e) => {
-                return Err(AvailError::new(
-                    AvailErrorType::External,
-                    e.to_string(),
-                    "Error updating campaign".to_string(),
-                ))
-            }
+        let campaign_id = res.text().await.unwrap();
+        println!(
+            "Campaign created successfully! \n RESPONSE - {:?}",
+            campaign_id
+        );
+        let campaign_return = Campaign {
+            id: Uuid::parse_str(&campaign_id)?,
+            title: campaign.title,
+            subtitle: campaign.subtitle,
+            description: campaign.description,
+            inner_description: campaign.inner_description,
+            box_image: campaign.box_image,
+            bg_image: campaign.bg_image,
+            profile_image: campaign.profile_image,
+            color: campaign.color,
+            points_image: campaign.points_image,
+            project_name: campaign.project_name,
+            owner: campaign.owner,
         };
-
-        Ok(campaign)
+        Ok(campaign_return)
     } else if res.status() == 401 {
         Err(AvailError::new(
             AvailErrorType::Unauthorized,
@@ -754,18 +780,20 @@ pub async fn create_quest(
         }
     };
     if res.status() == 200 {
-        let quest: Quest = match res.json().await {
-            Ok(res) => res,
-            Err(e) => {
-                return Err(AvailError::new(
-                    AvailErrorType::External,
-                    e.to_string(),
-                    "Error creating quest".to_string(),
-                ))
-            }
+        let quest_id = res.text().await.unwrap();
+        println!("Quest created successfully! \n RESPONSE - {:?}", quest_id);
+        let quest_return = Quest {
+            id: Uuid::parse_str(&quest_id)?,
+            title: quest.title,
+            description: quest.description,
+            display_image: quest.display_image,
+            tasks: quest.tasks,
+            reward: quest.reward,
+            expires_on: quest.expires_on,
+            created_on: quest.created_on,
+            campaign_id: quest.campaign_id,
         };
-
-        Ok(quest)
+        Ok(quest_return)
     } else if res.status() == 401 {
         Err(AvailError::new(
             AvailErrorType::Unauthorized,
