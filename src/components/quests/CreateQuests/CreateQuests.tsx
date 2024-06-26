@@ -9,6 +9,7 @@ import ProjectBio from "../CreateQuests/CreateProjectBio";
 import CoverImage from "../CreateQuests/CreateCoverImage";
 import CreateQuestsBox from "../create_quests_box";
 import EditableProfileAndTitle from "./EditableProfileAndTitle";
+import CreateQuestsCard from "./CreateQuestsCard";
 
 // Types
 import {
@@ -28,6 +29,15 @@ import { SuccessAlert, ErrorAlert } from "../../../components/snackbars/alerts";
 import ProfileImage from "./CreateProfilePicture";
 
 const CreateQuests: React.FC = () => {
+  // Helper function to convert hex to RGBA
+  const hexToRGBA = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
   const location = useLocation();
   const state = location.state as CampaignDetailPageProps | undefined;
 
@@ -53,6 +63,19 @@ const CreateQuests: React.FC = () => {
   );
   const [projectTitle, setProjectTitle] = React.useState("Project Title"); // New state for project title
   const [projectName, setProjectName] = React.useState("Campaign Name"); // Separate state for project name
+  const [boxImage, setBoxImage] = React.useState<string>(
+    "https://i.imgur.com/IzWdTWR.png"
+  );
+  // const [title, setTitle] = React.useState<string>("Disruptors");
+  // const [subtitle, setSubtitle] = React.useState<string>(
+  //   "Avail - Your Gateway to Privacy"
+  // );
+  const [description, setDescription] = React.useState<{
+    part1: string;
+    main: string;
+    part2: string;
+  }>({ part1: "Complete Weekly", main: "Quests", part2: "Win Disruptors" });
+  const [color, setColor] = React.useState<string>("#00FFAA");
 
   const handleSaveNameClick = (newString: string) => {
     setNewCampaignName(newString);
@@ -273,6 +296,14 @@ const CreateQuests: React.FC = () => {
             justifyContent: "space-around",
           }}
         >
+          <CreateQuestsCard
+            initialTitle={newCampaignName}
+            initialSubtitle={newCampaignBio}
+            initialDescription={description}
+            initialColor={color}
+            initialImage={boxImage}
+          />
+
           <CreateQuestsBox />
         </mui.Box>
       </mui.Box>
