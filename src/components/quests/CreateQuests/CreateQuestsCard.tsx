@@ -104,6 +104,11 @@ const CreateQuestsCard: React.FC<CreateQuestsCardProps> = ({
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 
+  React.useEffect(() => {
+    setTitle(initialTitle);
+    setSubtitle(initialSubtitle);
+  }, [initialTitle, initialSubtitle]);
+
   return (
     <mui.Card
       sx={{
