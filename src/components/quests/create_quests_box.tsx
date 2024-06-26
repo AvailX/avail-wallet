@@ -17,7 +17,7 @@ const CreateQuestsBox: React.FC = () => {
         justifyContent: "center",
         padding: "20px",
         height: "150px",
-        borderRadius: "8px",
+        borderRadius: 7,
         cursor: "pointer",
         "&:hover": {
           backgroundColor: "#696969",

@@ -3,13 +3,14 @@ import * as React from 'react';
 import * as mui from '@mui/material';
 
 // Components
-import Layout from '../../../views-desktop/reusable/layout';
-import SideMenu from '../../../components/sidebar';
-import ProjectTitle from '../CreateQuests/CreateProjectTitle';
-import ProjectBio from '../CreateQuests/CreateProjectBio';
-import CoverImage from '../CreateQuests/CreateCoverImage';
-import CreateQuestsBox from '../create_quests_box';
-import EditableProfileAndTitle from './EditableProfileAndTitle';
+import Layout from "../../../views-desktop/reusable/layout";
+import SideMenu from "../../../components/sidebar";
+import ProjectTitle from "../CreateQuests/CreateProjectTitle";
+import ProjectBio from "../CreateQuests/CreateProjectBio";
+import CoverImage from "../CreateQuests/CreateCoverImage";
+import CreateQuestsBox from "../create_quests_box";
+import EditableProfileAndTitle from "./EditableProfileAndTitle";
+import CreateQuestsCard from "./CreateQuestsCard";
 
 // Types
 import {
@@ -35,31 +36,52 @@ const CreateQuests: React.FC = () => {
 	const location = useLocation();
 	const state = location.state as CampaignDetailPageProps | undefined;
 
-	const [newCampaignName, setNewCampaignName] = React.useState('Project Title');
-	const [isEditingName, setIsEditingName] = React.useState(false);
-	const [newCampaignBio, setNewCampaignBio] = React.useState('Project Bio');
-	const [isEditingBio, setIsEditingBio] = React.useState(false);
-	const [newCoverImage, setNewCoverImage] = React.useState(
-		campaign[0].bg_image || ''
-	);
-	const [newPPImage, setNewPPImage] = React.useState(
-		campaign[0].profile_image || ''
-	);
-	const [isEditingCover, setIsEditingCover] = React.useState(false);
-	const [isEditingPP, setIsEditingPP] = React.useState(false);
-	const [coverImageError, setCoverImageError] = React.useState(false);
-	const [ppImageError, setPPImageError] = React.useState(false);
-	const [success, setSuccess] = React.useState(false);
-	const [error, setError] = React.useState(false);
 	const [defaultCoverImage, setDefaultCoverImage] = React.useState('');
 	const [defaultProfileImage, setDefaultProfileImage] = React.useState('');
-	const [message, setMessage] = React.useState('Your changes have been saved');
-	const [projectImage, setProjectImage] = React.useState(
-		campaign[0].profile_image || ''
-	);
-	const [projectTitle, setProjectTitle] = React.useState('Project Title'); // New state for project title
-	const [projectName, setProjectName] = React.useState('Campaign Name'); // Separate state for project name
 	const [returnCampaign, setReturnCampaign] = React.useState<Campaign>();
+  // Helper function to convert hex to RGBA
+  const hexToRGBA = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+  const [newCampaignName, setNewCampaignName] = React.useState("Project Title");
+  const [isEditingName, setIsEditingName] = React.useState(false);
+  const [newCampaignBio, setNewCampaignBio] = React.useState("Project Bio");
+  const [isEditingBio, setIsEditingBio] = React.useState(false);
+  const [newCoverImage, setNewCoverImage] = React.useState(
+    campaign[0].bg_image || ""
+  );
+  const [newPPImage, setNewPPImage] = React.useState(
+    campaign[0].profile_image || ""
+  );
+  const [isEditingCover, setIsEditingCover] = React.useState(false);
+  const [isEditingPP, setIsEditingPP] = React.useState(false);
+  const [coverImageError, setCoverImageError] = React.useState(false);
+  const [ppImageError, setPPImageError] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+  const [error, setError] = React.useState(false);
+  const [message, setMessage] = React.useState("Your changes have been saved");
+  const [projectImage, setProjectImage] = React.useState(
+    campaign[0].profile_image || ""
+  );
+  const [projectTitle, setProjectTitle] = React.useState("Project Title"); // New state for project title
+  const [projectName, setProjectName] = React.useState("Campaign Name"); // Separate state for project name
+  const [boxImage, setBoxImage] = React.useState<string>(
+    "https://i.imgur.com/IzWdTWR.png"
+  );
+  // const [title, setTitle] = React.useState<string>("Disruptors");
+  // const [subtitle, setSubtitle] = React.useState<string>(
+  //   "Avail - Your Gateway to Privacy"
+  // );
+  const [description, setDescription] = React.useState<{
+    part1: string;
+    main: string;
+    part2: string;
+  }>({ part1: "Complete Weekly", main: "Quests", part2: "Win Disruptors" });
+  const [color, setColor] = React.useState<string>("#00FFAA");
 
 	const handleSaveNameClick = (newString: string) => {
 		setNewCampaignName(newString);
@@ -305,29 +327,37 @@ const CreateQuests: React.FC = () => {
 					>
 						<mui.Typography fontSize={'15px'} color="#000" variant="h6">
               Create Campaign
-						</mui.Typography>
-					</mui.Box>
-				</mui.Box>
-				<mui.Divider
-					sx={{ width: '100%', height: '1px', bgcolor: '#00FFAA', mt: '3%' }}
-					orientation="horizontal"
-				/>
-				<mui.Box
-					sx={{
-						marginTop: '20px',
-						alignItems: 'center',
-						mb: '5%',
-						bgcolor: '#111111',
-						alignSelf: 'center',
-						width: '90%',
-						justifyContent: 'space-around',
-					}}
-				>
-					<CreateQuestsBox />
-				</mui.Box>
-			</mui.Box>
-		</Layout>
-	);
+            </mui.Typography>
+          </mui.Box>
+        </mui.Box>
+        <mui.Divider
+          sx={{ width: "100%", height: "1px", bgcolor: "#00FFAA", mt: "3%" }}
+          orientation="horizontal"
+        />
+        <mui.Box
+          sx={{
+            marginTop: "20px",
+            alignItems: "center",
+            mb: "5%",
+            bgcolor: "#111111",
+            alignSelf: "center",
+            width: "90%",
+            justifyContent: "space-around",
+          }}
+        >
+          <CreateQuestsCard
+            initialTitle={newCampaignName}
+            initialSubtitle={newCampaignBio}
+            initialDescription={description}
+            initialColor={color}
+            initialImage={boxImage}
+          />
+
+          <CreateQuestsBox />
+        </mui.Box>
+      </mui.Box>
+    </Layout>
+  );
 };
 
 export default CreateQuests;
