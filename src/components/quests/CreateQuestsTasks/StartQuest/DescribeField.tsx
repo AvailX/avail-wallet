@@ -1,7 +1,11 @@
 import * as React from "react";
 import * as mui from "@mui/material";
+import { useFormContext } from "react-hook-form";
+import { useQuestContext } from "../../../../views-desktop/quests/CreateTask";
 
 const DescribeField: React.FC = () => {
+  const { register } = useFormContext();
+
   return (
     <mui.Box
       sx={{
@@ -11,7 +15,7 @@ const DescribeField: React.FC = () => {
         mb: "5%",
       }}
     >
-      <mui.Typography variant="h4" color={"white"} fontWeight={"bold"}>
+      <mui.Typography variant='h4' color={"white"} fontWeight={"bold"}>
         Description
       </mui.Typography>
       <mui.Box
@@ -23,31 +27,34 @@ const DescribeField: React.FC = () => {
           backgroundColor: "#2A2C2B",
           border: "none",
           borderRadius: "15px",
-          alignItems: "stretch", // Align items to stretch vertically
-          justifyContent: "flex-start", // Align content to start at the top
+          alignItems: "stretch",
+          justifyContent: "flex-start",
         }}
       >
         <mui.TextField
           fullWidth
-          multiline // Allow multiline input
-          rows={8} // Specify number of rows to show initially
-          label="Describe Your Quest Here"
-          variant="standard"
+          multiline
+          rows={8}
+          label='Describe Your Quest Here'
+          variant='standard'
+          {...register("describeQuest")}
+          // value={formField.describeQuest || ""}
+          // onChange={handleChange}
           InputProps={{
             sx: {
               ml: "10px",
               color: "#00FFAA",
               "& .MuiInput-underline:before": {
-                borderBottom: "none", // Remove default underline
+                borderBottom: "none",
               },
               "& .MuiInput-underline:hover:before": {
-                borderBottom: "none", // Remove underline on hover
+                borderBottom: "none",
               },
               "& .MuiInput-underline:after": {
-                borderBottom: "none", // Remove underline after interaction
+                borderBottom: "none",
               },
             },
-            disableUnderline: true, // Alternative way to disable underline
+            disableUnderline: true,
           }}
           InputLabelProps={{
             sx: {

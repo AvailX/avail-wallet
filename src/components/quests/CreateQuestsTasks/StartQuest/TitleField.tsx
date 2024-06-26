@@ -1,7 +1,16 @@
 import * as React from "react";
 import * as mui from "@mui/material";
+import { useFormContext } from "react-hook-form";
+import { useQuestContext } from "../../../../views-desktop/quests/CreateTask";
 
 const TitleField: React.FC = () => {
+  const { register } = useFormContext();
+  // const { formField, setFormField } = useQuestContext();
+
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setFormField({ ...formField, taskTitle: e.target.value });
+  // };
+
   return (
     <mui.Box
       sx={{
@@ -11,7 +20,7 @@ const TitleField: React.FC = () => {
         mb: "5%",
       }}
     >
-      <mui.Typography variant="h4" color={"white"} fontWeight={"bold"}>
+      <mui.Typography variant='h4' color={"white"} fontWeight={"bold"}>
         Title
       </mui.Typography>
       <mui.Box
@@ -28,29 +37,31 @@ const TitleField: React.FC = () => {
         }}
       >
         <mui.TextField
-          fullWidth // Make TextField take full width of its container
-          label="Create a title"
-          variant="standard"
+          fullWidth
+          label='Create a title'
+          variant='standard'
+          {...register("taskTitle")}
+          // value={formField.taskTitle || ""}
+          // onChange={handleChange}
           InputProps={{
             sx: {
               ml: "10px",
-
               color: "#00FFAA",
               "& .MuiInput-underline:before": {
-                borderBottom: "none", // Remove default underline
+                borderBottom: "none",
               },
               "& .MuiInput-underline:hover:before": {
-                borderBottom: "none", // Remove underline on hover
+                borderBottom: "none",
               },
               "& .MuiInput-underline:after": {
-                borderBottom: "none", // Remove underline after interaction
+                borderBottom: "none",
               },
             },
-            disableUnderline: true, // Alternative way to disable underline
+            disableUnderline: true,
           }}
           InputLabelProps={{
             sx: {
-              color: "#00FFAA", // Change label text color
+              color: "#00FFAA",
               ml: "10px",
             },
           }}
