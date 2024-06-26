@@ -249,42 +249,7 @@ const TestQaaS: React.FC = () => {
       });
   };
 
-        console.log(fieldsJson);
-        // console.log('Title:', e.target.elements[0].value);
-        // console.log('Description:', e.target.elements[2].value);
-        // console.log('Display Image:', e.target.elements[4].value);
-        // console.log('Tasks:', fields.toString());
-        // console.log('Reward Collection Name:', e.target.elements[34].value);
-        // console.log('Reward Amount:', e.target.elements[36].value);
-        // console.log('Reward Method:', e.target.elements[38].value);
-        // console.log('Expires On:', e.target.elements[40].value);
-        // console.log('Created On:', e.target.elements[42].value);
-        // console.log('Campaign ID:', e.target.elements[44].value);
-        const time = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        // console.log('Title:', e.target.elements);
-        createQuest(
-            e.target.elements[0].value,
-            e.target.elements[2].value,
-            e.target.elements[4].value,
-            fieldsJson.toString(),
-            e.target.elements[21].value,
-            e.target.elements[23].value,
-            e.target.elements[25].value,
-            tomorrow,
-            time,
-            e.target.elements[31].value
-        ).then(quest => {
-            console.log('Quest Created:', quest);
-            setSuccess(true);
-            setMessage('Quest Created');
-        }).catch(err => {
-            console.log(err);
-            setError(true);
-            setMessage('Quest Creation Failed');
-        });
-    };
+        
 
   return (
     <Layout>
@@ -411,7 +376,6 @@ const TestQaaS: React.FC = () => {
           <mui.Button type='submit'>Submit</mui.Button>
         </form>
       </mui.Box>
-      <mui.Button onClick={handleUserTest}>test user fn</mui.Button>
     </Layout>
   );
 };
