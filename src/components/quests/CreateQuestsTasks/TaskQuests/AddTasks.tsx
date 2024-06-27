@@ -35,7 +35,6 @@ const taskSchema = yup.object().shape({
   function_id: yup.string().required("Function ID is required"),
   dapp_url: yup
     .string()
-    .url("Must be a valid URL")
     .required("Dapp URL is required"),
   points: yup
     .number()

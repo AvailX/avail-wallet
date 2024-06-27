@@ -192,28 +192,65 @@ const Quests: React.FC = () => {
 						{campaign_state.inner_description}
 					</BodyText500>
 					<mui.Box>
-						<button onClick={handleAddQuestDummy}>
+						{/* <button onClick={handleAddQuestDummy}>
 							Add quest dummy button
-						</button>
+						</button> */}
 						{campaign_state.owner === ownerAddr && (
-							<mui.Button
-								variant='contained'
-								color='primary'
+							// <mui.Button
+							// 	variant='contained'
+							// 	color='primary'
+							// 	onClick={handleAddQuest}
+							// >
+							// 	Add Quest
+							// </mui.Button>
+							<mui.Box
+								sx={{
+									backgroundColor: '#fff',
+									height: '40px',
+									width: '150px',
+									mr: '2%',
+									borderRadius: '8px',
+									alignContent: 'center',
+									textAlign: 'center',
+									marginRight: '20px',
+									cursor: 'pointer',
+								}}
 								onClick={handleAddQuest}
 							>
-								Add Quest
-							</mui.Button>
+								<mui.Typography fontSize={'15px'} color="#000" variant="h6">
+									Add Quest
+								</mui.Typography>
+							</mui.Box>
 						)}
 					</mui.Box>
 					<mui.Box>
 						{campaign_state.owner === ownerAddr && (
-							<mui.Button
-								variant='contained'
-								color='primary'
+							// <mui.Button
+							// 	variant='contained'
+							// 	color='primary'
+							// 	onClick={handleDeleteConfirmation}
+							// >
+							// 	Delete Campaign
+							// </mui.Button>
+							<mui.Box
+								sx={{
+									backgroundColor: '#fff',
+									height: '40px',
+									width: '150px',
+									mr: '2%',
+									borderRadius: '8px',
+									alignContent: 'center',
+									textAlign: 'center',
+									marginRight: '20px',
+									cursor: 'pointer',
+									marginTop: '5px',
+								}}
 								onClick={handleDeleteConfirmation}
 							>
-								Delete Campaign
-							</mui.Button>
+								<mui.Typography fontSize={'15px'} color="#000" variant="h6">
+									Delete Campaign
+								</mui.Typography>
+							</mui.Box>
 						)}
 					</mui.Box>
 				</mui.Box>
