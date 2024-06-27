@@ -3,121 +3,168 @@ import { useState } from "react";
 import * as mui from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Select from "@mui/material/Select";
+import { useForm, Controller, FieldValues } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-const SelectWinners: React.FC = () => {
-  const [rewardName, setRewardName] = useState("");
-  const [username, setUsername] = useState("");
-  const [mechanism, setMechanism] = useState("");
-  const [expiresOn, setExpiresOn] = useState("");
+import { useQuestContext } from "../../../../views-desktop/quests/CreateTask";
+
+// Define the validation schema using Yup
+const schema = yup.object().shape({
+  rewardName: yup.string().required("Reward Collection Name is required"),
+  username: yup.string().required("Reward Amount is required"),
+  mechanism: yup.string().required("Mechanism is required"),
+  expiresOn: yup.date().required("Expires On is required"),
+});
+
+const SelectWinners: React.FC<{ campaignId: string }> = ({ campaignId }) => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const { formField, setFormField } = useQuestContext();
+
   const [createdOn, setCreatedOn] = useState(
     new Date().toISOString().slice(0, 10)
   );
-  const handleLaunch = () => {
-    console.log("Reward Collection Name:", rewardName);
-    console.log("Reward Amount:", username);
-    console.log("Mechanism:", mechanism);
-    console.log("Expires On:", expiresOn);
+
+  const onSubmit = (data: FieldValues) => {
+    console.log("Form Data:", data);
     console.log("Created On:", createdOn);
+
+    setFormField({ ...formField, data, createdOn });
+    console.log("Form field", formField);
   };
 
   return (
     <mui.Box sx={{ width: "100%" }}>
       <mui.Stack spacing={2}>
-        <mui.Stack direction="column" spacing={0}>
-          <mui.Typography color="#fff" fontSize="15px" fontWeight={200}>
+        <mui.Stack direction='column' spacing={0}>
+          <mui.Typography
+            color='#fff'
+            fontSize='15px'
+            sx={{ mb: 1 }}
+            fontWeight={200}
+          >
             Reward Collection Name
           </mui.Typography>
-          <mui.TextField
-            value={rewardName}
-            onChange={(e) => setRewardName(e.target.value)}
-            sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+          <Controller
+            name='rewardName'
+            control={control}
+            render={({ field }) => (
+              <mui.TextField
+                {...field}
+                error={!!errors.rewardName}
+                helperText={errors.rewardName ? errors.rewardName.message : ""}
+                sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+              />
+            )}
           />
         </mui.Stack>
-        <mui.Stack direction="column" spacing={0}>
-          <mui.Typography color="#fff" fontSize="15px" fontWeight={200}>
+        <mui.Stack direction='column' spacing={0}>
+          <mui.Typography
+            color='#fff'
+            fontSize='15px'
+            sx={{ mb: 1 }}
+            fontWeight={200}
+          >
             Reward Amount
           </mui.Typography>
-          <mui.TextField
-            name="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            // optional
-            sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+          <Controller
+            name='username'
+            control={control}
+            render={({ field }) => (
+              <mui.TextField
+                {...field}
+                error={!!errors.username}
+                helperText={errors.username ? errors.username.message : ""}
+                sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+              />
+            )}
           />
         </mui.Stack>
-        <mui.Stack direction="column" spacing={0}>
+        <mui.Stack direction='column' spacing={0}>
           <InputLabel
-            id="demo-simple-select-helper-label"
+            id='mechanism-label'
             sx={{
               color: "#fff",
               fontSize: "15px",
               fontWeight: "200",
+              mb: 1,
             }}
           >
             Mechanism
           </InputLabel>
-          <Select
-            labelId="demo-simple-select-helper-label"
-            id="demo-simple-select-helper"
-            value={mechanism}
-            onChange={(e) => setMechanism(e.target.value)}
+          <Controller
+            name='mechanism'
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                labelId='mechanism-label'
+                id='mechanism'
+                sx={{
+                  bgcolor: "#2A2C2B",
+                  border: "1px solid #2e9368",
+                  color: "#fff",
+                  fontSize: "15px",
+                  fontWeight: "200",
+                }}
+              >
+                <MenuItem value=''>
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value='FCFS'>FCFS</MenuItem>
+                <MenuItem value='Leaderboard'>Leaderboard</MenuItem>
+                <MenuItem value='LuckyDraw'>LuckyDraw</MenuItem>
+              </Select>
+            )}
+          />
+          {errors.mechanism && (
+            <mui.Typography color='error' fontSize='12px'>
+              {errors.mechanism.message}
+            </mui.Typography>
+          )}
+        </mui.Stack>
+        <mui.Stack direction='column' spacing={1}>
+          <InputLabel
+            id='expiresOn-label'
             sx={{
-              bgcolor: "#2A2C2B",
-              borderRadius: "10px",
               color: "#fff",
               fontSize: "15px",
               fontWeight: "200",
+              mb: 1,
             }}
-            // sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
           >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={1}>FCFS</MenuItem>
-            <MenuItem value={2}>Leaderboard</MenuItem>
-            <MenuItem value={3}>LuckyDraw</MenuItem>
-          </Select>
-        </mui.Stack>
-        <mui.Stack direction="row" spacing={1}>
-          <mui.TextField
-            fullWidth
-            label="Expires On"
-            type="date"
-            value={expiresOn}
-            onChange={(e) => setExpiresOn(e.target.value)}
-            InputLabelProps={{ shrink: true, style: { color: "white" } }}
-            sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
-          />
-          {/* to be automated */}
-          <mui.TextField
-            fullWidth
-            label="created On"
-            type="date"
-            InputLabelProps={{ shrink: true, style: { color: "white" } }}
-            value={createdOn}
-            disabled
-            sx={{
-              bgcolor: "#2A2C2B",
-              borderRadius: "10px",
-              color: "#fff",
-              fontSize: "15px",
-              fontWeight: "200",
-            }}
-          />
-        </mui.Stack>
-
-        <mui.Stack direction="column" spacing={0}>
-          <mui.TextField
-            label="Campiagn ID"
-            disabled
-            InputLabelProps={{ shrink: true, style: { color: "white" } }}
-            sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+            Expires On
+          </InputLabel>
+          <Controller
+            name='expiresOn'
+            control={control}
+            render={({ field }) => (
+              <mui.TextField
+                {...field}
+                type='date'
+                error={!!errors.expiresOn}
+                helperText={errors.expiresOn ? errors.expiresOn.message : ""}
+                InputLabelProps={{ shrink: true, style: { color: "white" } }}
+                sx={{ bgcolor: "#2A2C2B", borderRadius: "10px" }}
+              />
+            )}
           />
         </mui.Stack>
       </mui.Stack>
-      <mui.Button sx={{ color: "fff" }} onClick={handleLaunch}>
+      <mui.Button
+        fullWidth
+        sx={{ color: "fff", textTransform: "inherit", mt: 3 }}
+        variant='contained'
+        onClick={handleSubmit(onSubmit)}
+      >
         Launch
       </mui.Button>
     </mui.Box>

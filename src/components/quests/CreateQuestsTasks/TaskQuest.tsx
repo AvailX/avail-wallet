@@ -9,11 +9,12 @@ import {
   useQuestContext,
 } from "../../../views-desktop/quests/CreateTask";
 
-const TasksQuests: React.FC = () => {
+const TasksQuests: React.FC<{ handleNext: () => void }> = ({
+  handleNext,
+}: {
+  handleNext: () => void;
+}) => {
   const { formField, setFormField } = useQuestContext();
-  React.useEffect(() => {
-    console.log("Form fields", formField);
-  }, []);
   return (
     <ContextProvider>
       <mui.Box
@@ -24,7 +25,11 @@ const TasksQuests: React.FC = () => {
           position: "relative",
         }}
       >
-        <AddTasks setFormField={setFormField} formField={formField} />
+        <AddTasks
+          setFormField={setFormField}
+          handleNext={handleNext}
+          formField={formField}
+        />
       </mui.Box>
     </ContextProvider>
   );

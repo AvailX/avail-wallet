@@ -28,7 +28,7 @@ const TitleField: React.FC = () => {
           display: "flex",
           height: "50px",
           width: "100%",
-          backgroundColor: "#2A2C2B",
+          // backgroundColor: "#2A2C2B",
           border: "none",
           borderRadius: "15px",
           alignItems: "center",
@@ -38,23 +38,23 @@ const TitleField: React.FC = () => {
       >
         <mui.TextField
           fullWidth
-          label='Create a title'
-          variant='standard'
+          placeholder='Create a title'
+          sx={{ mt: 1 }}
+          // variant='standard'
           {...register("taskTitle")}
           // value={formField.taskTitle || ""}
           // onChange={handleChange}
           InputProps={{
             sx: {
-              ml: "10px",
               color: "#00FFAA",
               "& .MuiInput-underline:before": {
-                borderBottom: "none",
+                // borderBottom: "none",
               },
               "& .MuiInput-underline:hover:before": {
-                borderBottom: "none",
+                // borderBottom: "none",
               },
               "& .MuiInput-underline:after": {
-                borderBottom: "none",
+                // borderBottom: "none",
               },
             },
             disableUnderline: true,

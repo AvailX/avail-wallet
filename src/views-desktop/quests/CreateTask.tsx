@@ -11,7 +11,10 @@ import SideMenu from "../../components/sidebar";
 import StartQuests from "../../components/quests/CreateQuestsTasks/StartQuests";
 import TasksQuests from "../../../src/components/quests/CreateQuestsTasks/TaskQuest";
 import RewardsQuests from "../../../src/components/quests/CreateQuestsTasks/RewardQuest";
-import { AddQuestTasksProps, Campaign} from "../../../src/types/quests/quest_types";
+import {
+  AddQuestTasksProps,
+  Campaign,
+} from "../../../src/types/quests/quest_types";
 import { useLocation } from "react-router-dom";
 
 type QuestContextType = {
@@ -41,115 +44,185 @@ export const useQuestContext = (): QuestContextType => {
 };
 
 const CreateTasks: React.FC = () => {
-  const {campaign} = useLocation().state as AddQuestTasksProps;
+  const { campaign } = useLocation().state as AddQuestTasksProps;
 
   const [tabValue, setTabValue] = useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (newValue: number) => {
     setTabValue(newValue);
   };
   console.log(campaign.id);
 
   return (
-    <Layout>
-      <SideMenu />
-      <ContextProvider>
-        <mui.Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "100%",
-          }}
-        >
+    <mui.ThemeProvider
+      theme={mui.createTheme({
+        palette: {
+          primary: { main: "#00FFAA" },
+        },
+        components: {
+          MuiTextField: {
+            defaultProps: {
+              InputLabelProps: {
+                style: { color: "#fff", opacity: "50%" },
+              },
+              InputProps: {
+                style: { color: "#fff" },
+              },
+            },
+            styleOverrides: {
+              root: {
+                "&.MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#00FFAA",
+                },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "#00FFAA",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#00FFAA",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#00FFAA",
+                  },
+                },
+              },
+            },
+          },
+          MuiSelect: {
+            styleOverrides: {
+              root: {
+                "&.MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#00FFAA",
+                },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "#00FFAA",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#00FFAA",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#00FFAA",
+                  },
+                },
+              },
+            },
+          },
+        },
+      })}
+    >
+      <Layout>
+        <SideMenu />
+        <ContextProvider>
           <mui.Box
             sx={{
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              width: "60%",
-              margin: 2,
+              height: "100%",
             }}
           >
-            <mui.Tab
-              icon={<PlayArrowOutlinedIcon />}
-              iconPosition='start'
-              label='Start'
+            <mui.Box
               sx={{
-                backgroundColor: tabValue === 0 ? "#238363" : "#0D3C2C",
-                color: "#00FFAA",
-                "&.Mui-selected": {
-                  color: "#00FFAA",
-                },
-                flexGrow: 1,
-                padding: 1,
-                margin: 1,
-                borderRadius: 2,
-                minHeight: "auto",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "60%",
+                margin: 2,
               }}
-              onClick={(event) => handleChange(event, 0)}
-            />
-            <ArrowForwardIosOutlinedIcon
-              sx={{ color: "#00FFAA", fontSize: "large" }}
-            />
-            <mui.Tab
-              icon={<DoneIcon />}
-              iconPosition='start'
-              label='Task'
-              sx={{
-                backgroundColor: tabValue === 1 ? "#238363" : "#0D3C2C",
-                color: "#00FFAA",
-                "&.Mui-selected": {
+            >
+              <mui.Tab
+                icon={<PlayArrowOutlinedIcon />}
+                iconPosition='start'
+                label='Start'
+                sx={{
+                  backgroundColor: tabValue === 0 ? "#238363" : "#0D3C2C",
                   color: "#00FFAA",
-                },
-                flexGrow: 1,
-                padding: 1,
-                margin: 1,
-                borderRadius: 2,
-                minHeight: "auto",
-              }}
-              onClick={(event) => handleChange(event, 1)}
-            />
-            <ArrowForwardIosOutlinedIcon
-              sx={{ color: "#00FFAA", fontSize: "large" }}
-            />
-            <mui.Tab
-              icon={<EmojiEventsOutlinedIcon />}
-              iconPosition='start'
-              label='Rewards'
-              sx={{
-                backgroundColor: tabValue === 2 ? "#238363" : "#0D3C2C",
-                color: "#00FFAA",
-                "&.Mui-selected": {
+                  "&.Mui-selected": {
+                    color: "#00FFAA",
+                  },
+                  flexGrow: 1,
+                  padding: 1,
+                  margin: 1,
+                  borderRadius: 2,
+                  minHeight: "auto",
+                }}
+                onClick={(event) => handleChange(0)}
+              />
+              <ArrowForwardIosOutlinedIcon
+                sx={{ color: "#00FFAA", fontSize: "large" }}
+              />
+              <mui.Tab
+                icon={<DoneIcon />}
+                iconPosition='start'
+                label='Task'
+                sx={{
+                  backgroundColor: tabValue === 1 ? "#238363" : "#0D3C2C",
                   color: "#00FFAA",
-                },
-                flexGrow: 1,
-                padding: 1,
-                margin: 1,
-                borderRadius: 2,
-                minHeight: "auto",
-                minWidth: "auto",
-              }}
-              onClick={(event) => handleChange(event, 2)}
-            />
-          </mui.Box>
+                  "&.Mui-selected": {
+                    color: "#00FFAA",
+                  },
+                  flexGrow: 1,
+                  padding: 1,
+                  margin: 1,
+                  borderRadius: 2,
+                  minHeight: "auto",
+                }}
+                onClick={(event) => handleChange(1)}
+              />
+              <ArrowForwardIosOutlinedIcon
+                sx={{ color: "#00FFAA", fontSize: "large" }}
+              />
+              <mui.Tab
+                icon={<EmojiEventsOutlinedIcon />}
+                iconPosition='start'
+                label='Rewards'
+                sx={{
+                  backgroundColor: tabValue === 2 ? "#238363" : "#0D3C2C",
+                  color: "#00FFAA",
+                  "&.Mui-selected": {
+                    color: "#00FFAA",
+                  },
+                  flexGrow: 1,
+                  padding: 1,
+                  margin: 1,
+                  borderRadius: 2,
+                  minHeight: "auto",
+                  minWidth: "auto",
+                }}
+                onClick={(event) => handleChange(2)}
+              />
+            </mui.Box>
 
-          <mui.Box
-            sx={{
-              padding: 2,
-              display: "flex",
-              width: "60%",
-              margin: 2,
-            }}
-          >
-            {tabValue === 0 && <StartQuests />}
-            {tabValue === 1 && <TasksQuests />}
-            {tabValue === 2 && <RewardsQuests />}
+            <mui.Box
+              sx={{
+                padding: 2,
+                display: "flex",
+                width: "60%",
+                margin: 2,
+              }}
+            >
+              {tabValue === 0 && (
+                <StartQuests
+                  handleNext={() => {
+                    handleChange(1);
+                  }}
+                />
+              )}
+              {tabValue === 1 && (
+                <TasksQuests
+                  handleNext={() => {
+                    handleChange(2);
+                  }}
+                />
+              )}
+              {tabValue === 2 && <RewardsQuests campaignId={campaign?.id} />}
+            </mui.Box>
           </mui.Box>
-        </mui.Box>
-      </ContextProvider>
-    </Layout>
+        </ContextProvider>
+      </Layout>
+    </mui.ThemeProvider>
   );
 };
 
