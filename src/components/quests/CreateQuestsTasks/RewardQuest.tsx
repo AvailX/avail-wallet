@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as mui from "@mui/material";
-import SelectWinners from "./RewardsQuests/SelectWinners";
+import SelectWinners from "./RewardsQuests/RewardTab";
 
 const Rewards: React.FC = () => {
   return (
