@@ -16,6 +16,7 @@ use snarkvm::{
     prelude::{Address, Testnet3},
     utilities::FromBytes,
 };
+use snarkvm_console::network::Network;
 
 pub async fn init_stronghold(
     password: &str,
@@ -99,7 +100,7 @@ pub async fn init_stronghold(
     Ok((hold, stronghold, client))
 }
 
-pub async fn generate_seed_phrase(password: &str) -> AvailResult<String> {
+pub async fn generate_seed_phrase<N: Network>(password: &str) -> AvailResult<String> {
     let (hold, stronghold, client) = init_stronghold(password).await?;
 
     let vault = Vault::new(
@@ -110,7 +111,7 @@ pub async fn generate_seed_phrase(password: &str) -> AvailResult<String> {
 
     let record_path = "bip39";
 
-    let result = vault.generate_bip39(&hold, record_path).await?;
+    let result = vault.generate_bip39::<N>(&hold, record_path).await?;
 
     let mnemonic = String::from_utf8(result)?;
     stronghold.save(&hold).await?;
@@ -120,7 +121,7 @@ pub async fn generate_seed_phrase(password: &str) -> AvailResult<String> {
 
 /* ALEO KEY API */
 
-pub async fn derive_aleo_master_key(password: &str) -> AvailResult<()> {
+pub async fn derive_aleo_master_key<N: Network>(password: &str) -> AvailResult<()> {
     let (hold, stronghold, client) = init_stronghold(password).await?;
 
     let vault = Vault::new(
@@ -131,7 +132,7 @@ pub async fn derive_aleo_master_key(password: &str) -> AvailResult<()> {
 
     let key_path = "m/44'/0'/0'/0'";
 
-    let cc = vault.derive_slip10_master(&hold, key_path).await?;
+    let cc = vault.derive_slip10_master::<N>(&hold, key_path).await?;
     store_chain_code(0u32, cc, client, &hold).await?;
 
     stronghold.save(&hold).await?;
@@ -139,7 +140,7 @@ pub async fn derive_aleo_master_key(password: &str) -> AvailResult<()> {
     Ok(())
 }
 
-pub async fn derive_aleo_key(password: &str, account_index: u32) -> AvailResult<String> {
+pub async fn derive_aleo_key<N: Network>(password: &str, account_index: u32) -> AvailResult<String> {
     let (hold, stronghold, client) = init_stronghold(password).await?;
 
     let vault = Vault::new(
@@ -153,11 +154,11 @@ pub async fn derive_aleo_key(password: &str, account_index: u32) -> AvailResult<
 
     let cc = vault
         .clone()
-        .derive_slip10(&hold, &key_path, &chain_code)
+        .derive_slip10::<N>(&hold, &key_path, &chain_code)
         .await?;
     store_chain_code(account_index, cc, client, &hold).await?;
 
-    let address = vault.get_address(&hold, &key_path).await?;
+    let address = vault.get_address::<N>(&hold, &key_path).await?;
     let aleo_address = Address::<Testnet3>::from_bytes_le(&address)?.to_string();
 
     stronghold.save(&hold).await?;
@@ -232,28 +233,35 @@ mod test_helpers {
     use snarkvm::circuit::prelude::PrimeField;
     use snarkvm::prelude::{PrivateKey, Testnet3};
     use snarkvm::utilities::{FromBytes, ToBytes};
+    use snarkvm_console::network::MainnetV0;
 
     use avail_common::models::constants::STRONG_PASSWORD;
 
     #[tokio::test]
     async fn test_generate_bip39() {
+        type N = MainnetV0;
+
         let password = "password";
-        let mnemonic = generate_seed_phrase(password).await.unwrap();
+        let mnemonic = generate_seed_phrase::<N>(password).await.unwrap();
         println!("{}", mnemonic);
     }
 
     #[tokio::test]
     async fn derive_aleo_master() {
+        type N = MainnetV0;
+
         let password = "password";
-        derive_aleo_master_key(password).await.unwrap();
+        derive_aleo_master_key::<N>(password).await.unwrap();
     }
 
     #[tokio::test]
     async fn derive_aleo_slip10_key() {
+        type N = MainnetV0;
+
         let password = "password";
         let account_index = 1;
-        let address = derive_aleo_key(password, account_index).await.unwrap();
-        let address2 = derive_aleo_key(password, account_index + 1u32)
+        let address = derive_aleo_key::<N>(password, account_index).await.unwrap();
+        let address2 = derive_aleo_key::<N>(password, account_index + 1u32)
             .await
             .unwrap();
         println!("{}", address);
@@ -262,6 +270,8 @@ mod test_helpers {
 
     #[tokio::test]
     async fn test_aleo_sign() {
+        type N = MainnetV0;
+
         let (hold, stronghold, client) = init_stronghold("password").await.unwrap();
         let vault = Vault::new(
             stronghold.path.as_str(),
@@ -272,7 +282,7 @@ mod test_helpers {
         let account_index = 2;
         let key_path = format!("m/44'/0'/{}'/0'", account_index);
 
-        let res = vault.aleo_sign(&hold, "tester", &key_path).await.unwrap();
+        let res = vault.aleo_sign::<N>(&hold, "tester", &key_path).await.unwrap();
 
         println!("{:?}", res);
     }

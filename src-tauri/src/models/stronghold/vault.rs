@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 use iota_stronghold::procedures::Curve;
+use snarkvm_console::{network::Network, program::Identifier};
 use tauri_plugin_aleo_stronghold::{
     execute_procedure, remove_secret, save_secret, BytesDto, LocationDto, ProcedureDto,
     Slip10DeriveInputDto, StrongholdCollection,
@@ -72,7 +73,7 @@ impl Vault {
         }
     }
 
-    pub async fn generate_bip39(
+    pub async fn generate_bip39<N: Network>(
         self,
         hold: &StrongholdCollection,
         record_path: &str,
@@ -83,7 +84,7 @@ impl Vault {
             vault: self.name,
             record: record_path,
         };
-        let procedure = ProcedureDto::BIP39Generate {
+        let procedure = ProcedureDto::<N>::BIP39Generate {
             passphrase: None,
             output: location,
         };
@@ -98,7 +99,7 @@ impl Vault {
         }
     }
 
-    pub async fn derive_slip10_master(
+    pub async fn derive_slip10_master<N: Network>(
         self,
         hold: &StrongholdCollection,
         record_path: &str,
@@ -123,11 +124,14 @@ impl Vault {
         //let hardened_offset = 0x80000000;
         //let chain_code = [0u8; 32];
 
-        let procedure = ProcedureDto::SLIP10Derive {
+        let network = "mainnet".to_string();
+
+        let procedure = ProcedureDto::<N>::SLIP10Derive {
             curve: Curve::Aleo,
             chain: vec![0x80000000],
             input,
             output,
+            network,
         };
 
         match execute_procedure(hold, path, self.client, procedure).await {
@@ -140,7 +144,7 @@ impl Vault {
         }
     }
 
-    pub async fn derive_slip10(
+    pub async fn derive_slip10<N: Network>(
         self,
         hold: &StrongholdCollection,
         record_path: &str,
@@ -170,11 +174,13 @@ impl Vault {
             .iter()
             .map(|x| x + hardened_offset)
             .collect::<Vec<u32>>();
-        let procedure = ProcedureDto::SLIP10Derive {
+        let network = "mainnet".to_string();
+        let procedure = ProcedureDto::<N>::SLIP10Derive {
             curve: Curve::Aleo,
             chain: hardened_chain,
             input,
             output,
+            network
         };
 
         match execute_procedure(hold, path, self.client, procedure).await {
@@ -187,7 +193,7 @@ impl Vault {
         }
     }
 
-    pub async fn aleo_sign(
+    pub async fn aleo_sign<N: Network>(
         self,
         hold: &StrongholdCollection,
         message: &str,
@@ -202,6 +208,7 @@ impl Vault {
         let procedure = ProcedureDto::AleoSign {
             private_key: location,
             msg: message.to_string(),
+            ext: Identifier::<N>::try_from("Sign")?,
         };
 
         match execute_procedure(hold, path, self.client, procedure).await {
@@ -214,7 +221,7 @@ impl Vault {
         }
     }
 
-    pub async fn get_address(
+    pub async fn get_address<N: Network>(
         self,
         hold: &StrongholdCollection,
         record_path: &str,
@@ -227,6 +234,7 @@ impl Vault {
         };
         let procedure = ProcedureDto::GetAleoAddress {
             private_key: location,
+            ext: Identifier::<N>::try_from("GetAddress")?,
         };
 
         match execute_procedure(hold, path, self.client, procedure).await {
