@@ -21,7 +21,7 @@ const schema = yup.object().shape({
   allocation: yup.string().required("Allocation method is required"),
 });
 
-const Rewards: React.FC = () => {
+const Rewards: React.FC<{ campaignId: string }> = ({ campaignId }) => {
   const methods = useForm({
     resolver: yupResolver(schema),
   });
@@ -40,7 +40,7 @@ const Rewards: React.FC = () => {
         position: "relative",
       }}
     >
-      <SelectWinners />
+      <SelectWinners campaignId={campaignId} />
     </mui.Box>
   );
 };

@@ -16,9 +16,20 @@ import {
 const schema = yup.object().shape({
   taskTitle: yup.string().required("Title is required"),
   describeQuest: yup.string().required("Description is required"),
+  desktopUrl: yup
+    .string()
+    .matches(
+      /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
+      "Enter correct url!"
+    )
+    .required("Please enter correct url"),
 });
 
-const StartQuests: React.FC = () => {
+const StartQuests: React.FC<{ handleNext: () => void }> = ({
+  handleNext,
+}: {
+  handleNext: () => void;
+}) => {
   const { setFormField, formField } = useQuestContext();
   const methods = useForm({
     resolver: yupResolver(schema),
@@ -30,6 +41,7 @@ const StartQuests: React.FC = () => {
   const onSubmit = (data: any) => {
     console.log(data);
     setFormField({ ...formField, data });
+    handleNext();
   };
 
   const onTest = () => {
@@ -61,19 +73,15 @@ const StartQuests: React.FC = () => {
             </mui.Typography>
           )}
           <BannerDesktop />
-          <BannerMobile />
+          {errors.desktopUrl && (
+            <mui.Typography color='error'>
+              {errors.desktopUrl.message}
+            </mui.Typography>
+          )}
+
           <QuestDuration />
           <mui.Button type='submit' variant='contained' color='primary'>
             Submit
-          </mui.Button>
-          <mui.Button
-            onClick={() => {
-              onTest();
-            }}
-            variant='contained'
-            color='primary'
-          >
-            Test Submit
           </mui.Button>
         </mui.Box>
       </FormProvider>

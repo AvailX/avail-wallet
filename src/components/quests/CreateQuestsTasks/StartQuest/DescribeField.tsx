@@ -24,8 +24,8 @@ const DescribeField: React.FC = () => {
           flexDirection: "column",
           height: "200px",
           width: "100%",
-          backgroundColor: "#2A2C2B",
-          border: "none",
+          // backgroundColor: "#2A2C2B",
+          // border: "none",
           borderRadius: "15px",
           alignItems: "stretch",
           justifyContent: "flex-start",
@@ -35,14 +35,14 @@ const DescribeField: React.FC = () => {
           fullWidth
           multiline
           rows={8}
-          label='Describe Your Quest Here'
-          variant='standard'
+          placeholder='Describe Your Quest Here'
+          sx={{ mt: 1 }}
+          // variant='standard'
           {...register("describeQuest")}
           // value={formField.describeQuest || ""}
           // onChange={handleChange}
           InputProps={{
             sx: {
-              ml: "10px",
               color: "#00FFAA",
               "& .MuiInput-underline:before": {
                 borderBottom: "none",
