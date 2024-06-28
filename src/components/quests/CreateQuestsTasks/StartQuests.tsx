@@ -40,7 +40,7 @@ const StartQuests: React.FC<{ handleNext: () => void }> = ({
   } = methods;
   const onSubmit = (data: any) => {
     console.log(data);
-    setFormField({ ...formField, data });
+    setFormField({ ...formField, ...data });
     handleNext();
   };
 

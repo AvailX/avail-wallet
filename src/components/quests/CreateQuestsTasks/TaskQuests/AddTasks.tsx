@@ -115,7 +115,8 @@ const AddTasks: React.FC<{ props: any }> = ({
       JSON.stringify(reorderKeys(data?.tasks as Partial<DataObject>[]))
     );
 
-    setFormField({ task: { ...data?.tasks }, formField });
+    // setFormField({ task: { ...data?.tasks }, formField });
+    setFormField({ task: [...data?.tasks], ...formField });
     handleNext();
   };
 

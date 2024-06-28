@@ -110,6 +110,7 @@ const CreateQuestsCard: React.FC<CreateQuestsCardProps> = ({
   }, [initialTitle, initialSubtitle]);
 
   return (
+
     <mui.Card
       sx={{
         display: "flex",
@@ -130,6 +131,7 @@ const CreateQuestsCard: React.FC<CreateQuestsCardProps> = ({
         },
       }}
     >
+
       <mui.Box sx={{ display: "flex", flexDirection: "column", ml: "2%" }}>
         <mui.Typography sx={{ color: "#fff", textShadow: "0 0 1px #FFF" }}>
           {title}
