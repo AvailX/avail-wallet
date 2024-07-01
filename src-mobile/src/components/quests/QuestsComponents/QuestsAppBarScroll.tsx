@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import img from "../../../assets/connected-dapp.svg";
-import { Campaign } from "../../../types/quests/quest_types";
+import { Campaign } from "../../../../../src/types/quests/quest_types";
 
 interface QuestsScrollContainerProps {
   campaign: Campaign; // Define a prop 'dapp' of type 'Dapp'

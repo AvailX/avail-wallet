@@ -1,13 +1,13 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import NavigateNextOutlinedIcon from "@mui/icons-material/NavigateNextOutlined";
-import { Campaign } from "../../../types/quests/quest_types";
+import { Campaign } from "../../../../../src/types/quests/quest_types";
 
 interface DappsSectionProps {
   campaign: Campaign;
 }
 
-const QuestsSection: React.FC<DappsSectionProps> = ({  campaign }) => {
+const QuestsSection: React.FC<DappsSectionProps> = ({ campaign }) => {
   return (
     <Box
       sx={{
@@ -79,4 +79,3 @@ const QuestsSection: React.FC<DappsSectionProps> = ({  campaign }) => {
 };
 
 export default QuestsSection;
- 

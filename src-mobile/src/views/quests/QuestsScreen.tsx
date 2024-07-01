@@ -8,18 +8,22 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import DappsSection from "../../components/dapps/DappsSection";
 import QuestsAppBar from "../../components/quests/QuestsComponents/QuestsAppBar";
-import { type Campaign, testCampaign } from "../../types/quests/quest_types";
+import { type Campaign, testCampaign } from "../../../../src/types/quests/quest_types";
 import QuestsAppBarScroll from "../../components/quests/QuestsComponents/QuestsAppBarScroll";
 import QuestsSection from "../../components/quests/QuestsComponents/QuestsSection";
 import ConnectedQuestsGrid from "../../components/quests/QuestsComponents/QuestsGrid";
-import { getCampaigns } from "../../services/quests/quests";
+import { getCampaigns } from "../../../../src/services/quests/quests";
 
 const QuestsScreen: React.FC = () => {
   const [campaigns, setCampaigns] = React.useState<Campaign[]>([]);
-
+  console.log(campaigns);
+  console.log("Campaigns");
   React.useEffect(() => {
+    console.log("CampaignsINNN");
     getCampaigns()
       .then((campaigns) => {
+        console.log("CampaignsINNN2222");
+        console.log(campaigns);
         setCampaigns(campaigns);
       })
       .catch((err) => {

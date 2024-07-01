@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
-import { Campaign } from "../../../types/quests/quest_types";
+import { Campaign } from "../../../../../src/types/quests/quest_types";
 
 interface QuestsGridView {
   campaigns: Campaign[];
