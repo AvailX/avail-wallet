@@ -1,6 +1,6 @@
 [package]
 name = "wallet"
-version = "0.2.9"
+version = "0.3.0"
 description = "Avail Wallet | Make it yours."
 authors = ["Avail"]
 license = "Apache-2.0"
@@ -19,11 +19,10 @@ tauri-plugin = { version = "=2.0.0-beta.15", features = [] }
 tauri-utils = { version = "=2.0.0-beta.15", features = [] }
 tauri-build = { version = "=2.0.0-beta.15", features = [] }
 
-
 [dependencies]
 
 app_dirs = { package = "app_dirs2", version = "2.5" }
-avail-common = { git = "https://github.com/availx/avail-lib", branch = "feat/delegate-proving", features = [
+avail-common = { git = "https://github.com/availx/avail-lib", rev = "e47766b", features = [
     "snarkvm",
 ] }
 bs58 = "0.5.0"
@@ -45,6 +44,9 @@ rayon = "1.7.0"
 rusqlite = { version = "0.31.0", features = ["bundled", "chrono"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+snarkvm = { version = "0.16.19", features = [
+    "wasm",
+], git = "https://github.com/AleoNet/snarkVM", branch = "testnet-beta" }
 ssss = "0.2.0"
 tauri = { version = "2.0.0-beta.19", features = [] }
 tauri-plugin-deep-link = "=2.0.0-beta.4"
@@ -79,10 +81,13 @@ tid-rs = { git = "https://github.com/Zack-Xb/tid-rs" }
 ndk-context = "0.1.1"
 
 [target.'cfg(target_os = "ios")'.dependencies]
-snarkvm = { version = "0.16.19", features = ["wasm"] }
+snarkvm = { version = "0.16.19", features = [
+    "wasm",
+], git = "https://github.com/AleoNet/snarkVM", branch = "testnet-beta" }
 
 [target.'cfg(not(target_os = "ios"))'.dependencies]
-snarkvm = { version = "0.16.19", features = [] }
+snarkvm = { version = "0.16.19", features = [
+], git = "https://github.com/AleoNet/snarkVM", branch = "testnet-beta" }
 
 [profile.release]
 opt-level = 3

@@ -7,6 +7,9 @@ import { ScanProvider } from "../../../avail-wallet/src/context/ScanContext";
 import { RecentEventsProvider } from "../../../avail-wallet/src/context/EventsContext";
 
 import "./style.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme";
 import QuestsCampaign from "./views/quests/QuestsCampaign";
@@ -21,6 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <RecentEventsProvider>
           <ThemeProvider theme={theme}>
             <App />
+            <ToastContainer />
           </ThemeProvider>
         </RecentEventsProvider>
       </ScanProvider>

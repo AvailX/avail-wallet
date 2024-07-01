@@ -3,13 +3,31 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 import react from "@vitejs/plugin-react";
 import { internalIpV4 } from "internal-ip";
 
+import * as path from "path";
+
 const mobile =
   process.env.TAURI_PLATFORM === "android" ||
   process.env.TAURI_PLATFORM === "ios";
 
 // https://vitejs.dev/config/
-export default defineConfig(async () => ({
+export default defineConfig({
   plugins: [react(), nodePolyfills()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src/"),
+      components: `${path.resolve(__dirname, "./src/components/")}`,
+      public: `${path.resolve(__dirname, "./public/")}`,
+      views: path.resolve(__dirname, "./src/views"),
+      lib: path.resolve(__dirname, "./src/lib"),
+      layouts: path.resolve(__dirname, "./src/layouts"),
+      assets: path.resolve(__dirname, "./src/assets"),
+      shared: path.resolve(__dirname, "./src/shared"),
+      routes: path.resolve(__dirname, "./src/routes"),
+      theme: path.resolve(__dirname, "./src/theme"),
+      types: `${path.resolve(__dirname, "./src/types")}`,
+      services: `${path.resolve(__dirname, "./src/services")}`,
+    },
+  },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
@@ -36,4 +54,4 @@ export default defineConfig(async () => ({
     // Produce sourcemaps for debug builds
     sourcemap: Boolean(process.env.TAURI_DEBUG),
   },
-}));
+});

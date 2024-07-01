@@ -22,7 +22,7 @@ use avail_common::{
 };
 use tauri_plugin_http::reqwest;
 
-use snarkvm::prelude::{Network, Testnet3, Transaction};
+use snarkvm::prelude::{Network, TestnetV0, Transaction};
 
 use super::aleo_client::setup_client;
 #[tauri::command(rename_all = "snake_case")]
@@ -288,8 +288,8 @@ pub async fn verify_task(
     /// REMOVE SESSSION AFETR - TEST FOR DOMINION
     set_session_temp().await;
     match SupportedNetworks::from_str(network.as_str())? {
-        SupportedNetworks::Testnet3 => {
-            verify_task_raw::<Testnet3>(start_time, end_time, task_id, program_id, function_id)
+        SupportedNetworks::Testnet => {
+            verify_task_raw::<TestnetV0>(start_time, end_time, task_id, program_id, function_id)
                 .await
         }
     }

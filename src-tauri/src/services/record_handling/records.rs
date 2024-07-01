@@ -774,8 +774,10 @@ async fn split_records<N: Network>(
 #[cfg(test)]
 mod record_handling_test {
     use super::*;
-    use crate::services::local_storage::persistent_storage::get_last_sync;
-    use snarkvm::prelude::{AleoID, Field, Testnet3};
+    use crate::{
+        api::aleo_client::setup_client, services::local_storage::persistent_storage::get_last_sync,
+    };
+    use snarkvm::prelude::{AleoID, Field, TestnetV0};
     use std::str::FromStr;
 
     #[test]
@@ -783,11 +785,11 @@ mod record_handling_test {
         let start = 500527u32;
         let end = 500531u32;
 
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_client::<TestnetV0>().unwrap();
 
         let blocks = api_client.get_blocks(start, end).unwrap();
 
-        let tx_id = &AleoID::<Field<Testnet3>, 29793>::from_str(
+        let tx_id = &AleoID::<Field<TestnetV0>, 29793>::from_str(
             "at1w8t8pkc9xuf2p05gp9fanxpx0h53jmpguc07ja34s3jm905v65gss306rr",
         );
 
@@ -816,7 +818,7 @@ mod record_handling_test {
     /*
     #[test]
     fn test_nova() {
-        let _res = get_nova_records::<Testnet3>(372243).unwrap();
+        let _res = get_nova_records::<TestnetV0>(372243).unwrap();
 
         println!("res: {:?}", _res);
     }
@@ -824,20 +826,31 @@ mod record_handling_test {
 
     #[test]
     fn test_get_records() {
-        let api_client = setup_client::<Testnet3>().unwrap();
+        let api_client = setup_client::<TestnetV0>().unwrap();
 
         let latest_height = api_client.latest_height().unwrap();
         let last_sync = get_last_sync().unwrap();
 
-        let _res = get_records::<Testnet3>(last_sync, latest_height, None).unwrap();
+        let _res = get_records::<TestnetV0>(last_sync, latest_height, None).unwrap();
 
         println!("res: {:?}", _res);
     }
 
     #[test]
     fn find_aleo_credits_record_to_spend_test() {
-        let _res = find_aleo_credits_record_to_spend::<Testnet3>(&10000, vec![]).unwrap();
+        let _res = find_aleo_credits_record_to_spend::<TestnetV0>(&10000, vec![]).unwrap();
 
         println!("res: {:?}", _res);
     }
+
+    /*
+        #[tokio::test]
+        async fn handle_unconfirmed_transactions_test() {
+            VIEWSESSION
+            .set_view_session("AViewKey1h4qXQ8kP2JT7Vo7pBuhtMrHz7R81RJUHLc2LTQfrCt3R")
+            .unwrap();
+
+           handle_unconfirmed_transactions::<TestnetV0>().await.unwrap();
+        }
+    */
 }

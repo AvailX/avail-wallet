@@ -115,6 +115,7 @@ jobs:
           TESTNET_API_OBSCURA: ${{ secrets.TESTNET_API_OBSCURA}}
           MAINNET_API_OBSCURA: ""
           DEVNET_API_OBSCURA: ""
+          OBSCURA_SDK: ${{ secrets.OBSCURA_SDK}}
         with:
           tauriScript: cargo tauri
           # This is required for Apple ARM chips and license bundling

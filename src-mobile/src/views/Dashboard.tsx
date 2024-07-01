@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
@@ -19,16 +19,17 @@ import React, { useState } from "react";
 import ActivityDetails from "../components/ActivityDetails";
 import AsssetDisplay from "../components/AsssetDisplay";
 import DashboardCarousel from "../components/DashboardCarousel";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { get_address } from "../../../src/services/storage/persistent";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const goToOther = () => {
-    navigate('/secret-recovery');
+    navigate("/secret-recovery");
   };
   const DASHBOARD_ITEMS = [
     { icon: diamondShinyIcon },
-    { icon: sendIcon },
+    { icon: sendIcon, path: "/send" },
     { icon: receiveIcon },
     { icon: receiveIcon },
   ];
@@ -50,7 +51,9 @@ const Dashboard = () => {
   const toggleActivityDetails = (newOpen: boolean) => (): void => {
     setOpenActivityDetails(newOpen);
   };
-
+  let address = get_address().then((data) => {
+    console.log("address", data);
+  });
   const sampleData = {
     recipient: "@zack_x",
     date: "12 Mar at 2:34 PM",
@@ -73,123 +76,120 @@ const Dashboard = () => {
   };
 
   return (
-      <>
-        <DashboardLayout>
-          <DashboardHeader
-              onProfileClick={(): void => {
-                setOpen(true);
-              }}
-          />
-          <Typography color='#fff'>Total Balance</Typography>
-          <Typography
-              sx={{textShadow: "0 0 15px #00FFAA"}}
-              color='#00FFAA'
-              fontWeight={600}
-              fontSize='40px'
-          >
-            $48,000.00
-          </Typography>
-          <Typography color='#01FFAA'>+450.6%</Typography>
-          <Box
+    <>
+      <DashboardLayout>
+        <DashboardHeader
+          onProfileClick={(): void => {
+            setOpen(true);
+          }}
+        />
+        <Typography color='#fff'>Total Balance</Typography>
+        <Typography
+          sx={{ textShadow: "0 0 15px #00FFAA" }}
+          color='#00FFAA'
+          fontWeight={600}
+          fontSize='40px'
+        >
+          $48,000.00
+        </Typography>
+        <Typography color='#01FFAA'>+450.6%</Typography>
+        <Box
+          display='flex'
+          alignItems='center'
+          my={3}
+          justifyContent='space-between'
+          width='90%'
+          mx='auto'
+        >
+          {DASHBOARD_ITEMS.map(({ icon }, i) => (
+            <Box
+              borderRadius='9px'
+              p={1}
+              height='63px'
+              width='62px'
               display='flex'
               alignItems='center'
-              my={3}
-              justifyContent='space-between'
-              width='90%'
-              mx='auto'
+              justifyContent='center'
+              bgcolor='#2A2A2A'
+              key={i}
+            >
+              <img src={icon} />
+            </Box>
+          ))}
+        </Box>
+
+        <Box display='flex' mb={2}>
+          <Typography
+            fontWeight={500}
+            borderBottom={activeTab === "assets" ? "1px solid #FFFFFF" : ""}
+            fontSize='20px'
+            width='content-fit'
+            mr={2}
+            onClick={() => {
+              setActiveTab("assets");
+            }}
           >
-            {DASHBOARD_ITEMS.map(({icon}, i) => (
-                <Box
-                    borderRadius='9px'
-                    p={1}
-                    height='63px'
-                    width='62px'
-                    display='flex'
-                    alignItems='center'
-                    justifyContent='center'
-                    bgcolor='#2A2A2A'
-                    key={i}
-                >
-                  <img src={icon}/>
-                </Box>
-            ))}
-          </Box>
+            Assets
+          </Typography>
 
-          <Box display='flex' mb={2}>
-            <button onClick={goToOther}>
-              Next page
-            </button>
-            <Typography
-                fontWeight={500}
-                borderBottom={activeTab === "assets" ? "1px solid #FFFFFF" : ""}
-                fontSize='20px'
-                width='content-fit'
-                mr={2}
-                onClick={() => {
-                  setActiveTab("assets");
-                }}
-            >
-              Assets
-            </Typography>
+          <Typography
+            fontWeight={500}
+            fontSize='20px'
+            width='content-fit'
+            borderBottom={activeTab === "nft" ? "1px solid #FFFFFF" : ""}
+            mr={2}
+            onClick={() => {
+              setActiveTab("nft");
+            }}
+          >
+            NFT
+          </Typography>
+          <Typography
+            fontWeight={500}
+            fontSize='20px'
+            width='content-fit'
+            borderBottom={activeTab === "activity" ? "1px solid #FFFFFF" : ""}
+            onClick={() => {
+              setActiveTab("activity");
+            }}
+          >
+            Activity
+          </Typography>
+        </Box>
 
-            <Typography
-                fontWeight={500}
-                fontSize='20px'
-                width='content-fit'
-                borderBottom={activeTab === "nft" ? "1px solid #FFFFFF" : ""}
-                mr={2}
-                onClick={() => {
-                  setActiveTab("nft");
-                }}
-            >
-              NFT
-            </Typography>
-            <Typography
-                fontWeight={500}
-                fontSize='20px'
-                width='content-fit'
-                borderBottom={activeTab === "activity" ? "1px solid #FFFFFF" : ""}
-                onClick={() => {
-                  setActiveTab("activity");
-                }}
-            >
-              Activity
-            </Typography>
-          </Box>
+        <DashboardCarousel />
 
-          <DashboardCarousel/>
+        {activeTab === "activity" && (
+          <>
+            <PendingDisplay
+              onClick={() => {
+                setOpenActivityDetails(true);
+              }}
+            />
+            <CompletedDisplay />
+          </>
+        )}
 
-          {activeTab === "activity" && (
-              <>
-                <PendingDisplay
-                    onClick={() => {
-                      setOpenActivityDetails(true);
-                    }}
-                />
-                <CompletedDisplay/>
-              </>
-          )}
+        {activeTab === "nft" && (
+          <NftDisplay onClick={() => setActiveTab("nftDetails")} />
+        )}
 
-          {activeTab === "nft" && (
-              <NftDisplay onClick={() => setActiveTab("nftDetails")}/>
-          )}
+        {activeTab === "nftDetails" && <NftDetailsDisplay />}
 
-          {activeTab === "nftDetails" && <NftDetailsDisplay/>}
-
-          {activeTab === "assets" && (
-              <>
-                <AsssetDisplay/>
-              </>
-          )}
-        </DashboardLayout>
-        <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}/>
-        <SwipeableEdgeDrawer
-            open={openActivityDetails}
-            toggleDrawer={toggleActivityDetails}
-        >
-          <ActivityDetails {...sampleData} />
-        </SwipeableEdgeDrawer>
-      </>
+        {activeTab === "assets" && (
+          <>
+            <AsssetDisplay />
+          </>
+        )}
+      </DashboardLayout>
+      <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer} />
+      <SwipeableEdgeDrawer
+        open={openActivityDetails}
+        toggleDrawer={toggleActivityDetails}
+      >
+        <ActivityDetails {...sampleData} />
+      </SwipeableEdgeDrawer>
+    </>
   );
 };
 
