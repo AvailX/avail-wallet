@@ -37,7 +37,6 @@ pub async fn set_session_temp() {
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_campaigns() -> AvailResult<Vec<Campaign>> {
     /// REMOVE SESSSION AFETR - TEST FOR DOMINION
-    set_session_temp().await;
     let res = match get_quest_client_with_session(reqwest::Method::GET, "campaigns")?
         .send()
         .await
@@ -84,7 +83,7 @@ pub async fn get_campaigns() -> AvailResult<Vec<Campaign>> {
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_collections() -> AvailResult<Vec<Collection>> {
     /// REMOVE SESSSION AFETR - TEST FOR DOMINION
-    set_session_temp().await;
+    // set_session_temp().await;
     let res = match get_quest_client_with_session(reqwest::Method::GET, "collections")?
         .send()
         .await
@@ -130,7 +129,7 @@ pub async fn get_collections() -> AvailResult<Vec<Collection>> {
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_quests_for_campaign(campaign_id: &str) -> AvailResult<Vec<Quest>> {
     /// REMOVE SESSSION AFETR - TEST FOR DOMINION
-    set_session_temp().await;
+    // set_session_temp().await;
     let res = match get_quest_client_with_session(
         reqwest::Method::GET,
         &format!("campaign/{}", campaign_id),
@@ -180,7 +179,7 @@ pub async fn get_quests_for_campaign(campaign_id: &str) -> AvailResult<Vec<Quest
 #[tauri::command(rename_all = "snake_case")]
 pub async fn check_quest_completion(quest_id: &str) -> AvailResult<bool> {
     /// REMOVE SESSSION AFETR - TEST FOR DOMINION
-    set_session_temp().await;
+    // set_session_temp().await;
     let res = match get_quest_client_with_session(
         reqwest::Method::GET,
         &format!("confirmed/{}", quest_id),
@@ -230,7 +229,7 @@ pub async fn check_quest_completion(quest_id: &str) -> AvailResult<bool> {
 #[tauri::command(rename_all = "snake_case")]
 pub async fn is_task_verified(task_id: Uuid) -> AvailResult<bool> {
     /// REMOVE SESSSION AFETR - TEST FOR DOMINION
-    set_session_temp().await;
+    // set_session_temp().await;
     let res = match get_quest_client_with_session(
         reqwest::Method::GET,
         &format!("verified/{}", task_id),
@@ -286,7 +285,7 @@ pub async fn verify_task(
 ) -> AvailResult<bool> {
     let network = get_network()?;
     /// REMOVE SESSSION AFETR - TEST FOR DOMINION
-    set_session_temp().await;
+    // set_session_temp().await;
     match SupportedNetworks::from_str(network.as_str())? {
         SupportedNetworks::Testnet => {
             verify_task_raw::<TestnetV0>(start_time, end_time, task_id, program_id, function_id)
@@ -451,7 +450,7 @@ async fn verify_task_raw<N: Network>(
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_points() -> AvailResult<Vec<PointsResponse>> {
     /// REMOVE SESSSION AFETR - TEST FOR DOMINION
-    set_session_temp().await;
+    // set_session_temp().await;
     let res = match get_quest_client_with_session(reqwest::Method::GET, "points")?
         .send()
         .await
@@ -498,7 +497,7 @@ pub async fn get_points() -> AvailResult<Vec<PointsResponse>> {
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_whitelists() -> AvailResult<Vec<WhitelistResponse>> {
     /// REMOVE SESSSION AFETR - TEST FOR DOMINION
-    set_session_temp().await;
+    // set_session_temp().await;
     let res = match get_quest_client_with_session(reqwest::Method::GET, "whitelists")?
         .send()
         .await
