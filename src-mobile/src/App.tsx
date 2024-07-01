@@ -24,6 +24,8 @@ import Settings from "./views/Settings";
 import Username from "./views/create-wallet/Username";
 import Password from "./views/create-wallet/Password";
 
+import Login from "./views/Login";
+
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
     /* --EntryPoint-- */
@@ -39,6 +41,8 @@ const App: React.FC = () => {
     { path: "/dashboard", element: <Dashboard /> },
     { path: "/secret-recovery", element: <SecretRecovery /> },
     { path: "/points", element: <AvailPoints /> },
+
+    { path: "/login", element: <Login /> },
 
     // Route to test wallet connect
     { path: "wallet-connect", element: <WalletConnect /> },

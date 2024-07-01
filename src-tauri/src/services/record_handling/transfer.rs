@@ -44,7 +44,7 @@ pub async fn transfer(request: TransferRequest, window: Window) -> AvailResult<S
     let network = get_network()?;
 
     let transfer_task_res = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
+        SupportedNetworks::Testnet => {
             tokio::task::spawn_blocking(move || transfer_raw::<TestnetV0>(request, Some(window)))
                 .await?
         }
@@ -1144,7 +1144,7 @@ mod transfer_tests {
 
     use snarkvm::{
         ledger::{query::Query, store::helpers::memory::BlockMemory},
-        prelude::{Identifier, Testnet3},
+        prelude::{Identifier, TestnetV0},
     };
 
     #[cfg(target_os = "linux")]
@@ -1561,7 +1561,7 @@ mod transfer_tests {
             "aleo1cnczr0y0qarqkc6k6jz2vswdmplw2ln4rqll92gyh8sfjd3hm5qqk45vt9",
         )
         .unwrap();
-        let sender = get_address::<Testnet3>().unwrap();
+        let sender = get_address::<TestnetV0>().unwrap();
         let transaction_id = program_manager
             .transfer(
                 1000000000,
@@ -1573,7 +1573,7 @@ mod transfer_tests {
                 None,
                 &program_id,
                 sender.to_string(),
-                SupportedNetworks::Testnet3,
+                SupportedNetworks::Testnet,
                 false,
             )
             .await

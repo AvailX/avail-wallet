@@ -311,7 +311,7 @@ pub enum Network {
 impl Network {
     pub fn to_string(&self) -> String {
         match self {
-            Network::AleoTestnet => "testnet3".to_string(),
+            Network::AleoTestnet => "testnet".to_string(),
             Network::AleoDevnet => "devnet".to_string(),
             Network::AleoMainnet => "mainnet".to_string(),
         }
