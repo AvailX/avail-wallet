@@ -22,7 +22,7 @@ tauri-build = { version = "=2.0.0-beta.15", features = [] }
 [dependencies]
 
 app_dirs = { package = "app_dirs2", version = "2.5" }
-avail-common = { git = "https://github.com/availx/avail-lib", rev = "e47766b", features = [
+avail-common = { git = "https://github.com/availx/avail-lib", rev = "4a1bc01", features = [
     "snarkvm",
 ] }
 bs58 = "0.5.0"
@@ -44,9 +44,9 @@ rayon = "1.7.0"
 rusqlite = { version = "0.31.0", features = ["bundled", "chrono"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-snarkvm = { version = "0.16.19", features = [
+snarkvm = { features = [
     "wasm",
-], git = "https://github.com/AleoNet/snarkVM", branch = "testnet-beta" }
+], git = "https://github.com/AleoNet/snarkVM", rev = "d170a9f" }
 ssss = "0.2.0"
 tauri = { version = "2.0.0-beta.19", features = [] }
 tauri-plugin-deep-link = "=2.0.0-beta.4"
@@ -81,13 +81,14 @@ tid-rs = { git = "https://github.com/Zack-Xb/tid-rs" }
 ndk-context = "0.1.1"
 
 [target.'cfg(target_os = "ios")'.dependencies]
-snarkvm = { version = "0.16.19", features = [
+snarkvm = { features = [
     "wasm",
-], git = "https://github.com/AleoNet/snarkVM", branch = "testnet-beta" }
+], git = "https://github.com/AleoNet/snarkVM", rev = "d170a9f" }
 
 [target.'cfg(not(target_os = "ios"))'.dependencies]
-snarkvm = { version = "0.16.19", features = [
-], git = "https://github.com/AleoNet/snarkVM", branch = "testnet-beta" }
+snarkvm = { features = [
+    "wasm",
+], git = "https://github.com/AleoNet/snarkVM", rev = "d170a9f" }
 
 [profile.release]
 opt-level = 3
