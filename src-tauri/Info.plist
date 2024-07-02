@@ -19,6 +19,8 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
     <key>CFBundleURLTypes</key>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Face ID is used to unlock your wallet.</string>
     <array>
         <dict>
             <key>CFBundleTypeRole</key>
@@ -32,7 +34,7 @@
         </dict>
     </array>
   <key>CFBundleShortVersionString</key>
-	<string>0.3.0</string>
+	<string>0.4.1</string>
 	<key>CFBundleVersion</key>
 	<string>20240222.152850</string>
 	<key>CSResourcesFileMapped</key>

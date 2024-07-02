@@ -1,7 +1,7 @@
 use avail_common::models::encrypted_data::EncryptedDataTypeCommon;
 use chrono::{DateTime, Local};
 use snarkvm::circuit::Aleo;
-use snarkvm::console::network::Testnet3;
+use snarkvm::console::network::TestnetV0;
 use snarkvm::ledger::transactions::ConfirmedTransaction;
 use snarkvm::prelude::{
     Address, Ciphertext, Entry, Execution, Field, GraphKey, Identifier, Itertools, Literal,
@@ -65,8 +65,6 @@ use avail_common::{
 };
 
 use super::decrypt_transition::DecryptTransition;
-
-use super::scan_utils::convert_txn_to_confirmed_txn;
 
 /// Gets all tags from a given block height to the latest block height
 pub fn get_tags<N: Network>(min_block_height: u32) -> AvailResult<Vec<String>> {
@@ -647,8 +645,8 @@ pub fn get_all_nft_data() -> AvailResult<Vec<String>> {
     let network = get_network()?;
 
     match SupportedNetworks::from_str(network.as_str())? {
-        SupportedNetworks::Testnet3 => {
-            let nft_data = get_all_nft_raw::<Testnet3>()?;
+        SupportedNetworks::Testnet => {
+            let nft_data = get_all_nft_raw::<TestnetV0>()?;
             println!("===> NFT Data {:?}", nft_data);
             Ok(nft_data)
         }
@@ -1590,7 +1588,12 @@ pub fn sync_transaction<N: Network>(
     timestamp: DateTime<Local>,
     message: Option<String>,
     from: Option<String>,
-) -> AvailResult<(Vec<AvailRecord<N>>, Vec<EncryptedData>, bool)> {
+) -> AvailResult<(
+    Option<EncryptedData>,
+    Vec<AvailRecord<N>>,
+    Vec<EncryptedData>,
+    bool,
+)> {
     let view_key = VIEWSESSION.get_instance::<N>()?;
     let address = view_key.to_address();
 
@@ -1599,6 +1602,8 @@ pub fn sync_transaction<N: Network>(
 
     let mut execution_transitions: Vec<ExecutedTransition<N>> = vec![];
     let mut found_flag = false;
+
+    let state = check_transaction_state::<N>(transaction)?;
 
     for transition in transaction.transitions() {
         let ownership_check = match DecryptTransition::owns_transition(
@@ -1654,7 +1659,8 @@ pub fn sync_transaction<N: Network>(
 
     let execution_transaction = match !execution_transitions.is_empty() {
         true => {
-            let fee = match transaction.fee_amount() {
+            let inner_tx = transaction.transaction();
+            let fee = match inner_tx.fee_amount() {
                 Ok(fee) => *fee as f64 / 1000000.0,
                 Err(_) => {
                     return Err(AvailError::new(
@@ -1666,8 +1672,6 @@ pub fn sync_transaction<N: Network>(
             };
 
             println!("Fee found from external execution: {:?}", fee);
-
-            let state = check_transaction_state::<N>(&transaction)?;
 
             let execution_tx = TransactionPointer::<N>::new(
                 None,
@@ -1697,7 +1701,12 @@ pub fn sync_transaction<N: Network>(
         false => None,
     };
 
-    Ok((record_pointers, encrypted_transition_pointers, found_flag))
+    Ok((
+        execution_transaction,
+        record_pointers,
+        encrypted_transition_pointers,
+        found_flag,
+    ))
 }
 
 pub fn check_transaction_state<N: Network>(
@@ -1914,7 +1923,7 @@ where
                         execution_vec,
                         program_id.to_string(),
                         function_id.to_string(),
-                        SupportedNetworks::Testnet3,
+                        SupportedNetworks::Testnet,
                     );
                     println!("Sending a request to Avail's Fee Estimation Microservice to add the fee data");
                     let result: String = create_record(request).await?;
@@ -1956,7 +1965,7 @@ mod test {
     use crate::{models::pointers::record::Metadata, services::local_storage::tokens::get_balance};
 
     use super::*;
-    use snarkvm::prelude::Testnet3;
+    use snarkvm::prelude::TestnetV0;
     #[tokio::test]
     async fn test_get_all_nft_data() {
         // AViewKey1cbThXosaWwor5t5F87m22K1hSRA4BWL5HrsNxRik15Rq
@@ -2019,26 +2028,26 @@ mod test {
 
     // #[tokio::test]
     // async fn test_token_record() {
-    //     let mut api_client = setup_client::<Testnet3>().unwrap();
-    //     let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-    //     let pk_3 = PrivateKey::<Testnet3>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
-    //     let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
-    //     let vk_3 = ViewKey::<Testnet3>::try_from(pk_3).unwrap();
+    //     let mut api_client = setup_client::<TestnetV0>().unwrap();
+    //     let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+    //     let pk_3 = PrivateKey::<TestnetV0>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
+    //     let vk = ViewKey::<TestnetV0>::try_from(pk).unwrap();
+    //     let vk_3 = ViewKey::<TestnetV0>::try_from(pk_3).unwrap();
     //     let fee = 10000u64;
     //     let program_id = "token_avl_4.aleo";
     //     // INPUTS
-    //     let address_to_mint = Value::<Testnet3>::try_from(TESTNET3_ADDRESS).unwrap();
-    //     let amt_input = Value::<Testnet3>::try_from("100u64").unwrap();
-    //     let transfer_amt = Value::<Testnet3>::try_from("1u64").unwrap();
+    //     let address_to_mint = Value::<TestnetV0>::try_from(TESTNET3_ADDRESS).unwrap();
+    //     let amt_input = Value::<TestnetV0>::try_from("100u64").unwrap();
+    //     let transfer_amt = Value::<TestnetV0>::try_from("1u64").unwrap();
     //     let fee = 10000u64;
 
-    //     // let token_program = Program::<Testnet3>::from_str(TOKEN_PROGRAM).unwrap();
-    //     let token_mint_program = Program::<Testnet3>::from_str(TOKEN_MINT).unwrap();
+    //     // let token_program = Program::<TestnetV0>::from_str(TOKEN_PROGRAM).unwrap();
+    //     let token_mint_program = Program::<TestnetV0>::from_str(TOKEN_MINT).unwrap();
     //     let mut program_manager =
-    //         ProgramManager::<Testnet3>::new(Some(pk), None, Some(api_client.clone()), None)
+    //         ProgramManager::<TestnetV0>::new(Some(pk), None, Some(api_client.clone()), None)
     //             .unwrap();
     //     let mut program_manager_3 =
-    //         ProgramManager::<Testnet3>::new(Some(pk_3), None, Some(api_client.clone()), None)
+    //         ProgramManager::<TestnetV0>::new(Some(pk_3), None, Some(api_client.clone()), None)
     //             .unwrap();
     //     // program_manager.add_program(&token_program);
     //     program_manager.add_program(&token_mint_program);
@@ -2047,7 +2056,7 @@ mod test {
     // STEP - 0     DEPLOY PROGRAM (DONT NEED TO DEPLOY AGAIN)
     // let deployement_id = program_manager.deploy_program("token_avl_4.aleo", 10000u64, None, None).unwrap();
     // println!("----> Program Deployed - {:?}", deployement_id);
-    // let mint_program: Result<ProgramCore<Testnet3, Instruction<Testnet3>, Command<Testnet3>>, snarkvm::prelude::Error> = api_client.get_program("token_avl.aleo");
+    // let mint_program: Result<ProgramCore<Testnet3, Instruction<TestnetV0>, Command<TestnetV0>>, snarkvm::prelude::Error> = api_client.get_program("token_avl.aleo");
 
     // STEP - 1     MINT ****ONLY FOR TESTING PURPOSES****
     // let inputs =  vec![address_to_mint.clone(), amt_input.clone()];
@@ -2076,7 +2085,7 @@ mod test {
     //     println!("INN");
     //     if transition.program_id().to_string() == program_id {
     //         println!("OKK");
-    //         let record_pointer_token = transition_to_record_pointer::<Testnet3>(record_txn.clone().id(), transition.clone(), latest_height, vk_3).unwrap();
+    //         let record_pointer_token = transition_to_record_pointer::<TestnetV0>(record_txn.clone().id(), transition.clone(), latest_height, vk_3).unwrap();
 
     //         println!("----> Token Record - {:?}", record_pointer_token);
     //     }
@@ -2093,14 +2102,14 @@ mod test {
 
     // #[test]
     // fn test_get_private_balance() {
-    //     let _res = get_private_token_balance::<Testnet3>("credits").unwrap();
+    //     let _res = get_private_token_balance::<TestnetV0>("credits").unwrap();
 
     //     println!("res: {:?}", _res);
     // }
 
     // #[test]
     // fn get_public_balance() {
-    //     get_public_token_balance::<Testnet3>("credits").unwrap();
+    //     get_public_token_balance::<TestnetV0>("credits").unwrap();
     // }
 
     // #[tokio::test]
@@ -2110,19 +2119,19 @@ mod test {
     //     let function_id = "transfer_public";
 
     //     let inputs = vec![
-    //         // Value::<Testnet3>::try_from(TESTNET_ADDRESS).unwrap(),
-    //         Value::<Testnet3>::try_from(TESTNET3_ADDRESS).unwrap(),
-    //         Value::<Testnet3>::try_from("10000u64").unwrap(),
-    //         // Value::<Testnet3>::try_from("true").unwrap()
+    //         // Value::<TestnetV0>::try_from(TESTNET_ADDRESS).unwrap(),
+    //         Value::<TestnetV0>::try_from(TESTNET3_ADDRESS).unwrap(),
+    //         Value::<TestnetV0>::try_from("10000u64").unwrap(),
+    //         // Value::<TestnetV0>::try_from("true").unwrap()
     //     ];
 
     //     //let inputs = vec![];
 
-    //     let api_client = setup_local_client::<Testnet3>();
+    //     let api_client = setup_local_client::<TestnetV0>();
 
-    //     let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+    //     let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
     //     let program_manager =
-    //         ProgramManager::<Testnet3>::new(Some(pk), None, Some(api_client), None).unwrap();
+    //         ProgramManager::<TestnetV0>::new(Some(pk), None, Some(api_client), None).unwrap();
     //     let start = Instant::now();
     //     let res =
     //         estimate_fee::<Testnet3, AleoV0>(program_id, function_id, inputs, program_manager)
@@ -2144,10 +2153,10 @@ mod test {
     // #[tokio::test]
     // async fn test_nft_record(){
     //    // ARRANGE
-    //    let mut api_client = setup_client::<Testnet3>().unwrap();
+    //    let mut api_client = setup_client::<TestnetV0>().unwrap();
     //     // ALEO INPUTS
     //     let program_id = "avail_nft_0.aleo";
-    //     let nft_program = Program::<Testnet3>::from_str(AVAIL_NFT_TEST).unwrap();
+    //     let nft_program = Program::<TestnetV0>::from_str(AVAIL_NFT_TEST).unwrap();
     //     let symbol_u128 = format!("{}u128", string_to_u128("AVL".to_string()));
     //     let token_id_u128 = format!("{}u128", string_to_u128("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.f6s.com%2Fcompany%2Favail-avail.global&psig=AOvVaw2PqnSWdrMxspXoYbX1xHDG&ust=1708445613257000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCLCV84Dmt4QDFQAAAAAdAAAAABAE".to_string()));
     //     // let token_id_obj = format!("{}")
@@ -2155,30 +2164,30 @@ mod test {
     //         data0: {},
     //         data1: 0u128
     //     }}", token_id_u128);
-    //     let total = Value::<Testnet3>::try_from("10u128").unwrap();
-    //     let symbol = Value::<Testnet3>::try_from(symbol_u128).unwrap();
-    //     let token_id = Value::<Testnet3>::try_from(token_id_obj).unwrap();
-    //     let base_uri = Value::<Testnet3>::try_from("{
+    //     let total = Value::<TestnetV0>::try_from("10u128").unwrap();
+    //     let symbol = Value::<TestnetV0>::try_from(symbol_u128).unwrap();
+    //     let token_id = Value::<TestnetV0>::try_from(token_id_obj).unwrap();
+    //     let base_uri = Value::<TestnetV0>::try_from("{
     //         data0: 143324u128,
     //         data1: 883746u128,
     //         data2: 993843u128,
     //         data3: 932838u128
     //     }").unwrap();
-    //     let edition = Value::<Testnet3>::try_from("0scalar").unwrap();
-    //     let owner = Value::<Testnet3>::try_from(TESTNET_ADDRESS).unwrap();
-    //     let amount = Value::<Testnet3>::try_from("3u8").unwrap();
-    //     let settings = Value::<Testnet3>::try_from("3u32").unwrap();
-    //     let block = Value::<Testnet3>::try_from("64400u32").unwrap(); //UPDATE ASPER VALUE
-    //     let hiding_nonce = Value::<Testnet3>::try_from("1234scalar").unwrap();
-    //     // let record_NFT_mint = Value::<Testnet3>::Record(Record::<Testnet3,Plaintext<Testnet3>>::from_str(RECORD_NFT_MINT).unwrap());
-    //     // let record_NFT_claim = Value::<Testnet3>::Record(Record::<Testnet3,Plaintext<Testnet3>>::from_str(RECORD_NFT_CLAIM).unwrap());
+    //     let edition = Value::<TestnetV0>::try_from("0scalar").unwrap();
+    //     let owner = Value::<TestnetV0>::try_from(TESTNET_ADDRESS).unwrap();
+    //     let amount = Value::<TestnetV0>::try_from("3u8").unwrap();
+    //     let settings = Value::<TestnetV0>::try_from("3u32").unwrap();
+    //     let block = Value::<TestnetV0>::try_from("64400u32").unwrap(); //UPDATE ASPER VALUE
+    //     let hiding_nonce = Value::<TestnetV0>::try_from("1234scalar").unwrap();
+    //     // let record_NFT_mint = Value::<TestnetV0>::Record(Record::<Testnet3,Plaintext<TestnetV0>>::from_str(RECORD_NFT_MINT).unwrap());
+    //     // let record_NFT_claim = Value::<TestnetV0>::Record(Record::<Testnet3,Plaintext<TestnetV0>>::from_str(RECORD_NFT_CLAIM).unwrap());
     //     // Program manager
 
-    //     let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-    //     let vk = ViewKey::<Testnet3>::try_from(pk).unwrap();
+    //     let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+    //     let vk = ViewKey::<TestnetV0>::try_from(pk).unwrap();
     //     let fee = 10000u64;
     //     let mut program_manager =
-    //         ProgramManager::<Testnet3>::new(Some(pk), None, Some(api_client.clone()), None).unwrap();
+    //         ProgramManager::<TestnetV0>::new(Some(pk), None, Some(api_client.clone()), None).unwrap();
     //     program_manager.add_program(&nft_program);
     //     // ACT
     //     // ============================== DOCUMENTATION FOR TESTING ==============================
@@ -2219,7 +2228,7 @@ mod test {
     //             // STEP - 4     set_mint_block()
     //             for record in record_pointer_NFT_mint{
     //                 let mint_block = format!("{}u32",record.pointer.block_height);
-    //                 let mint_block_inputs = vec![Value::<Testnet3>::try_from(mint_block.to_string()).unwrap()];
+    //                 let mint_block_inputs = vec![Value::<TestnetV0>::try_from(mint_block.to_string()).unwrap()];
     //                 // let block_txn_id = program_manager.execute_program(program_id, "set_mint_block", mint_block_inputs.iter(), fee, None, None).unwrap().to_string();
     //                 // println!("----> Updated block number (TXN-ID) - {:?}", block_txn_id);
 
@@ -2260,12 +2269,12 @@ mod test {
     //     println!("----> NFT_claim.record created and stored - {:?}", NFT_claim_record);
 
     //     // STEP - 7     mint()
-    //     let mint_inputs = vec![Value::<Testnet3>::Record(Record::<Testnet3, Plaintext<Testnet3>>::from_str(&NFT_mint_record.clone()).unwrap()) ,hiding_nonce.clone()];
+    //     let mint_inputs = vec![Value::<TestnetV0>::Record(Record::<Testnet3, Plaintext<TestnetV0>>::from_str(&NFT_mint_record.clone()).unwrap()) ,hiding_nonce.clone()];
     //     let mint_txn_id = program_manager.execute_program(program_id, "mint", mint_inputs.iter(), fee, None, None).unwrap().to_string();
     //     println!("----> Mint function invoked (TXN-ID) - {:?}", mint_txn_id);
 
     //     // STEP - 8     claim_nft()
-    //     let nft_inputs = vec![Value::<Testnet3>::Record(Record::<Testnet3, Plaintext<Testnet3>>::from_str(&NFT_claim_record.clone()).unwrap()) ,token_id.clone(), edition.clone()];
+    //     let nft_inputs = vec![Value::<TestnetV0>::Record(Record::<Testnet3, Plaintext<TestnetV0>>::from_str(&NFT_claim_record.clone()).unwrap()) ,token_id.clone(), edition.clone()];
     //     let nft_txn_id = program_manager.execute_program(program_id, "claim_nft", nft_inputs.iter(), fee, None, None).unwrap().to_string();
     //     println!("----> NFT Claimed (TXN-ID) - {:?}", nft_txn_id);
 

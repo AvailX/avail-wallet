@@ -1,16 +1,17 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography } from "@mui/material";
 
-import connectWallet from '../assets/connect-wallet.png';
-import ownNft from '../assets/own-nft.png';
-import ownPrivately from '../assets/crypto-privately.png';
-import powerApps from '../assets/power-apps.png';
+import connectWallet from "../../assets/connect-wallet.png";
+import ownNft from "../../assets/own-nft.png";
+import ownPrivately from "../../assets/crypto-privately.png";
+import powerApps from "../../assets/power-apps.png";
 
-import AwesomeSlider from 'react-awesome-slider';
-import 'react-awesome-slider/dist/styles.css';
-import withAutoplay from 'react-awesome-slider/dist/autoplay';
+import AwesomeSlider from "react-awesome-slider";
+import "react-awesome-slider/dist/styles.css";
+import withAutoplay from "react-awesome-slider/dist/autoplay";
 
-import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import NewAccountDialog from "components/dialogs/NewAccount";
 
 const AutoplaySlider = withAutoplay(AwesomeSlider, { Infinity: false });
 
@@ -34,6 +35,7 @@ const Mob: React.FC<IProps> = ({ title, img }) => {
         fontSize='30px'
         fontWeight={500}
         lineHeight='31.8px'
+        pt='50vh'
       >
         {title}
       </Typography>
@@ -59,13 +61,20 @@ export const MobCarousel = () => {
       img: powerApps,
     },
   ];
+  const [openDialog, setOpenDialog] = React.useState(false);
   return (
     <>
-      <div style={{ height: '100vh', backgroundColor: '#111111' }}>
+      <NewAccountDialog
+        isOpen={openDialog}
+        onRequestClose={() => {
+          setOpenDialog(false);
+        }}
+      />
+      <div style={{ height: "100vh", backgroundColor: "#111111" }}>
         <AutoplaySlider
           play={true}
           bullets={false}
-          style={{ height: '100vh' }}
+          style={{ height: "100vh" }}
           infinite={false}
           mobileTouch={true}
           interval={4000}
@@ -83,15 +92,17 @@ export const MobCarousel = () => {
           p={2}
           left={0}
           bottom={0}
-          height='30vh'
           zIndex={10}
         >
           <Button
             fullWidth
-            onClick={(): void => navigate("/secret-recovery")}
+            onClick={(): void => {
+              setOpenDialog(true);
+              //;
+            }}
             sx={{
               background:
-                'linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA',
+                "linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA",
               py: 2,
             }}
             variant='contained'
@@ -99,12 +110,19 @@ export const MobCarousel = () => {
           >
             Create Wallet
           </Button>
-          <Button sx={{ mt: 3 }} fullWidth variant='outlined'>
+          <Button
+            onClick={() => {
+              navigate("/login");
+            }}
+            sx={{ mt: 3 }}
+            fullWidth
+            variant='outlined'
+          >
             Add an existing wallet
           </Button>
           <Typography variant='body1' mt={4} color='#9d9d9d' fontWeight={700}>
-            By signing up you agree to Avail’s{' '}
-            <span style={{ color: '#01f0a0' }}>
+            By signing up you agree to Avail’s{" "}
+            <span style={{ color: "#01f0a0" }}>
               Terms of Service and Privacy policy.
             </span>
           </Typography>

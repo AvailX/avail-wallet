@@ -1,5 +1,5 @@
 use chrono::{DateTime, Local};
-use snarkvm::prelude::{transactions::Transactions, Address, Network, Testnet3};
+use snarkvm::prelude::{transactions::Transactions, Address, Network, TestnetV0};
 use std::str::FromStr;
 
 use crate::models::{event::Event, pointers::deployment::DeploymentPointer};
@@ -98,16 +98,16 @@ pub fn decrypt_deployments<N: Network>(
     let network = get_network()?;
 
     let v_key = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => VIEWSESSION.get_instance::<Testnet3>()?,
-        _ => VIEWSESSION.get_instance::<Testnet3>()?,
+        SupportedNetworks::Testnet => VIEWSESSION.get_instance::<TestnetV0>()?,
+        _ => VIEWSESSION.get_instance::<TestnetV0>()?,
     };
 
     let deployments = encrypted_deployments
         .iter()
         .map(|x| {
             let encrypted_data = match SupportedNetworks::from_str(&network)? {
-                SupportedNetworks::Testnet3 => x.to_enrypted_struct::<Testnet3>()?,
-                _ => x.to_enrypted_struct::<Testnet3>()?,
+                SupportedNetworks::Testnet => x.to_enrypted_struct::<TestnetV0>()?,
+                _ => x.to_enrypted_struct::<TestnetV0>()?,
             };
 
             let deployment: DeploymentPointer<N> = encrypted_data.decrypt(v_key)?;

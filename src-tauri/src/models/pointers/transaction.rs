@@ -251,12 +251,10 @@ impl<N: Network> TransactionPointer<N> {
         let id = Uuid::new_v4();
         let flavour = EncryptedDataTypeCommon::Transaction;
         let created_at = chrono::Utc::now();
-
         let tx_id = match self.transaction_id {
             Some(id) => Some(id.to_string()),
             None => None,
         };
-
         let program_ids = self
             .transitions
             .iter()
@@ -296,7 +294,7 @@ impl<N: Network> TransactionPointer<N> {
             Some(self.event_type.clone()),
             None,
             Some(self.state.clone()),
-            Some(transaction_id),
+            tx_id,
             None,
         );
 
@@ -311,15 +309,18 @@ impl<N: Network> TransactionPointer<N> {
         let record = decrypt::<N>(encrypted_struct)?;
         let network = get_network()?;
         let encrypted_tx = record.encrypt_for(address)?;
+        let tx_id = match record.transaction_id {
+            Some(id) => Some(id.to_string()),
+            None => None,
+        };
+        let id = Uuid::new_v4();
+        let flavour = EncryptedDataTypeCommon::Transaction;
+        let created_at = chrono::Utc::now();
 
         let tx_id = match record.transaction_id {
             Some(id) => Some(id.to_string()),
             None => None,
         };
-
-        let id = Uuid::new_v4();
-        let flavour = EncryptedDataTypeCommon::Transaction;
-        let created_at = chrono::Utc::now();
 
         let program_ids = record
             .transitions
@@ -360,7 +361,7 @@ impl<N: Network> TransactionPointer<N> {
             Some(record.event_type.clone()),
             None,
             Some(record.state.clone()),
-            Some(transaction_id),
+            tx_id,
             None,
         );
         Ok(encrypted_data)

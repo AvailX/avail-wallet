@@ -18,6 +18,7 @@ use services::account::generation::import_wallet;
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
 use services::account::utils::{network_status_check, open_url, os_type};
 use services::authentication::session::get_session;
+use services::account::key_management::faceid::{store_keys_ios, get_key_ios};
 use services::local_storage::persistent_storage::{
     get_address_string, get_auth_type, get_backup_flag, get_language, get_last_sync, get_network,
     get_username, update_language,
@@ -32,7 +33,7 @@ use api::{
     user::{update_backup_flag, update_username},
 };
 use services::local_storage::{
-    encrypted_data::{get_and_store_all_data, migrate_encrypted_data},
+    encrypted_data::get_and_store_all_data,
     tokens::get_stored_tokens,
     utils::{
         delete_local_for_recovery, delete_util, get_private_key_tauri, get_seed_phrase,
@@ -72,6 +73,7 @@ struct DeepLinkPayload {
 pub fn run() {
     // let devtools = tauri_plugin_devtools::init();
     tauri::Builder::default()
+        .plugin(tauri_plugin_barcode_scanner::init())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_process::init())
         // .plugin(devtools)
@@ -126,9 +128,6 @@ pub fn run() {
             txs_sync,
             blocks_sync,
             sync_backup,
-            migrate_encrypted_data,
-            scan_public_transitions,
-            handle_unconfirmed_transactions,
             /* Avail Services */
             get_avail_event,
             get_avail_events,
@@ -159,7 +158,9 @@ pub fn run() {
             test_snarkvm_mobile,
             test_snarkvm_mobile_deploy,
             init_user_mobile,
-            switch_to_obscura
+            switch_to_obscura,
+            store_keys_ios,
+            get_key_ios,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

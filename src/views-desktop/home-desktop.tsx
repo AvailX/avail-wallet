@@ -55,15 +55,15 @@ import { handleGetTokens } from '../services/tokens/get_tokens';
 import {
 	set_first_visit, get_first_visit, set_visit_session_flag, get_visit_session_flag,
 } from '../services/storage/localStorage';
-import {os} from '../services/util/open';
-import {preInstallInclusionProver} from '../services/transfer/inclusion';
-import {sync_backup} from '../services/scans/backup';
-import {scan_blocks, scan_public, handleUnconfirmedTransactions} from '../services/scans/blocks';
-import {scan_messages} from '../services/scans/encrypted_messages';
-import {getNetwork, getBackupFlag} from '../services/storage/persistent';
-import {getNetworkStatus} from '../services/util/network';
-import {getPoints} from '../services/quests/quests';
-import {updateData} from '../services/util/migrate_data';
+import { os } from '../services/util/open';
+import { preInstallInclusionProver } from '../services/transfer/inclusion';
+import { sync_backup } from '../services/scans/backup';
+import { scan_blocks } from '../services/scans/blocks';
+import { scan_messages } from '../services/scans/encrypted_messages';
+import { getNetwork, getBackupFlag } from '../services/storage/persistent';
+import { getNetworkStatus } from '../services/util/network';
+import { getPoints } from '../services/quests/quests';
+import { updateData } from '../services/util/migrate_data';
 
 import '../styles/animations.css';
 
@@ -228,29 +228,6 @@ function Home() {
 
 		if (!scanInProgress && !transferState) {
 			// Set Scanning state to true
-
-			handleUnconfirmedTransactions().catch(error => {
-				const err = error as AvailError;
-				if (err.internal_msg.includes('null')) {
-					console.log('No unconfirmed transactions');
-					return;
-				}
-
-				setMessage('Failed to handle unconfirmed transactions');
-				setErrorAlert(true);
-			});
-
-			scan_public(res.block_height).then(async res => {
-				await handleGetTokens();
-				fetchEvents();
-			}).catch(async err => {
-				const error = err as AvailError;
-
-				console.log('Error' + error.internal_msg);
-				setMessage('Failed to scan public transactions');
-				setErrorAlert(true);
-			});
-
 			startScan();
 			setLocalScan(true);
 
@@ -341,11 +318,6 @@ function Home() {
 				// Info notify user that inclusion.prover is being installed
 				preInstallInclusionProver().catch(() => {
 					setMessage('Issue checking Aleo resources.');
-					setErrorAlert(true);
-				});
-
-				updateData().catch(() => {
-					setMessage('Issue updating data.');
 					setErrorAlert(true);
 				});
 

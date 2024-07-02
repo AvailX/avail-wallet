@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
@@ -19,11 +19,17 @@ import React, { useState } from "react";
 import ActivityDetails from "../components/ActivityDetails";
 import AsssetDisplay from "../components/AsssetDisplay";
 import DashboardCarousel from "../components/DashboardCarousel";
+import { useNavigate } from "react-router-dom";
+import { get_address } from "../../../src/services/storage/persistent";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const goToOther = () => {
+    navigate("/secret-recovery");
+  };
   const DASHBOARD_ITEMS = [
     { icon: diamondShinyIcon },
-    { icon: sendIcon },
+    { icon: sendIcon, path: "/send" },
     { icon: receiveIcon },
     { icon: receiveIcon },
   ];
@@ -45,7 +51,9 @@ const Dashboard = () => {
   const toggleActivityDetails = (newOpen: boolean) => (): void => {
     setOpenActivityDetails(newOpen);
   };
-
+  let address = get_address().then((data) => {
+    console.log("address", data);
+  });
   const sampleData = {
     recipient: "@zack_x",
     date: "12 Mar at 2:34 PM",

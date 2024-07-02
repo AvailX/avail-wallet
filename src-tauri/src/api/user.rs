@@ -334,6 +334,7 @@ pub async fn update_backup_flag(backup_flag: bool) -> AvailResult<()> {
 
 mod tests {
     use super::*;
+    use snarkvm::prelude::TestnetV0;
 
     #[tokio::test]
     async fn test_create_user() {
@@ -353,7 +354,7 @@ mod tests {
     async fn test_name_to_address() {
         let username = "AvailInhabitantX";
 
-        let result = name_to_address::<Testnet3>(username).await.unwrap();
+        let result = name_to_address::<TestnetV0>(username).await.unwrap();
         println!("{:?}", result);
     }
 

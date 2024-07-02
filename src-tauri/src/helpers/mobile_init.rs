@@ -12,7 +12,7 @@ use snarkvm::prelude::Program;
 use chrono::{DateTime, Local};
 use log::info;
 use snarkvm::circuit::Aleo;
-use snarkvm::console::network::Testnet3;
+use snarkvm::console::network::TestnetV0;
 use snarkvm::ledger::query::{self, Query};
 use snarkvm::ledger::store::helpers::memory::BlockMemory;
 use snarkvm::ledger::transactions::ConfirmedTransaction;
@@ -130,21 +130,21 @@ pub fn log(window: Window, content: &str) -> AvailResult<()> {
 #[tauri::command(rename_all = "snake_case")]
 pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     // log("Transfer Public Mobile");
-    let api_client = setup_client::<Testnet3>()?;
+    let api_client = setup_client::<TestnetV0>()?;
 
     // log("API Client Setup");
-    let private_key = PrivateKey::<Testnet3>::from_str(
+    let private_key = PrivateKey::<TestnetV0>::from_str(
         "APrivateKey1zkpEa57WrhvNVagKkja6mzU5waS4xFXidKtBNMweupft7JX",
     )
     .unwrap();
     // log(format!("Private Key: {:?}", private_key.to_string()).as_str());
     let mut program_manager =
-        ProgramManager::<Testnet3>::new(Some(private_key), None, Some(api_client.clone()), None)
+        ProgramManager::<TestnetV0>::new(Some(private_key), None, Some(api_client.clone()), None)
             .unwrap();
 
     let program_id = format!("credits.aleo");
 
-    let recipient = Address::<Testnet3>::from_str(
+    let recipient = Address::<TestnetV0>::from_str(
         "aleo17uwd9yfdlusx2u2pr2nummcx8gst694w2nfm3hxkfeccqrv9yczqnvhq0c",
     )
     .unwrap();
@@ -166,12 +166,12 @@ pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     SESSION.set_session_token(session_get);
     // let authorization = {
     //     let rng = &mut rand::thread_rng();
-    //     let query: Query<Testnet3, BlockMemory<Testnet3>> = Query::from(api_client.base_url());
+    //     let query: Query<TestnetV0, BlockMemory<TestnetV0>> = Query::from(api_client.base_url());
 
     //     // Initialize a VM
     //     let store = snarkvm::ledger::store::ConsensusStore::<
-    //         Testnet3,
-    //         snarkvm::ledger::store::helpers::memory::ConsensusMemory<Testnet3>,
+    //         TestnetV0,
+    //         snarkvm::ledger::store::helpers::memory::ConsensusMemory<TestnetV0>,
     //     >::open(None)?;
     //     let vm = snarkvm::synthesizer::VM::from(store)?;
     //     let transfer_type = TransferType::Public;
@@ -197,7 +197,7 @@ pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     // let prover_request = ProverRequest::new(
     //     "aleo9789517609".to_string(),
     //     auth_bytes,
-    //     SupportedNetworks::Testnet3,
+    //     SupportedNetworks::TestnetV0,
     //     None,
     // );
     // let execution = delegate_execution(prover_request).await?;
@@ -212,7 +212,7 @@ pub async fn test_transfer_public_mobile() -> AvailResult<String> {
             None,
             &program_id,
             TESTNET_ADDRESS.to_string(),
-            SupportedNetworks::Testnet3,
+            SupportedNetworks::Testnet,
             true,
         )
         .await?;
@@ -241,15 +241,15 @@ pub async fn test_transfer_public_mobile() -> AvailResult<String> {
 #[tauri::command(rename_all = "snake_case")]
 
 pub fn test_snarkvm_mobile() -> AvailResult<String> {
-    let api_client = setup_local_client::<Testnet3>();
+    let api_client = setup_local_client::<TestnetV0>();
     let private_key =
-        PrivateKey::<Testnet3>::from_str(avail_common::models::constants::TESTNET_PRIVATE_KEY)
+        PrivateKey::<TestnetV0>::from_str(avail_common::models::constants::TESTNET_PRIVATE_KEY)
             .unwrap();
     let block_height = api_client.latest_block().unwrap();
     let rng = &mut rand::thread_rng();
 
     let msg = utf8_string_to_bits("TESTING AVAIL MOBILE SNARKVM");
-    let msg_field = Testnet3::hash_bhp512(&msg)?;
+    let msg_field = TestnetV0::hash_bhp512(&msg)?;
     let msg = field_to_fields(&msg_field)?;
 
     let signature = private_key.sign(&msg, rng)?;
@@ -266,12 +266,12 @@ pub fn test_snarkvm_mobile() -> AvailResult<String> {
 
 #[tauri::command(rename_all = "snake_case")]
 pub fn test_snarkvm_mobile_deploy() -> AvailResult<String> {
-    let api_client = setup_local_client::<Testnet3>();
+    let api_client = setup_local_client::<TestnetV0>();
     let private_key =
-        PrivateKey::<Testnet3>::from_str(avail_common::models::constants::TESTNET_PRIVATE_KEY)?;
+        PrivateKey::<TestnetV0>::from_str(avail_common::models::constants::TESTNET_PRIVATE_KEY)?;
     let mut program_manager =
-        ProgramManager::<Testnet3>::new(Some(private_key), None, Some(api_client.clone()), None)?;
-    let hello_program = Program::<Testnet3>::from_str(HELLO_PROGRAM)?;
+        ProgramManager::<TestnetV0>::new(Some(private_key), None, Some(api_client.clone()), None)?;
+    let hello_program = Program::<TestnetV0>::from_str(HELLO_PROGRAM)?;
     program_manager.add_program(&hello_program);
     let program_id = "hello.aleo";
     let deployement_id = program_manager.deploy_program(program_id, 10000u64, None, None)?;
@@ -281,7 +281,7 @@ pub fn test_snarkvm_mobile_deploy() -> AvailResult<String> {
 
 #[tauri::command(rename_all = "snake_case")]
 pub async fn init_user_mobile() -> AvailResult<String> {
-    let avail_wallet = BetterAvailWallet::<Testnet3>::from_seed_phrase(
+    let avail_wallet = BetterAvailWallet::<TestnetV0>::from_seed_phrase(
         "unusual squeeze advance legend sign drink buffalo until craft record carpet shuffle
         ",
         Languages::to_bip39_language(&Languages::English),
@@ -314,7 +314,7 @@ pub async fn init_user_mobile() -> AvailResult<String> {
     //     .store_key("tylerDurden@0xf5", &avail_wallet)
     //     .unwrap();
 
-    get_session_after_creation::<Testnet3>(&avail_wallet.private_key)
+    get_session_after_creation::<TestnetV0>(&avail_wallet.private_key)
         .await
         .unwrap();
 
@@ -377,7 +377,7 @@ async fn test_mobile() {
 
 #[tokio::test]
 async fn test_init_user() {
-    let avail_wallet = BetterAvailWallet::<Testnet3>::from_seed_phrase(
+    let avail_wallet = BetterAvailWallet::<TestnetV0>::from_seed_phrase(
         "unusual squeeze advance legend sign drink buffalo until craft record carpet shuffle
         ",
         Languages::to_bip39_language(&Languages::English),
@@ -411,7 +411,7 @@ async fn test_init_user() {
     //     .store_key("tylerDurden@0xf5", &avail_wallet)
     //     .unwrap();
 
-    get_session_after_creation::<Testnet3>(&avail_wallet.private_key)
+    get_session_after_creation::<TestnetV0>(&avail_wallet.private_key)
         .await
         .unwrap();
 
