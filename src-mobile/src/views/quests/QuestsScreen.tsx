@@ -8,11 +8,16 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import DappsSection from "../../components/dapps/DappsSection";
 import QuestsAppBar from "../../components/quests/QuestsComponents/QuestsAppBar";
-import { type Campaign, testCampaign } from "../../../../src/types/quests/quest_types";
+// import Divider from "@mui/joy/Divider";
+import {
+  type Campaign,
+  testCampaign,
+} from "../../../../src/types/quests/quest_types";
 import QuestsAppBarScroll from "../../components/quests/QuestsComponents/QuestsAppBarScroll";
 import QuestsSection from "../../components/quests/QuestsComponents/QuestsSection";
 import ConnectedQuestsGrid from "../../components/quests/QuestsComponents/QuestsGrid";
 import { getCampaigns } from "../../../../src/services/quests/quests";
+import { relative } from "path";
 
 const QuestsScreen: React.FC = () => {
   const [campaigns, setCampaigns] = React.useState<Campaign[]>([]);
@@ -69,37 +74,53 @@ const QuestsScreen: React.FC = () => {
   return (
     <DashboardLayout>
       <QuestsAppBar activeTab={activeTab} onTabChange={handleTabChange} />
-
+      {/* <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          height: "200px",
+          mx: "-30px",
+          px: 0,
+          zIndex: "2",
+        }}
+      > */}
       <Box
         sx={{
-          position: "absolute",
-          top: "17%",
-          left: "3%",
-          width: "100%",
+          position: "relative",
+          top: "4",
+          px: 0,
+          mx: "-30px",
+          right: "0",
+          // width: "100%",
+          // overflowX: "hidden",
+          // height: "100vh",
 
           maxHeight: "calc(100vh - 17%)", // Adjust the height to fill the remaining viewport height
           overflowY: "auto", // Enable vertical scrolling if content exceeds the container height
         }}
       >
+        <Carousel
+          swipeable={true}
+          partialVisible={true}
+          draggable={true}
+          responsive={responsive}
+          minimumTouchDrag={200}
+          autoPlay={false}
+          autoPlaySpeed={10_000}
+          customTransition="all .5"
+          transitionDuration={1000}
+          containerClass="carousel-container"
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+        >
+          {renderHorizontalScrollContainers()}
+        </Carousel>
+      </Box>
+      {/* </Box> */}
+
+      <Box sx={{}}>
         {/* Quests screen */}
         {activeTab === "quests" && (
           <Box>
-            <Carousel
-              swipeable={true}
-              partialVisible={true}
-              draggable={true}
-              responsive={responsive}
-              minimumTouchDrag={200}
-              autoPlay={false}
-              autoPlaySpeed={10_000}
-              customTransition="all .5"
-              transitionDuration={1000}
-              containerClass="carousel-container"
-              removeArrowOnDeviceType={["tablet", "mobile"]}
-            >
-              {renderHorizontalScrollContainers()}
-            </Carousel>
-
             {/* Quests Ending Soon Section */}
             <Box>
               {/* Title */}
@@ -117,9 +138,9 @@ const QuestsScreen: React.FC = () => {
               <Box
                 sx={{
                   position: "relative",
-                  width: "340px",
-                  maxHeight: `${48 * campaigns.length}px`, // Calculate the height dynamically based on the number of items
-                  overflowX: "auto",
+                  width: "100%",
+                  // maxHeight: `${48 * campaigns.length}px`, // Calculate the height dynamically based on the number of items
+                  // overflowX: "auto",
                   background: "#2A2A2A",
                   padding: "10px",
                   borderRadius: "22px",
@@ -132,6 +153,7 @@ const QuestsScreen: React.FC = () => {
 
                 {campaigns.map((campaign) => (
                   <QuestsSection campaign={campaign} />
+                  // <Divider />
                 ))}
               </Box>
             </Box>
@@ -153,8 +175,8 @@ const QuestsScreen: React.FC = () => {
               <Box
                 sx={{
                   position: "relative",
-                  width: "340px",
-                  overflowX: "auto",
+                  width: "100%",
+                  // overflowX: "auto",
                   background: "#2A2A2A",
                   padding: "10px",
                   borderRadius: "22px",
@@ -186,7 +208,7 @@ const QuestsScreen: React.FC = () => {
               <Box
                 sx={{
                   position: "relative",
-                  width: "340px",
+                  width: "100%",
                   overflowX: "auto",
                   background: "#2A2A2A",
                   padding: "10px",

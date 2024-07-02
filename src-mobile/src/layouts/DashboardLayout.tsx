@@ -9,7 +9,7 @@ import splashImg from "../assets/green-splash.svg";
 
 import { useNavigate } from "react-router-dom";
 
-interface IProps extends PropsWithChildren { }
+interface IProps extends PropsWithChildren {}
 
 const DashboardLayout: FC<IProps> = ({ children }) => {
   const navigate = useNavigate();
@@ -29,22 +29,23 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
     },
   ];
   return (
-    <Box height='100vh'>
-      <Box position='absolute' width='100%' top={0}>
-        <img src={splashImg} width='100%' />
+    <Box height="100vh">
+      <Box position="absolute" width="100%" top={0}>
+        <img src={splashImg} width="100%" />
       </Box>
       <Box
-        bgcolor='black'
-        textAlign='center'
-        color='#fff'
-        pt='10vh'
-        height='90vh'
+        bgcolor="black"
+        textAlign="center"
+        color="#fff"
+        pt="10vh"
+        height="90vh"
         px={3}
         sx={{ overflowY: "auto" }}
+        // position="relative"
       >
         {children}
       </Box>
-      <Box height='15vh' bgcolor='#2A2A2A' px={4} position='fixed' width='100%'>
+      <Box height="15vh" bgcolor="#2A2A2A" px={4} position="fixed" width="100%">
         <Box
           width="100%"
           mx="auto"
