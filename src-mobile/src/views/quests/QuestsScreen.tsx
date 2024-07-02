@@ -8,7 +8,7 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import DappsSection from "../../components/dapps/DappsSection";
 import QuestsAppBar from "../../components/quests/QuestsComponents/QuestsAppBar";
-// import Divider from "@mui/joy/Divider";
+import Divider from "@mui/material/Divider";
 import {
   type Campaign,
   testCampaign,
@@ -88,7 +88,6 @@ const QuestsScreen: React.FC = () => {
         sx={{
           mt: 2,
           position: "relative",
-          top: "4",
           px: 0,
           mx: "-20px",
           right: "0",
@@ -153,8 +152,14 @@ const QuestsScreen: React.FC = () => {
                 {/*This is the Row section of the container. placed at the bottom */}
 
                 {campaigns.map((campaign) => (
-                  <QuestsSection campaign={campaign} />
-                  // <Divider />
+                  <Box>
+                    <QuestsSection campaign={campaign} />
+                    <Divider
+                      variant="middle"
+                      // component="li"
+                      sx={{ bgcolor: "#353535" }}
+                    />
+                  </Box>
                 ))}
               </Box>
             </Box>
@@ -187,7 +192,14 @@ const QuestsScreen: React.FC = () => {
                 }}
               >
                 {campaigns.map((campaign) => (
-                  <QuestsSection campaign={campaign} />
+                  <Box>
+                    <QuestsSection campaign={campaign} />
+                    <Divider
+                      variant="middle"
+                      // component="li"
+                      sx={{ bgcolor: "#353535" }}
+                    />
+                  </Box>
                 ))}
               </Box>
             </Box>
@@ -220,7 +232,14 @@ const QuestsScreen: React.FC = () => {
                 }}
               >
                 {campaigns.map((campaign) => (
-                  <QuestsSection campaign={campaign} />
+                  <Box>
+                    <QuestsSection campaign={campaign} />
+                    <Divider
+                      variant="middle"
+                      // component="li"
+                      sx={{ bgcolor: "#353535" }}
+                    />
+                  </Box>
                 ))}
               </Box>
             </Box>
