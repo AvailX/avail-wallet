@@ -86,10 +86,11 @@ const QuestsScreen: React.FC = () => {
       > */}
       <Box
         sx={{
+          mt: 2,
           position: "relative",
           top: "4",
           px: 0,
-          mx: "-30px",
+          mx: "-20px",
           right: "0",
           // width: "100%",
           // overflowX: "hidden",
