@@ -6,7 +6,7 @@ import diamondIcon from "../assets/diamond-icon.svg";
 import homeIcon from "../assets/home-icon.svg";
 
 import splashImg from "../assets/green-splash.svg";
-
+import settings from "../assets/settings-icon.svg";
 import { useNavigate } from "react-router-dom";
 
 interface IProps extends PropsWithChildren {}
@@ -20,7 +20,7 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
       path: "/send",
     },
     {
-      icon: diamondIcon,
+      icon: settings,
       path: "/settings",
     },
     {

@@ -1,5 +1,6 @@
 import { Typography, Box } from "@mui/material";
 import Stack from "@mui/material/Stack";
+import { Tabs, Tab } from "@mui/material";
 
 interface QuestAppBarProps {
   activeTab: string;
@@ -10,9 +11,12 @@ const QuestAppBar: React.FC<QuestAppBarProps> = ({
   activeTab,
   onTabChange,
 }) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+    onTabChange(newValue);
+  };
   return (
     <>
-      <Stack direction="row" spacing={2}>
+      {/* <Stack direction="row" spacing={2}>
         <Typography
           color="#ffffff"
           borderBottom={activeTab === "quests" ? "1px solid #FFFFFF" : ""}
@@ -45,7 +49,30 @@ const QuestAppBar: React.FC<QuestAppBarProps> = ({
         >
           Launch a Quest
         </Typography>
-      </Stack>
+      </Stack> */}
+      <Box
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          aria-label="quest tabs"
+          textColor="inherit"
+          indicatorColor="primary"
+          sx={{
+            ".MuiTabs-indicator": { backgroundColor: "#ffffff" },
+          }}
+          // sx={{ color: "#ffffff" }}
+        >
+          <Tab label="Quests" value="quests" />
+          <Tab label="Launch a Quest" value="launch-a-quest" />
+        </Tabs>
+      </Box>
     </>
   );
 };
