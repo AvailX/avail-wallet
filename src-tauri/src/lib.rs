@@ -7,18 +7,18 @@ use crate::helpers::mobile_init::init_user_mobile;
 use crate::helpers::mobile_init::test_snarkvm_mobile;
 use crate::helpers::mobile_init::test_snarkvm_mobile_deploy;
 use crate::helpers::mobile_init::test_transfer_public_mobile;
-use crate::services::record_handling::scan_utils::{
-    handle_unconfirmed_transactions, scan_public_transitions,
-};
+// use crate::services::record_handling::scan_utils::{
+//     handle_unconfirmed_transactions, scan_public_transitions,
+// };
 use crate::services::record_handling::utils::get_all_nft_data;
 use log::LevelFilter;
 use log::{error, info};
 use services::account::generation::create_seed_phrase_wallet;
 use services::account::generation::import_wallet;
+use services::account::key_management::faceid::{get_key_ios, store_keys_ios};
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
 use services::account::utils::{network_status_check, open_url, os_type};
 use services::authentication::session::get_session;
-use services::account::key_management::faceid::{store_keys_ios, get_key_ios};
 use services::local_storage::persistent_storage::{
     get_address_string, get_auth_type, get_backup_flag, get_language, get_last_sync, get_network,
     get_username, update_language,
