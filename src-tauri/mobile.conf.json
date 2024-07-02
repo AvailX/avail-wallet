@@ -16,23 +16,22 @@
         ]
       }
     ]
-  }
-},
-"app": {
-  "security": {
-    "csp": null
   },
-  "withGlobalTauri": true,
-  "windows": [
-    {
-      "fullscreen": false,
-      "resizable": true,
-      "title": "Avail",
-      "width": 1125,
-      "height": 800,
-      "minWidth": 843.75,
-      "minHeight": 600
-    }
-  ]
-}
+  "app": {
+    "security": {
+      "csp": null
+    },
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "title": "Avail",
+        "width": 1125,
+        "height": 800,
+        "minWidth": 843.75,
+        "minHeight": 600
+      }
+    ]
+  }
 }
