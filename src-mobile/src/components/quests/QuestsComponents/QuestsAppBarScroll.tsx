@@ -1,6 +1,12 @@
 import { Box, Typography } from "@mui/material";
 import img from "../../../assets/connected-dapp.svg";
 import { Campaign } from "../../../../../src/types/quests/quest_types";
+// import {
+//   Quest,
+//   quests,
+//   RewardMethod,
+//   Campaign,
+// } from "../../../types/quests/quest_types";
 
 interface QuestsScrollContainerProps {
   campaign: Campaign; // Define a prop 'dapp' of type 'Dapp'
@@ -15,14 +21,16 @@ const QuestsScrollContainer: React.FC<QuestsScrollContainerProps> = ({
         position: "relative", // Set position to relative
         width: "340px",
         height: "165px",
-        overflowX: "auto", // Enable horizontal scrolling
-        background:
-          "linear-gradient(to right, #0038FF 0%,  #000000 50%, #0038FF 100%)",
+        overflowX: "auto", 
         padding: "10px",
         borderRadius: "22px",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "flex-end", // Align content to the bottom
+        justifyContent: "flex-end", 
+        backgroundImage: `url(${campaign.bg_image})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center", 
+        backgroundRepeat: "no-repeat", 
       }}
     >
       <Box
