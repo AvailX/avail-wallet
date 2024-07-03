@@ -457,8 +457,8 @@ checksum = "0c4b4d0bd25bd0b74681c0ad21497610ce1b7c91b1022cd21c80c6fbdd9476b0"
 
 [[package]]
 name = "avail-common"
-version = "0.6.0"
-source = "git+https://github.com/availx/avail-lib?rev=4a1bc01#4a1bc0175412de65168092a4f7d4067aab32cd0e"
+version = "0.13.0"
+source = "git+https://github.com/availx/avail-lib?rev=bdaf515#bdaf515b908897eb67bb4fc5f9959ce96983ab12"
 dependencies = [
  "aes-gcm",
  "app_dirs2",
@@ -466,7 +466,9 @@ dependencies = [
  "bs58",
  "chrono",
  "duration-str",
+ "futures 0.3.30",
  "hex",
+ "http 1.1.0",
  "jni",
  "keyring",
  "once_cell",
