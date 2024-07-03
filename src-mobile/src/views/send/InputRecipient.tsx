@@ -39,6 +39,7 @@ import { useTranslation } from "react-i18next";
 import { AvailError } from "../../../../src/types/errors";
 
 import aleo from "../../../../src/assets/icons/tokens/aleo.svg";
+import { invoke } from "@tauri-apps/api/core";
 
 const tokens = [
   {
@@ -103,10 +104,17 @@ function InputRecipient() {
 
   const [isLoading, setIsLoading] = React.useState(false);
 
+  async function dgate() {
+    const response: string = await invoke<string>('get_delegate_flag', {});
+    return response;
+  }
   React.useEffect(() => {
     // setRecipient(address);
     // Set network
-
+    dgate().then((res) => {
+      console.log("This is my delegate", res);
+    }
+    );
     getNetwork()
       .then((res) => {
         setNetwork(res);
