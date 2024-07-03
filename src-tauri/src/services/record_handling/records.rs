@@ -853,4 +853,26 @@ mod record_handling_test {
            handle_unconfirmed_transactions::<TestnetV0>().await.unwrap();
         }
     */
+
+    #[tokio::test]
+    async fn test_good_block_height() {
+        let api_client = setup_client::<TestnetV0>().unwrap();
+        let latest_height = api_client.latest_height().unwrap();
+        let mut last_sync = 0u32;
+        let mut flag = true;
+        while flag {
+            let last_sync_block = match api_client.get_block(last_sync) {
+                Ok(block) => {
+                    println!("Block: {:?}", block);
+                    flag = false;
+                    block
+                }
+                Err(e) => {
+                    println!("Error getting block: {:?}", e.to_string());
+                    last_sync += 1;
+                    continue;
+                }
+            };
+        }
+    }
 }
