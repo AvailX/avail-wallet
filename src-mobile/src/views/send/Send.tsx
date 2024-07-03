@@ -37,6 +37,7 @@ import TransferDialog from "../../../../src/components/dialogs/transfer";
 import TransferInProgressDialog from "../../../../src/components/dialogs/transfer_in_progress";
 
 import aleo from "../../../../src/assets/icons/tokens/aleo.svg";
+import { Button } from "@mui/material";
 
 const tokens = [
   {
@@ -346,6 +347,19 @@ function Send() {
             mt: 4,
           }}
         />
+
+        <Button
+          fullWidth
+          onClick={handleEnterPress}
+          sx={{
+            position: "absolute",
+            bottom: 40,
+            left: 0,
+            py: 2,
+          }}
+        >
+          Send
+        </Button>
       </Box>
     </DashboardLayout>
   );

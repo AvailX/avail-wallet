@@ -35,6 +35,7 @@ function EntryPoint() {
           setAlertMessage,
           true
         );
+        console.log("Login response", res);
         if (res) {
           navigate("/login");
         }
