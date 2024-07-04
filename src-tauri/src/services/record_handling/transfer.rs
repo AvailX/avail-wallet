@@ -659,9 +659,8 @@ async fn transfer_public<N: Network>(
     let sender_address = get_address::<N>()?;
     let private_key = get_private_key::<N>(password)?;
     let network = SupportedNetworks::from_str(&get_network()?)?;
-    let delegate = get_delegate_flag()?;
-
-    //extend session auth
+    let delegate = true; //get_delegate_flag()?;
+                         //extend session auth
     get_session_after_creation::<N>(&private_key).await?;
     let recipient = get_address_from_recipient::<N>(to).await?;
 
@@ -704,9 +703,9 @@ async fn transfer_public<N: Network>(
         Some(*fee as f64 / 1000000.0),
         None,
     );
-
+    println!("Pending Transaction: {:?}", pending_transaction);
     let pending_tx_id = pending_transaction.encrypt_and_store(sender_address)?;
-
+    println!("Pending Tx Id: {}", pending_tx_id);
     if let Some(window) = window.clone() {
         match window.emit("tx_state_change", &pending_tx_id) {
             Ok(_) => {}
@@ -721,6 +720,7 @@ async fn transfer_public<N: Network>(
     };
 
     // update spent states
+    println!("Update Record Spent Local");
     if let Some(fee_id) = fee_id.clone() {
         update_record_spent_local::<N>(&fee_id, true)?;
     }
@@ -737,7 +737,7 @@ async fn transfer_public<N: Network>(
             }
         };
     };
-
+    println!("Transfer Public");
     let transfer_res = match program_manager
         .transfer(
             amount.to_owned(),
@@ -759,7 +759,7 @@ async fn transfer_public<N: Network>(
             if let Some(fee_id) = fee_id {
                 update_record_spent_local::<N>(&fee_id, false)?;
             }
-
+            println!("FAIL");
             pending_transaction.update_failed_transaction(
                 "Transaction execution failed, no records were spent.".to_string(),
                 None,
@@ -795,7 +795,7 @@ async fn transfer_public<N: Network>(
             ));
         }
     };
-
+    println!("Transfer Res: {}", transfer_res);
     handle_encrypted_storage_and_message(
         transfer_res,
         recipient,
@@ -1454,8 +1454,8 @@ mod transfer_tests {
 
         /* --SETUP COMPLETE */
 
-        let fee = 4000000u64;
-        let amount = 100000u64;
+        let fee = 400000u64;
+        let amount = 10000u64;
         let recipient_address = Address::<TestnetV0>::from_str(TESTNET3_ADDRESS).unwrap();
         let asset_id = "credits".to_string();
 
@@ -1474,53 +1474,59 @@ mod transfer_tests {
     }
 
     #[tokio::test]
-    async fn test_transfer_public() {
+    async fn test_transfer_public_new_delegate() {
         //NOTE - Don't forget to change OS depending on what you testing on -default should be linux
 
         /* -- Has to be called here cause has to await-- */
 
-        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
-        let ext = Identifier::<TestnetV0>::from_str("test").unwrap();
+        // let pk = PrivateKey::<TestnetV0>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
+        // let ext = Identifier::<TestnetV0>::from_str("test").unwrap();
 
-        #[cfg(target_os = "macos")]
-        let mac_key_controller = macKeyController {};
-        #[cfg(target_os = "macos")]
-        mac_key_controller
-            .delete_key(Some("tylerDurden@0xf5"), ext)
-            .unwrap();
+        // #[cfg(target_os = "macos")]
+        // let mac_key_controller = macKeyController {};
+        // #[cfg(target_os = "macos")]
+        // mac_key_controller
+        //     .delete_key(Some("tylerDurden@0xf5"), ext)
+        //     .unwrap();
 
-        #[cfg(target_os = "linux")]
-        let linux_key_controller = linuxKeyController {};
-        #[cfg(target_os = "linux")]
-        linux_key_controller
-            .delete_key(Some(STRONG_PASSWORD), ext)
-            .unwrap();
+        // #[cfg(target_os = "linux")]
+        // let linux_key_controller = linuxKeyController {};
+        // #[cfg(target_os = "linux")]
+        // linux_key_controller
+        //     .delete_key(Some(STRONG_PASSWORD), ext)
+        //     .unwrap();
 
-        #[cfg(target_os = "windows")]
-        let windows_key_controller = windowsKeyController {};
-        #[cfg(target_os = "windows")]
-        windows_key_controller
-            .delete_key(Some(STRONG_PASSWORD), ext)
-            .unwrap();
+        // #[cfg(target_os = "windows")]
+        // let windows_key_controller = windowsKeyController {};
+        // #[cfg(target_os = "windows")]
+        // windows_key_controller
+        //     .delete_key(Some(STRONG_PASSWORD), ext)
+        //     .unwrap();
 
-        drop_encrypted_data_table().unwrap();
-        delete_user_preferences().unwrap();
-        // initialize the user preferences
+        // drop_encrypted_data_table().unwrap();
+        // delete_user_preferences().unwrap();
+        // // initialize the user preferences
 
-        import_wallet(
-            Some("Satoshib".to_string()),
-            STRONG_PASSWORD.to_string(),
-            false,
-            &pk.to_string(),
-            false,
-            Languages::English,
-        )
-        .await
-        .unwrap();
+        // import_wallet(
+        //     Some("Satoshib".to_string()),
+        //     STRONG_PASSWORD.to_string(),
+        //     false,
+        //     &pk.to_string(),
+        //     false,
+        //     Languages::English,
+        // )
+        // .await
+        // .unwrap();
         /* --SETUP COMPLETE */
-
-        let fee = 4000000u64;
-        let amount = 10000000u64;
+        // let session_get = crate::services::authentication::session::get_session(Some(
+        //     "tylerDurden@0xf5".to_string(),
+        // ))
+        // .await
+        // .unwrap();
+        // println!("Session: {:?}", session_get);
+        // avail_common::service_clients::SESSION.set_session_token(session_get);
+        let fee = 400000u64;
+        let amount = 1000000u64;
         let recipient_address = Address::<TestnetV0>::from_str(
             "aleo1c0c8vu9qu7888x0x36upe2la3tnr46v4exn2knm29q7nhvf4m59s3hwae8",
         )
@@ -1531,14 +1537,26 @@ mod transfer_tests {
             recipient_address.to_string(),
             amount,
             Some("Public Transfer Test".to_string()),
-            Some(STRONG_PASSWORD.to_string()),
+            Some("tylerDurden@0xf5".to_string()),
             TransferType::Public,
             false,
             fee,
             asset_id,
         );
 
-        transfer_raw::<TestnetV0>(request, None).await.unwrap();
+        // transfer_raw::<TestnetV0>(request, None).await.unwrap();
+        transfer_public::<TestnetV0>(
+            request.asset_id().as_str(),
+            request.amount(),
+            request.fee(),
+            request.fee_private(),
+            request.message().clone(),
+            request.recipient().as_str(),
+            request.password().clone(),
+            None,
+        )
+        .await
+        .unwrap();
     }
 
     // Transfer funds to test wallet on local dev network

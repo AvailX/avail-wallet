@@ -73,7 +73,7 @@ struct DeepLinkPayload {
 pub fn run() {
     // let devtools = tauri_plugin_devtools::init();
     tauri::Builder::default()
-        .plugin(tauri_plugin_barcode_scanner::init())
+        // .plugin(tauri_plugin_barcode_scanner::init())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_process::init())
         // .plugin(devtools)
