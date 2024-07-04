@@ -139,7 +139,13 @@ function Settings() {
   const { t } = useTranslation();
   const shouldRunEffect = React.useRef(true);
 
-  const ProfileDisplay = () => {
+  const ProfileDisplay = ({
+    username,
+    address,
+  }: {
+    username: string;
+    address: string;
+  }) => {
     return (
       <Box display="flex" alignItems="center" my={3}>
         <Box
@@ -151,11 +157,12 @@ function Settings() {
         ></Box>
         <Box textAlign="left">
           <Typography fontWeight={700} fontSize="17px">
-            {/* {setUsername} */}
-            Normal Lowell
+            {username}
           </Typography>
           {/* {setAddress} */}
-          <Typography color="#A7A7A7">aleo7843ab4...3894</Typography>
+          <Typography color="#A7A7A7">
+            {address.length > 15 ? `${address.substring(0, 15)}...` : address}
+          </Typography>
         </Box>
       </Box>
     );
@@ -319,7 +326,7 @@ function Settings() {
           Settings
         </Typography>
       </Box>
-      <ProfileDisplay />
+      <ProfileDisplay username={username} address={address} />
       <Box textAlign="left">
         {SETTINGS_DETAIL.map(({ title, children }) => (
           <Box mb={2}>

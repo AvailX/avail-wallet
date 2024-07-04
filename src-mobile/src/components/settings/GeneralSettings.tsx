@@ -199,6 +199,7 @@ const GeneralSettings: React.FC<{
               InputProps={{
                 readOnly: true,
               }}
+              // disabled
               sx={{
                 bgcolor: "#264139",
                 borderRadius: "10px",
