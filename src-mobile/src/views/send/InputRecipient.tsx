@@ -105,7 +105,7 @@ function InputRecipient() {
   const [isLoading, setIsLoading] = React.useState(false);
 
   async function dgate() {
-    const response: string = await invoke<string>('get_delegate_flag', {});
+    const response: string = await invoke<string>("get_delegate_flag", {});
     return response;
   }
   React.useEffect(() => {
@@ -113,8 +113,7 @@ function InputRecipient() {
     // Set network
     dgate().then((res) => {
       console.log("This is my delegate", res);
-    }
-    );
+    });
     getNetwork()
       .then((res) => {
         setNetwork(res);
@@ -285,6 +284,16 @@ function InputRecipient() {
         setErrorAlert(true);
       });
   }, [token]);
+
+  function shortenAleoAddress(address: string) {
+    if (address.length <= 10) {
+      return address;
+    }
+    const start = address.slice(0, 6);
+    const end = address.slice(-4);
+    return `${start}...${end}`;
+  }
+
   return (
     <DashboardLayout>
       <Box pt={2}>
@@ -340,9 +349,8 @@ function InputRecipient() {
           >
             <Box textAlign='left'>
               <Typography fontSize='30px' color='#B6B6B6' fontWeight={400}>
-                {969.0}
+                {amount}
               </Typography>
-              <Typography color='#969696'>$6,749.30</Typography>
             </Box>
             <Box>
               <img src={aleoGreen} />
@@ -371,7 +379,7 @@ function InputRecipient() {
             borderRadius='9px'
           >
             <Typography fontSize='20px' fontWeight={700}>
-              {address || "No address found."}
+              {shortenAleoAddress?.(address) || "No address found."}
             </Typography>
           </Box>
         </Box>
@@ -437,7 +445,6 @@ const TextButtons = ({
 
   return (
     <>
-      <h1 style={{ color: "yellow" }}>{text}</h1>
       <Box
         width='100%'
         display='grid'

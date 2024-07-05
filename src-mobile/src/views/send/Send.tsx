@@ -353,7 +353,7 @@ function Send() {
           onClick={handleEnterPress}
           sx={{
             position: "absolute",
-            bottom: 40,
+            bottom: "calc( 15vh + 10px )",
             left: 0,
             py: 2,
           }}
