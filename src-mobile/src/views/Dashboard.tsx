@@ -7,6 +7,8 @@ import diamondShinyIcon from "../assets/diamond-shiny-icon.svg";
 import sendIcon from "../assets/send-icon.svg";
 import receiveIcon from "../assets/receive-icon.svg";
 
+import { open_url } from "../services/utils/open";
+
 import availLogo from "../assets/avail-icon.svg";
 import NftDisplay from "../components/NftDisplay";
 import NftDetailsDisplay from "../components/NftDetailsDisplay";
@@ -20,7 +22,28 @@ import ActivityDetails from "../components/ActivityDetails";
 import AsssetDisplay from "../components/AsssetDisplay";
 import DashboardCarousel from "../components/DashboardCarousel";
 import { useNavigate } from "react-router-dom";
-import { get_address } from "../../../src/services/storage/persistent";
+import { getName } from "../services/states/util";
+import { getAddress } from "../services/states/util";
+import { AirdropNft } from "../components/Nft";
+
+// Services
+import { get_nfts } from "../services/nfts/fetch";
+import { getWhitelists, getCollections } from "../services/quests/quests";
+
+// Types
+import { type INft, disruptorWhitelist } from "../types/nfts/nft";
+import {
+  type WhitelistResponse,
+  type Collection,
+  testCollection,
+} from "../types/quests/quest_types";
+import { type AvailError } from "../types/errors";
+
+// Interfaces
+import { type AssetType } from "../types/assets/asset";
+import { AvailEvent } from "../services/wallet-connect/WCTypes";
+import { handleGetTokens } from "services/tokens/get_tokens";
+import { useTranslation } from "react-i18next";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -40,6 +63,17 @@ const Dashboard = () => {
     { whitelist_img: availLogo, name: "Airdrop NFT 3" },
   ];
 
+  const [nfts, setNfts] = React.useState<INft[]>([]);
+  const [airdropNfts, setAirdropNfts] = React.useState<Collection[]>([]);
+
+  // Alert states
+  const [errorAlert, setErrorAlert] = React.useState(false);
+  const [successAlert, setSuccessAlert] = React.useState(false);
+  const [warningAlert, setWarningAlert] = React.useState(false);
+  const [infoAlert, setInfoAlert] = React.useState(false);
+  const [message, setMessage] = React.useState<string>("");
+  const [loading, setLoading] = React.useState(true);
+
   const [open, setOpen] = React.useState<boolean>(false);
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
@@ -51,9 +85,44 @@ const Dashboard = () => {
   const toggleActivityDetails = (newOpen: boolean) => (): void => {
     setOpenActivityDetails(newOpen);
   };
-  let address = get_address().then((data) => {
-    console.log("address", data);
-  });
+
+  const handleWhitelistCollectionCheck = (
+    whitelist: WhitelistResponse,
+    collections: Collection[]
+  ) => {
+    collections.forEach((collection) => {
+      if (collection.name === whitelist.collection_name) {
+        console.log("Adding airdrop nft");
+        console.log(collection);
+        console.log(airdropNfts);
+        setAirdropNfts([...airdropNfts, collection]);
+      }
+    });
+  };
+
+  const checkWhitelists = (
+    whitelists: WhitelistResponse[],
+    collections: Collection[]
+  ) => {
+    console.log(whitelists);
+    const selectedCollections: Collection[] = [];
+    whitelists.forEach((whitelist) => {
+      collections.forEach((collection) => {
+        if (collection.name === whitelist.collection_name) {
+          selectedCollections.push(collection);
+        }
+      });
+    });
+
+    setAirdropNfts(selectedCollections);
+  };
+
+  const handleXlink = async (url: string) => {
+    await open_url(url);
+  };
+  // let address = get_address().then((data) => {
+  //   console.log("address", data);
+  // });
   const sampleData = {
     recipient: "@zack_x",
     date: "12 Mar at 2:34 PM",
@@ -75,6 +144,83 @@ const Dashboard = () => {
     ],
   };
 
+  const shouldRunEffect = React.useRef(true);
+
+  const [username, setUsername] = React.useState<string>("");
+  const [address, setAddress] = React.useState<string>("aleo1gu...w4i");
+
+  /* --Events || Balance || Assets-- */
+  const [balance, setBalance] = React.useState<number>(0);
+  const [assets, setAssets] = React.useState<AssetType[]>([]);
+
+  const { t } = useTranslation();
+
+  const handleGetAssets = () => {
+    handleGetTokens()
+      .then((response) => {
+        console.log(response);
+        console.log("firing");
+        setAssets(response.assets);
+        setBalance(response.balance_sum);
+        console.log(`nfts are --` + airdropNfts.toString);
+      })
+      .catch((error) => {
+        console.log(error);
+        setMessage(t("home.messages.errors.balance"));
+        setErrorAlert(true);
+      });
+  };
+
+  React.useEffect(() => {
+    getName(setUsername).catch((error) => {
+      console.log(error);
+    });
+
+    getAddress(setAddress).catch((error) => {
+      console.log(error);
+    });
+
+    handleGetAssets();
+
+    if (shouldRunEffect.current) {
+      getCollections()
+        .then(async (collections) => {
+          console.log(collections);
+          const whitelists = await getWhitelists();
+          console.log(whitelists);
+
+          checkWhitelists(whitelists, collections);
+          setLoading(false);
+        })
+        .catch((err) => {
+          const error = err as AvailError;
+
+          if (error.error_type.toString() === "Unauthorized") {
+            // eslint-disable-next-line no-warning-comments
+            // TODO - Re-authenticate and fix execution on re-auth (Bala)
+
+            console.log("Unauthorized, re auth");
+
+            setOpen(true);
+          } else {
+            console.log(error.internal_msg);
+            setMessage(error.internal_msg);
+            setErrorAlert(true);
+          }
+        });
+
+      get_nfts()
+        .then((nfts) => {
+          setNfts(nfts);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      shouldRunEffect.current = false;
+    }
+  });
+
   return (
     <>
       <DashboardLayout>
@@ -82,35 +228,36 @@ const Dashboard = () => {
           onProfileClick={(): void => {
             setOpen(true);
           }}
+          profileAddress={address}
         />
-        <Typography color='#fff'>Total Balance</Typography>
+        <Typography color="#fff">Total Balance</Typography>
         <Typography
           sx={{ textShadow: "0 0 15px #00FFAA" }}
-          color='#00FFAA'
+          color="#00FFAA"
           fontWeight={600}
-          fontSize='40px'
+          fontSize="40px"
         >
-          $48,000.00
+          {`$` + balance}
         </Typography>
-        <Typography color='#01FFAA'>+450.6%</Typography>
+        {/* <Typography color="#01FFAA">+450.6%</Typography> */}
         <Box
-          display='flex'
-          alignItems='center'
+          display="flex"
+          alignItems="center"
           my={3}
-          justifyContent='space-between'
-          width='90%'
-          mx='auto'
+          justifyContent="space-between"
+          width="90%"
+          mx="auto"
         >
           {DASHBOARD_ITEMS.map(({ icon }, i) => (
             <Box
-              borderRadius='9px'
+              borderRadius="9px"
               p={1}
-              height='63px'
-              width='62px'
-              display='flex'
-              alignItems='center'
-              justifyContent='center'
-              bgcolor='#2A2A2A'
+              height="63px"
+              width="62px"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="#2A2A2A"
               key={i}
             >
               <img src={icon} />
@@ -118,12 +265,12 @@ const Dashboard = () => {
           ))}
         </Box>
 
-        <Box display='flex' mb={2}>
+        <Box display="flex" mb={2}>
           <Typography
             fontWeight={500}
             borderBottom={activeTab === "assets" ? "1px solid #FFFFFF" : ""}
-            fontSize='20px'
-            width='content-fit'
+            fontSize="20px"
+            width="content-fit"
             mr={2}
             onClick={() => {
               setActiveTab("assets");
@@ -134,8 +281,8 @@ const Dashboard = () => {
 
           <Typography
             fontWeight={500}
-            fontSize='20px'
-            width='content-fit'
+            fontSize="20px"
+            width="content-fit"
             borderBottom={activeTab === "nft" ? "1px solid #FFFFFF" : ""}
             mr={2}
             onClick={() => {
@@ -146,8 +293,8 @@ const Dashboard = () => {
           </Typography>
           <Typography
             fontWeight={500}
-            fontSize='20px'
-            width='content-fit'
+            fontSize="20px"
+            width="content-fit"
             borderBottom={activeTab === "activity" ? "1px solid #FFFFFF" : ""}
             onClick={() => {
               setActiveTab("activity");
@@ -178,7 +325,7 @@ const Dashboard = () => {
 
         {activeTab === "assets" && (
           <>
-            <AsssetDisplay />
+            <AsssetDisplay asset={assets} />
           </>
         )}
       </DashboardLayout>

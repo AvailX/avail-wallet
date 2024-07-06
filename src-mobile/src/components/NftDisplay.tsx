@@ -1,6 +1,20 @@
 import { Box, Typography } from "@mui/material";
 import Nft from "./Nft";
+import { AirdropNft } from "./Nft";
 import availLogo from "../assets/avail-icon.svg";
+
+// Services 
+import {get_nfts} from '../services/nfts/fetch';
+import {getWhitelists, getCollections} from '../services/quests/quests';
+
+// Types
+import {type INft, disruptorWhitelist} from '../types/nfts/nft';
+import {type WhitelistResponse, type Collection, testCollection} from '../types/quests/quest_types';
+import {type AvailError} from '../types/errors';
+
+import {useNavigate} from 'react-router-dom';
+
+
 
 const NftDisplay = ({ onClick }: { onClick: () => void }) => {
   const nftData = [
