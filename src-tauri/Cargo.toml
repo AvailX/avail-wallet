@@ -22,7 +22,7 @@ tauri-build = { version = "2.0.0-beta.17", features = [] }
 [dependencies]
 
 
-avail-common = { git = "https://github.com/availx/avail-lib", rev = "600e854", features = [
+avail-common = { git = "https://github.com/availx/avail-lib", rev = "4b1b811", features = [
     "snarkvm",
 ] }
 bs58 = "0.5.0"
