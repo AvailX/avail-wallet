@@ -296,7 +296,7 @@ function InputRecipient() {
   }
 
   useEffect(() => {
-    if (+amount > publicBalance || publicBalance === 0) {
+    if (+amount > publicBalance && publicBalance === 0) {
       setAmount(0);
       toast.error("Cannot send any token as balance is low");
     }
