@@ -45,6 +45,11 @@ import { AvailEvent } from "../services/wallet-connect/WCTypes";
 import { handleGetTokens } from "services/tokens/get_tokens";
 import { useTranslation } from "react-i18next";
 
+//Images
+import noNftsImage from "../assets/images/no_nfts.png";
+import noAssetsImage from "../assets/images/no_balance.png";
+import noActivyityImage from "../assets/images/no_activity.png";
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const goToOther = () => {
@@ -162,7 +167,7 @@ const Dashboard = () => {
         console.log("firing");
         setAssets(response.assets);
         setBalance(response.balance_sum);
-        console.log(`nfts are --` + airdropNfts.toString);
+        // console.log(`nfts are --` + nfts.length);
       })
       .catch((error) => {
         console.log(error);
@@ -317,17 +322,71 @@ const Dashboard = () => {
           </>
         )}
 
-        {activeTab === "nft" && (
-          <NftDisplay onClick={() => setActiveTab("nftDetails")} />
-        )}
-
+        {activeTab === "nft" &&
+          (nfts.length === 0 ? (
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <img src={noNftsImage} alt="No NFTs" />
+              <Typography
+                fontFamily="DM Sans"
+                fontSize="17px"
+                color="#B6B6B6"
+                mt={3}
+              >
+                No NFTs yet
+              </Typography>
+              <Typography
+                fontFamily="DM Sans"
+                fontSize="17px"
+                color="#969696"
+                mt={1}
+              >
+                Send NFTs from another wallet or{"\n"}complete a{" "}
+                <Box component="span" color="#00FFAA">
+                  Quest
+                </Box>
+                .
+              </Typography>
+            </Box>
+          ) : (
+            <NftDisplay
+              onClick={() => {
+                setActiveTab("nftDetails");
+              }}
+              nft={nfts}
+            />
+          ))}
         {activeTab === "nftDetails" && <NftDetailsDisplay />}
 
-        {activeTab === "assets" && (
-          <>
-            <AsssetDisplay asset={assets} />
-          </>
-        )}
+        {activeTab === "assets" &&
+          (assets.length === 0 ? (
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <img src={noAssetsImage} alt="No NFTs" />
+              <Typography
+                fontFamily="DM Sans"
+                fontSize="17px"
+                color="#B6B6B6"
+                mt={3}
+              >
+                No Assets yet
+              </Typography>
+              <Typography
+                fontFamily="DM Sans"
+                fontSize="17px"
+                color="#969696"
+                mt={1}
+              >
+                Send Assets from another wallet or{"\n"}buy{" "}
+                <Box component="span" color="#00FFAA">
+                  here
+                </Box>
+                .
+              </Typography>
+            </Box>
+          ) : (
+            <>
+              <AsssetDisplay asset={assets} />
+            </>
+          ))}
       </DashboardLayout>
       <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer} />
       <SwipeableEdgeDrawer
