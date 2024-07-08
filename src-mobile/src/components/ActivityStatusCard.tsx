@@ -24,43 +24,43 @@ export const PendingCard: FC<IPendingCard> = ({
   return (
     <Box
       onClick={onClick}
-      display='flex'
-      alignItems='center'
+      display="flex"
+      alignItems="center"
       my={0.5}
-      justifyContent='space-between'
-      borderBottom='1px solid #353535'
-      pb='5px'
+      justifyContent="space-between"
+      borderBottom="1px solid #353535"
+      pb="5px"
     >
-      <Box display='flex' alignItems='center'>
+      <Box display="flex" alignItems="center">
         <Box
-          bgcolor='#111111'
-          display='flex'
-          alignItems='center'
-          justifyContent='center'
-          width='41px'
-          height='41px'
-          borderRadius='4px'
+          bgcolor="#111111"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          width="41px"
+          height="41px"
+          borderRadius="4px"
           mr={1}
         >
           <img src={type === "buy" ? buyIcon : arrowUp} />
         </Box>
-        <Box textAlign='left'>
-          <Typography fontWeight={400} fontSize='15px'>
+        <Box textAlign="left">
+          <Typography fontWeight={400} fontSize="15px">
             {title}
           </Typography>
           <Typography
-            fontSize='10px'
+            fontSize="10px"
             color={status === "Canceled" ? "red" : "#00FFAA"}
           >
             {status === "Pending" ? "In process" : "Canceled"}
           </Typography>
         </Box>
       </Box>
-      <Box textAlign='right'>
-        <Typography fontSize='17px' fontWeight={700}>
+      <Box textAlign="right">
+        <Typography fontSize="17px" fontWeight={700}>
           {amount} USDT
         </Typography>
-        <Typography fontSize='10px' color='#00FFAA'>
+        <Typography fontSize="10px" color="#00FFAA">
           Fee {fee}
         </Typography>
       </Box>
@@ -70,32 +70,47 @@ export const PendingCard: FC<IPendingCard> = ({
 
 interface IProps {
   onClick: () => void;
+  activity: IPendingCard[];
 }
 
-export const PendingDisplay: FC<IProps> = ({ onClick }) => {
-  const pendingCards: IPendingCard[] = [
-    {
-      type: "buy",
-      title: "Buy USDT",
-      status: "Pending",
-      amount: 150.0,
-      fee: 5.0,
-    },
-    {
-      type: "transfer",
-      title: "Transfer to Savings",
-      status: "Completed",
-      amount: 500.0,
-      fee: 10.0,
-    },
-  ];
+export const PendingDisplay: FC<IProps> = ({ onClick, activity }) => {
+  // const pendingCards: IPendingCard[] = [
+  //   {
+  //     type: "buy",
+  //     title: "Buy USDT",
+  //     status: "Pending",
+  //     amount: 150.0,
+  //     fee: 5.0,
+  //   },
+  //   {
+  //     type: "transfer",
+  //     title: "Transfer to Savings",
+  //     status: "Completed",
+  //     amount: 500.0,
+  //     fee: 10.0,
+  //   },
+  //   {
+  //     type: "transfer",
+  //     title: "Transfer to Savings",
+  //     status: "Completed",
+  //     amount: 500.0,
+  //     fee: 10.0,
+  //   },
+  //   {
+  //     type: "transfer",
+  //     title: "Transfer to Savings",
+  //     status: "Completed",
+  //     amount: 500.0,
+  //     fee: 10.0,
+  //   },
+  // ];
   return (
     <Box>
-      <Typography fontSize='25px' mb={1} fontWeight={700} textAlign='left'>
-        Pending
+      <Typography fontSize="25px" mb={1} fontWeight={700} textAlign="left">
+        All Activities
       </Typography>
-      <Box borderRadius='9px' bgcolor='#2a2a2a' p={2}>
-        {pendingCards.map((item, i) => (
+      <Box borderRadius="9px" bgcolor="#2a2a2a" p={2}>
+        {activity.map((item, i) => (
           <PendingCard onClick={onClick} {...item} key={i} />
         ))}
       </Box>
@@ -122,10 +137,10 @@ export const CompletedDisplay = () => {
   ];
   return (
     <Box mt={2}>
-      <Typography fontSize='25px' mb={1} fontWeight={700} textAlign='left'>
+      <Typography fontSize="25px" mb={1} fontWeight={700} textAlign="left">
         Completed
       </Typography>
-      <Box borderRadius='9px' bgcolor='#2a2a2a' p={2}>
+      <Box borderRadius="9px" bgcolor="#2a2a2a" p={2}>
         {compledtedCards.map((item, i) => (
           <PendingCard {...item} key={i} />
         ))}

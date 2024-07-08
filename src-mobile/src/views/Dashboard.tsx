@@ -49,6 +49,10 @@ import { useTranslation } from "react-i18next";
 import noNftsImage from "../assets/images/no_nfts.png";
 import noAssetsImage from "../assets/images/no_balance.png";
 import noActivyityImage from "../assets/images/no_activity.png";
+import { SuccinctAvailEvent } from "types/avail-events/event";
+import { listen } from "@tauri-apps/api/event";
+import { useScan } from "../../../src/context/ScanContext";
+import { useRecentEvents } from "../../../src/context/EventsContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -158,6 +162,20 @@ const Dashboard = () => {
   const [balance, setBalance] = React.useState<number>(0);
   const [assets, setAssets] = React.useState<AssetType[]>([]);
 
+  /* --Event Drawer-- */
+  const [eventDrawerOpen, setEventDrawerOpen] = React.useState(false);
+  const [event, setEvent] = React.useState<SuccinctAvailEvent | undefined>();
+
+  /* --Block Scan State-- */
+  const { scanInProgress, startScan, endScan } = useScan();
+
+  const [localScan, setLocalScan] = React.useState<boolean>(false);
+  const [scanProgressPercent, setScanProgressPercent] =
+    React.useState<number>(0);
+
+  /* -- Recent Events State -- */
+  const { events, fetchEvents, updateEventList } = useRecentEvents();
+
   const { t } = useTranslation();
 
   const handleGetAssets = () => {
@@ -225,6 +243,48 @@ const Dashboard = () => {
       shouldRunEffect.current = false;
     }
   });
+
+  /* --Event Listners */
+  React.useEffect(() => {
+    const unlistenScan = listen("scan_progress", (event) => {
+      console.log(scanInProgress);
+      console.log(event);
+      console.log(event.payload);
+
+      const progress = event.payload as number;
+      if (progress !== 100) {
+        startScan();
+      }
+
+      setScanProgressPercent(progress);
+    });
+
+    const unlistenTx = listen("tx_state_change", (event) => {
+      console.log(event);
+
+      fetchEvents();
+      handleGetAssets();
+    });
+
+    return () => {
+      unlistenScan
+        .then((remove) => {
+          remove();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      unlistenTx
+        .then((remove) => {
+          remove();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      // Unlisten_reauth.then(remove => remove());
+    };
+  }, []);
 
   return (
     <>
@@ -311,16 +371,42 @@ const Dashboard = () => {
 
         <DashboardCarousel />
 
-        {activeTab === "activity" && (
-          <>
-            <PendingDisplay
-              onClick={() => {
-                setOpenActivityDetails(true);
-              }}
-            />
-            <CompletedDisplay />
-          </>
-        )}
+        {activeTab === "activity" &&
+          (events.length === 0 ? (
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <img src={noNftsImage} alt="No NFTs" />
+              <Typography
+                fontFamily="DM Sans"
+                fontSize="17px"
+                color="#B6B6B6"
+                mt={3}
+              >
+                No Activity yet
+              </Typography>
+              <Typography
+                fontFamily="DM Sans"
+                fontSize="17px"
+                color="#969696"
+                mt={1}
+              >
+                Go and do something and it will appear{"\n"}{" "}
+                <Box component="span" color="#00FFAA">
+                  here
+                </Box>
+                .
+              </Typography>
+            </Box>
+          ) : (
+            <>
+              <PendingDisplay
+                onClick={() => {
+                  setOpenActivityDetails(true);
+                }}
+                activity={events}
+              />
+              {/* <CompletedDisplay /> */}
+            </>
+          ))}
 
         {activeTab === "nft" &&
           (nfts.length === 0 ? (
