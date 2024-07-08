@@ -1050,7 +1050,7 @@ async fn install_prover(path: PathBuf, window: Window) -> AvailResult<()> {
     println!("Downloading inclusion.prover.cd85cc5...");
 
     let res = match client
-        .get("https://s3-us-west-1.amazonaws.com/testnet3.parameters/inclusion.prover.cd85cc5")
+        .get("https://s3-us-west-1.amazonaws.com/testnet.parameters/inclusion.prover.cd85cc5")
         .send()
         .await
     {

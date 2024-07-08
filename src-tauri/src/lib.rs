@@ -10,6 +10,7 @@ use crate::helpers::mobile_init::test_transfer_public_mobile;
 // use crate::services::record_handling::scan_utils::{
 //     handle_unconfirmed_transactions, scan_public_transitions,
 // };
+use crate::services::local_storage::persistent_storage::get_delegate_flag;
 use crate::services::record_handling::utils::get_all_nft_data;
 use log::LevelFilter;
 use log::{error, info};
@@ -114,6 +115,7 @@ pub fn run() {
             get_last_sync,
             get_backup_flag,
             update_backup_flag,
+            get_delegate_flag,
             get_network,
             get_language,
             update_language,
