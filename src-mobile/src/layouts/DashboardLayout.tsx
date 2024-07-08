@@ -17,7 +17,7 @@ const DashboardLayout: FC<IProps> = ({ children }) => {
     { icon: homeIcon, path: "/dashboard" },
     {
       icon: anchorIcon,
-      path: "/",
+      path: "/dashboard",
     },
     {
       icon: diamondIcon,

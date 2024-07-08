@@ -265,7 +265,7 @@ function Send() {
 
   const handleEnterPress = () => {
     console.log("Enter key pressed! Address:", address);
-    navigate("/input-send", { state: { address } });
+    navigate("/input-send", { state: { address1: address } });
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -353,7 +353,7 @@ function Send() {
           onClick={handleEnterPress}
           sx={{
             position: "absolute",
-            bottom: "calc( 15vh + 10px )",
+            bottom: "1vh",
             left: 0,
             py: 2,
           }}

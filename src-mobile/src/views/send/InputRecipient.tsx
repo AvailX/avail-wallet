@@ -40,6 +40,7 @@ import { AvailError } from "../../../../src/types/errors";
 
 import aleo from "../../../../src/assets/icons/tokens/aleo.svg";
 import { invoke } from "@tauri-apps/api/core";
+import { toast } from "react-toastify";
 
 const tokens = [
   {
@@ -74,7 +75,7 @@ function InputRecipient() {
 
   // Transfer states
   const [token, setToken] = React.useState<string>("ALEO");
-  const [recipient, setRecipient] = React.useState<string>("");
+  const [recipient, setRecipient] = React.useState<string>(address1);
   const [amount, setAmount] = React.useState<number>(0);
   const [transferMessage, setTransferMessage] = React.useState<string>("");
   // const [request, setRequest] =
@@ -129,7 +130,7 @@ function InputRecipient() {
       .then((res) => {
         console.log("This is my address", res);
         // ! HERE I am trying to send to my own address, will need to be changed
-        setRecipient(res);
+        // setRecipient(res);
         setAddress(res);
       })
       .catch((error) => {
@@ -294,6 +295,13 @@ function InputRecipient() {
     return `${start}...${end}`;
   }
 
+  useEffect(() => {
+    if (+amount > publicBalance || publicBalance === 0) {
+      setAmount(0);
+      toast.error("Cannot send any token as balance is low");
+    }
+  }, [amount]);
+
   return (
     <DashboardLayout>
       <Box pt={2}>
@@ -379,7 +387,7 @@ function InputRecipient() {
             borderRadius='9px'
           >
             <Typography fontSize='20px' fontWeight={700}>
-              {shortenAleoAddress?.(address) || "No address found."}
+              {shortenAleoAddress?.(recipient) || "No address found."}
             </Typography>
           </Box>
         </Box>
@@ -393,12 +401,12 @@ function InputRecipient() {
           sx={{
             width: "100%",
             border: "0px",
-            bgcolor: "#264139",
-            color: isLoading ? "#000" : "#00FFAA",
+            // bgcolor: "#264139",
+            // color: "#00FFAA",
             mb: 7,
           }}
         >
-          Send
+          {isLoading ? "Loading..." : "Send"}
         </Button>
       </Box>
     </DashboardLayout>
