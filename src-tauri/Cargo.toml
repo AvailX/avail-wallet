@@ -21,7 +21,7 @@ tauri-build = { version = "=2.0.0-beta.13", features = [] }
 
 
 [dependencies]
-avail-common = { git = "https://github.com/availx/avail-lib", rev = "f4dffed", features = [
+avail-common = { git = "https://github.com/availx/avail-lib", rev = "0909debac881c91d0252ab116de81a1c93c32aab", features = [
     "snarkvm",
 ] }
 app_dirs = { package = "app_dirs2", version = "2.5" }
