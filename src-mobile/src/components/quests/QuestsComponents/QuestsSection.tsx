@@ -2,12 +2,14 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import NavigateNextOutlinedIcon from "@mui/icons-material/NavigateNextOutlined";
 import { Campaign } from "../../../../../src/types/quests/quest_types";
+import { useNavigate } from "react-router-dom";
 
 interface DappsSectionProps {
   campaign: Campaign;
 }
 
 const QuestsSection: React.FC<DappsSectionProps> = ({ campaign }) => {
+  const navigate = useNavigate();
   return (
     <Box
       sx={{
@@ -17,6 +19,7 @@ const QuestsSection: React.FC<DappsSectionProps> = ({ campaign }) => {
         mt: "10px", // Add margin top
         mb: "10px",
       }}
+      onClick={() => navigate("/quests-details")}
     >
       <Box
         sx={{

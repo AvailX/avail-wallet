@@ -20,9 +20,11 @@ import { getCampaigns } from "../../../../src/services/quests/quests";
 import { relative } from "path";
 
 const QuestsScreen: React.FC = () => {
+  
   const [campaigns, setCampaigns] = React.useState<Campaign[]>([]);
   console.log(campaigns);
   console.log("Campaigns");
+
   React.useEffect(() => {
     console.log("CampaignsINNN");
     getCampaigns()
@@ -74,16 +76,7 @@ const QuestsScreen: React.FC = () => {
   return (
     <DashboardLayout>
       <QuestsAppBar activeTab={activeTab} onTabChange={handleTabChange} />
-      {/* <Box
-        sx={{
-          position: "relative",
-          width: "100%",
-          height: "200px",
-          mx: "-30px",
-          px: 0,
-          zIndex: "2",
-        }}
-      > */}
+
       <Box
         sx={{
           mt: 2,
@@ -91,12 +84,8 @@ const QuestsScreen: React.FC = () => {
           px: 0,
           mx: "-20px",
           right: "0",
-          // width: "100%",
-          // overflowX: "hidden",
-          // height: "100vh",
-
-          maxHeight: "calc(100vh - 17%)", // Adjust the height to fill the remaining viewport height
-          overflowY: "auto", // Enable vertical scrolling if content exceeds the container height
+          maxHeight: "calc(100vh - 17%)",
+          overflowY: "auto",
         }}
       >
         <Carousel
@@ -121,49 +110,6 @@ const QuestsScreen: React.FC = () => {
         {/* Quests screen */}
         {activeTab === "quests" && (
           <Box>
-            {/* Quests Ending Soon Section */}
-            <Box>
-              {/* Title */}
-              <Typography
-                mt="22px"
-                fontSize={25}
-                sx={{ color: "#ffffff", fontWeight: "bold", textAlign: "left" }}
-              >
-                {" "}
-                <span style={{ color: "#01f0a0" }}> Quests</span> Ending Soon!
-              </Typography>
-
-              {/* Container for the exchange item */}
-
-              <Box
-                sx={{
-                  position: "relative",
-                  width: "100%",
-                  // maxHeight: `${48 * campaigns.length}px`, // Calculate the height dynamically based on the number of items
-                  // overflowX: "auto",
-                  background: "#2A2A2A",
-                  padding: "10px",
-                  borderRadius: "22px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                }}
-              >
-                {/*This is the Row section of the container. placed at the bottom */}
-
-                {campaigns.map((campaign) => (
-                  <Box>
-                    <QuestsSection campaign={campaign} />
-                    <Divider
-                      variant="middle"
-                      // component="li"
-                      sx={{ bgcolor: "#353535" }}
-                    />
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-
             {/* Another container */}
             <Box>
               {/* Title */}
@@ -243,6 +189,44 @@ const QuestsScreen: React.FC = () => {
                 ))}
               </Box>
             </Box>
+
+            {/* Quests Ending Soon Section */}
+
+            {/* <Box>
+              <Typography
+                mt="22px"
+                fontSize={25}
+                sx={{ color: "#ffffff", fontWeight: "bold", textAlign: "left" }}
+              >
+                {" "}
+                <span style={{ color: "#01f0a0" }}> Quests</span> Ending Soon!
+              </Typography>
+              <Box
+                sx={{
+                  position: "relative",
+                  width: "100%",
+                  // maxHeight: `${48 * campaigns.length}px`, // Calculate the height dynamically based on the number of items
+                  // overflowX: "auto",
+                  background: "#2A2A2A",
+                  padding: "10px",
+                  borderRadius: "22px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                }}
+              > */}
+            {/* {campaigns.map((campaign) => (
+                  <Box>
+                    <QuestsSection campaign={campaign} />
+                    <Divider
+                      variant="middle"
+                      // component="li"
+                      sx={{ bgcolor: "#353535" }}
+                    />
+                  </Box>
+                ))} */}
+            {/* </Box>
+            </Box> */}
           </Box>
         )}
 

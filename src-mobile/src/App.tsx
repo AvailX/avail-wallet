@@ -32,6 +32,7 @@ import Username from "./views/create-wallet/Username";
 import Password from "./views/create-wallet/Password";
 
 import Login from "./views/Login";
+import QuestsDetails from "components/quests/QuestsComponents/QuestsDetails";
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
@@ -67,6 +68,7 @@ const App: React.FC = () => {
     /* --Quest Flow-- */
     { path: "/quests", element: <QuestsScreen /> },
     { path: "/campaign", element: <QuestsCampaign /> },
+    { path: "/quests-details", element: <QuestsDetails /> },
   ]);
 
   return <RouterProvider router={router} />;
