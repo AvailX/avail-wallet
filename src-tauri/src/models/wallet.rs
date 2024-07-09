@@ -33,9 +33,9 @@ impl<N: Network> BetterAvailWallet<N> {
     /// ```
     /// use availx_lib::models::wallet::BetterAvailWallet;
     /// # use availx_lib::models::storage::languages::Languages;
-    /// # use snarkvm::prelude::Testnet3;
+    /// # use snarkvm::prelude::TestnetV0;
     ///
-    /// let wallet = BetterAvailWallet::<Testnet3>::new(24, &Languages::English);
+    /// let wallet = BetterAvailWallet::<TestnetV0>::new(24, &Languages::English);
     ///
     /// assert!(wallet.is_ok());
     /// ```

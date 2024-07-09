@@ -123,7 +123,7 @@ pub fn delete_ios(password: Option<&str>) -> AvailResult<String> {
     let network = get_network()?;
     // verify password is correct before deletion
     let _validation = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet => search::<Testnet3>(password, "avl-v")?,
+        SupportedNetworks::Testnet => search::<TestnetV0>(password, "avl-v")?,
     };
 
     match passwords::delete_generic_password("com.avail", "avail-user-view", "avl-v") {
@@ -200,11 +200,11 @@ pub fn prepare_context() -> bool {
 mod tests {
     use super::*;
     use avail_common::models::constants::STRONG_PASSWORD;
-    use snarkvm::prelude::{PrivateKey, Testnet3};
+    use snarkvm::prelude::{PrivateKey, TestnetV0};
 
     #[test]
     fn test_store_key_local_password() {
-        let pk = PrivateKey::<Testnet3>::new(&mut rand::thread_rng()).unwrap();
+        let pk = PrivateKey::<TestnetV0>::new(&mut rand::thread_rng()).unwrap();
         let seed = pk.to_bytes_le().unwrap();
         let password = STRONG_PASSWORD.to_string();
 
@@ -213,7 +213,7 @@ mod tests {
 
     #[test]
     fn test_store_key_local_biometrics() {
-        let pk = PrivateKey::<Testnet3>::new(&mut rand::thread_rng()).unwrap();
+        let pk = PrivateKey::<TestnetV0>::new(&mut rand::thread_rng()).unwrap();
         let seed = pk.to_bytes_le().unwrap();
 
         store_key_local(&seed, "", true, true).unwrap();
@@ -229,12 +229,12 @@ mod tests {
 
     #[test]
     fn test_search_password() {
-        search::<Testnet3>(Some(STRONG_PASSWORD), "avl-p").unwrap();
+        search::<TestnetV0>(Some(STRONG_PASSWORD), "avl-p").unwrap();
     }
 
     #[test]
     fn test_search_biometrics() {
-        search::<Testnet3>(None, "avl-p").unwrap();
+        search::<TestnetV0>(None, "avl-p").unwrap();
     }
 
     #[tokio::test]

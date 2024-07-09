@@ -131,7 +131,6 @@ mod tests {
     #[tokio::test]
     async fn test_create_record() {
         let new_exec = get_execution_object().await.unwrap();
-        // let new_exec = Execution::<Testnet3>::new();
         let exec_obj: Vec<u8> = FeeRequest::to_bytes_execution_object::<TestnetV0>(new_exec)
             .await
             .unwrap();

@@ -1,4 +1,4 @@
-use snarkvm::prelude::{Testnet3, ToBytes};
+use snarkvm::prelude::{TestnetV0, ToBytes};
 use std::str::FromStr;
 
 use crate::{
@@ -19,7 +19,7 @@ pub fn android_auth(password: Option<&str>, _key_type: &str) -> AvailResult<()> 
     let network = get_network()?;
 
     let result = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet => keystore_load::<Testnet3>(password, "avl-v")?,
+        SupportedNetworks::Testnet => keystore_load::<TestnetV0>(password, "avl-v")?,
     };
 
     let view_key_bytes = match result {

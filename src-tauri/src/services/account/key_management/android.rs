@@ -599,7 +599,7 @@ pub fn keystore_delete(password: Option<&str>) -> AvailResult<String> {
     let network = get_network()?;
 
     let _validation = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet => keystore_load::<Testnet3>(password, "avl-v")?,
+        SupportedNetworks::Testnet => keystore_load::<TestnetV0>(password, "avl-v")?,
     };
 
     let (jvm, activity) = prepare_jvm()?;
@@ -664,7 +664,7 @@ mod tests {
 
     #[test]
     fn test_keystore_init_password() {
-        let wallet = AvailWallet::<Testnet3>::new().unwrap();
+        let wallet = AvailWallet::<TestnetV0>::new().unwrap();
 
         let _result = keystore_init(
             STRONG_PASSWORD,
@@ -678,7 +678,7 @@ mod tests {
     //Requires android environment to run
     #[test]
     fn test_keystore_init_biometric() {
-        let wallet = AvailWallet::<Testnet3>::new().unwrap();
+        let wallet = AvailWallet::<TestnetV0>::new().unwrap();
 
         let _result = keystore_init("", true, &wallet.private_key, &wallet.view_key).unwrap();
     }
@@ -686,7 +686,7 @@ mod tests {
     //Requires android environment to run if not password auth
     #[test]
     fn test_keystore_load() {
-        let _result = keystore_load::<Testnet3>(Some(STRONG_PASSWORD), "avl-p").unwrap();
+        let _result = keystore_load::<TestnetV0>(Some(STRONG_PASSWORD), "avl-p").unwrap();
     }
 
     //Requires android environment to run
@@ -714,6 +714,6 @@ mod tests {
             110, 76, 116, 67, 76, 82, 82, 82, 116, 100, 115, 69,
         ];
 
-        let _view_key = ViewKey::<Testnet3>::from_bytes_le(&v_key).unwrap();
+        let _view_key = ViewKey::<TestnetV0>::from_bytes_le(&v_key).unwrap();
     }
 }

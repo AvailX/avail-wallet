@@ -57,6 +57,11 @@ pub fn setup_obscura_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
     Ok(api_client)
 }
 
+pub fn setup_aleo_client<N: Network>() -> AvailResult<AleoAPIClient<N>> {
+    let aleo_client = AleoAPIClient::<N>::new("https://api.explorer.aleo.org/v1", "testnet")?;
+    Ok(aleo_client)
+}
+
 pub fn network_status<N: Network>() -> AvailResult<Status> {
     let obscura_client = setup_obscura_client::<N>()?;
     let aleo_client = AleoAPIClient::<N>::new("https://api.explorer.aleo.org/v1", "testnet")?;
