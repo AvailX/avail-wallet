@@ -24,7 +24,7 @@ import verified from "../../assets/icons/verified.svg";
 import { BodyText500 } from "../../components/typography/typography";
 
 // Services
-import { deleteCampaign, isQuestCompleted } from "../../services/quests/quests";
+import { deleteCampaign, fetchQuestMetrics, isQuestCompleted } from "../../services/quests/quests";
 
 // Hooks
 import { useLocation, useNavigate } from "react-router-dom";
@@ -43,6 +43,7 @@ const Quests: React.FC = () => {
 	const navigate = useNavigate();
 	const [openDialog, setOpenDialog] = React.useState(false);
 	const [reAuthDialogOpen, setReAuthDialogOpen] = React.useState(false);
+	const [metrics, setMetrics] = React.useState([]);
 
 	const [success, setSuccess] = React.useState(false);
 	const [error, setError] = React.useState(false);
@@ -72,6 +73,7 @@ const Quests: React.FC = () => {
 		navigate("/create-tasks", { state: campaignDetails });
 	};
 
+
 	const handleAddQuestDummy = () => {
 		navigate("/create-tasks", { state: campaignDetailsDummy });
 	};
@@ -99,6 +101,18 @@ const Quests: React.FC = () => {
 	const handleDeleteConfirmation = () => {
 		setOpenDialog(true);
 	};
+	const handleFetchMetrics = async () => {
+		try {
+			console.log('Quest:', quest);
+			console.log('Quest ID:', quest?.id);
+			const metrics = await fetchQuestMetrics(quest?.id);
+			setMetrics(Number(metrics));
+			console.log('Metrics:', Number(metrics));
+		} catch (error) {
+			console.error("Error fetching metrics:", error);
+		}
+	};
+
 	return (
 		<Layout>
 			<ErrorAlert
@@ -249,6 +263,36 @@ const Quests: React.FC = () => {
 							>
 								<mui.Typography fontSize={'15px'} color="#000" variant="h6">
 									Delete Campaign
+								</mui.Typography>
+							</mui.Box>
+						)}
+					</mui.Box>
+					<mui.Box>
+						{campaign_state.owner === ownerAddr && (
+							// <mui.Button
+							// 	variant='contained'
+							// 	color='primary'
+							// 	onClick={handleDeleteConfirmation}
+							// >
+							// 	Delete Campaign
+							// </mui.Button>
+							<mui.Box
+								sx={{
+									backgroundColor: '#fff',
+									height: '40px',
+									width: '150px',
+									mr: '2%',
+									borderRadius: '8px',
+									alignContent: 'center',
+									textAlign: 'center',
+									marginRight: '20px',
+									cursor: 'pointer',
+									marginTop: '5px',
+								}}
+								onClick={handleFetchMetrics}
+							>
+								<mui.Typography fontSize={'15px'} color="#000" variant="h6">
+									Fetch Metrics
 								</mui.Typography>
 							</mui.Box>
 						)}

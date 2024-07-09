@@ -23,7 +23,7 @@ use tauri_plugin_http::reqwest;
 
 use snarkvm::prelude::{Network, TestnetV0, Transaction};
 
-use super::aleo_client::setup_client;
+use super::aleo_client::setup_aleo_client;
 use super::client::SESSION;
 
 /* GET ALL CAMPAIGNS */
@@ -309,7 +309,7 @@ async fn verify_task_raw<N: Network>(
 
     let mut transaction_ids: Vec<N::TransactionID> = vec![];
     let mut block_heights: Vec<u32> = vec![];
-    let aleo_client = setup_client::<N>()?;
+    let aleo_client = setup_aleo_client::<N>()?;
 
     for encrypted_transaction in encrypted_transactions {
         // check if the encypted_transaction created_at date is in between the start_time and end_time
@@ -1127,6 +1127,54 @@ pub async fn distribute_rewards(quest_id: &str) -> AvailResult<()> {
     }
 }
 
+#[tauri::command(rename_all = "snake_case")]
+pub async fn fetch_quest_metrics(quest_id: &str) -> AvailResult<String> {
+    let path = format!("metrics/{}", quest_id);
+    let res = match get_quest_client_with_session(reqwest::Method::GET, &path)?
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error fetching metrics".to_string(),
+            ))
+        }
+    };
+    if res.status() == 200 {
+        let count_str = match res.json().await {
+            Ok(res) => {
+                let res_vec: Vec<Uuid> = res;
+                println!("Metrics: {:?}", res_vec.len());
+                res_vec.len().to_string()
+            }
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error updating collection".to_string(),
+                ))
+            }
+        };
+
+        Ok(count_str)
+    } else if res.status() == 401 {
+        Err(AvailError::new(
+            AvailErrorType::Unauthorized,
+            "User session has expired.".to_string(),
+            "Your session has expired, please authenticate again.".to_string(),
+        ))
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Error fetching rewards".to_string(),
+            "Error fetching rewards".to_string(),
+        ))
+    }
+}
+
 // #[tauri::command(rename_all = "snake_case")]
 // pub async fn airdrop_nfts(collection_name: String, addresses: Vec<String>) -> AvailResult<()> {
 //     // create a json reuesy with the collection name and addresses
@@ -1458,5 +1506,12 @@ mod tests {
         println!("Result: {:?}", result);
     }
 
-    // #[tokio::test]
+    #[tokio::test]
+    async fn test_fetch_quest_metrics() {
+        session_setup().await;
+
+        let quest_id = "25356243-9876-4c32-a57e-6371359a7462";
+        let result = fetch_quest_metrics(quest_id).await.unwrap();
+        println!("Result: {:?}", result);
+    }
 }

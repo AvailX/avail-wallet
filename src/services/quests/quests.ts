@@ -25,6 +25,10 @@ export async function createCampaign(
 	return invoke<Campaign>('create_campaign', { title, subtitle, desc_1, desc_main, desc_2, inner_desc, box_image, bg_image, profile_image, color, points_image, project_name });
 }
 
+export async function fetchQuestMetrics(quest_id: string) {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	return invoke<String>('fetch_quest_metrics', { quest_id });
+}
 export async function updateCampaign(
 	campaignId: string,
 	title: string,

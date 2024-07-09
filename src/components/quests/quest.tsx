@@ -2,19 +2,20 @@ import React from 'react';
 import * as mui from '@mui/material';
 
 // Types
-import {type Quest} from '../../types/quests/quest_types';
+import { type Quest } from '../../types/quests/quest_types';
 
 // Typography
-import {SubMainTitleText} from '../typography/typography';
+import { SubMainTitleText } from '../typography/typography';
 
 // Services
-import {isQuestCompleted} from '../../services/quests/quests';
+import { fetchQuestMetrics, isQuestCompleted } from '../../services/quests/quests';
 
 // Components
 import TaskDrawer from './tasks_drawer';
 
 // Icon
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Points from './points/points';
 
 type QuestBoxProps = {
 	quest: Quest;
@@ -26,14 +27,14 @@ type QuestBoxProps = {
 function formateDateString(date: string) {
 	const d = new Date(date);
 	const day = d.getDate();
-	const month = d.toLocaleString('default', {month: 'long'});
+	const month = d.toLocaleString('default', { month: 'long' });
 	const year = d.getFullYear();
 	return `${day} ${month} ${year}`;
 }
 
-const QuestBox: React.FC<QuestBoxProps> = ({quest, openTasks, setOpenTasks, setQuest}) => {
+const QuestBox: React.FC<QuestBoxProps> = ({ quest, openTasks, setOpenTasks, setQuest }) => {
 	const [completed, setCompleted] = React.useState(false);
-
+	const [metrics, setMetrics] = React.useState(0);
 	const shouldRunEffect = React.useRef(true);
 	React.useEffect(() => {
 		if (shouldRunEffect.current) {
@@ -42,6 +43,7 @@ const QuestBox: React.FC<QuestBoxProps> = ({quest, openTasks, setOpenTasks, setQ
 				if (res) {
 					setCompleted(true);
 				}
+
 			}).catch(err => {
 				console.log(err);
 			});
@@ -49,6 +51,21 @@ const QuestBox: React.FC<QuestBoxProps> = ({quest, openTasks, setOpenTasks, setQ
 		}
 	}, []);
 
+	React.useEffect(() => {
+		const fetchMetrics = async () => {
+			try {
+				console.log('Quest:', quest);
+				console.log('Quest ID:', quest.id);
+				const metrics = await fetchQuestMetrics(quest.id);
+				setMetrics(Number(metrics));
+				console.log('Metrics:', Number(metrics));
+			} catch (error) {
+				console.error("Error fetching metrics:", error);
+			}
+		};
+
+		fetchMetrics();
+	}, []);
 	return (
 		<mui.Box sx={{
 			width: '450px',
@@ -68,21 +85,21 @@ const QuestBox: React.FC<QuestBoxProps> = ({quest, openTasks, setOpenTasks, setQ
 				boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
 			},
 		}}
-		onClick={() => {
-			setQuest(quest);
-			setOpenTasks(true);
-		}}
+			onClick={() => {
+				setQuest(quest);
+				setOpenTasks(true);
+			}}
 		>
-			<SubMainTitleText color='#FFF' sx={{backdropFilter: 'blur(2px)'}}>{quest.title}</SubMainTitleText>
-			<mui.Typography variant='body1' color='#fff' sx={{mb: '13%', backdropFilter: 'blur(2px)'}}>{quest.description}</mui.Typography>
-			{ quest.reward.method.toString() === 'LuckyDraw' ? (
-				<mui.Box sx={{display: 'flex', flexDirection: 'column'}}>
-					<mui.Typography variant='h4' color='#FFF' sx={{backdropFilter: 'blur(2px)'}}> Chance to Win {quest.reward.collection_name} Whitelist</mui.Typography>
+			<SubMainTitleText color='#FFF' sx={{ backdropFilter: 'blur(2px)' }}>{quest.title}</SubMainTitleText>
+			<mui.Typography variant='body1' color='#fff' sx={{ mb: '13%', backdropFilter: 'blur(2px)' }}>{quest.description}</mui.Typography>
+			{quest.reward.method.toString() === 'LuckyDraw' ? (
+				<mui.Box sx={{ display: 'flex', flexDirection: 'column' }}>
+					<mui.Typography variant='h4' color='#FFF' sx={{ backdropFilter: 'blur(2px)' }}> Chance to Win {quest.reward.collection_name} Whitelist</mui.Typography>
 					<mui.Typography variant='body1' color='#00FFAA'> Allocation {quest.reward.amount} </mui.Typography>
 				</mui.Box>
 			)
 				: quest.reward.method.toString() === 'FCFS' ? (
-					<mui.Box sx={{display: 'flex', flexDirection: 'column'}}>
+					<mui.Box sx={{ display: 'flex', flexDirection: 'column' }}>
 						<mui.Typography variant='h4' color='#FFF'> First {quest.reward.amount} to complete.</mui.Typography>
 						<mui.Typography variant='body1' color='#00FFAA'> Gets {quest.reward.collection_name} Whitelist </mui.Typography>
 					</mui.Box>
@@ -92,9 +109,9 @@ const QuestBox: React.FC<QuestBoxProps> = ({quest, openTasks, setOpenTasks, setQ
 					)
 			}
 			{completed ? (
-				<CheckCircleIcon sx={{color: '#00FFAA', width: '35px', height: '35px'}}/>
+				<CheckCircleIcon sx={{ color: '#00FFAA', width: '35px', height: '35px' }} />
 			) : (
-				<mui.Typography variant='body1' color='#A3A3A3' sx={{mt: '2%'}}>Expires on: {formateDateString(quest.expires_on.toString())}</mui.Typography>
+				<mui.Typography variant='body1' color='#A3A3A3' sx={{ mt: '2%' }}>Expires on: {formateDateString(quest.expires_on.toString())}</mui.Typography>
 			)}
 		</mui.Box>);
 };

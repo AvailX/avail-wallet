@@ -2,8 +2,8 @@ import * as React from 'react';
 import * as mui from '@mui/material';
 
 import Layout from './reusable/layout';
-import {useNavigate} from 'react-router-dom';
-import {listen} from '@tauri-apps/api/event';
+import { useNavigate } from 'react-router-dom';
+import { listen } from '@tauri-apps/api/event';
 
 // Componenets
 import SideMenu from '../components/sidebar';
@@ -22,47 +22,47 @@ import NetworkDownDialog from '../components/dialogs/network_down';
 import Points from '../components/quests/points/points';
 
 // State functions
-import {getName} from '../services/states/utils';
-import {getAuth} from '../services/states/utils';
-import {getAddress} from '../services/states/utils';
+import { getName } from '../services/states/utils';
+import { getAuth } from '../services/states/utils';
+import { getAddress } from '../services/states/utils';
 
 // Interfaces
-import {type AssetType} from '../types/assets/asset';
-import {AvailEvent} from '../services/wallet-connect/WCTypes';
+import { type AssetType } from '../types/assets/asset';
+import { AvailEvent } from '../services/wallet-connect/WCTypes';
 import Asset from '../components/assets/asset';
-import {ScanProgressEvent, type TxScanResponse} from '../types/events';
-import {type AvailError, AvailErrorType} from '../types/errors';
-import {type SuccinctAvailEvent} from '../types/avail-events/event';
-import {NetworkStatus, switchToObscura} from '../services/util/network';
-import {type PointsResponse, testPoints} from '../types/quests/quest_types';
+import { ScanProgressEvent, type TxScanResponse } from '../types/events';
+import { type AvailError, AvailErrorType } from '../types/errors';
+import { type SuccinctAvailEvent } from '../types/avail-events/event';
+import { NetworkStatus, switchToObscura } from '../services/util/network';
+import { type PointsResponse, testPoints } from '../types/quests/quest_types';
 
 // Context hooks
-import {useScan} from '../context/ScanContext';
-import {useWalletConnectManager} from '../context/WalletConnect';
-import {useRecentEvents} from '../context/EventsContext';
+import { useScan } from '../context/ScanContext';
+import { useWalletConnectManager } from '../context/WalletConnect';
+import { useRecentEvents } from '../context/EventsContext';
 
 // Typography
-import {SmallText, SmallText400, SubtitleText} from '../components/typography/typography';
+import { SmallText, SmallText400, SubtitleText } from '../components/typography/typography';
 
 // Alerts
 import {
 	ErrorAlert, SuccessAlert, WarningAlert, InfoAlert,
 } from '../components/snackbars/alerts';
 
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import Balance from '../components/balance';
-import {handleGetTokens} from '../services/tokens/get_tokens';
+import { handleGetTokens } from '../services/tokens/get_tokens';
 import {
 	set_first_visit, get_first_visit, set_visit_session_flag, get_visit_session_flag,
 } from '../services/storage/localStorage';
-import {os} from '../services/util/open';
-import {preInstallInclusionProver} from '../services/transfer/inclusion';
-import {sync_backup} from '../services/scans/backup';
-import {scan_blocks} from '../services/scans/blocks';
-import {scan_messages} from '../services/scans/encrypted_messages';
-import {getNetwork, getBackupFlag} from '../services/storage/persistent';
-import {getNetworkStatus} from '../services/util/network';
-import {getPoints} from '../services/quests/quests';
+import { os } from '../services/util/open';
+import { preInstallInclusionProver } from '../services/transfer/inclusion';
+import { sync_backup } from '../services/scans/backup';
+import { scan_blocks } from '../services/scans/blocks';
+import { scan_messages } from '../services/scans/encrypted_messages';
+import { getNetwork, getBackupFlag } from '../services/storage/persistent';
+import { getNetworkStatus } from '../services/util/network';
+import { getPoints } from '../services/quests/quests';
 
 import '../styles/animations.css';
 
@@ -102,13 +102,13 @@ function Home() {
 	const [event, setEvent] = React.useState<SuccinctAvailEvent | undefined>();
 
 	/* --Block Scan State-- */
-	const {scanInProgress, startScan, endScan} = useScan();
+	const { scanInProgress, startScan, endScan } = useScan();
 
 	const [localScan, setLocalScan] = React.useState<boolean>(false);
 	const [scanProgressPercent, setScanProgressPercent] = React.useState<number>(0);
 
 	/* -- Recent Events State -- */
-	const {events, fetchEvents, updateEventList} = useRecentEvents();
+	const { events, fetchEvents, updateEventList } = useRecentEvents();
 
 	/* --Events || Balance || Assets-- */
 	const [balance, setBalance] = React.useState<number>(0);
@@ -119,7 +119,7 @@ function Home() {
 
 	const [transferState, setTransferState] = React.useState<boolean>(false);
 
-	const {t} = useTranslation();
+	const { t } = useTranslation();
 	const shouldRotate = transferState || scanInProgress || localScan;
 	const shouldRunEffect = React.useRef(true);
 
@@ -132,7 +132,7 @@ function Home() {
 		},
 	});
 
-	const RotatingSyncIcon = mui.styled(SyncIcon)(({theme}) => ({
+	const RotatingSyncIcon = mui.styled(SyncIcon)(({ theme }) => ({
 		color: '#00FFAA',
 		width: '40px',
 		height: '30px',
@@ -437,7 +437,7 @@ function Home() {
 			{/* Network Down Dialog */}
 			<NetworkDownDialog isOpen={networkDownDialog} onRequestClose={() => {
 				setNetworkDownDialog(false);
-			}} status={networkStatus}/>
+			}} status={networkStatus} />
 
 			{/* Side Menu */}
 
@@ -459,7 +459,7 @@ function Home() {
 				}}>
 					{scanInProgress
 						&& <mui.Box sx={{ width: '100%', bgcolor: '#00FFAA', height: '30px' }}>
-							<SmallText400 sx={{color: '#111111'}}> {t('home.scan.progress')} {scanProgressPercent?.toString()}%{t('home.scan.complete')}</SmallText400>
+							<SmallText400 sx={{ color: '#111111' }}> {t('home.scan.progress')} {scanProgressPercent?.toString()}%{t('home.scan.complete')}</SmallText400>
 						</mui.Box>
 					}
 					{scanInProgress
@@ -469,17 +469,17 @@ function Home() {
 					<mui.Box sx={{
 						display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', mt: '2%', mr: '5%', alignItems: 'center',
 					}}>
-						<mui.Chip label={network} variant='outlined' sx={{mr: '2%', color: '#a3a3a3'}} />
+						<mui.Chip label={network} variant='outlined' sx={{ mr: '2%', color: '#a3a3a3' }} />
 						<ProfileBar address={address} name={username}></ProfileBar>
-						{ networkStatus !== NetworkStatus.Up
-						&& <WarningIcon sx={{color: (networkStatus === NetworkStatus.Warning) ? '#FFA500' : '#FF0000', ml: '1%', cursor: 'pointer'}}
-							onClick={() => {
-								setNetworkDownDialog(true);
-							}} />
+						{networkStatus !== NetworkStatus.Up
+							&& <WarningIcon sx={{ color: (networkStatus === NetworkStatus.Warning) ? '#FFA500' : '#FF0000', ml: '1%', cursor: 'pointer' }}
+								onClick={() => {
+									setNetworkDownDialog(true);
+								}} />
 						}
 					</mui.Box>
 
-					<mui.Box sx={{display: 'flex', flexDirection: 'row', width: '100%', alignItems: 'center', justifyContent: 'space-between'}}>
+					<mui.Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', alignItems: 'center', justifyContent: 'space-between' }}>
 						{/* Balance section */}
 						<mui.Box sx={{
 							background: 'linear-gradient(90deg, #1E1D1D 0%, #111111 100%)', display: 'flex', flexDirection: 'column', p: 2, borderRadius: '30px', width: '65%',
