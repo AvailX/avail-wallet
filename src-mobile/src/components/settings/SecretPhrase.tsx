@@ -115,6 +115,40 @@ function SecretPhrase() {
           </mui.IconButton>
         )}
       </mui.Box>
+      <mui.Box
+        sx={{
+          mt: "2%",
+          borderRadius: "10px",
+          bgcolor: "#1E1D1D",
+          justifyContent: "space-between",
+          mb: "1%",
+          alignItems: "center",
+          position: "relative",
+          padding: 2,
+          display: "flex",
+          flexDirection: "row",
+        }}
+      >
+        {/* Overlay with blur effect */}
+        {!revealAll && (
+          <mui.Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              bgcolor: "rgba(0, 0, 0, 0.5)", // Dark overlay
+              backdropFilter: "blur(4px)", // Blur effect
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "10px", // Match the parent's border radius
+            }}
+          ></mui.Box>
+        )}
+        <SmallText400 sx={{ color: "#FFF" }}>{param}</SmallText400>
+      </mui.Box>
     </mui.Box>
   );
 
