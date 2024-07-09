@@ -22,8 +22,9 @@
     "react": "^18.2.0",
     "react-awesome-slider": "^4.1.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.51.5",
+    "react-multi-carousel": "^2.8.5",
     "react-router-dom": "^6.23.0",
+    "react-hook-form": "^7.51.5",
     "react-toastify": "^10.0.5",
     "yup": "^1.4.0"
   },
@@ -40,6 +41,7 @@
     "eslint-plugin-react-refresh": "^0.4.6",
     "internal-ip": "^7.0.0",
     "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "vite": "^5.2.0",
+    "vite-plugin-node-polyfills": "^0.22.0"
   }
 }

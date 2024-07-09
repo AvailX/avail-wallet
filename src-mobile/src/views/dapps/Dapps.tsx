@@ -10,12 +10,14 @@ import "react-multi-carousel/lib/styles.css";
 import img from "../assets/connected-dapp.svg";
 import NavigateNextOutlinedIcon from "@mui/icons-material/NavigateNextOutlined";
 import DappsSection from "../../components/dapps/DappsSection";
+import { displayDapps, dapps } from "../../assets/dapps/dapps";
 
-interface DappsPageProps {
-  dapps: Dapp[];
-}
+// interface DappsPageProps {
+//   dapps: Dapp[];
+// }
 
-const DappsPage: React.FC<DappsPageProps> = ({ dapps }) => {
+// const DappsPage: React.FC<DappsPageProps> = ({ dapps }) => {
+const DappsPage = () => {
   const renderHorizontalScrollContainers = () => {
     return dapps.map((dapp, index) => (
       <HorizontalScrollContainer key={index} dapp={dapp} />
@@ -100,23 +102,22 @@ const DappsPage: React.FC<DappsPageProps> = ({ dapps }) => {
               {/* Container for the exchange item */}
 
               <Box
-                sx={{
-                  position: "relative",
-                  width: "340px",
-                  maxHeight: `${48 * dapps.length}px`, // Calculate the height dynamically based on the number of items
-                  overflowX: "auto",
-                  background: "#2A2A2A",
-                  padding: "10px",
-                  borderRadius: "22px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                }}
+               sx={{
+                position: "relative",
+                width: "340px",
+                overflowX: "auto",
+                background: "#2A2A2A",
+                padding: "10px",
+                borderRadius: "22px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-end",
+              }}
               >
                 {/*This is the Row section of the container. placed at the bottom */}
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
+                {dapps.map((dapp, index) => (
+                  <DappsSection title="Exchanges" dapp={dapp} />
+                ))}
               </Box>
             </Box>
 
@@ -148,11 +149,9 @@ const DappsPage: React.FC<DappsPageProps> = ({ dapps }) => {
                 }}
               >
                 {/*This is the Row section of the container. placed at the bottom */}
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
-                <DappsSection title="Exchanges" dapps={dapps} />
+                {dapps.map((dapp, index) => (
+                  <DappsSection title="Exchanges" dapp={dapp} />
+                ))}
               </Box>
             </Box>
           </Box>

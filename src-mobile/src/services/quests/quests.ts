@@ -1,9 +1,9 @@
 import { invoke } from '@tauri-apps/api/core';
 
-import { type Campaign, type Quest, type WhitelistResponse, type PointsResponse, type Collection } from '../../../src/types/quests/quest_types';
+import { type Campaign, type Quest, type WhitelistResponse, type PointsResponse, type Collection } from '../../types/quests/quest_types';
 
 export async function getCampaigns() {
-	console.log("getCampaigns");
+	console.log("Get Campaigns");
 	return invoke<Campaign[]>('get_campaigns');
 }
 

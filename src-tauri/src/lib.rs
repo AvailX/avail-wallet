@@ -12,10 +12,10 @@ use log::LevelFilter;
 use log::{error, info};
 use services::account::generation::create_seed_phrase_wallet;
 use services::account::generation::import_wallet;
+use services::account::key_management::faceid::{get_key_ios, store_keys_ios};
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
 use services::account::utils::{network_status_check, open_url, os_type};
 use services::authentication::session::get_session;
-use services::account::key_management::faceid::{store_keys_ios, get_key_ios};
 use services::local_storage::persistent_storage::{
     get_address_string, get_auth_type, get_backup_flag, get_language, get_last_sync, get_network,
     get_username, update_language,
@@ -23,7 +23,7 @@ use services::local_storage::persistent_storage::{
 
 use api::quests::{
     check_quest_completion, get_campaigns, get_collections, get_points, get_quests_for_campaign,
-    get_whitelists, is_task_verified, verify_task,
+    get_whitelists, is_task_verified, set_session_temp, verify_task,
 };
 use api::{
     aleo_client::switch_to_obscura,
@@ -158,6 +158,8 @@ pub fn run() {
             switch_to_obscura,
             store_keys_ios,
             get_key_ios,
+            //remove after login auth impl is done
+            set_session_temp,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

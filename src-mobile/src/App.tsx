@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 
 import * as React from "react";
+import { testCampaign, quests } from "../src/types/quests/quest_types";
 
 // Screens
 import EntryPoint from "./views/Entrypoint";
@@ -21,10 +22,17 @@ import Send from "./views/send/Send";
 import InputRecipient from "./views/send/InputRecipient";
 import QrCode from "./views/QrCode";
 import Settings from "./views/Settings";
+import ChooseMethod from "./views/add-an-existing-account/ChooseMethod";
+import PrivateKeyLogin from "./views/add-an-existing-account/InputPrivateKey";
+import SeedLogin from "./views/add-an-existing-account/InputSeedPhrase";
+import DappsPage from "./views/dapps/Dapps";
+import QuestsCampaign from "./views/quests/QuestsCampaign";
+import QuestsScreen from "./views/quests/QuestsScreen";
 import Username from "./views/create-wallet/Username";
 import Password from "./views/create-wallet/Password";
 
 import Login from "./views/Login";
+import QuestsDetails from "components/quests/QuestsComponents/QuestsDetails";
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
@@ -52,8 +60,15 @@ const App: React.FC = () => {
     { path: "/qr-code", element: <QrCode /> },
     { path: "/settings", element: <Settings /> },
     /* --Existing Wallet Flow-- */
+    { path: "/add-wallet", element: <ChooseMethod /> },
+    { path: "/seed-phrase", element: <SeedLogin /> },
+    { path: "/private-key", element: <PrivateKeyLogin /> },
     /* --Dapp Flow-- */
+    { path: "/dapps", element: <DappsPage /> },
     /* --Quest Flow-- */
+    { path: "/quests", element: <QuestsScreen /> },
+    { path: "/campaign", element: <QuestsCampaign /> },
+    { path: "/quests-details", element: <QuestsDetails /> },
   ]);
 
   return <RouterProvider router={router} />;
