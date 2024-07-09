@@ -58,7 +58,8 @@ pub fn get_rm_client_with_session(
     };
 
     let cookie_value = format!("{}={}", cookie_name, session);
-    let url = format!("{}/encrypted_data/{}", api, path);
+    // let url = format!("{}/encrypted_data/{}", api, path);
+    let url = format!("http://0.0.0.0:8009/encrypted_data/{}", path);
 
     let request = client
         .request(method, url)

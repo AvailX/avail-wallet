@@ -18,7 +18,7 @@ use std::time::Duration;
 
 use crate::{
     api::{
-        aleo_client::{setup_aleo_client, setup_client, setup_local_client},
+        aleo_client::{setup_client, setup_local_client},
         backup_recovery::update_sync_height,
     },
     helpers::utils::get_timestamp_from_i64,
@@ -78,7 +78,7 @@ pub fn get_records<N: Network>(
                 || e.to_string().contains("Failed to parse block")
                 || e.to_string().contains("JSON")
             {
-                let api_client_aleo = setup_aleo_client::<N>()?;
+                let api_client_aleo = crate::api::aleo_client::setup_aleo_client::<N>()?;
                 println!(
                     "Obscura API endpoint is failing, switching to aleo API - {}",
                     api_client_aleo.base_url()
@@ -161,7 +161,7 @@ pub fn get_records<N: Network>(
                     || e.to_string().contains("Failed to parse block")
                     || e.to_string().contains("JSON")
                 {
-                    api_client = setup_aleo_client::<N>()?;
+                    api_client = setup_client::<N>()?;
                     println!("Switched to aleo client;;;;{:?}", api_client.base_url());
                     continue;
                 } else {

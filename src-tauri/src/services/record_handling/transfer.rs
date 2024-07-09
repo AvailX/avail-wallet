@@ -9,7 +9,7 @@ use std::{fs, path::PathBuf};
 use std::{ops::Add, str::FromStr};
 use tokio::time::{Duration, Instant};
 
-use crate::api::aleo_client::{setup_client, setup_local_client};
+use crate::api::aleo_client::{setup_aleo_client, setup_client, setup_local_client};
 use crate::services::local_storage::encrypted_data::update_encrypted_transaction_state_by_id;
 use crate::{
     helpers::utils::get_timestamp_from_i64,
@@ -815,9 +815,25 @@ pub fn find_confirmed_block_height<N: Network>(
                 block
             }
             Err(e) => {
-                println!("Error getting block: {:?}\n", e);
-                std::thread::sleep(std::time::Duration::from_secs(3));
-                continue;
+                if e.to_string().contains("Invalid Circuit")
+                    || e.to_string().contains("Invalid Data")
+                    || e.to_string().contains("Failed to parse block")
+                    || e.to_string().contains("JSON")
+                {
+                    let api_client_aleo = setup_aleo_client::<N>()?;
+                    println!(
+                        "Obscura API endpoint is failing, switching to aleo API - {}",
+                        api_client_aleo.base_url()
+                    );
+                    let block = api_client_aleo.get_block(iter)?;
+                    block
+                } else {
+                    return Err(AvailError::new(
+                        AvailErrorType::Internal,
+                        e.to_string(),
+                        "Error getting block".to_string(),
+                    ));
+                }
             }
         };
 

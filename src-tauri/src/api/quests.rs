@@ -23,7 +23,7 @@ use tauri_plugin_http::reqwest;
 
 use snarkvm::prelude::{Network, TestnetV0, Transaction};
 
-use super::aleo_client::setup_aleo_client;
+use super::aleo_client::setup_client;
 use super::client::SESSION;
 
 /* GET ALL CAMPAIGNS */
@@ -309,7 +309,7 @@ async fn verify_task_raw<N: Network>(
 
     let mut transaction_ids: Vec<N::TransactionID> = vec![];
     let mut block_heights: Vec<u32> = vec![];
-    let aleo_client = setup_aleo_client::<N>()?;
+    let aleo_client = setup_client::<N>()?;
 
     for encrypted_transaction in encrypted_transactions {
         // check if the encypted_transaction created_at date is in between the start_time and end_time
