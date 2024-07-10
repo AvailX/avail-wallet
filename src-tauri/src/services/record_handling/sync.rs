@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 use crate::{
     api::{
-        aleo_client::{setup_client, setup_local_client},
+        aleo_client::{setup_aleo_client, setup_local_client},
         backup_recovery::{update_backup_timestamp, update_sync_height},
         encrypted_data::{
             delete_invalid_transactions_in, get_new_transaction_messages, post_encrypted_data,
@@ -78,7 +78,7 @@ pub async fn txs_sync() -> AvailResult<TxScanResponse> {
 
 /// syncs transactions sent to user by another avail user
 pub async fn txs_sync_raw<N: Network>() -> AvailResult<TxScanResponse> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_aleo_client::<N>()?;
 
     let backup = get_backup_flag()?;
 
@@ -482,7 +482,7 @@ mod test {
 
         tokio::time::sleep(tokio::time::Duration::from_secs(45)).await;
 
-        let api_client = setup_client::<TestnetV0>().unwrap();
+        let api_client = setup_aleo_client::<TestnetV0>().unwrap();
 
         let latest_height = api_client.latest_height().unwrap();
 
@@ -498,7 +498,7 @@ mod test {
             .set_view_session("AViewKey1tLudtDDJQBBcHBnBLaHTJVCdyBeNgwks9oYivxBSeegZ")
             .unwrap();
 
-        let api_client = setup_client::<TestnetV0>().unwrap();
+        let api_client = setup_aleo_client::<TestnetV0>().unwrap();
 
         let latest_height = api_client.latest_height().unwrap();
 
@@ -607,7 +607,7 @@ output r1 as u32.public;",
 
         let pk2 = PrivateKey::<TestnetV0>::from_str(TESTNET3_PRIVATE_KEY).unwrap();
 
-        let api_client = setup_client::<TestnetV0>().unwrap();
+        let api_client = setup_aleo_client::<TestnetV0>().unwrap();
 
         let mut program_manager =
             ProgramManager::<TestnetV0>::new(Some(pk2), None, Some(api_client.clone()), None)
@@ -753,7 +753,7 @@ output r1 as u32.public;",
 
     #[test]
     fn test_get_latest_height() {
-        let api_client = setup_client::<TestnetV0>().unwrap();
+        let api_client = setup_aleo_client::<TestnetV0>().unwrap();
 
         let latest_height = api_client.latest_height().unwrap();
         println!("latest_height: {:?}", latest_height);
@@ -834,7 +834,7 @@ output r1 as u32.public;",
 
         tokio::time::sleep(tokio::time::Duration::from_secs(30)).await;
 
-        let api_client = setup_client::<TestnetV0>().unwrap();
+        let api_client = setup_aleo_client::<TestnetV0>().unwrap();
         let latest_height2 = api_client.latest_height().unwrap();
         blocks_sync_test(latest_height2).await.unwrap();
     }

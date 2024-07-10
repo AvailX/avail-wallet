@@ -24,7 +24,7 @@ use super::{
         },
     },
 };
-use crate::api::aleo_client::setup_client;
+use crate::api::aleo_client::setup_aleo_client;
 use crate::api::aleo_client::setup_local_client;
 use crate::models::event::{AvailEvent, SuccinctAvailEvent};
 use crate::models::pointers::{deployment::DeploymentPointer, transaction::TransactionPointer};
@@ -108,7 +108,7 @@ pub async fn request_create_event_raw<N: Network, A: Aleo + Environment<Network 
     fee_private: bool,
     window: Option<Window>,
 ) -> AvailResult<CreateEventResponse> {
-    let api_client = setup_client::<N>()?;
+    let api_client = setup_aleo_client::<N>()?;
     let private_key = match get_private_key::<N>(None) {
         Ok(private_key) => {
             PASS.extend_session()?;

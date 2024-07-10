@@ -11,7 +11,7 @@ use crate::models::event::{
     AvailEvent, Event, EventTransition, Network as EventNetwork, SuccinctAvailEvent, Visibility,
 };
 use crate::{
-    api::aleo_client::setup_client,
+    api::aleo_client::setup_aleo_client,
     services::local_storage::{
         encrypted_data::store_encrypted_data,
         persistent_storage::{get_address, get_address_string, get_network},
@@ -378,7 +378,7 @@ impl<N: Network> TransactionPointer<N> {
 
         let v_key = VIEWSESSION.get_instance::<N>()?;
 
-        let api_client = setup_client::<N>()?;
+        let api_client = setup_aleo_client::<N>()?;
 
         let event_transaction = match self.transaction_id {
             Some(id) => match self.state {
@@ -495,7 +495,7 @@ impl<N: Network> TransactionPointer<N> {
 
         let v_key = VIEWSESSION.get_instance::<N>()?;
 
-        let api_client = setup_client::<N>()?;
+        let api_client = setup_aleo_client::<N>()?;
 
         let event_transaction = match self.transaction_id {
             Some(id) => match self.state {
