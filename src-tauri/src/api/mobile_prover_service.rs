@@ -1,7 +1,8 @@
 use avail_common::models::mobile_prover::ProverRequest;
+use http::request;
+use http::Method;
 use snarkvm::prelude::*;
 use std::str::FromStr;
-use tauri_plugin_http::reqwest;
 
 use crate::api::client::{get_prover_client_with_session, get_um_client_with_session};
 use crate::helpers::utils::HOST;
@@ -10,6 +11,8 @@ use crate::models::account::AddressRequest;
 use crate::services::local_storage::persistent_storage::{
     get_backup_flag, update_local_backup_flag,
 };
+use tauri_plugin_http::reqwest;
+
 use crate::services::{
     account::utils::generate_discriminant,
     local_storage::persistent_storage::{get_address_string, update_username_local},
@@ -18,6 +21,7 @@ use crate::services::{
 use avail_common::{
     errors::{AvailError, AvailErrorType, AvailResult},
     models::user::{UpdateBackupRequest, User},
+    // service_clients::get_prover_client_with_session,
 };
 
 pub async fn delegate_execution(request: ProverRequest) -> AvailResult<String> {
@@ -44,7 +48,7 @@ pub async fn delegate_execution(request: ProverRequest) -> AvailResult<String> {
                 return Err(AvailError::new(
                     AvailErrorType::External,
                     e.to_string(),
-                    "Error delegating execution".to_string(),
+                    "Error delegating proving".to_string(),
                 ));
             }
         };
@@ -53,8 +57,8 @@ pub async fn delegate_execution(request: ProverRequest) -> AvailResult<String> {
     } else {
         Err(AvailError::new(
             AvailErrorType::External,
-            "Error delegating execution".to_string(),
-            "Error delegating execution".to_string(),
+            "Error delegating data".to_string(),
+            "Error delegating data".to_string(),
         ))
     }
 }

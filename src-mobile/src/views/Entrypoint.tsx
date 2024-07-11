@@ -35,10 +35,12 @@ function EntryPoint() {
           setAlertMessage,
           true
         );
-        if (res) {
-          navigate("/login");
-        }
+        console.log("Login response", res);
+        // if (res) {
+        navigate("/login");
+        // }
       } catch (error_) {
+        console.log("Error caught", error_);
         const error = error_ as AvailError;
 
         switch (error?.error_type) {

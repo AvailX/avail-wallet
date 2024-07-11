@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable max-statements-per-line */
+/* eslint-disable @typescript-eslint/brace-style */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {
@@ -43,11 +46,16 @@ import Faucet from './views-desktop/faucet';
 // See if language is set in local storage
 const storedLanguage = localStorage.getItem('language');
 
-if (storedLanguage) {
+const setStoredLang = async () => {if (storedLanguage) {
 	await i18n.changeLanguage(storedLanguage);
 } else {
 	await i18n.changeLanguage('en');
 }
+};
+
+setStoredLang().then(() => {
+	console.log('Language set');
+});
 
 const platform = true;
 
