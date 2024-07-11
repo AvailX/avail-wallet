@@ -148,7 +148,7 @@ const GeneralSettings: React.FC<{
                       }}
                       sx={{ color: "#fff" }}
                     >
-                      <SaveIcon fontSize="large" />
+                      <SaveIcon fontSize="medium" />
                     </mui.IconButton>
                   ),
               }}
@@ -205,6 +205,19 @@ const GeneralSettings: React.FC<{
                 // placeholder="aleo10gv8wduhc9weciu89uw9..."
                 InputProps={{
                   readOnly: true,
+                  endAdornment: (
+                    <mui.IconButton
+                      onClick={() => handleCopyToClipboard(address)}
+                      size="large"
+                      sx={{
+                        color: "#00FFAA",
+                        "&:hover": { bgcolor: "#3a3a3a" },
+                        marginRight: "-12px",
+                      }}
+                    >
+                      <ContentCopyIcon fontSize="inherit" />
+                    </mui.IconButton>
+                  ),
                 }}
                 fullWidth
                 disabled
@@ -216,7 +229,7 @@ const GeneralSettings: React.FC<{
                   },
                 }}
               />
-              <mui.IconButton
+              {/* <mui.IconButton
                 onClick={() => {
                   handleCopyToClipboard(address);
                 }}
@@ -227,7 +240,7 @@ const GeneralSettings: React.FC<{
                 }}
               >
                 <ContentCopyIcon fontSize="inherit" />
-              </mui.IconButton>
+              </mui.IconButton> */}
             </Stack>
           </Stack>
         </Stack>
