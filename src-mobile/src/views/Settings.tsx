@@ -73,14 +73,24 @@ const SETTINGS_DETAIL = [
     title: "Alerts",
     children: [
       { title: "Notifications", icon: notificationsIcon, showSwitch: true },
-      { title: "Airdrop Alert", icon: airdropIcon, showSwitch: true },
+      {
+        title: "Airdrop Alert",
+        icon: airdropIcon,
+        showSwitch: true,
+        disabled: true,
+      },
     ],
   },
   {
     title: "Other",
     children: [
       { title: "Backup", icon: backupIcon, showSwitch: true },
-      { title: "Full ReSync", icon: fullIcon, showSwitch: true },
+      {
+        title: "Full ReSync",
+        icon: fullIcon,
+        showSwitch: true,
+        disabled: true,
+      },
       { title: "Sign a message", icon: messageIcon },
       { title: "Remove Account", icon: removeIcon },
     ],
@@ -140,10 +150,10 @@ function Settings() {
   const shouldRunEffect = React.useRef(true);
 
   const ProfileDisplay = ({
-    username,
+    setUsername,
     address,
   }: {
-    username: string;
+    setUsername: string;
     address: string;
   }) => {
     return (
@@ -157,7 +167,7 @@ function Settings() {
         ></Box>
         <Box textAlign="left">
           <Typography fontWeight={700} fontSize="17px">
-            {username}
+            {setUsername}
           </Typography>
           {/* {setAddress} */}
           <Typography color="#A7A7A7">
@@ -326,7 +336,7 @@ function Settings() {
           Settings
         </Typography>
       </Box>
-      <ProfileDisplay username={username} address={address} />
+      <ProfileDisplay setUsername={username} address={address} />
       <Box textAlign="left">
         {SETTINGS_DETAIL.map(({ title, children }) => (
           <Box mb={2}>
@@ -341,10 +351,12 @@ function Settings() {
                   title,
                   icon,
                   showSwitch,
+                  disabled,
                 }: {
                   title: string;
                   icon?: any;
                   showSwitch?: boolean;
+                  disabled?: boolean;
                 }) => (
                   <Box width="100%" mx="auto" bgcolor="#2A2A2A">
                     {showSwitch ? (
@@ -362,7 +374,7 @@ function Settings() {
                             {title}
                           </Typography>
                         </Box>
-                        <SettingsSwitch />
+                        <SettingsSwitch disabled={disabled} />
                       </Box>
                     ) : (
                       <Accordion

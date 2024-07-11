@@ -50,11 +50,11 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-export default function SettingsSwitch() {
+export default function SettingsSwitch({ disabled }) {
   return (
     <FormGroup>
       <Stack direction='row' spacing={1} alignItems='center'>
-        <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+        <AntSwitch disabled={disabled} inputProps={{ "aria-label": "ant design" }} />
       </Stack>
     </FormGroup>
   );

@@ -20,9 +20,9 @@ import {
 } from "../../../../src/components/snackbars/alerts";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteDialog from "../../../../src/components/dialogs/delete";
-import ViewKeyDialog from "../../../../src/components/dialogs/keys/get_viewing_key";
-import PrivateKeyDialog from "../../../../src/components/dialogs/keys/get_private_key";
+import ViewKeyDialog from "../../components/dialogs/keys/get_viewing_key";
 import SeedPhraseDialog from "../../../../src/components/dialogs/keys/get_seed_phrase";
+import PrivateKeyDialog from "../../components/dialogs/keys/get_private_key";
 import ReAuthDialog from "../../../../src/components/dialogs/reauth";
 
 function KeysSettings() {
@@ -182,15 +182,8 @@ function KeysSettings() {
       <Stack direction="column" spacing={2}>
         <Stack direction="column" spacing={0}>
           <Typography color="#fff" fontSize="15px" fontWeight={200}>
-            Public Key
+            Viewing Key
           </Typography>
-          {/* <TextField
-          fullWidth
-          value={publicKey}
-          onChange={handleChange}
-          name="publicKey"
-          sx={{ bgcolor: "#264139", borderRadius: "10px" }}
-        /> */}
           <HiddenItem param={vk} label="Viewing Key" />
         </Stack>
         <Stack direction="column" spacing={0}>

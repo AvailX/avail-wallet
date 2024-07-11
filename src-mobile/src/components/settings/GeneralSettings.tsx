@@ -5,6 +5,8 @@ import i18n from "../../../../src/i18next-config";
 import { languages } from "../../../../src/components/select/language";
 // import { updateUsername } from "../../../../src/services/storage/persistent";
 import UsernameDialog from "../../../../src/components/dialogs/username";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+
 import {
   TextField,
   Select,
@@ -71,6 +73,12 @@ const GeneralSettings: React.FC<{
     setUsername(event.target.value);
   };
 
+  const handleCopyToClipboard = (address: string) => {
+    navigator.clipboard.writeText(address);
+    setMessage(address + " copied successfully!");
+    setSuccess(true);
+  };
+
   const handleLanguageChange = (event: mui.SelectChangeEvent) => {
     // SetLanguage(event.target.value as string);
     const selectedLanguage = event.target.value;
@@ -111,18 +119,18 @@ const GeneralSettings: React.FC<{
           setReAuthDialog(false);
         }}
       />
+      <UsernameDialog
+        isOpen={UsernameDialogOpen}
+        onRequestClose={() => {
+          setUsernameDialogOpen(false);
+        }}
+        username={username}
+        originalUsername={originalUsername}
+      />
       <Stack spacing={2}>
         <Stack direction="column" spacing={2}>
           <Stack direction="column" spacing={0}>
             {/* username dialogue is supposed to come here */}
-            <UsernameDialog
-              isOpen={UsernameDialogOpen}
-              onRequestClose={() => {
-                setUsernameDialogOpen(true);
-              }}
-              username={username}
-              originalUsername={originalUsername}
-            />
             <Typography color="#fff" fontSize="15px" fontWeight={200}>
               Username (optional)
             </Typography>
@@ -134,16 +142,14 @@ const GeneralSettings: React.FC<{
               InputProps={{
                 endAdornment:
                   username === originalUsername ? null : (
-                    <mui.InputAdornment position="end">
-                      <mui.IconButton
-                        onClick={() => {
-                          setUsernameDialogOpen(true);
-                        }}
-                        sx={{ color: "#fff" }}
-                      >
-                        <SaveIcon />
-                      </mui.IconButton>
-                    </mui.InputAdornment>
+                    <mui.IconButton
+                      onClick={() => {
+                        setUsernameDialogOpen(true);
+                      }}
+                      sx={{ color: "#fff" }}
+                    >
+                      <SaveIcon fontSize="large" />
+                    </mui.IconButton>
                   ),
               }}
             />
@@ -192,22 +198,37 @@ const GeneralSettings: React.FC<{
             <Typography color="#fff" fontSize="15px" fontWeight={200}>
               Address
             </Typography>
-            <TextField
-              name="address"
-              value={address}
-              // placeholder="aleo10gv8wduhc9weciu89uw9..."
-              InputProps={{
-                readOnly: true,
-              }}
-              // disabled
-              sx={{
-                bgcolor: "#264139",
-                borderRadius: "10px",
-                "& .MuiInputBase-placeholder": {
-                  color: "#fff", // Change placeholder color to white
-                },
-              }}
-            />
+            <Stack direction="row" spacing={0}>
+              <TextField
+                name="address"
+                value={address}
+                // placeholder="aleo10gv8wduhc9weciu89uw9..."
+                InputProps={{
+                  readOnly: true,
+                }}
+                fullWidth
+                disabled
+                sx={{
+                  bgcolor: "#264139",
+                  borderRadius: "10px",
+                  "& .MuiInputBase-placeholder": {
+                    color: "#fff", // Change placeholder color to white
+                  },
+                }}
+              />
+              <mui.IconButton
+                onClick={() => {
+                  handleCopyToClipboard(address);
+                }}
+                size="large"
+                sx={{
+                  color: "#00FFAA",
+                  "&:hover": { bgcolor: mui.alpha("#3a3a3a", 0.8) },
+                }}
+              >
+                <ContentCopyIcon fontSize="inherit" />
+              </mui.IconButton>
+            </Stack>
           </Stack>
         </Stack>
       </Stack>

@@ -9,22 +9,22 @@ type CtaButtonProperties = {
 };
 
 const SettingButton = styled(Button)({
-  backgroundColor: "#00FFAA",
+  backgroundColor: "#264139",
   color: "#111111",
   fontWeight: "bold",
   padding: "8px 15px",
   borderRadius: "10px",
   transition: "transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out",
   textTransform: "none",
-  "&:hover": {
-    backgroundColor: "#00FFAA",
-    boxShadow: "0 0 8px 2px rgba(0, 255, 170, 0.6)",
-    transform: "scale(1.03)",
-  },
-  "&:focus": {
-    backgroundColor: "#00FFAA",
-    boxShadow: "0 0 8px 2px rgba(0, 255, 170, 0.8)",
-  },
+  // "&:hover": {
+  //   backgroundColor: "#00FFAA",
+  //   boxShadow: "0 0 8px 2px rgba(0, 255, 170, 0.6)",
+  //   transform: "scale(1.03)",
+  // },
+  // "&:focus": {
+  //   backgroundColor: "#00FFAA",
+  //   boxShadow: "0 0 8px 2px rgba(0, 255, 170, 0.8)",
+  // },
   width: "20%",
   alignSelf: "center",
   height: "40px",

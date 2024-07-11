@@ -22,7 +22,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteDialog from "../../../../src/components/dialogs/delete";
 import ViewKeyDialog from "../../../../src/components/dialogs/keys/get_viewing_key";
 import PrivateKeyDialog from "../../../../src/components/dialogs/keys/get_private_key";
-import SeedPhraseDialog from "../../../../src/components/dialogs/keys/get_seed_phrase";
+import SeedPhraseDialog from "../../components/dialogs/keys/get_seed_phrase";
 import ReAuthDialog from "../../../../src/components/dialogs/reauth";
 
 function SecretPhrase() {
