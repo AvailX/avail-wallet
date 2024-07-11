@@ -85,6 +85,9 @@ impl<N: Network> TransitionPointer<N> {
         let flavour = EncryptedDataTypeCommon::Transition;
         let created_at = chrono::Utc::now();
 
+        let transaction_id = self.transaction_id.to_string();
+        let transition_id = self.id.to_string();
+
         let encrypted_data = EncryptedData::new(
             Some(id),
             encrypt_for.to_string(),
@@ -103,8 +106,8 @@ impl<N: Network> TransitionPointer<N> {
             Some(self.transition_type.to_event_type()),
             None,
             None,
-            Some(self.transaction_id.to_string()),
-            Some(self.id.to_string()),
+            Some(transaction_id),
+            Some(transition_id),
         );
 
         Ok(encrypted_data)
@@ -134,6 +137,7 @@ impl<N: Network> TransitionPointer<N> {
             created_at,
             record.timestamp.with_timezone(&Utc)
         );
+
         let encrypted_data = EncryptedData::new(
             encrypted_data_record.id,
             address.to_string(),

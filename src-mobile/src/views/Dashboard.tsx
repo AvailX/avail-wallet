@@ -1,4 +1,4 @@
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
@@ -21,7 +21,6 @@ import React, { useState } from "react";
 import ActivityDetails from "../components/ActivityDetails";
 import AsssetDisplay from "../components/AsssetDisplay";
 import DashboardCarousel from "../components/DashboardCarousel";
-import { useNavigate } from "react-router-dom";
 import { getName } from "../services/states/util";
 import { getAddress } from "../services/states/util";
 import { AirdropNft } from "../components/Nft";
@@ -53,6 +52,8 @@ import { SuccinctAvailEvent } from "types/avail-events/event";
 import { listen } from "@tauri-apps/api/event";
 import { useScan } from "../../../src/context/ScanContext";
 import { useRecentEvents } from "../../../src/context/EventsContext";
+import { Link, useNavigate } from "react-router-dom";
+import { get_address } from "../../../src/services/storage/persistent";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -60,10 +61,10 @@ const Dashboard = () => {
     navigate("/secret-recovery");
   };
   const DASHBOARD_ITEMS = [
-    { icon: diamondShinyIcon },
+    { icon: diamondShinyIcon, path: "" },
     { icon: sendIcon, path: "/send" },
-    { icon: receiveIcon },
-    { icon: receiveIcon },
+    { icon: receiveIcon, path: "" },
+    { icon: receiveIcon, path: "" },
   ];
 
   const airdropNftData = [
@@ -313,9 +314,15 @@ const Dashboard = () => {
           width="90%"
           mx="auto"
         >
-          {DASHBOARD_ITEMS.map(({ icon }, i) => (
+          {DASHBOARD_ITEMS.map(({ icon, path }, i) => (
             <Box
-              borderRadius="9px"
+              borderRadius='9px'
+              component={Button}
+              onClick={() => {
+                console.log("Clicked");
+                navigate(path);
+              }}
+              sx={{ border: "none" }}
               p={1}
               height="63px"
               width="62px"

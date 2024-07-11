@@ -3,7 +3,7 @@ use futures::lock::MutexGuard;
 use snarkvm::{
     circuit::group::add,
     console::program::Itertools,
-    ledger::Block,
+    ledger::block::*,
     prelude::{ConfirmedTransaction, Network, Plaintext, Record},
 };
 use std::ops::Sub;
@@ -18,7 +18,7 @@ use std::time::Duration;
 
 use crate::{
     api::{
-        aleo_client::{setup_client, setup_local_client},
+        aleo_client::{setup_aleo_client, setup_client, setup_local_client},
         backup_recovery::update_sync_height,
     },
     helpers::utils::get_timestamp_from_i64,
@@ -63,14 +63,37 @@ pub fn get_records<N: Network>(
     let view_key = VIEWSESSION.get_instance::<N>()?;
     let address = view_key.to_address();
 
-    let api_client = setup_client::<N>()?;
+    let mut api_client = setup_client::<N>()?;
 
     let step_size = 49;
 
     let amount_to_scan = height.sub(last_sync);
     let latest_height = height;
 
-    let last_sync_block = api_client.get_block(last_sync)?;
+    let (last_sync_block, mut api_client) = match api_client.get_block(last_sync) {
+        Ok(block) => (block, api_client.clone()),
+        Err(e) => {
+            if e.to_string().contains("Invalid Circuit")
+                || e.to_string().contains("Invalid Data")
+                || e.to_string().contains("Failed to parse block")
+                || e.to_string().contains("JSON")
+            {
+                let api_client_aleo = setup_aleo_client::<N>()?;
+                println!(
+                    "Obscura API endpoint is failing, switching to aleo API - {}",
+                    api_client_aleo.base_url()
+                );
+                let block = api_client_aleo.get_block(last_sync)?;
+                (block, api_client_aleo)
+            } else {
+                return Err(AvailError::new(
+                    AvailErrorType::Internal,
+                    e.to_string(),
+                    "Error getting block".to_string(),
+                ));
+            }
+        }
+    };
     let last_sync_timestamp = get_timestamp_from_i64(last_sync_block.timestamp())?;
 
     // checks if unconfirmed transactions have expired and updates their state to failed
@@ -111,6 +134,7 @@ pub fn get_records<N: Network>(
     }
 
     let mut found_flag = false;
+    println!("API Client{:?}", api_client.base_url());
 
     for _ in (last_sync..latest_height).step_by(step_size as usize) {
         let mut blocks = match api_client.get_blocks(start_height, end_height) {
@@ -127,6 +151,23 @@ pub fn get_records<N: Network>(
 
                     continue;
                 }
+
+                if e.to_string().contains("500")
+                    || e.to_string().contains("504")
+                    || e.to_string().contains("status code 500")
+                    || e.to_string().contains("Error getting blocks")
+                    || e.to_string().contains("https://aleo-testnetbeta.obscura.network/v1/92acf30f-5cea-4679-880c-f06e9a7e8465/testnet/blocks?start=")
+                {
+                    api_client = setup_aleo_client::<N>()?;
+                    println!("Switched to aleo client;;;;{:?}", api_client.base_url());
+                    continue;
+                } else {
+                    return Err(AvailError::new(
+                        AvailErrorType::Internal,
+                        e.to_string(),
+                        "Error getting blocks".to_string(),
+                    ));
+                };
 
                 return Err(AvailError::new(
                     AvailErrorType::Internal,

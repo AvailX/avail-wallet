@@ -2,8 +2,10 @@ import { Box, IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import avatarImg from "../assets/avatar-img.svg";
 import scanIcon from "../assets/scan-icon.svg";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { get_address } from "../../../src/services/storage/persistent";
+import { toast } from "react-toastify";
 
 const EllipsisTypography = styled(Typography)({
   whiteSpace: "nowrap",
@@ -26,9 +28,27 @@ interface IProps {
 
 const DashboardHeader: FC<IProps> = ({ onProfileClick, profileAddress }) => {
   const address = profileAddress ?? 'aleo1ab3j...82k';
-  const truncatedAddress = truncateText(address, 10); 
+  const truncatedAddress = truncateText(address, 10);
 
   const navigate = useNavigate();
+  const [address, setAddress] = useState("");
+  get_address()
+    .then((res) => {
+      setAddress(res);
+    })
+    .catch((error) => {
+      console.log(error);
+      toast("Failed to get address");
+    });
+
+  function shortenAleoAddress(address: string) {
+    if (address.length <= 10) {
+      return address;
+    }
+    const start = address.slice(0, 6);
+    const end = address.slice(-4);
+    return `${start}...${end}`;
+  }
   return (
     <Box
       mb={3}
@@ -40,7 +60,7 @@ const DashboardHeader: FC<IProps> = ({ onProfileClick, profileAddress }) => {
         <img src={avatarImg} />
         <Box ml={3}>
           <EllipsisTypography fontWeight={700} color="#fff">
-             {truncatedAddress}
+            {truncatedAddress}
           </EllipsisTypography>
         </Box>
       </Box>
