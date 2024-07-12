@@ -1,6 +1,5 @@
 import React from "react";
 import * as mui from "@mui/material";
-import { useTranslation } from "react-i18next";
 import i18n from "../../../../src/i18next-config";
 import { languages } from "../../../../src/components/select/language";
 // import { updateUsername } from "../../../../src/services/storage/persistent";
@@ -14,28 +13,13 @@ import {
   FormControl,
   Typography,
   Stack,
-  Button,
-  InputLabel,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import {
   ErrorAlert,
   SuccessAlert,
 } from "../../../../src/components/snackbars/alerts";
-import {
-  getUsername,
-  updateUsername,
-  get_address,
-  getLastSync,
-  getLanguage,
-  getNetwork,
-  updateBackupFlag,
-  getBackupFlag,
-} from "../../../../src/services/storage/persistent";
 import DeleteDialog from "../../../../src/components/dialogs/delete";
-import ViewKeyDialog from "../../../../src/components/dialogs/keys/get_viewing_key";
-import PrivateKeyDialog from "../../../../src/components/dialogs/keys/get_private_key";
-import SeedPhraseDialog from "../../../../src/components/dialogs/keys/get_seed_phrase";
 import ReAuthDialog from "../../../../src/components/dialogs/reauth";
 
 type Language = {
@@ -61,12 +45,8 @@ const GeneralSettings: React.FC<{
   const [UsernameDialogOpen, setUsernameDialogOpen] = React.useState(false);
 
   const [deleteOpen, setDeleteOpen] = React.useState(false);
-  const [vkOpen, setVkOpen] = React.useState(false);
-  const [pkOpen, setPkOpen] = React.useState(false);
-  const [spOpen, setSpOpen] = React.useState(false);
   const [reAuthDialog, setReAuthDialog] = React.useState(false);
 
-  const { t } = useTranslation();
 
   // Handlers for change events
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {

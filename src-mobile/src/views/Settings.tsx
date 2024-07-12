@@ -58,46 +58,68 @@ import GeneralSettings from "../components/settings/GeneralSettings";
 import KeysSettings from "../components/settings/KeysSettings";
 import SecretPhrase from "../components/settings/SecretPhrase";
 import SecurityPrivacy from "../components/settings/SecurityPrivacy";
+import SignaMessage from "components/settings/SignaMessage";
 
-const SETTINGS_DETAIL = [
-  {
-    title: "Account",
-    children: [
-      { title: "General", icon: generalIcon },
-      { title: "Keys", icon: keysIcon },
-      { title: "Secret Phrase", icon: secretIcon },
-      { title: "Security and Privacy", icon: securityIcon },
-    ],
-  },
-  {
-    title: "Alerts",
-    children: [
-      { title: "Notifications", icon: notificationsIcon, showSwitch: true },
-      {
-        title: "Airdrop Alert",
-        icon: airdropIcon,
-        showSwitch: true,
-        disabled: true,
-      },
-    ],
-  },
-  {
-    title: "Other",
-    children: [
-      { title: "Backup", icon: backupIcon, showSwitch: true },
-      {
-        title: "Full ReSync",
-        icon: fullIcon,
-        showSwitch: true,
-        disabled: true,
-      },
-      { title: "Sign a message", icon: messageIcon },
-      { title: "Remove Account", icon: removeIcon },
-    ],
-  },
-];
+// interface SettingsSwitchProps {
+//   disabled: boolean;
+//   checked: boolean;
+//   onClick: (e: any) => void;
+// }
 
+// const SettingsSwitch: React.FC<SettingsSwitchProps> = ({ disabled, checked, onClick }) => {
+//   return (
+//     <Switch
+//       disabled={disabled}
+//       checked={checked}
+//       onClick={onClick}
+//     />
+//   );
+// };
+
+// export default SettingsSwitch;
 function Settings() {
+  const SETTINGS_DETAIL = [
+    {
+      title: "Account",
+      children: [
+        { title: "General", icon: generalIcon },
+        { title: "Keys", icon: keysIcon },
+        { title: "Secret Phrase", icon: secretIcon },
+        { title: "Security and Privacy", icon: securityIcon },
+      ],
+    },
+    {
+      title: "Alerts",
+      children: [
+        { title: "Notifications", icon: notificationsIcon, showSwitch: true },
+        {
+          title: "Airdrop Alert",
+          icon: airdropIcon,
+          showSwitch: true,
+          disabled: true,
+        },
+      ],
+    },
+    {
+      title: "Other",
+      children: [
+        {
+          title: "Backup",
+          icon: backupIcon,
+          showSwitch: true,
+          onSwitchChange: (checked: boolean) => handleBackupToggle(checked),
+        },
+        {
+          title: "Full ReSync",
+          icon: fullIcon,
+          showSwitch: true,
+          disabled: true,
+        },
+        { title: "Sign a message", icon: messageIcon },
+        { title: "Remove Account", icon: removeIcon },
+      ],
+    },
+  ];
   //temporary sidebar states
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -329,6 +351,12 @@ function Settings() {
     setSelectedOption(null);
   };
 
+  const handleBackupToggle = (event) => {
+    const checked = event.target.checked;
+    setBackup(checked);
+    localStorage.setItem("backup", JSON.stringify(checked));
+  };
+
   return (
     <DashboardLayout>
       <Box>
@@ -356,7 +384,8 @@ function Settings() {
                   title: string;
                   icon?: any;
                   showSwitch?: boolean;
-                  disabled?: boolean;
+                  disabled?: any;
+                  // checked?: boolean;
                 }) => (
                   <Box width="100%" mx="auto" bgcolor="#2A2A2A">
                     {showSwitch ? (
@@ -374,7 +403,11 @@ function Settings() {
                             {title}
                           </Typography>
                         </Box>
-                        <SettingsSwitch disabled={disabled} />
+                        <SettingsSwitch
+                          disabled={disabled}
+                          onSwitchChange={handleBackupToggle}
+                          checked={backup}
+                        />
                       </Box>
                     ) : (
                       <Accordion
@@ -412,7 +445,8 @@ function Settings() {
                           {title === "Secret Phrase" && <SecretPhrase />}{" "}
                           {title === "Security and Privacy" && (
                             <SecurityPrivacy />
-                          )}{" "}
+                          )}
+                          {title === "Sign a message" && <SignaMessage />}
                         </AccordionDetails>
                       </Accordion>
                     )}

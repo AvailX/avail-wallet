@@ -1,74 +1,33 @@
 import React from "react";
 import * as mui from "@mui/material";
-import { listen } from "@tauri-apps/api/event";
 import STButton from "../settings/settings-button";
 
-import { TextField, Typography, Stack, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import {
-  Title2Text,
-  SubMainTitleText,
-  SubtitleText,
-  BodyText,
-  BodyText500,
-  SmallText400,
-} from "../../../../src/components/typography/typography";
+import { Typography, Stack } from "@mui/material";
+import { SmallText400 } from "../../../../src/components/typography/typography";
 import {
   ErrorAlert,
   SuccessAlert,
 } from "../../../../src/components/snackbars/alerts";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import DeleteDialog from "../../../../src/components/dialogs/delete";
 import ViewKeyDialog from "../../components/dialogs/keys/get_viewing_key";
-import SeedPhraseDialog from "../../../../src/components/dialogs/keys/get_seed_phrase";
 import PrivateKeyDialog from "../../components/dialogs/keys/get_private_key";
-import ReAuthDialog from "../../../../src/components/dialogs/reauth";
 
 function KeysSettings() {
   const [success, setSuccess] = React.useState<boolean>(false);
-  const [warning, setWarning] = React.useState<boolean>(true);
   const [error, setError] = React.useState<boolean>(false);
-  const [info, setInfo] = React.useState<boolean>(false);
   const [message, setMessage] = React.useState<string>("");
-
-  // General States
-  const [username, setUsername] = React.useState<string>("");
-  const [language, setLanguage] = React.useState<string>("");
-  const [network, setNetwork] = React.useState<string>("");
-  const [address, setAddress] = React.useState<string>("");
 
   // Key states
   const [pk, setPk] = React.useState<string>("");
   const [vk, setVk] = React.useState<string>("");
 
   // Seed Phrase states
-  const [seedPhrase, setSeedPhrase] = React.useState<string>("");
   const [revealAll, setRevealAll] = React.useState(false);
 
-  // Advanced settings states
-  const [lastSync, setLastSync] = React.useState<number>(0);
-  const [backup, setBackup] = React.useState<boolean>(false);
-
   // Dialog states
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [vkOpen, setVkOpen] = React.useState(false);
   const [pkOpen, setPkOpen] = React.useState(false);
   const [spOpen, setSpOpen] = React.useState(false);
-  const [reAuthDialog, setReAuthDialog] = React.useState(false);
-
-  // Sign states
-  const [signature, setSignature] = React.useState<string>("");
-  const [signMessage, setSignMessage] = React.useState<string>("");
-
-  // Verification states
-  const [addressToVerify, setAddressToVerify] = React.useState<string>("");
-  const [signatureToVerify, setSignatureToVerify] = React.useState<string>("");
-  const [verificationMessage, setVerificationMessage] =
-    React.useState<string>("");
-  const [verifyResult, setVerifyResult] = React.useState<boolean>();
-
-  const { t } = useTranslation();
 
   const handleCopyToClipboard = (parameter: string, label: string) => {
     navigator.clipboard.writeText(parameter);
@@ -149,9 +108,6 @@ function KeysSettings() {
       </mui.Box>
     </mui.Box>
   );
-
-  // const [publicKey, setPublicKey] = React.useState("");
-  // const [privateKey, setPrivateKey] = React.useState("");
 
   return (
     <div>
