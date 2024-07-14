@@ -242,7 +242,7 @@ const Dashboard = () => {
 
       shouldRunEffect.current = false;
     }
-  });
+  }, []);
 
   /* --Event Listners */
   React.useEffect(() => {
@@ -268,21 +268,16 @@ const Dashboard = () => {
 
     return () => {
       unlistenScan
-        .then((remove) => {
-          remove();
-        })
+        .then((remove) => remove())
         .catch((error) => {
           console.log(error);
         });
 
       unlistenTx
-        .then((remove) => {
-          remove();
-        })
+        .then((remove) => remove())
         .catch((error) => {
           console.log(error);
         });
-      // Unlisten_reauth.then(remove => remove());
     };
   }, []);
 
