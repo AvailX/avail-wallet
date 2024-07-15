@@ -114,6 +114,7 @@ function Settings() {
           icon: fullIcon,
           showSwitch: true,
           disabled: true,
+          onSwitchChange: (checked: boolean) => handleFullResyncToggle(checked),
         },
         { title: "Sign a message", icon: messageIcon },
         { title: "Remove Account", icon: removeIcon },
@@ -160,6 +161,35 @@ function Settings() {
   // Sign states
   const [signature, setSignature] = React.useState<string>("");
   const [signMessage, setSignMessage] = React.useState<string>("");
+
+  //adding this state to test the fullresync state, shoulde endure it works with backend
+  const [fullResync, setFullResync] = React.useState<boolean>(false);
+
+  // Backup states
+  const [backupFlag, setBackupFlag] = React.useState<boolean>(false);
+
+  // Scan states
+  const [scanResult, setScanResult] = React.useState<any[]>([]);
+
+  // Backup states
+  const [backupOpen, setBackupOpen] = React.useState(false);
+
+  // Reauth states
+  const [reAuthOpen, setReAuthOpen] = React.useState(false);
+
+  // Message states
+  const [messageOpen, setMessageOpen] = React.useState(false);
+
+  // Reveal states
+  const [revealOpen, setRevealOpen] = React.useState(false);
+
+  // Recover states
+  const [recoverOpen, setRecoverOpen] = React.useState(false);
+
+  // Recover states
+  const [recoverMessage, setRecoverMessage] = React.useState<string>("");
+
+  // Re, setSignMessage] = React.useState<string>("");
 
   // Verification states
   const [addressToVerify, setAddressToVerify] = React.useState<string>("");
@@ -356,6 +386,11 @@ function Settings() {
     setBackup(checked);
     localStorage.setItem("backup", JSON.stringify(checked));
   };
+  const handleFullResyncToggle = (event) => {
+    const checked = event.target.checked;
+    setFullResync(checked);
+    localStorage.setItem("FullReSync", JSON.stringify(checked));
+  };
 
   return (
     <DashboardLayout>
@@ -380,12 +415,15 @@ function Settings() {
                   icon,
                   showSwitch,
                   disabled,
+                  onSwitchChange,
+                  checked,
                 }: {
                   title: string;
                   icon?: any;
                   showSwitch?: boolean;
                   disabled?: any;
-                  // checked?: boolean;
+                  onSwitchChange?: (checked: boolean) => void;
+                  checked?: boolean;
                 }) => (
                   <Box width="100%" mx="auto" bgcolor="#2A2A2A">
                     {showSwitch ? (
@@ -405,8 +443,10 @@ function Settings() {
                         </Box>
                         <SettingsSwitch
                           disabled={disabled}
-                          onSwitchChange={handleBackupToggle}
-                          checked={backup}
+                          onSwitchChange={(event) =>
+                            onSwitchChange?.(event.target.checked)
+                          }
+                          checked={checked}
                         />
                       </Box>
                     ) : (
