@@ -1,3 +1,8 @@
+/* eslint-disable max-statements-per-line */
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from 'react';
 import { useEffect, useState, useRef } from 'react';
 
@@ -28,12 +33,15 @@ function App() {
 			console.log('====> obj ', resJson.id);
 
 			return res;
-		}).catch((err) => { console.log("ERR", err); });
+		}).catch(err => {
+			console.log('ERR', err);
+		});
 		console.log(result);
 	};
 
 	const noVMTest = async () => {
 		console.log('====> Non snarkVM Test');
+		// eslint-disable-next-line @typescript-eslint/brace-style
 		const result = await invoke('test_snarkvm_mobile').then(res => { console.log('====> After Exec '); return res; }).catch((err) => { console.log("ERR", err); });
 		console.log(result);
 	};
@@ -63,11 +71,11 @@ function App() {
 			<button onClick={deployVMTest} >Test snarkVM (Deploy helloworld.aleo)</button>
 			<br />
 			<br />
-			<button onClick={preInstallInclusionProver} >Inclusion Prover </button>
+			{/* <button onClick={pre_install_inclusion_prover} >Inclusion Prover </button> */}
 			<br />
 			<br />
 			<button onClick={testInitUser} >Initialise user</button>
-		</React.Fragment>
+		</React.Fragment >
 	);
 }
 

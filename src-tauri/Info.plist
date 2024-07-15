@@ -40,7 +40,7 @@
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.13</string>
+	<string>11.0.0</string>
 	<key>LSRequiresCarbon</key>
 	<true/>
 	<key>NSHighResolutionCapable</key>

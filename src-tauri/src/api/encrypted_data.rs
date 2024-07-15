@@ -21,6 +21,7 @@ use avail_common::{
         },
         traits::encryptable::EncryptedStruct,
     },
+    // service_clients::get_rm_client_with_session,
 };
 
 /* --ENCRYPTED DATA SERVICE-- */

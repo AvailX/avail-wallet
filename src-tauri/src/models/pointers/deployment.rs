@@ -233,7 +233,6 @@ impl<N: Network> DeploymentPointer<N> {
         );
         Ok(encrypted_data)
     }
-
     pub fn to_event(&self, id: &str) -> AvailResult<Event> {
         let address = get_address_string()?;
         let network = get_network()?;
