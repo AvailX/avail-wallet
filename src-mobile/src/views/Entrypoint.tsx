@@ -35,10 +35,12 @@ function EntryPoint() {
           setAlertMessage,
           true
         );
-        if (res) {
-          navigate("/login");
-        }
+        console.log("Login response", res);
+        // if (res) {
+        navigate("/login");
+        // }
       } catch (error_) {
+        console.log("Error caught", error_);
         const error = error_ as AvailError;
 
         switch (error?.error_type) {
@@ -69,10 +71,10 @@ function EntryPoint() {
         setErrorAlert={setAlert}
         message={alertMessage}
       />
-      <mui.Box component={Link} to='/dashboard' sx={boxStyles}>
+      <mui.Box component={Link} to="/dashboard" sx={boxStyles}>
         <img
           src={logo}
-          alt='Logo'
+          alt="Logo"
           style={{ width: "30%", alignSelf: "center" }}
         />
       </mui.Box>
