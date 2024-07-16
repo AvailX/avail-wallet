@@ -27,8 +27,8 @@ interface IProps {
 }
 
 const DashboardHeader: FC<IProps> = ({ onProfileClick, profileAddress }) => {
-  const address = profileAddress ?? 'aleo1ab3j...82k';
-  const truncatedAddress = truncateText(address, 10);
+  const addressP = profileAddress ?? 'aleo1ab3j...82k';
+  const truncatedAddress = truncateText(addressP, 10);
 
   const navigate = useNavigate();
   const [address, setAddress] = useState("");

@@ -243,7 +243,7 @@ const Dashboard = () => {
 
       shouldRunEffect.current = false;
     }
-  });
+  }, []);
 
   /* --Event Listners */
   React.useEffect(() => {
@@ -269,21 +269,16 @@ const Dashboard = () => {
 
     return () => {
       unlistenScan
-        .then((remove) => {
-          remove();
-        })
+        .then((remove) => remove())
         .catch((error) => {
           console.log(error);
         });
 
       unlistenTx
-        .then((remove) => {
-          remove();
-        })
+        .then((remove) => remove())
         .catch((error) => {
           console.log(error);
         });
-      // Unlisten_reauth.then(remove => remove());
     };
   }, []);
 
@@ -316,13 +311,7 @@ const Dashboard = () => {
         >
           {DASHBOARD_ITEMS.map(({ icon, path }, i) => (
             <Box
-              borderRadius='9px'
-              component={Button}
-              onClick={() => {
-                console.log("Clicked");
-                navigate(path);
-              }}
-              sx={{ border: "none" }}
+              borderRadius="9px"
               p={1}
               height="63px"
               width="62px"
