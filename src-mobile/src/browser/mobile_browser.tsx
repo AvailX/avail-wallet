@@ -14,6 +14,7 @@ import {
   Button,
   Grid,
   Typography,
+  Stack,
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -47,7 +48,7 @@ const Search = styled("div")(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   backgroundColor: theme.palette.common.white,
   marginLeft: 0,
-  width: "60%",
+  width: "50%",
 }));
 
 type BrowserProperties = {
@@ -333,35 +334,47 @@ const Browser: React.FC<BrowserProperties> = ({
         </IconButton>
       </Box> */}
       <AppBar position="static" sx={{ bgcolor: "#111111" }}>
-        <Toolbar variant="dense">
+        <Stack direction="row" spacing={1}>
           <IconButton
             edge="start"
             color="inherit"
             aria-label="back"
             onClick={handleBack}
+            sx={{ color: "white" }}
+            // onClick={() => navigate("/wallet-connect")}
           >
-            <ArrowBackIosNewIcon />
+            <ArrowBackIosNewIcon fontSize="small" />
           </IconButton>
           <IconButton
             color="inherit"
             aria-label="reload"
             onClick={handleReload}
+            sx={{ color: "white" }}
           >
-            <RefreshIcon />
+            <RefreshIcon fontSize="small" />
           </IconButton>
+        </Stack>
+        <Toolbar variant="dense">
           <Search>
             <Paper
               component="form"
               sx={{
-                p: "2px 4px",
+                p: "2px 2px",
                 display: "flex",
                 alignItems: "center",
-                width: "50%",
+                width: "100%",
               }}
               onSubmit={handleInputSubmit}
             >
               <InputBase
-                sx={{ ml: 1, flex: 1 }}
+                sx={{
+                  ml: 0.5,
+                  height: "30px",
+                  flex: 1,
+                  "& input::placeholder": {
+                    fontSize: "14px",
+                  },
+                }}
                 placeholder={t("browser.enter") + " URL"}
                 inputProps={{ "aria-label": "enter url" }}
                 value={inputUrl}
@@ -369,19 +382,26 @@ const Browser: React.FC<BrowserProperties> = ({
               />
             </Paper>
           </Search>
-          <Box sx={{ width: "30%", ml: "2%" }}>
+          <Box sx={{ width: "25%", m: "1%" }}>
             <Paper
               component="form"
               sx={{
-                p: "2px 4px",
+                height: "35px",
+                p: "2px 2px",
                 display: "flex",
                 alignItems: "center",
-                width: "80%",
+                width: "100%",
               }}
               onSubmit={handleInputSubmit}
             >
               <InputBase
-                sx={{ ml: 1, flex: 1 }}
+                sx={{
+                  ml: 0.5,
+                  flex: 1,
+                  "& input::placeholder": {
+                    fontSize: "14px",
+                  },
+                }}
                 placeholder={t("browser.enter") + " Wallet Connect Link"}
                 inputProps={{ "aria-label": "enter url" }}
                 value={wcUrl}
@@ -392,7 +412,7 @@ const Browser: React.FC<BrowserProperties> = ({
           <Button
             sx={{
               borderRadius: "10px",
-              width: "12%",
+              width: "20%",
               bgcolor: "#00FFAA",
               color: "#111111",
               transition:
@@ -412,7 +432,6 @@ const Browser: React.FC<BrowserProperties> = ({
               connected ? handleDisconnect() : handleConnected();
             }}
           >
-            {" "}
             {connected
               ? t("browser.message.success.disconnect")
               : t("browser.connect")}
