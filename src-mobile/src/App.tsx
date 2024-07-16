@@ -21,6 +21,8 @@ import Send from "./views/send/Send";
 import InputRecipient from "./views/send/InputRecipient";
 import QrCode from "./views/QrCode";
 import Settings from "./views/Settings";
+import PrivacyPolicy from "./views/PrivacyPolicy";
+import TermsAndConditions from "./views/TermsandService";
 import Username from "./views/create-wallet/Username";
 import Password from "./views/create-wallet/Password";
 
@@ -52,6 +54,8 @@ const App: React.FC = () => {
     { path: "/input-send", element: <InputRecipient /> },
     { path: "/qr-code", element: <TauriQrCode /> },
     { path: "/settings", element: <Settings /> },
+    { path: "/privacy-policy", element: <PrivacyPolicy /> },
+    { path: "/terms-of-service", element: <TermsAndConditions /> },
     /* --Existing Wallet Flow-- */
     /* --Dapp Flow-- */
     /* --Quest Flow-- */

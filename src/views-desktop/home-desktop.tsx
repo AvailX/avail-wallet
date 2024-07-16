@@ -63,6 +63,7 @@ import { scan_messages } from '../services/scans/encrypted_messages';
 import { getNetwork, getBackupFlag } from '../services/storage/persistent';
 import { getNetworkStatus } from '../services/util/network';
 import { getPoints } from '../services/quests/quests';
+import { updateData } from '../services/util/migrate_data';
 
 import '../styles/animations.css';
 

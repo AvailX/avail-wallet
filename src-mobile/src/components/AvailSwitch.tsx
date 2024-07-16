@@ -49,12 +49,26 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
     boxSizing: "border-box",
   },
 }));
+interface SettingsSwitchProps {
+  disabled: boolean;
+  onSwitchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  checked: boolean;
+}
 
-export default function SettingsSwitch() {
+export default function SettingsSwitch({
+  disabled,
+  onSwitchChange,
+  checked,
+}: SettingsSwitchProps) {
   return (
     <FormGroup>
-      <Stack direction='row' spacing={1} alignItems='center'>
-        <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+      <Stack direction="row" spacing={1} alignItems="center">
+        <AntSwitch
+          disabled={disabled}
+          onChange={onSwitchChange}
+          checked={checked}
+          inputProps={{ "aria-label": "ant design" }}
+        />
       </Stack>
     </FormGroup>
   );
