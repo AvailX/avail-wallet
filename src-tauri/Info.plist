@@ -21,6 +21,8 @@
     <key>CFBundleURLTypes</key>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Face ID is used to unlock your wallet.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to your camera to scan QR codes.</string>
     <array>
         <dict>
             <key>CFBundleTypeRole</key>
@@ -34,13 +36,13 @@
         </dict>
     </array>
   <key>CFBundleShortVersionString</key>
-	<string>0.4.2</string>
+	<string>0.4.3</string>
 	<key>CFBundleVersion</key>
 	<string>20240222.152850</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.13</string>
+	<string>11.0.0</string>
 	<key>LSRequiresCarbon</key>
 	<true/>
 	<key>NSHighResolutionCapable</key>
