@@ -25,6 +25,7 @@ import Username from "./views/create-wallet/Username";
 import Password from "./views/create-wallet/Password";
 
 import Login from "./views/Login";
+import TauriQrCode from "./views/TauriQrCode";
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
@@ -49,7 +50,7 @@ const App: React.FC = () => {
 
     { path: "/send", element: <Send /> },
     { path: "/input-send", element: <InputRecipient /> },
-    { path: "/qr-code", element: <QrCode /> },
+    { path: "/qr-code", element: <TauriQrCode /> },
     { path: "/settings", element: <Settings /> },
     /* --Existing Wallet Flow-- */
     /* --Dapp Flow-- */
