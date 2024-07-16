@@ -157,6 +157,9 @@ pub fn get_records<N: Network>(
                     || e.to_string().contains("status code 500")
                     || e.to_string().contains("Error getting blocks")
                     || e.to_string().contains("https://aleo-testnetbeta.obscura.network/v1/92acf30f-5cea-4679-880c-f06e9a7e8465/testnet/blocks?start=")
+                    || e.to_string().contains("Invalid Data")
+                    || e.to_string().contains("Failed to parse block")
+                    || e.to_string().contains("JSON")
                 {
                     api_client = setup_aleo_client::<N>()?;
                     println!("Switched to aleo client;;;;{:?}", api_client.base_url());
