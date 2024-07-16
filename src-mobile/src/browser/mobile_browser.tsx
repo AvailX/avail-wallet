@@ -144,6 +144,25 @@ const Browser: React.FC<BrowserProperties> = ({
     }
   };
 
+  const handleInputSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (inputUrl && inputUrl !== url && inputUrl !== "") {
+      let urlModified = inputUrl;
+
+      if (!inputUrl.startsWith("https://") && !inputUrl.startsWith("http://")) {
+        urlModified = "https://" + inputUrl;
+      }
+
+      setPreviousUrls([...previousUrls, url ?? ""]);
+      setUrl(urlModified);
+      setShowMenu(false);
+
+      if (urlModified !== "https://faucet.puzzle.online") {
+        sessionStorage.setItem("activeUrl", urlModified);
+      }
+    }
+  };
+
   function handleUrlChangeInIframe(): ReactEventHandler<HTMLIFrameElement> {
     return (event) => {
       // if url starts with avail:// open in native app
@@ -238,7 +257,7 @@ const Browser: React.FC<BrowserProperties> = ({
         setSuccessAlert={setSuccessAlert}
         message={alertMessage}
       />
-      <Box display="flex" alignItems="center" pt={1} pb={2} m={0}>
+      {/* <Box display="flex" alignItems="center" pt={1} pb={2} m={0}>
         <IconButton
           sx={{
             background: " #3E3E3E",
@@ -312,7 +331,94 @@ const Browser: React.FC<BrowserProperties> = ({
         >
           <PlayArrowIcon />
         </IconButton>
-      </Box>
+      </Box> */}
+      <AppBar position="static" sx={{ bgcolor: "#111111" }}>
+        <Toolbar variant="dense">
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="back"
+            onClick={handleBack}
+          >
+            <ArrowBackIosNewIcon />
+          </IconButton>
+          <IconButton
+            color="inherit"
+            aria-label="reload"
+            onClick={handleReload}
+          >
+            <RefreshIcon />
+          </IconButton>
+          <Search>
+            <Paper
+              component="form"
+              sx={{
+                p: "2px 4px",
+                display: "flex",
+                alignItems: "center",
+                width: "50%",
+              }}
+              onSubmit={handleInputSubmit}
+            >
+              <InputBase
+                sx={{ ml: 1, flex: 1 }}
+                placeholder={t("browser.enter") + " URL"}
+                inputProps={{ "aria-label": "enter url" }}
+                value={inputUrl}
+                onChange={handleInputChange}
+              />
+            </Paper>
+          </Search>
+          <Box sx={{ width: "30%", ml: "2%" }}>
+            <Paper
+              component="form"
+              sx={{
+                p: "2px 4px",
+                display: "flex",
+                alignItems: "center",
+                width: "80%",
+              }}
+              onSubmit={handleInputSubmit}
+            >
+              <InputBase
+                sx={{ ml: 1, flex: 1 }}
+                placeholder={t("browser.enter") + " Wallet Connect Link"}
+                inputProps={{ "aria-label": "enter url" }}
+                value={wcUrl}
+                onChange={handleInputWcUrl}
+              />
+            </Paper>
+          </Box>
+          <Button
+            sx={{
+              borderRadius: "10px",
+              width: "12%",
+              bgcolor: "#00FFAA",
+              color: "#111111",
+              transition:
+                "transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out",
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: "#00FFAA",
+                boxShadow: "0 0 8px 2px rgba(0, 255, 170, 0.6)",
+                transform: "scale(1.03)",
+              },
+              "&:focus": {
+                backgroundColor: "#00FFAA",
+                boxShadow: "0 0 8px 2px rgba(0, 255, 170, 0.8)",
+              },
+            }}
+            onClick={() => {
+              connected ? handleDisconnect() : handleConnected();
+            }}
+          >
+            {" "}
+            {connected
+              ? t("browser.message.success.disconnect")
+              : t("browser.connect")}
+          </Button>
+        </Toolbar>
+      </AppBar>
       <Box
         sx={{
           height: "80vh",
@@ -330,6 +436,41 @@ const Browser: React.FC<BrowserProperties> = ({
             allowFullScreen
             allow="clipboard-read; clipboard-write"
           />
+        )}
+        {url === "" && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              p: "20px",
+              ml: "2%",
+            }}
+          >
+            <Title2Text sx={{ color: "#fff" }}>
+              {" "}
+              {t("browser.title")}{" "}
+            </Title2Text>
+            <Typography variant="body1" sx={{ color: "#a3a3a3" }}>
+              {t("browser.subtitle")}
+            </Typography>
+            <Grid
+              container
+              spacing={2}
+              sx={{ marginTop: "20px", alignItems: "center" }}
+            >
+              {dapps.map((dapp, index) => (
+                <Grid item xs={12} md={4} key={index}>
+                  <DappView
+                    dapp={dapp}
+                    onClick={() => {
+                      handleDappSelect(dapp.url);
+                      handleDappSelection(dapp.url);
+                    }}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
         )}
       </Box>
     </Box>
