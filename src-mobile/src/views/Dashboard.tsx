@@ -1,4 +1,4 @@
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
@@ -60,10 +60,10 @@ const Dashboard = () => {
     navigate("/secret-recovery");
   };
   const DASHBOARD_ITEMS = [
-    { icon: diamondShinyIcon },
+    { icon: diamondShinyIcon, path: "" },
     { icon: sendIcon, path: "/send" },
-    { icon: receiveIcon },
-    { icon: receiveIcon },
+    { icon: receiveIcon, path: "" },
+    { icon: receiveIcon, path: "" },
   ];
 
   const airdropNftData = [
@@ -308,7 +308,7 @@ const Dashboard = () => {
           width="90%"
           mx="auto"
         >
-          {DASHBOARD_ITEMS.map(({ icon }, i) => (
+          {DASHBOARD_ITEMS.map(({ icon, path }, i) => (
             <Box
               borderRadius="9px"
               p={1}

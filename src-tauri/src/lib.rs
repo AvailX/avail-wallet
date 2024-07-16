@@ -7,15 +7,19 @@ use crate::helpers::mobile_init::init_user_mobile;
 use crate::helpers::mobile_init::test_snarkvm_mobile;
 use crate::helpers::mobile_init::test_snarkvm_mobile_deploy;
 use crate::helpers::mobile_init::test_transfer_public_mobile;
+// use crate::services::record_handling::scan_utils::{
+//     handle_unconfirmed_transactions, scan_public_transitions,
+// };
+use crate::services::local_storage::persistent_storage::get_delegate_flag;
 use crate::services::record_handling::utils::get_all_nft_data;
 use log::LevelFilter;
 use log::{error, info};
 use services::account::generation::create_seed_phrase_wallet;
 use services::account::generation::import_wallet;
+use services::account::key_management::faceid::{get_key_ios, store_keys_ios};
 use services::account::phrase_recovery::recover_wallet_from_seed_phrase;
 use services::account::utils::{network_status_check, open_url, os_type};
 use services::authentication::session::get_session;
-use services::account::key_management::faceid::{store_keys_ios, get_key_ios};
 use services::local_storage::persistent_storage::{
     get_address_string, get_auth_type, get_backup_flag, get_language, get_last_sync, get_network,
     get_username, update_language,
@@ -70,7 +74,7 @@ struct DeepLinkPayload {
 pub fn run() {
     // let devtools = tauri_plugin_devtools::init();
     tauri::Builder::default()
-        .plugin(tauri_plugin_barcode_scanner::init())
+        // .plugin(tauri_plugin_barcode_scanner::init())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_process::init())
         // .plugin(devtools)
@@ -111,6 +115,7 @@ pub fn run() {
             get_last_sync,
             get_backup_flag,
             update_backup_flag,
+            get_delegate_flag,
             get_network,
             get_language,
             update_language,
@@ -151,7 +156,7 @@ pub fn run() {
             verify,
             /* Aleo Helpers */
             pre_install_inclusion_prover,
-            // test_transfer_public_mobile,
+            test_transfer_public_mobile,
             test_snarkvm_mobile,
             test_snarkvm_mobile_deploy,
             init_user_mobile,

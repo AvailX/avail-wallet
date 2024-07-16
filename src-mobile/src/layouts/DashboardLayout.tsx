@@ -95,7 +95,7 @@ import homeIcon from "../assets/dashboard_item/home-icon.svg";
 import coloredHomeIcon from "../assets/dashboard_item/home.svg";
 import splashImg from "../assets/green-splash.svg";
 
-interface IProps extends PropsWithChildren {}
+interface IProps extends PropsWithChildren { }
 
 const DashboardLayout: FC<IProps> = ({ children }) => {
   const navigate = useNavigate();

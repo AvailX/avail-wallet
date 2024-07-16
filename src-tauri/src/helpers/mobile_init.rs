@@ -127,7 +127,7 @@ pub fn log(window: Window, content: &str) -> AvailResult<()> {
 
     Ok(())
 }
-
+#[tauri::command(rename_all = "snake_case")]
 pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     // log("Transfer Public Mobile");
     let api_client = setup_client::<TestnetV0>()?;
@@ -201,39 +201,38 @@ pub async fn test_transfer_public_mobile() -> AvailResult<String> {
     //     None,
     // );
     // let execution = delegate_execution(prover_request).await?;
-    // let res = program_manager
-    //     .transfer(
-    //         amount,
-    //         10000u64,
-    //         recipient,
-    //         TransferType::Public,
-    //         None,
-    //         None,
-    //         None,
-    //         &program_id,
-    //         TESTNET_ADDRESS.to_string(),
-    //         SupportedNetworks::TestnetV0,
-    //         true,
-    //     )
-    //     .await?;
-    const RECORD_MAINNET: &str = r"{owner:aleo18lmhpa6znqe4eqgnhqccze9awqtutlkh0aukd05k7pl52uu8cvysxqwurp.private,microcredits:5000000u64.private,_nonce:8225702631067250884087834370560624180419459511593007256346751473925039784459group.public}";
-
-    let fee_record =
-        Some(Record::<TestnetV0, Plaintext<TestnetV0>>::from_str(RECORD_MAINNET).unwrap()); //Some(Record::from_str(r"{owner: aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px.private,microcredits: 1000000u64.private,_nonce: 6359981118440619636307465025861597379883101966015424940295774216783421394007group.public}").unwrap());
-
     let res = program_manager
-        .execute_program(
-            "credits.aleo",
-            "transfer_public",
-            vec![recipient.to_string(), "10000u64".to_string()].iter(),
+        .transfer(
+            amount,
             10000u64,
-            fee_record,
+            recipient,
+            TransferType::Public,
             None,
+            None,
+            None,
+            &program_id,
             TESTNET_ADDRESS.to_string(),
             SupportedNetworks::Testnet,
             true,
         )
         .await?;
+    const RECORD_MAINNET: &str = r"{owner:aleo18lmhpa6znqe4eqgnhqccze9awqtutlkh0aukd05k7pl52uu8cvysxqwurp.private,microcredits:5000000u64.private,_nonce:8225702631067250884087834370560624180419459511593007256346751473925039784459group.public}";
+
+    // let fee_record = None; //Some(Record::<Testnet3, Plaintext<Testnet3>>::from_str(RECORD_MAINNET).unwrap()); //Some(Record::from_str(r"{owner: aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px.private,microcredits: 1000000u64.private,_nonce: 6359981118440619636307465025861597379883101966015424940295774216783421394007group.public}").unwrap());
+
+    // let res = program_manager
+    //     .execute_program(
+    //         "credits.aleo",
+    //         "transfer_public",
+    //         vec![recipient.to_string(), "10000u64".to_string()].iter(),
+    //         10000u64,
+    //         fee_record,
+    //         None,
+    //         TESTNET_ADDRESS.to_string(),
+    //         SupportedNetworks::Testnet3,
+    //         true,
+    //     )
+    //     .await?;
 
     // program_manager.broadcast_transaction(execution.clone())?;
 
@@ -286,8 +285,7 @@ pub async fn init_user_mobile() -> AvailResult<String> {
         "unusual squeeze advance legend sign drink buffalo until craft record carpet shuffle
         ",
         Languages::to_bip39_language(&Languages::English),
-    )
-    .unwrap();
+    )?;
 
     // let key_manager = {
     //     #[cfg(target_os = "macos")]
@@ -347,14 +345,13 @@ pub async fn init_user_mobile() -> AvailResult<String> {
         false,
         avail_wallet.get_address(),
         Languages::English,
-    )
-    .unwrap();
+    )?;
 
-    init_tokens_table().unwrap();
+    init_tokens_table()?;
 
     // some function
 
-    initialize_encrypted_data_table().unwrap();
+    initialize_encrypted_data_table()?;
     VIEWSESSION
         .set_view_session(&avail_wallet.get_view_key())
         .unwrap();
