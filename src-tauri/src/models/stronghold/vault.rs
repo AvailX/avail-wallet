@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 use iota_stronghold::procedures::Curve;
+use snarkvm::prelude::{Plaintext, ProgramID, Record, Value};
 use snarkvm_console::{network::Network, program::Identifier};
 use tauri_plugin_aleo_stronghold::{
     execute_procedure, remove_secret, save_secret, BytesDto, LocationDto, ProcedureDto,
@@ -243,6 +244,41 @@ impl Vault {
                 AvailErrorType::Internal,
                 e.to_string(),
                 "Failed to get address.".to_string(),
+            )),
+        }
+    }
+
+    pub async fn aleo_execute<N: Network>(
+        self,
+        hold: &StrongholdCollection,
+        pk_path: &str,
+        program_id: impl TryInto<ProgramID<N>>,
+        function_name: impl TryInto<snarkvm::prelude::Identifier<N>>,
+        inputs: impl ExactSizeIterator<Item = impl TryInto<Value<N>>>,
+        priority_fee_in_microcredits: u64,
+        fee_record: Option<Record<N, Plaintext<N>>>,
+    ) -> AvailResult<Vec<u8>> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(pk_path.to_string());
+        let location = LocationDto::Generic {
+            vault: self.name,
+            record: record_path,
+        };
+        let procedure = ProcedureDto::AleoExecute {
+            private_key: location,
+            program_id,
+            function_name,
+            inputs,
+            fee_record,
+            priority_fee_in_microcredits,
+        };
+
+        match execute_procedure(hold, path, self.client, procedure).await {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to execute Aleo transaction.".to_string(),
             )),
         }
     }
