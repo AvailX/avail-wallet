@@ -278,7 +278,7 @@ impl Vault {
             Err(e) => Err(AvailError::new(
                 AvailErrorType::Internal,
                 e.to_string(),
-                "Failed to execute Aleo transaction.".to_string(),
+                "Failed to execute Aleo transaction".to_string(),
             )),
         }
     }

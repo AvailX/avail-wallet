@@ -6830,7 +6830,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-aleo-stronghold"
 version = "2.0.0-beta.3"
-source = "git+https://github.com/AvailX/tauri-plugin-aleo-stronghold?rev=4b5d444#4b5d4449b848dd2b2d74e1a162458e90971da6d1"
+source = "git+https://github.com/AvailX/tauri-plugin-aleo-stronghold?rev=e1498eb#e1498eb49b10f57597ed0ee418789009650377ac"
 dependencies = [
  "hex",
  "iota-crypto 0.23.1 (git+https://github.com/AvailX/crypto.rs?rev=707a041)",

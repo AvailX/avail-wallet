@@ -231,7 +231,7 @@ async fn remove_chain_code(
 mod test_helpers {
     use super::*;
     use snarkvm::circuit::prelude::PrimeField;
-    use snarkvm::prelude::{PrivateKey, Testnet3};
+    use snarkvm::prelude::{anyhow, PrivateKey, Testnet3};
     use snarkvm::utilities::{FromBytes, ToBytes};
     use snarkvm_console::network::MainnetV0;
 
@@ -323,5 +323,39 @@ mod test_helpers {
         .unwrap();
         //let private_key = PrivateKey::<Testnet3>::from_bytes_le(&[146, 124, 48, 116, 162, 48, 39, 8, 140, 187, 133, 43, 229, 167, 140, 221, 27, 7, 222, 118, 206, 188, 3, 195, 141, 34, 99, 31, 191, 189, 241, 33, 133, 44, 230, 88, 13, 2, 119, 8, 116, 151, 106, 204, 91, 193, 218, 153, 144, 146, 235, 176, 201, 46, 164, 188, 68, 9, 160, 236, 248, 11, 4, 188]).unwrap();
         print!("Private Key {}", private_key.to_string());
+    }
+
+    #[tokio::test]
+    async fn test_aleo_execute() {
+        type N = MainnetV0;
+
+        let (hold, stronghold, client) = init_stronghold("password").await.unwrap();
+        let vault = Vault::new(
+            stronghold.path.as_str(),
+            client.name,
+            BytesDto::Text("slip10".to_string()),
+        );
+
+        let account_index = 2;
+        let key_path = format!("m/44'/0'/{}'/0'", account_index);
+        let program_id = "credits.aleo".try_into().map_err(|_| anyhow!("Invalid program id"))?;
+        let function_name = "transfer_public".try_into().map_err(|_| anyhow!("Invalid function name"))?;
+        let recipient = "AViewKey1gTShUdULoNLsoA2eXLtdEKkaMFu4CxzFwn7NTF1RcYvn";
+        let inputs: Vec<String> = [
+            recipient.to_string(),
+            "10000u64".to_string(),
+        ].to_vec();
+
+        let res = vault.aleo_execute::<N>(
+            &hold,
+            &key_path,
+            program_id,
+            function_name,
+            inputs,
+            0,
+            None,
+        );
+
+        println!("{:?}", res);
     }
 }
