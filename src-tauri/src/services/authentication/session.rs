@@ -89,6 +89,79 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
     }
 }
 
+#[tauri::command(rename_all = "snake_case")]
+pub async fn get_session_mobile(password: Option<String>) -> AvailResult<String> {
+    let address = get_address_string()?;
+    let session_request = request_hash(&address).await?;
+
+    let network = get_network()?;
+
+    let (sig, _) = match SupportedNetworks::from_str(&network)? {
+        SupportedNetworks::Testnet => crate::services::local_storage::utils::sign_message_ios::<
+            TestnetV0,
+        >(&session_request.hash, password.clone())?,
+        _ => crate::services::local_storage::utils::sign_message_ios::<TestnetV0>(
+            &session_request.hash,
+            password.clone(),
+        )?,
+    };
+
+    let verify_request = server_auth::VerifySessionRequest {
+        signature: sig.to_string(),
+        session_id: session_request.session_id,
+    };
+
+    let api = env!("API");
+
+    let client = reqwest::Client::new();
+
+    let res = match client
+        .post(format!("{}/auth/login/", api))
+        .json(&verify_request)
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error authenticating user ".to_string(),
+            ));
+        }
+    };
+
+    if res.status() == 200 {
+        let cookie = res.cookies().next();
+
+        let session_cookie = match cookie {
+            Some(cookie) => cookie,
+            None => {
+                return Err(AvailError::new(
+                    AvailErrorType::Validation,
+                    "Session cookie not found in auth response".to_string(),
+                    "Session cookie not found in auth response".to_string(),
+                ))
+            }
+        };
+
+        SESSION.set_session_token(session_cookie.value().to_string());
+
+        let _pass_session = match password {
+            Some(password) => PASS.set_pass_session(&password)?,
+            None => {}
+        };
+
+        Ok(session_request.session_id.to_string())
+    } else {
+        Err(AvailError::new(
+            AvailErrorType::External,
+            "Invalid Signature".to_string(),
+            "Invalid Signature".to_string(),
+        ))
+    }
+}
+
 pub async fn get_session_after_creation<N: Network>(
     private_key: &PrivateKey<N>,
 ) -> AvailResult<String> {

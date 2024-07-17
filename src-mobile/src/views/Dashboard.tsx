@@ -2,6 +2,8 @@ import { Box, Button, IconButton, Typography } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
+import ScanReAuthDialog from '../../../src/components/dialogs/scan_reauth';
+import { SuccessAlert, ErrorAlert } from '../../../src/components/snackbars/alerts';
 
 import diamondShinyIcon from "../assets/diamond-shiny-icon.svg";
 import sendIcon from "../assets/send-icon.svg";
@@ -27,7 +29,7 @@ import { AirdropNft } from "../components/Nft";
 
 // Services
 import { get_nfts } from "../services/nfts/fetch";
-import { getWhitelists, getCollections } from "../services/quests/quests";
+import { getWhitelists, getCollections, getPoints } from "../services/quests/quests";
 
 // Types
 import { type INft, disruptorWhitelist } from "../types/nfts/nft";
@@ -36,7 +38,7 @@ import {
   type Collection,
   testCollection,
 } from "../types/quests/quest_types";
-import { type AvailError } from "../types/errors";
+import { AvailErrorType, type AvailError } from "../types/errors";
 
 // Interfaces
 import { type AssetType } from "../types/assets/asset";
@@ -53,7 +55,9 @@ import { listen } from "@tauri-apps/api/event";
 import { useScan } from "../../../src/context/ScanContext";
 import { useRecentEvents } from "../../../src/context/EventsContext";
 import { Link, useNavigate } from "react-router-dom";
-import { get_address } from "../../../src/services/storage/persistent";
+import { getBackupFlag, getNetwork, get_address } from "../../../src/services/storage/persistent";
+import { scan_blocks } from "../../../src/services/scans/blocks";
+import { getAuth } from "../../../src/services/states/utils";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -78,7 +82,7 @@ const Dashboard = () => {
 
   // Alert states
   const [errorAlert, setErrorAlert] = React.useState(false);
-  const [successAlert, setSuccessAlert] = React.useState(false);
+  const [success, setSuccessAlert] = React.useState(false);
   const [warningAlert, setWarningAlert] = React.useState(false);
   const [infoAlert, setInfoAlert] = React.useState(false);
   const [message, setMessage] = React.useState<string>("");
@@ -219,12 +223,12 @@ const Dashboard = () => {
         .catch((err) => {
           const error = err as AvailError;
 
-          if (error.error_type.toString() === "Unauthorized") {
+          if (error.error_type.toString() === "Unauthorized" || error.internal_msg === "Session not found") {
             // eslint-disable-next-line no-warning-comments
             // TODO - Re-authenticate and fix execution on re-auth (Bala)
 
             console.log("Unauthorized, re auth");
-
+            console.log(error);
             setOpen(true);
           } else {
             console.log(error.internal_msg);
@@ -281,9 +285,171 @@ const Dashboard = () => {
         });
     };
   }, []);
+  const handleBlockScan = async (res: TxScanResponse) => {
+    if (res.txs) {
+      handleGetAssets();
+      fetchEvents();
+    }
+
+    if (!scanInProgress && !transferState) {
+      // Set Scanning state to true
+      startScan();
+      setLocalScan(true);
+
+      // Syncs blocks in different thread
+      scan_blocks(res.block_height, setErrorAlert, setMessage).then(async res => {
+        setSuccessAlert(true);
+        setMessage(t('home.messages.success.scan'));
+        setScanProgressPercent(0);
+        endScan();
+        setLocalScan(false);
+
+        if (res) {
+          console.log('Res: ' + res);
+          await handleGetTokens();
+          fetchEvents();
+        }
+      }).catch(async err => {
+        const error = err as AvailError;
+
+        console.log('Error' + error.internal_msg);
+        endScan();
+        setMessage(t('home.messages.errors.blocks-scan'));
+        setErrorAlert(true);
+      });
+
+      // Set Scanning state to false
+    } else {
+      console.log(`Scan in progress: ${scanInProgress} Transfer state: ${transferState}`);
+    }
+  };
+
+  const handleScan = () => {
+    // To get the initial balance and transactions
+    scan_messages().then(async res => {
+      getNetworkStatus().then(async status => {
+        setNetworkStatus(status);
+        if (status === NetworkStatus.Down) {
+          setNetworkDownDialog(true);
+        }
+
+        console.log('Network status: ' + status);
+      }).catch(() => {
+        setMessage('Issue checking network status.');
+        setErrorAlert(true);
+      });
+      await handleBlockScan(res);
+    }).catch(async err => {
+      const error = err as AvailError;
+      console.log(error.error_type);
+
+      if (error.error_type === AvailErrorType.Network) {
+        setMessage(t('home.messages.errors.network'));
+        setErrorAlert(true);
+      } else if (error.error_type.toString() === 'Unauthorized') {
+        // eslint-disable-next-line no-warning-comments
+        // TODO - Re-authenticate and fix execution on re-auth (Bala)
+
+        console.log('Unauthorized, re auth');
+
+        setReAuthDialogOpen(true);
+      } else {
+        console.log(error.internal_msg);
+        setMessage(error.internal_msg);
+        setErrorAlert(true);
+      }
+    });
+  };
+
+  React.useEffect(() => {
+    if (shouldRunEffect.current) {
+      handleTransferCheck();
+      const firstVisitSession = get_visit_session_flag();
+
+      if (!firstVisitSession) {
+        switchToObscura().catch(() => {
+          setMessage('Issue switching to Obscura.');
+          setErrorAlert(true);
+        });
+
+        getBackupFlag().then(async res => {
+          if (res) {
+            await sync_backup();
+          }
+        }).catch(error => {
+          console.log(error);
+        });
+
+        // Info notify user that inclusion.prover is being installed
+        preInstallInclusionProver().catch(() => {
+          setMessage('Issue checking Aleo resources.');
+          setErrorAlert(true);
+        });
+
+        set_visit_session_flag();
+      }
+
+      const firstVisitPersistent = get_first_visit();
+      console.log('First visit persistent: ' + firstVisitPersistent);
+
+      if (!firstVisitPersistent) {
+        set_first_visit();
+        setBackupDialog(true);
+      }
+
+      const transferState = sessionStorage.getItem('transferState');
+      if (transferState === 'true') {
+        setTransferState(true);
+      }
+
+      setLoading(true);
+      getAuth(setBiometric)
+        .catch(error => {
+          console.log(error);
+        });
+
+      getName(setUsername)
+        .catch(error => {
+          console.log(error);
+        });
+
+      getAddress(setAddress)
+        .catch(error => {
+          console.log(error);
+        });
+
+      getNetwork().then(res => {
+        setNetwork(res);
+      }).catch(error => {
+        console.log(error);
+      });
+
+      getPoints().then(res => {
+        console.log(res);
+        setPoints(res);
+      }).catch(error => {
+        console.log(error);
+      });
+
+      handleGetAssets();
+      fetchEvents();
+
+      setLoading(false);
+
+      handleScan();
+
+      shouldRunEffect.current = false;
+    }
+  }, [scanInProgress, startScan, endScan]);
 
   return (
     <>
+      <ScanReAuthDialog isOpen={open} onRequestClose={() => {
+        setOpen(false);
+      }} />
+      <SuccessAlert successAlert={success} setSuccessAlert={setSuccessAlert} message={message} />
+      <ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={message} />
+
       <DashboardLayout>
         <DashboardHeader
           onProfileClick={(): void => {
