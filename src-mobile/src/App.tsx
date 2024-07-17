@@ -52,7 +52,7 @@ const App: React.FC = () => {
 
     { path: "/send", element: <Send /> },
     { path: "/input-send", element: <InputRecipient /> },
-    { path: "/qr-code", element: <TauriQrCode /> },
+    { path: "/qr-code", element: <QrCode /> },
     { path: "/settings", element: <Settings /> },
     { path: "/privacy-policy", element: <PrivacyPolicy /> },
     { path: "/terms-of-service", element: <TermsAndConditions /> },
