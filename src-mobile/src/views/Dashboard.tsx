@@ -1,4 +1,13 @@
-import { Box, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Drawer,
+  IconButton,
+  Typography,
+  Button,
+} from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
@@ -53,7 +62,9 @@ import { SuccinctAvailEvent } from "types/avail-events/event";
 import { listen } from "@tauri-apps/api/event";
 import { useScan } from "../../../src/context/ScanContext";
 import { useRecentEvents } from "../../../src/context/EventsContext";
+import ReceiveItem from "components/modals/RecieveItem";
 
+import { truncateText } from "../components/DashboardHeader";
 const Dashboard = () => {
   const navigate = useNavigate();
   const goToOther = () => {
@@ -84,8 +95,12 @@ const Dashboard = () => {
   const [loading, setLoading] = React.useState(true);
 
   const [open, setOpen] = React.useState<boolean>(false);
+  const [recieve, setReceiveActive] = React.useState<boolean>(true);
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
+  };
+  const recievePressed = (receiveNow: boolean) => (): void => {
+    setReceiveActive(receiveNow);
   };
 
   const [activeTab, setActiveTab] = useState("assets");
@@ -94,6 +109,9 @@ const Dashboard = () => {
   const toggleActivityDetails = (newOpen: boolean) => (): void => {
     setOpenActivityDetails(newOpen);
   };
+
+  //Bottom Sheet
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   const handleWhitelistCollectionCheck = (
     whitelist: WhitelistResponse,
@@ -126,12 +144,33 @@ const Dashboard = () => {
     setAirdropNfts(selectedCollections);
   };
 
+  //Bottom sheet
+  const handleItemClick = (index: number) => {
+    console.log("I am being clicked");
+    // if (index === 2) {
+    //   console.log("INFO: Tapped on receive -- firing bottom sheet");
+    //   setIsBottomSheetOpen(true);
+
+    //   recievePressed(true);
+    // }
+    if (index === 2) {
+      setReceiveActive(!recieve);
+    }
+    // Handle other items if necessary
+  };
+
+  const handleClose = () => {
+    console.log("INFO: Tapped on receive -- killing bottom sheet");
+    setIsBottomSheetOpen(false);
+  };
+
   const handleXlink = async (url: string) => {
     await open_url(url);
   };
   // let address = get_address().then((data) => {
   //   console.log("address", data);
   // });
+
   const sampleData = {
     recipient: "@zack_x",
     date: "12 Mar at 2:34 PM",
@@ -299,6 +338,7 @@ const Dashboard = () => {
         >
           {`$` + balance}
         </Typography>
+        {/* This is the Percentage text, that shows in green or red, commented out by now -- order from Bala */}
         {/* <Typography color="#01FFAA">+450.6%</Typography> */}
         <Box
           display="flex"
@@ -308,20 +348,35 @@ const Dashboard = () => {
           width="90%"
           mx="auto"
         >
-          {DASHBOARD_ITEMS.map(({ icon }, i) => (
-            <Box
-              borderRadius="9px"
-              p={1}
-              height="63px"
-              width="62px"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              bgcolor="#2A2A2A"
-              key={i}
+          {DASHBOARD_ITEMS.map((item, index) => (
+            <Button
+              key={index}
+              onClick={() => handleItemClick(index)}
+              sx={{
+                borderRadius: "9px",
+                p: 1,
+                height: "63px",
+                width: "62px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                bgcolor: "#2A2A2A",
+                cursor: "pointer",
+                outline: "none",
+                border: "none",
+                "&:focus": {
+                  outline: "none",
+                },
+                "&:active": {
+                  bgcolor: "#2A2A2A",
+                },
+                "&:hover": {
+                  bgcolor: "#2A2A2A",
+                },
+              }}
             >
-              <img src={icon} />
-            </Box>
+              <img src={item.icon} alt={`icon-${index}`} />
+            </Button>
           ))}
         </Box>
 
@@ -469,6 +524,63 @@ const Dashboard = () => {
             </>
           ))}
       </DashboardLayout>
+      <Drawer
+        anchor="bottom"
+        open={isBottomSheetOpen}
+        onClose={handleClose}
+        sx={{ "& .MuiDrawer-paper": { borderRadius: "16px 16px 0 0" } }}
+      >
+        <Box p={2}>
+          <Typography variant="h6">{sampleData.recipient}</Typography>
+          <Box>
+            {sampleData.transactions.map((transaction, index) => (
+              <Box key={index} sx={{ display: "flex", marginBottom: 1 }}>
+                <img
+                  src={transaction.imageUrl}
+                  alt="transaction"
+                  style={{ marginRight: 10, width: 50, height: 50 }}
+                />
+                <Box>
+                  <Typography>{transaction.from}</Typography>
+                  <Typography>{transaction.amount}</Typography>
+                  <Typography>{transaction.aleo}</Typography>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      </Drawer>
+      <SwipeableEdgeDrawer open={recieve} toggleDrawer={recievePressed}>
+        <Typography
+          style={{
+            color: "#00FFAA",
+            fontSize: "2rem",
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          Receive
+        </Typography>
+        <Typography
+          style={{
+            color: "#979797",
+            marginBlock: "1.5rem",
+            fontSize: "1.2rem",
+          }}
+        >
+          NFTs and Crypto
+        </Typography>
+        {assets.map(function (asset, index) {
+          return (
+            <ReceiveItem
+              key={index}
+              header={asset.symbol}
+              walletAddress={truncateText(address, 10)}
+              image={asset.image_ref}
+            />
+          );
+        })}
+      </SwipeableEdgeDrawer>
       <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer} />
       <SwipeableEdgeDrawer
         open={openActivityDetails}

@@ -12,7 +12,7 @@ const EllipsisTypography = styled(Typography)({
   maxWidth: "150px",
 });
 
-const truncateText = (text: string, maxLength: number) => {
+export const truncateText = (text: string, maxLength: number) => {
   if (text.length <= maxLength) return text;
   const start = text.substring(0, maxLength - 3);
   const end = text.substring(text.length - 3, text.length);
@@ -25,8 +25,8 @@ interface IProps {
 }
 
 const DashboardHeader: FC<IProps> = ({ onProfileClick, profileAddress }) => {
-  const address = profileAddress ?? 'aleo1ab3j...82k';
-  const truncatedAddress = truncateText(address, 10); 
+  const address = profileAddress ?? "aleo1ab3j...82k";
+  const truncatedAddress = truncateText(address, 10);
 
   const navigate = useNavigate();
   return (
@@ -40,7 +40,7 @@ const DashboardHeader: FC<IProps> = ({ onProfileClick, profileAddress }) => {
         <img src={avatarImg} />
         <Box ml={3}>
           <EllipsisTypography fontWeight={700} color="#fff">
-             {truncatedAddress}
+            {truncatedAddress}
           </EllipsisTypography>
         </Box>
       </Box>
