@@ -8,12 +8,16 @@ import { toast } from "react-toastify";
 
 function QrCode() {
   const navigate = useNavigate();
+
   function isAleoAddress(address: string): boolean {
     const prefix = "aleo";
     const expectedLength = 64;
 
     // Check if the address starts with the prefix and has the expected length
-    if (address.startsWith(prefix) && address.length === expectedLength) {
+    if (
+      address.toLowerCase().startsWith(prefix) &&
+      address.length === expectedLength
+    ) {
       // Check if the address only contains alphanumeric characters
       const alphanumericRegex = /^[a-zA-Z0-9]+$/;
       return alphanumericRegex.test(address);
@@ -21,6 +25,7 @@ function QrCode() {
 
     return false;
   }
+
   return (
     <DashboardLayout>
       <Box

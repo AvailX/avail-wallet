@@ -28,6 +28,7 @@ import Password from "./views/create-wallet/Password";
 
 import Login from "./views/Login";
 import TauriQrCode from "./views/TauriQrCode";
+import UserQr from "views/UserQr";
 
 const App: React.FC = () => {
   const router: RouterProviderProps["router"] = createBrowserRouter([
@@ -56,6 +57,7 @@ const App: React.FC = () => {
     { path: "/settings", element: <Settings /> },
     { path: "/privacy-policy", element: <PrivacyPolicy /> },
     { path: "/terms-of-service", element: <TermsAndConditions /> },
+    { path: "/user-qr", element: <UserQr /> },
     /* --Existing Wallet Flow-- */
     /* --Dapp Flow-- */
     /* --Quest Flow-- */
