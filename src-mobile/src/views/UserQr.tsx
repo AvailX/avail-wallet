@@ -8,25 +8,33 @@ const UserQr = () => {
   const [address, setAddress] = useState<string>("");
   const [message, setMessage] = useState("");
   const [errorAlert, setErrorAlert] = useState(false);
-
-  get_address()
-    .then((res) => {
-      console.log("This is my address", res);
-      setAddress(res);
-    })
-    .catch((error) => {
-      console.log(error);
-      setMessage("Failed to get address.");
-      setErrorAlert(true);
-    });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    get_address();
+    get_address()
+      .then((res) => {
+        console.log("This is my address", res);
+        setAddress(res);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setMessage("Failed to get address.");
+        setErrorAlert(true);
+        setLoading(false);
+      });
   }, []);
 
   return (
     <DashboardLayout>
-      <QRCode value={address} />
+      <BackButton />
+      {loading ? (
+        <p>Loading...</p>
+      ) : errorAlert ? (
+        <p>{message}</p>
+      ) : (
+        <QRCode value={address} />
+      )}
     </DashboardLayout>
   );
 };
