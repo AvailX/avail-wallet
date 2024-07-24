@@ -3,9 +3,9 @@
   "identifier": "com.avail.wallet",
   "build": {
     "beforeDevCommand": "cd src-mobile && npm i && npm run dev",
-    "beforeBuildCommand": "npm i && npm run build",
-    "devUrl": "http://localhost:5173/",
-    "frontendDist": "../src-mobile/"
+    "beforeBuildCommand": "cd src-mobile && npm i && npm run build",
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../src-mobile"
   },
   "bundle": {
     "active": true,

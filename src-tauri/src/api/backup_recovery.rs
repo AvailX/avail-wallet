@@ -1,6 +1,8 @@
+use http::request;
 use snarkvm::{console::program::Itertools, prelude::Network};
 use std::str::FromStr;
 use tauri_plugin_http::reqwest;
+
 use uuid::Uuid;
 
 use crate::{
@@ -21,6 +23,7 @@ use avail_common::{
         },
         traits::encryptable::EncryptedStruct,
     },
+    // service_clients::get_backup_client_with_session,
 };
 
 pub async fn update_sync_height(address: String, sync_height: String) -> AvailResult<String> {
@@ -29,7 +32,7 @@ pub async fn update_sync_height(address: String, sync_height: String) -> AvailRe
         address = address,
         height = sync_height
     );
-    let res = match get_backup_client_with_session(reqwest::Method::POST, &path)?
+    let res = match get_backup_client_with_session(http::method::Method::POST, &path)?
         .send()
         .await
     {

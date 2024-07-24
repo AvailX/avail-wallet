@@ -1,4 +1,4 @@
-use crate::api::client::SESSION;
+// use crate::api::client::SESSION;
 use crate::helpers::utils::HOST;
 use crate::models::auth::{CreateSessionRequest, VerifySessionResponse};
 use crate::services::local_storage::{
@@ -6,6 +6,7 @@ use crate::services::local_storage::{
     session::password::PASS,
     utils::{sign_message, sign_message_w_key},
 };
+use avail_common::service_clients::SESSION;
 use snarkvm::prelude::*;
 use tauri_plugin_http::reqwest;
 
