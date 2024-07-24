@@ -95,7 +95,7 @@ const Dashboard = () => {
   const [loading, setLoading] = React.useState(true);
 
   const [open, setOpen] = React.useState<boolean>(false);
-  const [recieve, setReceiveActive] = React.useState<boolean>(true);
+  const [recieve, setReceiveActive] = React.useState<boolean>(false);
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
   };
