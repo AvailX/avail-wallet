@@ -19,11 +19,11 @@ import {
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { styled } from "@mui/material/styles";
-import arcane from "../assets/arcane.svg";
-import SegmentIcon from "@mui/icons-material/Segment";
-import CloseIcon from "@mui/icons-material/Close";
-import LoopIcon from "@mui/icons-material/Loop";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+// import arcane from "../assets/arcane.svg";
+// import SegmentIcon from "@mui/icons-material/Segment";
+// import CloseIcon from "@mui/icons-material/Close";
+// import LoopIcon from "@mui/icons-material/Loop";
+// import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 // global state
 import { useTranslation } from "react-i18next";
@@ -230,21 +230,21 @@ const Browser: React.FC<BrowserProperties> = ({
     };
   }, []);
 
-  const wcRequest: WalletConnectRequest = {
-    method: "connect",
-    question: "Do you want to connect to " + "metadata.name" + " ?",
-    imageRef: "../wc-images/connect.svg",
-    approveResponse: "User approved wallet connect",
-    rejectResponse: "User rejected wallet connect",
-    description: "metadata.description",
-    dappUrl: "",
-    dappImage: "metadata.icons[0]",
-  };
+  // const wcRequest: WalletConnectRequest = {
+  //   method: "connect",
+  //   question: "Do you want to connect to " + "metadata.name" + " ?",
+  //   imageRef: "../wc-images/connect.svg",
+  //   approveResponse: "User approved wallet connect",
+  //   rejectResponse: "User rejected wallet connect",
+  //   description: "metadata.description",
+  //   dappUrl: "",
+  //   dappImage: "metadata.icons[0]",
+  // };
 
-  const handleWCR = async () => {
-    await emit("wallet-connect-request", {});
-    console.log("Emitting wallet-connect-request");
-  };
+  // const handleWCR = async () => {
+  //   await emit("wallet-connect-request", {});
+  //   console.log("Emitting wallet-connect-request");
+  // };
 
   return (
     <Box sx={{}}>
@@ -383,7 +383,6 @@ const Browser: React.FC<BrowserProperties> = ({
           <Button
             sx={{
               borderRadius: "10px",
-              height: "35px",
               width: "20%",
               bgcolor: "#00FFAA",
               color: "#111111",
