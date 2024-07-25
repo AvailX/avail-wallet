@@ -1,15 +1,10 @@
 import {
   Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   Drawer,
-  IconButton,
   Typography,
   Button,
 } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
-import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
 
 import diamondShinyIcon from "../assets/diamond-shiny-icon.svg";
@@ -18,11 +13,9 @@ import receiveIcon from "../assets/receive-icon.svg";
 
 import { open_url } from "../services/utils/open";
 
-import availLogo from "../assets/avail-icon.svg";
 import NftDisplay from "../components/NftDisplay";
 import NftDetailsDisplay from "../components/NftDetailsDisplay";
 import {
-  CompletedDisplay,
   PendingDisplay,
 } from "../components/ActivityStatusCard";
 import SwipeableEdgeDrawer from "../components/SwipeableDrawer";
@@ -33,7 +26,6 @@ import DashboardCarousel from "../components/DashboardCarousel";
 import { useNavigate } from "react-router-dom";
 import { getName } from "../services/states/util";
 import { getAddress } from "../services/states/util";
-import { AirdropNft } from "../components/Nft";
 
 // Services
 import { get_nfts } from "../services/nfts/fetch";
@@ -44,20 +36,17 @@ import { type INft, disruptorWhitelist } from "../types/nfts/nft";
 import {
   type WhitelistResponse,
   type Collection,
-  testCollection,
 } from "../types/quests/quest_types";
 import { type AvailError } from "../types/errors";
 
 // Interfaces
 import { type AssetType } from "../types/assets/asset";
-import { AvailEvent } from "../services/wallet-connect/WCTypes";
 import { handleGetTokens } from "services/tokens/get_tokens";
 import { useTranslation } from "react-i18next";
 
 //Images
 import noNftsImage from "../assets/images/no_nfts.png";
 import noAssetsImage from "../assets/images/no_balance.png";
-import noActivyityImage from "../assets/images/no_activity.png";
 import { SuccinctAvailEvent } from "types/avail-events/event";
 import { listen } from "@tauri-apps/api/event";
 import { useScan } from "../../../src/context/ScanContext";
@@ -66,10 +55,6 @@ import ReceiveItem from "components/modals/RecieveItem";
 
 import { truncateText } from "../components/DashboardHeader";
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const goToOther = () => {
-    navigate("/secret-recovery");
-  };
   const DASHBOARD_ITEMS = [
     { icon: diamondShinyIcon },
     { icon: sendIcon, path: "/send" },
@@ -77,20 +62,13 @@ const Dashboard = () => {
     { icon: receiveIcon },
   ];
 
-  const airdropNftData = [
-    { whitelist_img: availLogo, name: "Airdrop NFT 1" },
-    { whitelist_img: availLogo, name: "Airdrop NFT 2" },
-    { whitelist_img: availLogo, name: "Airdrop NFT 3" },
-  ];
+
 
   const [nfts, setNfts] = React.useState<INft[]>([]);
   const [airdropNfts, setAirdropNfts] = React.useState<Collection[]>([]);
 
   // Alert states
   const [errorAlert, setErrorAlert] = React.useState(false);
-  const [successAlert, setSuccessAlert] = React.useState(false);
-  const [warningAlert, setWarningAlert] = React.useState(false);
-  const [infoAlert, setInfoAlert] = React.useState(false);
   const [message, setMessage] = React.useState<string>("");
   const [loading, setLoading] = React.useState(true);
 
@@ -113,19 +91,6 @@ const Dashboard = () => {
   //Bottom Sheet
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
-  const handleWhitelistCollectionCheck = (
-    whitelist: WhitelistResponse,
-    collections: Collection[]
-  ) => {
-    collections.forEach((collection) => {
-      if (collection.name === whitelist.collection_name) {
-        console.log("Adding airdrop nft");
-        console.log(collection);
-        console.log(airdropNfts);
-        setAirdropNfts([...airdropNfts, collection]);
-      }
-    });
-  };
 
   const checkWhitelists = (
     whitelists: WhitelistResponse[],
@@ -147,16 +112,9 @@ const Dashboard = () => {
   //Bottom sheet
   const handleItemClick = (index: number) => {
     console.log("I am being clicked");
-    // if (index === 2) {
-    //   console.log("INFO: Tapped on receive -- firing bottom sheet");
-    //   setIsBottomSheetOpen(true);
-
-    //   recievePressed(true);
-    // }
     if (index === 2) {
       setReceiveActive(!recieve);
     }
-    // Handle other items if necessary
   };
 
   const handleClose = () => {
@@ -164,12 +122,7 @@ const Dashboard = () => {
     setIsBottomSheetOpen(false);
   };
 
-  const handleXlink = async (url: string) => {
-    await open_url(url);
-  };
-  // let address = get_address().then((data) => {
-  //   console.log("address", data);
-  // });
+
 
   const sampleData = {
     recipient: "@zack_x",
@@ -201,14 +154,10 @@ const Dashboard = () => {
   const [balance, setBalance] = React.useState<number>(0);
   const [assets, setAssets] = React.useState<AssetType[]>([]);
 
-  /* --Event Drawer-- */
-  const [eventDrawerOpen, setEventDrawerOpen] = React.useState(false);
-  const [event, setEvent] = React.useState<SuccinctAvailEvent | undefined>();
 
   /* --Block Scan State-- */
   const { scanInProgress, startScan, endScan } = useScan();
 
-  const [localScan, setLocalScan] = React.useState<boolean>(false);
   const [scanProgressPercent, setScanProgressPercent] =
     React.useState<number>(0);
 
