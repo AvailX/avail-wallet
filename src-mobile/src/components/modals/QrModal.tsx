@@ -1,6 +1,4 @@
-import DashboardLayout from "layouts/DashboardLayout";
 import QRCode from "react-qr-code";
-import { useEffect, useState } from "react";
 import { Box, IconButton, Typography } from "@mui/material";
 import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
 
