@@ -2,6 +2,10 @@ import DashboardLayout from "../layouts/DashboardLayout";
 
 import { Box, Typography } from "@mui/material";
 
+// rhythm,modify,olympic,father,aim,swing,order,lobster,dolphin,gauge,more,kite
+
+
+
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
