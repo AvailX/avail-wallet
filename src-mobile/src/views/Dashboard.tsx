@@ -1,9 +1,4 @@
-import {
-  Box,
-  Drawer,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Box, Drawer, Typography, Button } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
 import DashboardHeader from "../components/DashboardHeader";
 
@@ -12,12 +7,12 @@ import sendIcon from "../assets/send-icon.svg";
 import receiveIcon from "../assets/receive-icon.svg";
 
 import { open_url } from "../services/utils/open";
+import qrCode from "../../assets/qrcode.svg";
+import UserQr from "./UserQr";
 
 import NftDisplay from "../components/NftDisplay";
 import NftDetailsDisplay from "../components/NftDetailsDisplay";
-import {
-  PendingDisplay,
-} from "../components/ActivityStatusCard";
+import { PendingDisplay } from "../components/ActivityStatusCard";
 import SwipeableEdgeDrawer from "../components/SwipeableDrawer";
 import React, { useState } from "react";
 import ActivityDetails from "../components/ActivityDetails";
@@ -52,8 +47,8 @@ import { listen } from "@tauri-apps/api/event";
 import { useScan } from "../../../src/context/ScanContext";
 import { useRecentEvents } from "../../../src/context/EventsContext";
 import ReceiveItem from "components/modals/RecieveItem";
+import ReceiveQR from "components/modals/QrModal";
 
-import { truncateText } from "../components/DashboardHeader";
 const Dashboard = () => {
   const DASHBOARD_ITEMS = [
     { icon: diamondShinyIcon },
@@ -61,8 +56,6 @@ const Dashboard = () => {
     { icon: receiveIcon },
     { icon: receiveIcon },
   ];
-
-
 
   const [nfts, setNfts] = React.useState<INft[]>([]);
   const [airdropNfts, setAirdropNfts] = React.useState<Collection[]>([]);
@@ -74,12 +67,18 @@ const Dashboard = () => {
 
   const [open, setOpen] = React.useState<boolean>(false);
   const [recieve, setReceiveActive] = React.useState<boolean>(false);
+  const [receive, setReceive] = useState(false);
+  const [showUserQr, setShowUserQr] = useState(false);
+
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
   };
   const recievePressed = (receiveNow: boolean) => (): void => {
     setReceiveActive(receiveNow);
   };
+
+  const toggleReceiveDrawer = () => setReceive(!receive);
+  const toggleUserQrDrawer = () => setShowUserQr(!showUserQr);
 
   const [activeTab, setActiveTab] = useState("assets");
 
@@ -90,7 +89,6 @@ const Dashboard = () => {
 
   //Bottom Sheet
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-
 
   const checkWhitelists = (
     whitelists: WhitelistResponse[],
@@ -112,6 +110,7 @@ const Dashboard = () => {
   //Bottom sheet
   const handleItemClick = (index: number) => {
     console.log("I am being clicked");
+    // console.log("NOTE: <<address has been copied>>");
     if (index === 2) {
       setReceiveActive(!recieve);
     }
@@ -121,8 +120,6 @@ const Dashboard = () => {
     console.log("INFO: Tapped on receive -- killing bottom sheet");
     setIsBottomSheetOpen(false);
   };
-
-
 
   const sampleData = {
     recipient: "@zack_x",
@@ -153,7 +150,6 @@ const Dashboard = () => {
   /* --Events || Balance || Assets-- */
   const [balance, setBalance] = React.useState<number>(0);
   const [assets, setAssets] = React.useState<AssetType[]>([]);
-
 
   /* --Block Scan State-- */
   const { scanInProgress, startScan, endScan } = useScan();
@@ -524,8 +520,9 @@ const Dashboard = () => {
             <ReceiveItem
               key={index}
               header={asset.symbol}
-              walletAddress={truncateText(address, 10)}
+              walletAddress={address}
               image={asset.image_ref}
+              onQrCodeClick={toggleUserQrDrawer}
             />
           );
         })}
@@ -536,6 +533,12 @@ const Dashboard = () => {
         toggleDrawer={toggleActivityDetails}
       >
         <ActivityDetails {...sampleData} />
+      </SwipeableEdgeDrawer>
+      <SwipeableEdgeDrawer open={showUserQr} toggleDrawer={toggleDrawer}>
+        <ReceiveQR
+          walletAddress={address}
+          onLeadingClick={toggleUserQrDrawer}
+        />
       </SwipeableEdgeDrawer>
     </>
   );
