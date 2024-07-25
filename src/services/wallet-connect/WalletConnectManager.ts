@@ -14,7 +14,7 @@ import {
   type IWeb3Wallet,
   type Web3WalletTypes,
 } from "@walletconnect/web3wallet";
-import { get_address } from "../storage/persistent";
+import { get_address } from "src-desktop/services/storage/persistent";
 import { AleoWallet } from "./AleoWallet";
 import { SessionInfo } from "./SessionInfo";
 import { dappSession, type WalletConnectRequest } from "./WCTypes";
@@ -96,11 +96,11 @@ export class WalletConnectManager {
 
   async close() {
     /*
-		If (this.pairingTopic) {
-			console.log("Closing pairing...")
-			await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
-			await this.theWallet?.core.history.delete(this.pairingTopic);
-		} */
+    If (this.pairingTopic) {
+      console.log("Closing pairing...")
+      await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
+      await this.theWallet?.core.history.delete(this.pairingTopic);
+    } */
     if (this.sessionTopic) {
       console.log("Closing pairing...");
       await this.theWallet?.disconnectSession({

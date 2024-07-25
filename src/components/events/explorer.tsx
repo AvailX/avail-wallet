@@ -3,15 +3,15 @@ import {
 	Typography, Box, Link, SvgIcon,
 } from '@mui/material';
 import NorthEastIcon from '@mui/icons-material/NorthEast';
-import {useNavigate} from 'react-router-dom';
-import {open_url} from '../../services/util/open';
-import {SuccessAlert, ErrorAlert} from '../snackbars/alerts';
+import { useNavigate } from 'react-router-dom';
+import { open_url } from '../../../src-desktop/services/util/open';
+import { SuccessAlert, ErrorAlert } from '../../../src-desktop/components/snackbars/alerts'
 
 type ExplorerProperties = {
 	link: string;
 };
 
-const Explorer: React.FC<ExplorerProperties> = ({link}) => {
+const Explorer: React.FC<ExplorerProperties> = ({ link }) => {
 	const navigate = useNavigate();
 	const [success, setSuccess] = React.useState(false);
 	const [error, setError] = React.useState(false);
@@ -29,8 +29,8 @@ const Explorer: React.FC<ExplorerProperties> = ({link}) => {
 
 	return (
 		<>
-			<SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message}/>
-			<ErrorAlert errorAlert={error} setErrorAlert={setError} message={message}/>
+			<SuccessAlert successAlert={success} setSuccessAlert={setSuccess} message={message} />
+			<ErrorAlert errorAlert={error} setErrorAlert={setError} message={message} />
 			<Box
 				sx={{
 					display: 'flex',
@@ -51,11 +51,11 @@ const Explorer: React.FC<ExplorerProperties> = ({link}) => {
 				<Typography
 					variant='h6'
 					component='span'
-					sx={{marginRight: '8px', fontWeight: '', fontStyle: 'italic'}}
+					sx={{ marginRight: '8px', fontWeight: '', fontStyle: 'italic' }}
 				>
-          Explorer
+					Explorer
 				</Typography>
-				<SvgIcon component={NorthEastIcon} sx={{color: '#fff'}}/>
+				<SvgIcon component={NorthEastIcon} sx={{ color: '#fff' }} />
 			</Box>
 		</>
 	);

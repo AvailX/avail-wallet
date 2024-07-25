@@ -1,82 +1,66 @@
-/* eslint-disable max-statements-per-line */
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React from 'react';
-import { useEffect, useState, useRef } from 'react';
+import {
+  RouterProvider,
+  type RouterProviderProps,
+  createBrowserRouter,
+} from "react-router-dom";
 
-/** STYLES */
-import { ThemeProvider } from '@emotion/react';
-import { theme } from './styles/theme';
+import * as React from "react";
 
-/** COMPONENTS */
-import Entrypoint from './views-desktop/entrypoint';
-import { useWalletConnectManager } from './context/WalletConnect';
+// Screens
+import EntryPoint from "./views/Entrypoint";
+import WalletChoser from "./views/WalletChoser";
+import BackupWallet from "./views/create-wallet/BackupWallet";
+import VerifySaved from "./views/create-wallet/VerifySaved";
+import DataPointers from "./views/create-wallet/DataPointers";
+import Dashboard from "./views/Dashboard";
+import SecretRecovery from "./views/create-wallet/SecretRecovery";
+import { MobCarousel } from "./views/create-wallet/CreateWallet";
+import AvailPoints from "./views/AvailPoints";
+import WalletConnect from "./views/WalletConnect";
+import Send from "./views/send/Send";
+import InputRecipient from "./views/send/InputRecipient";
+import QrCode from "./views/QrCode";
+import Settings from "./views/Settings";
+import PrivacyPolicy from "./views/PrivacyPolicy";
+import TermsAndConditions from "./views/TermsandService";
+import Username from "./views/create-wallet/Username";
+import Password from "./views/create-wallet/Password";
 
-/* Components for Testing */
-import Send from './views-desktop/send';
-import Home from './views-desktop/home-desktop';
-import { preInstallInclusionProver } from './services/transfer/inclusion';
-import { invoke } from '@tauri-apps/api/core';
+import Login from "./views/Login";
 
-function App() {
-	const [txnID, setTxnID] = useState<string>('');
-	const transferPublicTest = async () => {
-		console.log('====> Inside Transfer Public');
-		const result = await invoke('test_transfer_public_mobile').then(res => {
-			console.log('====> Inside snark exec');
-			let resJson = JSON.parse(res as string);
-			console.log('====> resJson ', resJson);
-			setTxnID(resJson.id);
-			console.log('====> set state ', txnID);
-			console.log('====> obj ', resJson.id);
+const App: React.FC = () => {
+  const router: RouterProviderProps["router"] = createBrowserRouter([
+    /* --EntryPoint-- */
+    { path: "/", element: <EntryPoint /> },
+    /* --Create Wallet Flow-- */
+    { path: "/create-wallet", element: <MobCarousel /> },
+    { path: "/username", element: <Username /> },
+    { path: "/password", element: <Password /> },
+    { path: "/wallet-choser", element: <WalletChoser /> },
+    { path: "/backup-wallet", element: <BackupWallet /> },
+    { path: "/verify-saved", element: <VerifySaved /> },
+    { path: "/data-pointers", element: <DataPointers /> },
+    { path: "/dashboard", element: <Dashboard /> },
+    { path: "/secret-recovery", element: <SecretRecovery /> },
+    { path: "/points", element: <AvailPoints /> },
 
-			return res;
-		}).catch(err => {
-			console.log('ERR', err);
-		});
-		console.log(result);
-	};
+    { path: "/login", element: <Login /> },
 
-	const noVMTest = async () => {
-		console.log('====> Non snarkVM Test');
-		// eslint-disable-next-line @typescript-eslint/brace-style
-		const result = await invoke('test_snarkvm_mobile').then(res => { console.log('====> After Exec '); return res; }).catch((err) => { console.log("ERR", err); });
-		console.log(result);
-	};
+    // Route to test wallet connect
+    { path: "wallet-connect", element: <WalletConnect /> },
 
-	const deployVMTest = async () => {
-		console.log('====> snarkVM Deploy Test');
-		const result = await invoke('test_snarkvm_mobile_deploy').then(res => { console.log('====> After deploy '); return res; }).catch((err) => { console.log("ERR", err); });
-		console.log(result);
-	};
+    { path: "/send", element: <Send /> },
+    { path: "/input-send", element: <InputRecipient /> },
+    { path: "/qr-code", element: <QrCode /> },
+    { path: "/settings", element: <Settings /> },
+    { path: "/privacy-policy", element: <PrivacyPolicy /> },
+    { path: "/terms-of-service", element: <TermsAndConditions /> },
+    /* --Existing Wallet Flow-- */
+    /* --Dapp Flow-- */
+    /* --Quest Flow-- */
+  ]);
 
-	const testInitUser = async () => {
-		console.log('====> user init');
-		const result = await invoke('init_user_mobile').then(res => { console.log('====> After user init '); return res; }).catch((err) => { console.log("ERR", err); });
-		console.log(result);
-	};
-
-	return (
-		<React.Fragment>
-			<h1>Testing</h1>
-			<button onClick={noVMTest}>Test Sign (Non snarkVM)</button>
-			<br />
-			<br />
-			<button onClick={transferPublicTest} >Transfer Public</button>
-			<h5>TXN ID</h5>{txnID}
-			<br />
-			<br />
-			<button onClick={deployVMTest} >Test snarkVM (Deploy helloworld.aleo)</button>
-			<br />
-			<br />
-			{/* <button onClick={pre_install_inclusion_prover} >Inclusion Prover </button> */}
-			<br />
-			<br />
-			<button onClick={testInitUser} >Initialise user</button>
-		</React.Fragment >
-	);
-}
+  return <RouterProvider router={router} />;
+};
 
 export default App;

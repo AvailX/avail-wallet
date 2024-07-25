@@ -1,98 +1,44 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable max-statements-per-line */
-/* eslint-disable @typescript-eslint/brace-style */
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import {
-	createBrowserRouter,
-	RouterProvider,
-	Route,
-	Link,
-} from 'react-router-dom';
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
 
-// Screens
-import Register from './views-desktop/register';
-import HomeDesktop from './views-desktop/home-desktop';
-import Login from './views-desktop/login';
-import Verify from './views-desktop/verify';
-import Settings from './views-desktop/settings';
-import Activity from './views-desktop/activity';
-import BrowserView from './views-desktop/browser';
-import Send from './views-desktop/send';
-import Recovery from './views-desktop/recovery';
-import SeedPhrase from './views-desktop/seedphrase';
-import Nfts from './views-desktop/nft';
-import PrivacyPolicy from './views-desktop/privacy-policy';
-import TermsAndConditions from './views-desktop/terms-and-conditions';
-import Oops from './views-desktop/oops';
-import Import from './views-desktop/import';
-import Dapps from './views-desktop/dapps';
-import Campaigns from './views-desktop/quests/campaigns';
-import Quests from './views-desktop/quests/quests';
+import { WalletConnectProvider } from "../src-desktop/context/WalletConnect";
+import { ScanProvider } from "../src-desktop/context/ScanContext";
+import { RecentEventsProvider } from "../src-desktop/context/EventsContext";
 
-// global font styles
-import './index.css';
+import "./style.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-// global states
-import { ScanProvider } from './context/ScanContext';
-import { WalletConnectProvider } from './context/WalletConnect';
-import { RecentEventsProvider } from './context/EventsContext';
+import { ThemeProvider } from "@mui/material";
+import theme from "./theme";
 
-// Languages
-import i18n from './i18next-config';
-import Faucet from './views-desktop/faucet';
+import i18n from "../src-desktop/i18next-config";
 
 // See if language is set in local storage
-const storedLanguage = localStorage.getItem('language');
+const storedLanguage = localStorage.getItem("language");
 
-const setStoredLang = async () => {if (storedLanguage) {
-	await i18n.changeLanguage(storedLanguage);
-} else {
-	await i18n.changeLanguage('en');
+const handleLanguage = async () => {
+  if (storedLanguage) {
+    await i18n.changeLanguage(storedLanguage);
+  } else {
+    await i18n.changeLanguage("en");
+  }
 }
-};
 
-setStoredLang().then(() => {
-	console.log('Language set');
-});
+handleLanguage();
 
-const platform = true;
-
-const router = createBrowserRouter([
-	{ path: '/', element: <App /> }, // MVP
-	{ path: '/register', element: <Register /> }, // MVP
-	{ path: '/home', element: <HomeDesktop /> }, // MVP
-	{ path: '/login', element: <Login /> }, // MVP
-	{ path: '/send', element: <Send /> }, // MVP ? TBD
-	{ path: '/recovery', element: <Recovery /> }, // MVP
-	{ path: '/seed', element: <SeedPhrase /> }, // MVP
-	{ path: '/verify', element: <Verify /> }, // MVP
-	{ path: '/settings', element: <Settings /> }, // MVP
-	{ path: '*', element: <Oops /> },
-	{ path: '/activity', element: <Activity /> },
-	{ path: '/browser', element: <BrowserView /> },
-	{ path: '/faucet', element: <Faucet /> },
-	{ path: '/support', element: <a href='discord://EeuhRNwx' /> },
-	{ path: '/nfts', element: <Nfts /> },
-	{ path: '/privacy-policy', element: <PrivacyPolicy /> },
-	{ path: '/terms-of-service', element: <TermsAndConditions /> },
-	{ path: '/import', element: <Import /> },
-	{ path: '/dapps', element: <Dapps /> },
-	{ path: '/campaigns', element: <Campaigns /> },
-	{ path: '/quests', element: <Quests /> },
-]);
-
-ReactDOM.createRoot(document.querySelector('#root')!).render(
-
-	<React.StrictMode >
-		<WalletConnectProvider>
-			<ScanProvider>
-				<RecentEventsProvider>
-					<RouterProvider router={router} />
-				</RecentEventsProvider>
-			</ScanProvider>
-		</WalletConnectProvider>
-	</React.StrictMode>,
-
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <WalletConnectProvider>
+      <ScanProvider>
+        <RecentEventsProvider>
+          <ThemeProvider theme={theme}>
+            <App />
+            <ToastContainer />
+          </ThemeProvider>
+        </RecentEventsProvider>
+      </ScanProvider>
+    </WalletConnectProvider>
+  </React.StrictMode>
 );
