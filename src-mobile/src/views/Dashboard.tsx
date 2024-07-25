@@ -6,9 +6,7 @@ import diamondShinyIcon from "../assets/diamond-shiny-icon.svg";
 import sendIcon from "../assets/send-icon.svg";
 import receiveIcon from "../assets/receive-icon.svg";
 
-import { open_url } from "../services/utils/open";
-import qrCode from "../../assets/qrcode.svg";
-import UserQr from "./UserQr";
+
 
 import NftDisplay from "../components/NftDisplay";
 import NftDetailsDisplay from "../components/NftDetailsDisplay";
@@ -18,7 +16,6 @@ import React, { useState } from "react";
 import ActivityDetails from "../components/ActivityDetails";
 import AsssetDisplay from "../components/AsssetDisplay";
 import DashboardCarousel from "../components/DashboardCarousel";
-import { useNavigate } from "react-router-dom";
 import { getName } from "../services/states/util";
 import { getAddress } from "../services/states/util";
 
@@ -42,7 +39,6 @@ import { useTranslation } from "react-i18next";
 //Images
 import noNftsImage from "../assets/images/no_nfts.png";
 import noAssetsImage from "../assets/images/no_balance.png";
-import { SuccinctAvailEvent } from "types/avail-events/event";
 import { listen } from "@tauri-apps/api/event";
 import { useScan } from "../../../src/context/ScanContext";
 import { useRecentEvents } from "../../../src/context/EventsContext";
@@ -67,7 +63,6 @@ const Dashboard = () => {
 
   const [open, setOpen] = React.useState<boolean>(false);
   const [recieve, setReceiveActive] = React.useState<boolean>(false);
-  const [receive, setReceive] = useState(false);
   const [showUserQr, setShowUserQr] = useState(false);
 
   const toggleDrawer = (newOpen: boolean) => (): void => {
@@ -77,7 +72,6 @@ const Dashboard = () => {
     setReceiveActive(receiveNow);
   };
 
-  const toggleReceiveDrawer = () => setReceive(!receive);
   const toggleUserQrDrawer = () => setShowUserQr(!showUserQr);
 
   const [activeTab, setActiveTab] = useState("assets");
