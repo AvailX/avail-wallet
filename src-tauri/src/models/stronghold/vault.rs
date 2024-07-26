@@ -2,8 +2,7 @@ use std::path::PathBuf;
 
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 use iota_stronghold::procedures::Curve;
-use snarkvm::prelude::{Plaintext, ProgramID, Record, Value};
-use snarkvm_console::{network::Network, program::Identifier};
+use snarkvm_console::{network::Network, program::{ProgramID, Identifier, Value, Record, Plaintext}};
 use tauri_plugin_aleo_stronghold::{
     execute_procedure, remove_secret, save_secret, BytesDto, LocationDto, ProcedureDto,
     Slip10DeriveInputDto, StrongholdCollection,
@@ -252,9 +251,9 @@ impl Vault {
         self,
         hold: &StrongholdCollection,
         pk_path: &str,
-        program_id: impl TryInto<ProgramID<N>>,
-        function_name: impl TryInto<snarkvm::prelude::Identifier<N>>,
-        inputs: impl ExactSizeIterator<Item = impl TryInto<Value<N>>>,
+        program_id: ProgramID<N>,
+        function_name: Identifier<N>,
+        inputs: Vec<Value<N>>,
         priority_fee_in_microcredits: u64,
         fee_record: Option<Record<N, Plaintext<N>>>,
     ) -> AvailResult<Vec<u8>> {

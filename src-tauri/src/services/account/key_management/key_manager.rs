@@ -233,9 +233,11 @@ mod test_helpers {
     use snarkvm::circuit::prelude::PrimeField;
     use snarkvm::prelude::{anyhow, PrivateKey, Testnet3};
     use snarkvm::utilities::{FromBytes, ToBytes};
-    use snarkvm_console::network::MainnetV0;
+    use snarkvm_console::{network::MainnetV0, program::Value as AleoValue};
 
     use avail_common::models::constants::STRONG_PASSWORD;
+    use futures::FutureExt;
+    use log::__private_api::Value;
 
     #[tokio::test]
     async fn test_generate_bip39() {
@@ -338,23 +340,28 @@ mod test_helpers {
 
         let account_index = 2;
         let key_path = format!("m/44'/0'/{}'/0'", account_index);
-        let program_id = "credits.aleo".try_into().map_err(|_| anyhow!("Invalid program id"))?;
-        let function_name = "transfer_public".try_into().map_err(|_| anyhow!("Invalid function name"))?;
-        let recipient = "AViewKey1gTShUdULoNLsoA2eXLtdEKkaMFu4CxzFwn7NTF1RcYvn";
+        let program_id = "credits.aleo".try_into().map_err(|_| anyhow!("Invalid program id")).unwrap();
+        let function_name = "transfer_public".try_into().map_err(|_| anyhow!("Invalid function name")).unwrap();
+        let recipient = "aleo1h7k3ttm6avttrgujp75wxfd5jf3ztmf9xcr4k6h6j9wj8z65uy9scuqkv8";
         let inputs: Vec<String> = [
             recipient.to_string(),
             "10000u64".to_string(),
         ].to_vec();
+        let mut inputs_values: Vec<AleoValue<N>> = vec![];
+
+        for i in inputs {
+            inputs_values.push(AleoValue::<N>::try_from(i).unwrap());
+        }
 
         let res = vault.aleo_execute::<N>(
             &hold,
             &key_path,
             program_id,
             function_name,
-            inputs,
+            inputs_values,
             0,
             None,
-        );
+        ).await.unwrap();
 
         println!("{:?}", res);
     }

@@ -48,8 +48,8 @@ tauri-plugin-deep-link = "2.0.0-beta.3"
 tauri-plugin-http = { version = "2.0.0-beta.3", features = ["cookies"] }
 tauri-plugin-updater = { version = "2.0.0-beta.3", features = [] }
 tauri-plugin-process = "2.0.0-beta.3"
-tauri-plugin-aleo-stronghold = {git="https://github.com/AvailX/tauri-plugin-aleo-stronghold", rev="d8e6a56"}
-iota_stronghold = {git="https://github.com/AvailX/stronghold.rs", rev="28ab6c4"}
+tauri-plugin-aleo-stronghold = {git="https://github.com/AvailX/tauri-plugin-aleo-stronghold", rev="67a4687"}
+iota_stronghold = {git="https://github.com/AvailX/stronghold.rs", rev="dedb4f7"}
 tiny-bip39 = "1.0.0"
 tokio = { version = "1.29.1", features = ["full"] }
 ureq = { version = "2.7.1", features = ["json"] }
@@ -61,7 +61,7 @@ zeroize = { version = "1.7.0", features = [
     "alloc",
 ] }
 rust-argon2 = "2.1.0"
-snarkvm-console = { version = "0.16.19", git = "https://github.com/AvailX/snarkVM", rev="34cb735"}
+snarkvm-console = { version = "0.16.19", git = "https://github.com/AleoNet/snarkVM.git" }
 
 [target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
 security-framework = { git = "https://github.com/AvailX/rust-security-framework" }
