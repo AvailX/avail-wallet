@@ -2,9 +2,17 @@ import { Box, Button, IconButton, Typography } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
-import ScanReAuthDialog from '../../../src/components/dialogs/scan_reauth';
-import { SuccessAlert, ErrorAlert } from '../../../src/components/snackbars/alerts';
-
+import ScanReAuthDialog from "../../../src/components/dialogs/scan_reauth";
+import {
+  SuccessAlert,
+  ErrorAlert,
+} from "../../../src/components/snackbars/alerts";
+import {
+  set_first_visit,
+  get_first_visit,
+  set_visit_session_flag,
+  get_visit_session_flag,
+} from "../../../src/services/storage/localStorage";
 import diamondShinyIcon from "../assets/diamond-shiny-icon.svg";
 import sendIcon from "../assets/send-icon.svg";
 import receiveIcon from "../assets/receive-icon.svg";
@@ -29,7 +37,11 @@ import { AirdropNft } from "../components/Nft";
 
 // Services
 import { get_nfts } from "../services/nfts/fetch";
-import { getWhitelists, getCollections, getPoints } from "../services/quests/quests";
+import {
+  getWhitelists,
+  getCollections,
+  getPoints,
+} from "../services/quests/quests";
 
 // Types
 import { type INft, disruptorWhitelist } from "../types/nfts/nft";
@@ -45,6 +57,10 @@ import { type AssetType } from "../types/assets/asset";
 import { AvailEvent } from "../services/wallet-connect/WCTypes";
 import { handleGetTokens } from "services/tokens/get_tokens";
 import { useTranslation } from "react-i18next";
+import {
+  ScanProgressEvent,
+  type TxScanResponse,
+} from "..../../../src/types/events";
 
 //Images
 import noNftsImage from "../assets/images/no_nfts.png";
@@ -55,9 +71,25 @@ import { listen } from "@tauri-apps/api/event";
 import { useScan } from "../../../src/context/ScanContext";
 import { useRecentEvents } from "../../../src/context/EventsContext";
 import { Link, useNavigate } from "react-router-dom";
-import { getBackupFlag, getNetwork, get_address } from "../../../src/services/storage/persistent";
+import {
+  getBackupFlag,
+  getNetwork,
+  get_address,
+} from "../../../src/services/storage/persistent";
 import { scan_blocks } from "../../../src/services/scans/blocks";
 import { getAuth } from "../../../src/services/states/utils";
+
+// Scan Imports
+import { os } from "../../../src/services/util/open";
+import { preInstallInclusionProver } from "../../../src/services/transfer/inclusion";
+import { sync_backup } from "../../../src/services/scans/backup";
+import { scan_messages } from "../../../src/services/scans/encrypted_messages";
+import { getNetworkStatus } from "../../../src/services/util/network";
+import { updateData } from "../../../src/services/util/migrate_data";
+import {
+  NetworkStatus,
+  switchToObscura,
+} from "../../../src/services/util/network";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -87,6 +119,29 @@ const Dashboard = () => {
   const [infoAlert, setInfoAlert] = React.useState(false);
   const [message, setMessage] = React.useState<string>("");
   const [loading, setLoading] = React.useState(true);
+
+  //Scan States
+  const [reAuthDialogOpen, setReAuthDialogOpen] = React.useState(false);
+  const [networkStatus, setNetworkStatus] = React.useState<NetworkStatus>(
+    NetworkStatus.Up
+  );
+  const [networkDownDialog, setNetworkDownDialog] = React.useState(false);
+  /* --ReAuth Dialog-- */
+  const [backupDialog, setBackupDialog] = React.useState(false);
+
+  /* --ReAuth Dialog-- */
+
+  /* --Receive Dialog-- */
+  const [receiveDialogOpen, setReceiveDialogOpen] = React.useState(false);
+
+  /* --Asset Drawer-- */
+  const [assetDrawerOpen, setAssetDrawerOpen] = React.useState(false);
+  const [asset, setAsset] = React.useState<AssetType | undefined>();
+
+  const [transferState, setTransferState] = React.useState<boolean>(false);
+  const [biometric, setBiometric] = React.useState("false");
+  const [network, setNetwork] = React.useState<string>("");
+  const [points, setPoints] = React.useState<PointsResponse[]>([]);
 
   const [open, setOpen] = React.useState<boolean>(false);
   const toggleDrawer = (newOpen: boolean) => (): void => {
@@ -223,7 +278,10 @@ const Dashboard = () => {
         .catch((err) => {
           const error = err as AvailError;
 
-          if (error.error_type.toString() === "Unauthorized" || error.internal_msg === "Session not found") {
+          if (
+            error.error_type.toString() === "Unauthorized" ||
+            error.internal_msg === "Session not found"
+          ) {
             // eslint-disable-next-line no-warning-comments
             // TODO - Re-authenticate and fix execution on re-auth (Bala)
 
@@ -297,68 +355,89 @@ const Dashboard = () => {
       setLocalScan(true);
 
       // Syncs blocks in different thread
-      scan_blocks(res.block_height, setErrorAlert, setMessage).then(async res => {
-        setSuccessAlert(true);
-        setMessage(t('home.messages.success.scan'));
-        setScanProgressPercent(0);
-        endScan();
-        setLocalScan(false);
+      scan_blocks(res.block_height, setErrorAlert, setMessage)
+        .then(async (res) => {
+          setSuccessAlert(true);
+          setMessage(t("home.messages.success.scan"));
+          setScanProgressPercent(0);
+          endScan();
+          setLocalScan(false);
 
-        if (res) {
-          console.log('Res: ' + res);
-          await handleGetTokens();
-          fetchEvents();
-        }
-      }).catch(async err => {
-        const error = err as AvailError;
+          if (res) {
+            console.log("Res: " + res);
+            await handleGetTokens();
+            fetchEvents();
+          }
+        })
+        .catch(async (err) => {
+          const error = err as AvailError;
 
-        console.log('Error' + error.internal_msg);
-        endScan();
-        setMessage(t('home.messages.errors.blocks-scan'));
-        setErrorAlert(true);
-      });
+          console.log("Error" + error.internal_msg);
+          endScan();
+          setMessage(t("home.messages.errors.blocks-scan"));
+          setErrorAlert(true);
+        });
 
       // Set Scanning state to false
     } else {
-      console.log(`Scan in progress: ${scanInProgress} Transfer state: ${transferState}`);
+      console.log(
+        `Scan in progress: ${scanInProgress} Transfer state: ${transferState}`
+      );
     }
   };
 
   const handleScan = () => {
     // To get the initial balance and transactions
-    scan_messages().then(async res => {
-      getNetworkStatus().then(async status => {
-        setNetworkStatus(status);
-        if (status === NetworkStatus.Down) {
-          setNetworkDownDialog(true);
+    scan_messages()
+      .then(async (res) => {
+        getNetworkStatus()
+          .then(async (status) => {
+            setNetworkStatus(status);
+            if (status === NetworkStatus.Down) {
+              setNetworkDownDialog(true);
+            }
+
+            console.log("Network status: " + status);
+          })
+          .catch(() => {
+            setMessage("Issue checking network status.");
+            setErrorAlert(true);
+          });
+        await handleBlockScan(res);
+      })
+      .catch(async (err) => {
+        const error = err as AvailError;
+        console.log(error.error_type);
+
+        if (error.error_type === AvailErrorType.Network) {
+          setMessage(t("home.messages.errors.network"));
+          setErrorAlert(true);
+        } else if (error.error_type.toString() === "Unauthorized") {
+          // eslint-disable-next-line no-warning-comments
+          // TODO - Re-authenticate and fix execution on re-auth (Bala)
+
+          console.log("Unauthorized, re auth");
+
+          setReAuthDialogOpen(true);
+        } else {
+          console.log(error.internal_msg);
+          setMessage(error.internal_msg);
+          setErrorAlert(true);
         }
-
-        console.log('Network status: ' + status);
-      }).catch(() => {
-        setMessage('Issue checking network status.');
-        setErrorAlert(true);
       });
-      await handleBlockScan(res);
-    }).catch(async err => {
-      const error = err as AvailError;
-      console.log(error.error_type);
+  };
 
-      if (error.error_type === AvailErrorType.Network) {
-        setMessage(t('home.messages.errors.network'));
-        setErrorAlert(true);
-      } else if (error.error_type.toString() === 'Unauthorized') {
-        // eslint-disable-next-line no-warning-comments
-        // TODO - Re-authenticate and fix execution on re-auth (Bala)
+  //HandleTransferCheck
 
-        console.log('Unauthorized, re auth');
+  const handleTransferCheck = () => {
+    const wcFlag = sessionStorage.getItem("transfer_on");
+    const transferState = sessionStorage.getItem("transferState");
 
-        setReAuthDialogOpen(true);
-      } else {
-        console.log(error.internal_msg);
-        setMessage(error.internal_msg);
-        setErrorAlert(true);
-      }
-    });
+    if (wcFlag === "true" || transferState === "true") {
+      setTransferState(true);
+    } else {
+      setTransferState(false);
+    }
   };
 
   React.useEffect(() => {
@@ -368,21 +447,23 @@ const Dashboard = () => {
 
       if (!firstVisitSession) {
         switchToObscura().catch(() => {
-          setMessage('Issue switching to Obscura.');
+          setMessage("Issue switching to Obscura.");
           setErrorAlert(true);
         });
 
-        getBackupFlag().then(async res => {
-          if (res) {
-            await sync_backup();
-          }
-        }).catch(error => {
-          console.log(error);
-        });
+        getBackupFlag()
+          .then(async (res) => {
+            if (res) {
+              await sync_backup();
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
 
         // Info notify user that inclusion.prover is being installed
         preInstallInclusionProver().catch(() => {
-          setMessage('Issue checking Aleo resources.');
+          setMessage("Issue checking Aleo resources.");
           setErrorAlert(true);
         });
 
@@ -390,46 +471,47 @@ const Dashboard = () => {
       }
 
       const firstVisitPersistent = get_first_visit();
-      console.log('First visit persistent: ' + firstVisitPersistent);
+      console.log("First visit persistent: " + firstVisitPersistent);
 
       if (!firstVisitPersistent) {
         set_first_visit();
         setBackupDialog(true);
       }
 
-      const transferState = sessionStorage.getItem('transferState');
-      if (transferState === 'true') {
+      const transferState = sessionStorage.getItem("transferState");
+      if (transferState === "true") {
         setTransferState(true);
       }
 
       setLoading(true);
-      getAuth(setBiometric)
-        .catch(error => {
-          console.log(error);
-        });
-
-      getName(setUsername)
-        .catch(error => {
-          console.log(error);
-        });
-
-      getAddress(setAddress)
-        .catch(error => {
-          console.log(error);
-        });
-
-      getNetwork().then(res => {
-        setNetwork(res);
-      }).catch(error => {
+      getAuth(setBiometric).catch((error) => {
         console.log(error);
       });
 
-      getPoints().then(res => {
-        console.log(res);
-        setPoints(res);
-      }).catch(error => {
+      getName(setUsername).catch((error) => {
         console.log(error);
       });
+
+      getAddress(setAddress).catch((error) => {
+        console.log(error);
+      });
+
+      getNetwork()
+        .then((res) => {
+          setNetwork(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      getPoints()
+        .then((res) => {
+          console.log(res);
+          setPoints(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
       handleGetAssets();
       fetchEvents();
@@ -444,11 +526,22 @@ const Dashboard = () => {
 
   return (
     <>
-      <ScanReAuthDialog isOpen={open} onRequestClose={() => {
-        setOpen(false);
-      }} />
-      <SuccessAlert successAlert={success} setSuccessAlert={setSuccessAlert} message={message} />
-      <ErrorAlert errorAlert={errorAlert} setErrorAlert={setErrorAlert} message={message} />
+      <ScanReAuthDialog
+        isOpen={open}
+        onRequestClose={() => {
+          setOpen(false);
+        }}
+      />
+      <SuccessAlert
+        successAlert={success}
+        setSuccessAlert={setSuccessAlert}
+        message={message}
+      />
+      <ErrorAlert
+        errorAlert={errorAlert}
+        setErrorAlert={setErrorAlert}
+        message={message}
+      />
 
       <DashboardLayout>
         <DashboardHeader
