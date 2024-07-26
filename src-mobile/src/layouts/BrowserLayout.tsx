@@ -1,9 +1,9 @@
 import { Box, Button } from "@mui/material";
 import { FC, PropsWithChildren } from "react";
 
-import anchorIcon from "../assets/anchor-icon.svg";
-import diamondIcon from "../assets/diamond-icon.svg";
-import homeIcon from "../assets/home-icon.svg";
+import anchorIcon from "../assets/dashboard_item/anchor-icon.svg";
+import diamondIcon from "../assets/dashboard_item/diamond-icon.svg";
+import homeIcon from "../assets/dashboard_item/home-icon.svg";
 
 import splashImg from "../assets/green-splash.svg";
 import { useNavigate } from "react-router-dom";

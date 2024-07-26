@@ -5,6 +5,7 @@ use crate::api::user::delete_user;
 use crate::models::storage::encryption::{Keys, Keys::PrivateKey as PKey, Keys::ViewKey as VKey};
 use crate::models::storage::languages::Languages;
 use crate::models::wallet::BetterAvailWallet;
+use crate::services::account::key_management::desktop::read_key;
 use crate::services::local_storage::{
     encrypted_data::drop_encrypted_data_table,
     persistent_storage::{delete_user_preferences, get_backup_flag, get_language, get_network},
@@ -344,6 +345,25 @@ pub fn sign_message<N: Network>(
     Ok((signature, msg_field))
 }
 
+pub fn sign_message_ios<N: Network>(
+    message: &str,
+    password: Option<String>,
+) -> AvailResult<(Signature<N>, Field<N>)> {
+    let key = get_private_key::<N>(password)?;
+
+    let v_key = ViewKey::<N>::try_from(key)?;
+    VIEWSESSION.set_view_session(&v_key.to_string())?;
+
+    let rng = &mut rand::thread_rng();
+
+    let msg = utf8_string_to_bits(message);
+    let msg_field = N::hash_bhp512(&msg)?;
+    let msg = field_to_fields(&msg_field)?;
+
+    let signature = key.sign(&msg, rng)?;
+
+    Ok((signature, msg_field))
+}
 // Sign any string with provided private key
 pub fn sign_message_w_key<N: Network>(
     message: &str,
