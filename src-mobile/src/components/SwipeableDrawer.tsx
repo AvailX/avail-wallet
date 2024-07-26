@@ -26,14 +26,14 @@ export default function SwipeableEdgeDrawer(props: Props) {
     toggleDrawer,
     children = (
       <Box>
-        <Typography color='#fff' fontSize='20px' fontWeight={700}>
+        <Typography color="#fff" fontSize="20px" fontWeight={700}>
           Wallets
         </Typography>
-        <Typography color='#B0B0B0' my={2}>
+        <Typography color="#B0B0B0" my={2}>
           WALLET 1
         </Typography>
         <ViewProfile />
-        <Box mx='auto' width='90%' my={2}>
+        <Box mx="auto" width="90%" my={2}>
           <Button
             fullWidth
             endIcon={<img src={settingsIcon} />}
@@ -75,7 +75,7 @@ export default function SwipeableEdgeDrawer(props: Props) {
       {open && (
         <SwipeableDrawer
           container={container}
-          anchor='bottom'
+          anchor="bottom"
           open={open}
           onClose={toggleDrawer(false)}
           onOpen={toggleDrawer(true)}
@@ -121,9 +121,9 @@ export default function SwipeableEdgeDrawer(props: Props) {
                 //boxShadow: "0px 4px 4px 0px #00FFAA40 inset",
                 bgcolor: "#1E1E1E",
               }}
-              width='100%'
-              height='100%'
-              overflow='auto'
+              width="100%"
+              height="100%"
+              overflow="auto"
             >
               {children}
             </Box>
