@@ -97,6 +97,7 @@ import splashImg from "../assets/green-splash.svg";
 
 interface IProps extends PropsWithChildren { }
 
+
 const DashboardLayout: FC<IProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation().pathname;

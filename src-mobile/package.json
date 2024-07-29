@@ -18,11 +18,13 @@
     "@tauri-apps/api": ">=2.0.0-beta.0",
     "@tauri-apps/plugin-barcode-scanner": "^2.0.0-beta.5",
     "@tauri-apps/plugin-shell": ">=2.0.0-beta.0",
+    "@yudiel/react-qr-scanner": "^2.0.4",
     "i18next": "^23.11.4",
     "react": "^18.2.0",
     "react-awesome-slider": "^4.1.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.5",
+    "react-qr-code": "^2.0.15",
     "react-router-dom": "^6.23.0",
     "react-toastify": "^10.0.5",
     "yup": "^1.4.0"

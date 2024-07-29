@@ -2,10 +2,22 @@ import { Box, IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import avatarImg from "../assets/avatar-img.svg";
 import scanIcon from "../assets/scan-icon.svg";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { useNavigate } from "react-router-dom";
-import { get_address } from "../../../src/services/storage/persistent";
-import { toast } from "react-toastify";
+
+const EllipsisTypography = styled(Typography)({
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  maxWidth: "150px",
+});
+
+export const truncateText = (text: string, maxLength: number) => {
+  if (text.length <= maxLength) return text;
+  const start = text.substring(0, maxLength - 3);
+  const end = text.substring(text.length - 3, text.length);
+  return `${start}...${end}`;
+};
 
 const EllipsisTypography = styled(Typography)({
   whiteSpace: "nowrap",
@@ -41,14 +53,9 @@ const DashboardHeader: FC<IProps> = ({ onProfileClick, profileAddress }) => {
       toast("Failed to get address");
     });
 
-  function shortenAleoAddress(address: string) {
-    if (address.length <= 10) {
-      return address;
-    }
-    const start = address.slice(0, 6);
-    const end = address.slice(-4);
-    return `${start}...${end}`;
-  }
+
+
+  const navigate = useNavigate();
   return (
     <Box
       mb={3}

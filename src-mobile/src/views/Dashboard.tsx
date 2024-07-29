@@ -1,6 +1,5 @@
-import { Box, Button, IconButton, Typography } from "@mui/material";
+import { Box, Drawer, Typography, Button } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
-import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
 
 import diamondShinyIcon from "../assets/diamond-shiny-icon.svg";
@@ -10,12 +9,10 @@ import receiveIcon from "../assets/receive-icon.svg";
 import { open_url } from "../services/utils/open";
 
 import availLogo from "../assets/avail-icon.svg";
+
 import NftDisplay from "../components/NftDisplay";
 import NftDetailsDisplay from "../components/NftDetailsDisplay";
-import {
-  CompletedDisplay,
-  PendingDisplay,
-} from "../components/ActivityStatusCard";
+import { PendingDisplay } from "../components/ActivityStatusCard";
 import SwipeableEdgeDrawer from "../components/SwipeableDrawer";
 import React, { useState } from "react";
 import ActivityDetails from "../components/ActivityDetails";
@@ -25,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { getName } from "../services/states/util";
 import { getAddress } from "../services/states/util";
 import { AirdropNft } from "../components/Nft";
+
 
 // Services
 import { get_nfts } from "../services/nfts/fetch";
@@ -36,6 +34,7 @@ import {
   type WhitelistResponse,
   type Collection,
   testCollection,
+
 } from "../types/quests/quest_types";
 import { type AvailError } from "../types/errors";
 
@@ -53,24 +52,24 @@ import { SuccinctAvailEvent } from "types/avail-events/event";
 import { listen } from "@tauri-apps/api/event";
 import { useScan } from "../../../src/context/ScanContext";
 import { useRecentEvents } from "../../../src/context/EventsContext";
+import ReceiveItem from "components/modals/RecieveItem";
+import ReceiveQR from "components/modals/QrModal";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const goToOther = () => {
-    navigate("/secret-recovery");
-  };
   const DASHBOARD_ITEMS = [
-    { icon: diamondShinyIcon, path: "" },
+    { icon: diamondShinyIcon },
     { icon: sendIcon, path: "/send" },
-    { icon: receiveIcon, path: "" },
-    { icon: receiveIcon, path: "" },
+    { icon: receiveIcon },
+    { icon: receiveIcon },
   ];
 
-  const airdropNftData = [
-    { whitelist_img: availLogo, name: "Airdrop NFT 1" },
-    { whitelist_img: availLogo, name: "Airdrop NFT 2" },
-    { whitelist_img: availLogo, name: "Airdrop NFT 3" },
-  ];
+  const [nfts, setNfts] = React.useState<INft[]>([]);
+  const [airdropNfts, setAirdropNfts] = React.useState<Collection[]>([]);
+
+  // Alert states
+  const [errorAlert, setErrorAlert] = React.useState(false);
+  const [message, setMessage] = React.useState<string>("");
+  const [loading, setLoading] = React.useState(true);
 
   const [nfts, setNfts] = React.useState<INft[]>([]);
   const [airdropNfts, setAirdropNfts] = React.useState<Collection[]>([]);
@@ -84,9 +83,17 @@ const Dashboard = () => {
   const [loading, setLoading] = React.useState(true);
 
   const [open, setOpen] = React.useState<boolean>(false);
+  const [recieve, setReceiveActive] = React.useState<boolean>(false);
+  const [showUserQr, setShowUserQr] = useState(false);
+
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
   };
+  const recievePressed = (receiveNow: boolean) => (): void => {
+    setReceiveActive(receiveNow);
+  };
+
+  const toggleUserQrDrawer = () => setShowUserQr(!showUserQr);
 
   const [activeTab, setActiveTab] = useState("assets");
 
@@ -108,7 +115,8 @@ const Dashboard = () => {
       }
     });
   };
-
+  //Bottom Sheet
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const checkWhitelists = (
     whitelists: WhitelistResponse[],
     collections: Collection[]
@@ -132,6 +140,7 @@ const Dashboard = () => {
   // let address = get_address().then((data) => {
   //   console.log("address", data);
   // });
+
   const sampleData = {
     recipient: "@zack_x",
     date: "12 Mar at 2:34 PM",
@@ -170,6 +179,7 @@ const Dashboard = () => {
   const { scanInProgress, startScan, endScan } = useScan();
 
   const [localScan, setLocalScan] = React.useState<boolean>(false);
+
   const [scanProgressPercent, setScanProgressPercent] =
     React.useState<number>(0);
 
@@ -299,6 +309,7 @@ const Dashboard = () => {
         >
           {`$` + balance}
         </Typography>
+        {/* This is the Percentage text, that shows in green or red, commented out by now -- order from Bala */}
         {/* <Typography color="#01FFAA">+450.6%</Typography> */}
         <Box
           display="flex"
@@ -320,8 +331,8 @@ const Dashboard = () => {
               bgcolor="#2A2A2A"
               key={i}
             >
-              <img src={icon} />
-            </Box>
+              <img src={item.icon} alt={`icon-${index}`} />
+            </Button>
           ))}
         </Box>
 
@@ -469,12 +480,76 @@ const Dashboard = () => {
             </>
           ))}
       </DashboardLayout>
+      <Drawer
+        anchor="bottom"
+        open={isBottomSheetOpen}
+        onClose={handleClose}
+        sx={{ "& .MuiDrawer-paper": { borderRadius: "16px 16px 0 0" } }}
+      >
+        <Box p={2}>
+          <Typography variant="h6">{sampleData.recipient}</Typography>
+          <Box>
+            {sampleData.transactions.map((transaction, index) => (
+              <Box key={index} sx={{ display: "flex", marginBottom: 1 }}>
+                <img
+                  src={transaction.imageUrl}
+                  alt="transaction"
+                  style={{ marginRight: 10, width: 50, height: 50 }}
+                />
+                <Box>
+                  <Typography>{transaction.from}</Typography>
+                  <Typography>{transaction.amount}</Typography>
+                  <Typography>{transaction.aleo}</Typography>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      </Drawer>
+      <SwipeableEdgeDrawer open={recieve} toggleDrawer={recievePressed}>
+        <Typography
+          style={{
+            color: "#00FFAA",
+            fontSize: "2rem",
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          Receive
+        </Typography>
+        <Typography
+          style={{
+            color: "#979797",
+            marginBlock: "1.5rem",
+            fontSize: "1.2rem",
+          }}
+        >
+          NFTs and Crypto
+        </Typography>
+        {assets.map(function (asset, index) {
+          return (
+            <ReceiveItem
+              key={index}
+              header={asset.symbol}
+              walletAddress={address}
+              image={asset.image_ref}
+              onQrCodeClick={toggleUserQrDrawer}
+            />
+          );
+        })}
+      </SwipeableEdgeDrawer>
       <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer} />
       <SwipeableEdgeDrawer
         open={openActivityDetails}
         toggleDrawer={toggleActivityDetails}
       >
         <ActivityDetails {...sampleData} />
+      </SwipeableEdgeDrawer>
+      <SwipeableEdgeDrawer open={showUserQr} toggleDrawer={toggleDrawer}>
+        <ReceiveQR
+          walletAddress={address}
+          onLeadingClick={toggleUserQrDrawer}
+        />
       </SwipeableEdgeDrawer>
     </>
   );
