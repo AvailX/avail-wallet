@@ -281,7 +281,7 @@ mod test_helpers {
             BytesDto::Text("slip10".to_string()),
         );
 
-        let account_index = 2;
+        let account_index = 1;
         let key_path = format!("m/44'/0'/{}'/0'", account_index);
 
         let res = vault.aleo_sign::<N>(&hold, "tester", &key_path).await.unwrap();
@@ -338,14 +338,14 @@ mod test_helpers {
             BytesDto::Text("slip10".to_string()),
         );
 
-        let account_index = 2;
+        let account_index = 1;
         let key_path = format!("m/44'/0'/{}'/0'", account_index);
         let program_id = "credits.aleo".try_into().map_err(|_| anyhow!("Invalid program id")).unwrap();
         let function_name = "transfer_public".try_into().map_err(|_| anyhow!("Invalid function name")).unwrap();
         let recipient = "aleo1h7k3ttm6avttrgujp75wxfd5jf3ztmf9xcr4k6h6j9wj8z65uy9scuqkv8";
         let inputs: Vec<String> = [
             recipient.to_string(),
-            "10000u64".to_string(),
+            "1000000u64".to_string(),
         ].to_vec();
         let mut inputs_values: Vec<AleoValue<N>> = vec![];
 
