@@ -481,6 +481,7 @@ dependencies = [
  "serde_json",
  "snarkvm",
  "snarkvm-console 0.16.19 (git+https://github.com/AleoNet/snarkVM.git)",
+ "snarkvm-ledger 0.16.19 (git+https://github.com/AleoNet/snarkVM.git)",
  "tauri",
  "tauri-build",
  "tauri-plugin",

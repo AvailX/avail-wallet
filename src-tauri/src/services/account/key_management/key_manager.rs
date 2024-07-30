@@ -230,18 +230,13 @@ async fn remove_chain_code(
 #[cfg(test)]
 mod test_helpers {
     use super::*;
-    use snarkvm::circuit::prelude::PrimeField;
-    use snarkvm::prelude::{anyhow, PrivateKey, Testnet3};
-    use snarkvm::utilities::{FromBytes, ToBytes};
-    use snarkvm_console::{network::MainnetV0, program::Value as AleoValue};
-
-    use avail_common::models::constants::STRONG_PASSWORD;
-    use futures::FutureExt;
-    use log::__private_api::Value;
+    use snarkvm::prelude::anyhow;
+    use snarkvm_ledger::block::Transaction;
+    use snarkvm_console::{network::TestnetV0, program::Value as AleoValue, prelude::FromBytes};
 
     #[tokio::test]
     async fn test_generate_bip39() {
-        type N = MainnetV0;
+        type N = TestnetV0;
 
         let password = "password";
         let mnemonic = generate_seed_phrase::<N>(password).await.unwrap();
@@ -250,7 +245,7 @@ mod test_helpers {
 
     #[tokio::test]
     async fn derive_aleo_master() {
-        type N = MainnetV0;
+        type N = TestnetV0;
 
         let password = "password";
         derive_aleo_master_key::<N>(password).await.unwrap();
@@ -258,7 +253,7 @@ mod test_helpers {
 
     #[tokio::test]
     async fn derive_aleo_slip10_key() {
-        type N = MainnetV0;
+        type N = TestnetV0;
 
         let password = "password";
         let account_index = 1;
@@ -272,7 +267,7 @@ mod test_helpers {
 
     #[tokio::test]
     async fn test_aleo_sign() {
-        type N = MainnetV0;
+        type N = TestnetV0;
 
         let (hold, stronghold, client) = init_stronghold("password").await.unwrap();
         let vault = Vault::new(
@@ -296,41 +291,27 @@ mod test_helpers {
         delete_aleo_key(password, account_index).await.unwrap();
     }
 
-    #[test]
-    fn test_aleo_pk_from_derived_bytes() {
-        /*
-        let seed: [u8; 32] = bytes.try_into().map_err(|_| {
-            AvailError::new(
-                AvailErrorType::InvalidData,
-                "Error generating seed phrase".to_string(),
-                "Error generating seed phrase".to_string(),
-            )
-        })?;
-
-        let field = <N as Environment>::Field::from_bytes_le_mod_order(&seed);
-        let private_key =
-            PrivateKey::<N>::try_from(FromBytes::read_le(&*field.to_bytes_le().unwrap()).unwrap())?;
-            */
-
-        let seed = [
-            169, 226, 137, 240, 19, 47, 167, 103, 64, 212, 123, 234, 219, 186, 179, 112, 144, 24,
-            65, 102, 18, 107, 54, 137, 214, 96, 59, 120, 192, 92, 102, 123, 86, 230, 131, 55, 46,
-            161, 95, 36, 205, 207, 176, 253, 25, 231, 113, 237, 91, 249, 79, 188, 186, 46, 248,
-            117, 133, 43, 41, 53, 206, 157, 181, 80,
-        ];
-        let field = <snarkvm::prelude::Testnet3 as snarkvm::prelude::Environment>::Field::from_bytes_le_mod_order(&seed);
-        let private_key = PrivateKey::<Testnet3>::try_from(
-            FromBytes::read_le(&*field.to_bytes_le().unwrap()).unwrap(),
-        )
-        .unwrap();
-        //let private_key = PrivateKey::<Testnet3>::from_bytes_le(&[146, 124, 48, 116, 162, 48, 39, 8, 140, 187, 133, 43, 229, 167, 140, 221, 27, 7, 222, 118, 206, 188, 3, 195, 141, 34, 99, 31, 191, 189, 241, 33, 133, 44, 230, 88, 13, 2, 119, 8, 116, 151, 106, 204, 91, 193, 218, 153, 144, 146, 235, 176, 201, 46, 164, 188, 68, 9, 160, 236, 248, 11, 4, 188]).unwrap();
-        print!("Private Key {}", private_key.to_string());
-    }
+    // #[test]
+    // fn test_aleo_pk_from_derived_bytes() {
+    //     let seed = [
+    //         169, 226, 137, 240, 19, 47, 167, 103, 64, 212, 123, 234, 219, 186, 179, 112, 144, 24,
+    //         65, 102, 18, 107, 54, 137, 214, 96, 59, 120, 192, 92, 102, 123, 86, 230, 131, 55, 46,
+    //         161, 95, 36, 205, 207, 176, 253, 25, 231, 113, 237, 91, 249, 79, 188, 186, 46, 248,
+    //         117, 133, 43, 41, 53, 206, 157, 181, 80,
+    //     ];
+    //     let field = <snarkvm::prelude::Testnet3 as snarkvm::prelude::Environment>::Field::from_bytes_le_mod_order(&seed);
+    //     let private_key = PrivateKey::<Testnet3>::try_from(
+    //         FromBytes::read_le(&*field.to_bytes_le().unwrap()).unwrap(),
+    //     )
+    //     .unwrap();
+    //     print!("Private Key {}", private_key.to_string());
+    // }
 
     #[tokio::test]
     async fn test_aleo_execute() {
-        type N = MainnetV0;
+        type N = TestnetV0;
 
+        // Setting up stronghold vault
         let (hold, stronghold, client) = init_stronghold("password").await.unwrap();
         let vault = Vault::new(
             stronghold.path.as_str(),
@@ -338,6 +319,7 @@ mod test_helpers {
             BytesDto::Text("slip10".to_string()),
         );
 
+        // Preparing inputs for key derivation and transaction
         let account_index = 1;
         let key_path = format!("m/44'/0'/{}'/0'", account_index);
         let program_id = "credits.aleo".try_into().map_err(|_| anyhow!("Invalid program id")).unwrap();
@@ -347,12 +329,14 @@ mod test_helpers {
             recipient.to_string(),
             "1000000u64".to_string(),
         ].to_vec();
-        let mut inputs_values: Vec<AleoValue<N>> = vec![];
 
+        // Convert inputs to AleoValue
+        let mut inputs_values: Vec<AleoValue<N>> = vec![];
         for i in inputs {
             inputs_values.push(AleoValue::<N>::try_from(i).unwrap());
         }
 
+        // Execute transaction with stronghold vault
         let res = vault.aleo_execute::<N>(
             &hold,
             &key_path,
@@ -363,6 +347,11 @@ mod test_helpers {
             None,
         ).await.unwrap();
 
-        println!("{:?}", res);
+        // Broadcast transaction to network
+        let txn = Transaction::<N>::from_bytes_le(&res).unwrap();
+        let client = ureq::Agent::new();
+        let url = format!("https://aleo-testnetbeta.obscura.network/v1/{}/testnet/transaction/broadcast", env!("TESTNET_API_OBSCURA"));
+        let res2 = client.post(&url).send_json(&txn).unwrap();
+        println!("result: {:?}", res2);
     }
 }
