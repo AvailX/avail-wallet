@@ -106,7 +106,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 	}else{
 
 	const {type, from, to, amount, fee, message, created, transitions, fee_transition, transactionId, programId, functionId, network, status,error} = fullEvent;
-	const explorer_link = `https://explorer.hamp.app/transaction?id=${transactionId}`;
+	const explorer_link = `https://explorer.aleo.org/transaction/${transactionId}`;
 	return (
 		<Drawer
 			anchor='bottom'
@@ -118,7 +118,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({open, onClose, event}) => {
 					borderTopRightRadius: '20px',
 					height: '82%', // Drawer height
 					overflow: 'hidden', // Prevent scrolling on the entire drawer
-					bgcolor: '#1E1D1D',
+					bgcolor: '#171717',
 					width: '85%',
 					alignSelf: 'center',
 					ml: '7.5%',

@@ -4,7 +4,7 @@ import {useNavigate} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {ErrorAlert, SuccessAlert} from '../snackbars/alerts';
 import { Update } from '@tauri-apps/plugin-updater';
-import { relaunch } from "@tauri-apps/plugin-process";
+import {relaunch} from "@tauri-apps/plugin-process";
 
 type UpdateDialogProperties = {
 	isOpen: boolean;

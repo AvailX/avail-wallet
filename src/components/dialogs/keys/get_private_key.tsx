@@ -89,6 +89,11 @@ const PrivateKeyDialog: React.FC<PkDialogProperties> = ({ isOpen, onRequestClose
 								</mui.InputAdornment>
 							),
 						}}
+						onKeyDown={e => {
+							if (e.key === 'Enter') {
+								handleConfirmClick();
+							}
+						}}
 					/>
 				</mui.DialogContent>
 				<mui.DialogActions>

@@ -7,7 +7,7 @@ use crate::helpers::utils::HOST;
 use crate::helpers::validation::validate_address;
 use crate::models::account::AddressRequest;
 use crate::services::local_storage::persistent_storage::{
-    get_backup_flag, update_local_backup_flag,
+    get_backup_flag, get_last_backup_sync, get_last_sync, update_local_backup_flag,
 };
 use crate::services::{
     account::utils::generate_discriminant,
@@ -19,6 +19,8 @@ use avail_common::{
     models::user::{UpdateBackupRequest, User},
 };
 
+use super::backup_recovery::{update_backup_timestamp, update_sync_height};
+
 /* --USER SERVICE-- */
 
 // create user online account
@@ -27,11 +29,21 @@ pub async fn create_user(request: User) -> AvailResult<String> {
 
     let client = reqwest::Client::new();
 
-    let res = client
+    let res = match client
         .post(format!("{}/user", api))
         .json(&request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error creating user".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
         Ok("User created".to_string())
@@ -46,12 +58,31 @@ pub async fn create_user(request: User) -> AvailResult<String> {
 
 // get user online account
 pub async fn get_user() -> AvailResult<User> {
-    let res = get_um_client_with_session(reqwest::Method::GET, "user")?
+    let res = match get_um_client_with_session(reqwest::Method::GET, "user")?
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error getting user".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        let user: User = res.json().await?;
+        let user: User = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error getting user".to_string(),
+                ));
+            }
+        };
 
         Ok(user)
     } else if res.status() == 401 {
@@ -71,9 +102,19 @@ pub async fn get_user() -> AvailResult<User> {
 
 /// delete user on server-side
 pub async fn delete_user() -> AvailResult<String> {
-    let res = get_um_client_with_session(reqwest::Method::DELETE, "user")?
+    let res = match get_um_client_with_session(reqwest::Method::DELETE, "user")?
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error deleting user account".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
         Ok("User deleted".to_string())
@@ -105,13 +146,32 @@ pub async fn name_to_address<N: Network>(username: &str) -> AvailResult<Address<
         username: username.to_string(),
     };
 
-    let res = get_um_client_with_session(reqwest::Method::GET, &format!("user_address"))?
+    let res = match get_um_client_with_session(reqwest::Method::GET, &format!("user_address"))?
         .json(&request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error getting address".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        let address: String = res.json().await?;
+        let address: String = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error getting address".to_string(),
+                ));
+            }
+        };
 
         print!("{}", address);
 
@@ -134,12 +194,32 @@ pub async fn name_to_address<N: Network>(username: &str) -> AvailResult<Address<
 }
 
 pub async fn get_username(address: &str) -> AvailResult<Option<String>> {
-    let res = get_um_client_with_session(reqwest::Method::GET, &format!("username/{}", address))?
-        .send()
-        .await?;
+    let res =
+        match get_um_client_with_session(reqwest::Method::GET, &format!("username/{}", address))?
+            .send()
+            .await
+        {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error getting username".to_string(),
+                ));
+            }
+        };
 
     if res.status() == 200 {
-        let username: Option<String> = res.json().await?;
+        let username: Option<String> = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error getting username".to_string(),
+                ));
+            }
+        };
 
         Ok(username)
     } else if res.status() == 401 {
@@ -164,7 +244,7 @@ pub async fn update_username(username: &str) -> AvailResult<String> {
 
     let tag = generate_discriminant();
 
-    let res = get_um_client_with_session(reqwest::Method::PUT, "user")?
+    let res = match get_um_client_with_session(reqwest::Method::PUT, "user")?
         .json(&User::new(
             Some(username.to_string()),
             address,
@@ -172,7 +252,17 @@ pub async fn update_username(username: &str) -> AvailResult<String> {
             backup,
         ))
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error updating username".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
         update_username_local(username, tag as i32)?;
@@ -201,13 +291,29 @@ pub async fn update_backup_flag(backup_flag: bool) -> AvailResult<()> {
     // TODO - Handle backup flag being false and server side backup being true
     // Should backup get deleted on server side?
 
-    let res = get_um_client_with_session(reqwest::Method::PUT, "backup")?
+    let res = match get_um_client_with_session(reqwest::Method::PUT, "backup")?
         .json(&request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error updating backup flag".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
         update_local_backup_flag(backup_flag)?;
+        let sync_height = get_last_sync()?;
+        let backup_ts = get_last_backup_sync()?;
+        let ts: i64 = backup_ts.timestamp();
+        let _result = update_backup_timestamp(get_address_string()?, ts).await?;
+        let _result = update_sync_height(get_address_string()?, sync_height.to_string()).await?;
+        println!("BACKUP INIT IN DB{:?}", _result);
         Ok(())
     } else if res.status() == 401 {
         Err(AvailError::new(
@@ -228,6 +334,7 @@ pub async fn update_backup_flag(backup_flag: bool) -> AvailResult<()> {
 
 mod tests {
     use super::*;
+    use snarkvm::prelude::TestnetV0;
 
     #[tokio::test]
     async fn test_create_user() {
@@ -247,7 +354,7 @@ mod tests {
     async fn test_name_to_address() {
         let username = "AvailInhabitantX";
 
-        let result = name_to_address::<Testnet3>(username).await.unwrap();
+        let result = name_to_address::<TestnetV0>(username).await.unwrap();
         println!("{:?}", result);
     }
 

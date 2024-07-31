@@ -94,7 +94,7 @@ const AssetDrawer: React.FC<AssetDrawerProps> = ({open, onClose, asset, address,
 					borderTopRightRadius: '20px',
 					height: '82%', // Drawer height
 					overflow: 'hidden', // Prevent scrolling on the entire drawer
-					bgcolor: '#1E1D1D',
+					bgcolor: '#171717',
 					width: '85%',
 					alignSelf: 'center',
 					ml: '7.5%',

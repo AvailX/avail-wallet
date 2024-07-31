@@ -311,7 +311,7 @@ pub enum Network {
 impl Network {
     pub fn to_string(&self) -> String {
         match self {
-            Network::AleoTestnet => "testnet3".to_string(),
+            Network::AleoTestnet => "testnet".to_string(),
             Network::AleoDevnet => "devnet".to_string(),
             Network::AleoMainnet => "mainnet".to_string(),
         }
@@ -319,7 +319,7 @@ impl Network {
 
     pub fn from_str(s: &str) -> Option<Self> {
         match s {
-            "testnet3" => Some(Network::AleoTestnet),
+            "testnet" => Some(Network::AleoTestnet),
             "devnet" => Some(Network::AleoDevnet),
             "mainnet" => Some(Network::AleoMainnet),
             _ => None,

@@ -197,7 +197,7 @@ const Faucet: React.FC = () => {
                 </AppBar>
                 {url !== ''
                     && <iframe
-                        src={url}
+                        src={"https://dev.puzzle.online/faucet"}
                         title='Browser'
                         width='100%'
                         height='100%'

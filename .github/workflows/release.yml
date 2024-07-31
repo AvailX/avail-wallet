@@ -73,9 +73,9 @@ jobs:
       - name: Install the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.platform == 'macos_arm-latest' && 'aarch64-apple-darwin' || '' }}
-
+          targets: ${{ matrix.platform == 'macos_arm-latest' && 'aarch64-apple-darwin' || matrix.platform == 'macos_x86-latest' && 'x86_64-apple-darwin' || '' }}
       - name: Initialize Rust cache
+        if: matrix.platform != 'windows-latest'
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
@@ -97,7 +97,7 @@ jobs:
         uses: baptiste0928/cargo-install@v3
         with:
           crate: tauri-cli
-          version: "2.0.0-beta.9"
+          version: "2.0.0-beta.15"
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -115,10 +115,11 @@ jobs:
           TESTNET_API_OBSCURA: ${{ secrets.TESTNET_API_OBSCURA}}
           MAINNET_API_OBSCURA: ""
           DEVNET_API_OBSCURA: ""
+          OBSCURA_SDK: ${{ secrets.OBSCURA_SDK}}
         with:
           tauriScript: cargo tauri
           # This is required for Apple ARM chips and license bundling
-          args: "${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64-apple-darwin' || '' }} --config {\"bundle\":{\"licenseFile\":\"${{ matrix.platform == 'windows-latest' && '..\\\\EULA.rtf' || '../EULA.txt' }}\"}}"
+          args: "${{ matrix.platform == 'macos_arm-latest' && ' --target aarch64-apple-darwin' || matrix.platform == 'macos_x86-latest' && ' --target x86_64-apple-darwin' || '' }} --config {\"bundle\":{\"licenseFile\":\"${{ matrix.platform == 'windows-latest' && '..\\\\EULA.rtf' || '../EULA.txt' }}\"}}"
           distPath: dist
           # The tagName is alpha for develop, beta for staging and latest for release
           includeDebug: ${{ github.ref_name == 'release' && false || true }}

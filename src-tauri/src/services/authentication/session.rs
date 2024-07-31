@@ -26,10 +26,10 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
     let network = get_network()?;
 
     let (sig, _) = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => {
-            sign_message::<Testnet3>(&session_request.hash, password.clone())?
+        SupportedNetworks::Testnet => {
+            sign_message::<TestnetV0>(&session_request.hash, password.clone())?
         }
-        _ => sign_message::<Testnet3>(&session_request.hash, password.clone())?,
+        _ => sign_message::<TestnetV0>(&session_request.hash, password.clone())?,
     };
 
     let verify_request = server_auth::VerifySessionRequest {
@@ -41,11 +41,21 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
 
     let client = reqwest::Client::new();
 
-    let res = client
+    let res = match client
         .post(format!("{}/auth/login/", api))
         .json(&verify_request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error authenticating user ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
         let cookie = res.cookies().next();
@@ -93,11 +103,21 @@ pub async fn get_session_after_creation<N: Network>(
 
     let api = env!("API");
 
-    let res = reqwest::Client::new()
+    let res = match reqwest::Client::new()
         .post(format!("{}/auth/login/", api))
         .json(&verify_request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error authenticating user ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
         let cookie = res.cookies().next();
@@ -144,15 +164,36 @@ pub async fn request_hash(address: &str) -> AvailResult<server_auth::CreateSessi
 
     let api = env!("API");
 
-    let res = client
+    let res = match client
         .post(format!("{}/auth/request/", api))
         .header("Content-Type", "application/json")
         .json(&request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error requesting auth token.".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 201 {
-        Ok(res.json::<server_auth::CreateSessionResponse>().await?)
+        let res = match res.json::<server_auth::CreateSessionResponse>().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error requesting auth token.".to_string(),
+                ));
+            }
+        };
+
+        Ok(res)
     } else {
         if res.status() == 0 {
             return Err(AvailError::new(
@@ -180,8 +221,8 @@ pub fn sign_hash(
     let network = get_network()?;
 
     let (sig, _) = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet3 => sign_message::<Testnet3>(&request.hash, password)?,
-        _ => sign_message::<Testnet3>(&request.hash, password)?,
+        SupportedNetworks::Testnet => sign_message::<TestnetV0>(&request.hash, password)?,
+        _ => sign_message::<TestnetV0>(&request.hash, password)?,
     };
 
     let verify_request = server_auth::VerifySessionRequest {
@@ -196,14 +237,33 @@ pub fn sign_hash(
 pub async fn get_session_only(request: VerifySessionResponse) -> AvailResult<String> {
     let client = reqwest::Client::new();
 
-    let res = client
+    let res = match client
         .post("https://test-api.avail.global/auth/login/")
         .json(&request.to_request())
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error authenticating user ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        res.json::<String>().await?;
+        match res.json::<String>().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error authenticating user ".to_string(),
+                ));
+            }
+        };
         // store session id in local storage (cookies)
         Ok(request.session_id.to_string())
     } else {
@@ -233,13 +293,13 @@ mod tests {
     use crate::services::local_storage::session::view::VIEWSESSION;
     use avail_common::models::constants::{STRONG_PASSWORD, TESTNET_PRIVATE_KEY};
     use avail_common::models::user::User;
-    use snarkvm::prelude::Testnet3;
+    use snarkvm::prelude::TestnetV0;
 
     use avail_common::converters::messages::{field_to_fields, utf8_string_to_bits};
 
     #[tokio::test]
     async fn test_setup_prerequisites() {
-        match delete_key::<Testnet3>(STRONG_PASSWORD) {
+        match delete_key::<TestnetV0>(STRONG_PASSWORD) {
             Ok(_) => println!("Key Deleted"),
             Err(_) => println!("No key found"),
         }
@@ -248,10 +308,10 @@ mod tests {
         delete_user_encrypted_data().unwrap();
         delete_user_preferences().unwrap();
 
-        let p_key = PrivateKey::<Testnet3>::new(&mut rand::thread_rng()).unwrap();
-        let wallet = BetterAvailWallet::<Testnet3>::try_from(p_key.to_string()).unwrap();
+        let p_key = PrivateKey::<TestnetV0>::new(&mut rand::thread_rng()).unwrap();
+        let wallet = BetterAvailWallet::<TestnetV0>::try_from(p_key.to_string()).unwrap();
 
-        let v_key = ViewKey::<Testnet3>::try_from(&p_key).unwrap();
+        let v_key = ViewKey::<TestnetV0>::try_from(&p_key).unwrap();
 
         let tag = generate_discriminant();
 
@@ -277,7 +337,7 @@ mod tests {
 
         create_user(user_request).await.unwrap();
 
-        store::<Testnet3>(&wallet, STRONG_PASSWORD).unwrap();
+        store::<TestnetV0>(&wallet, STRONG_PASSWORD).unwrap();
     }
 
     #[tokio::test]
@@ -289,7 +349,7 @@ mod tests {
             .unwrap();
         print!("{}", session);
 
-        get_new_transaction_messages::<Testnet3>().await.unwrap();
+        get_new_transaction_messages::<TestnetV0>().await.unwrap();
 
         println!("Successful fetch");
 
@@ -309,14 +369,14 @@ mod tests {
     #[test]
     fn test_sign_hash() {
         let sig = {
-            let key = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+            let key = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
 
             //get private key from local storage
 
             let rng = &mut rand::thread_rng();
 
             let msg = utf8_string_to_bits("KEqj6BDUl0Nh0izyOsXuW916qSoGxtfE");
-            let msg_field = Testnet3::hash_bhp512(&msg).unwrap();
+            let msg_field = TestnetV0::hash_bhp512(&msg).unwrap();
             let msg = field_to_fields(&msg_field).unwrap();
 
             key.sign(&msg, rng).unwrap()

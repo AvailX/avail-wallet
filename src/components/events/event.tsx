@@ -12,7 +12,7 @@ import {
 } from '../../services/wallet-connect/WCTypes';
 import {formatLongString} from './event_drawer';
 
-const formatDate = (date: Date) => {
+export const formatDate = (date: Date) => {
 	const today = new Date();
 	const yesterday = new Date(today);
 	yesterday.setDate(yesterday.getDate() - 1);
@@ -36,6 +36,9 @@ const formatDate = (date: Date) => {
 export const parseProgramId = (programId: string) => {
 	// An example program id is "program.aleo", the goal of parsing it is to remove the .aleo
 	// and turn the returned string to all caps
+	if (programId.startsWith('"') && programId.endsWith('"')) {
+		programId = programId.slice(1, -1);
+	}
 	const parts = programId.split('.');
 	if (parts[0] == 'credits') {
 		return 'ALEO';
@@ -150,7 +153,7 @@ const AvailEventComponent: React.FC<{event: SuccinctAvailEvent; slideFunction: (
 						</mui.Typography>
 						{ message
           && <mui.Typography variant='body2' color='#00FFAA' sx={{ml: '2%'}}>
-              • {message}
+              • {message.substring(0,25)+ (message.length > 25 ? '...' : '')}
           </mui.Typography>
 						}
 						{status.toString() === 'Processing'
@@ -162,7 +165,7 @@ const AvailEventComponent: React.FC<{event: SuccinctAvailEvent; slideFunction: (
 				</mui.Box>
 			</mui.Box>
 			<mui.Box sx={{
-				textAlign: 'right', display: 'flex', flexDirection: 'column', alignSelf: fee ? 'flex-end' : '',
+				textAlign: 'right', display: 'flex', flexDirection: 'column', alignSelf: fee ? 'flex-end' : '', width: '40%'
 			}}>
 				{amount && programId && (
 					<mui.Typography sx={{color: '#FFF'}}>

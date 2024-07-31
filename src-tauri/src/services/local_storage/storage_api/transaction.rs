@@ -9,8 +9,8 @@ use crate::models::{
     },
 };
 use crate::services::local_storage::encrypted_data::{
-    get_encrypted_data_by_id, handle_encrypted_data_query, handle_encrypted_data_query_params,
-    update_encrypted_transaction_state_by_id,
+    get_encrypted_data_by_id, get_encrypted_data_by_transaction_id, handle_encrypted_data_query,
+    handle_encrypted_data_query_params, update_encrypted_transaction_state_by_id,
 };
 use crate::services::local_storage::{
     encrypted_data::get_encrypted_data_by_flavour,
@@ -137,6 +137,15 @@ pub fn get_tx_ids_from_date<N: Network>(
     Ok(transaction_ids)
 }
 
+/*
+pub fn check_txs_for_task<N:Network>(start_data: DateTime<Utc>, end_time: DateTime<Utc>, program_id: &str, function_id: &str) -> AvailResult<bool>{
+    let address = get_address::<N>()?;
+    let network = get_network()?;
+
+    // I want to query the encrypted_data table for transactions that match the program_id and function_ud
+}
+*/
+
 pub fn get_transaction_ids<N: Network>() -> AvailResult<Vec<N::TransactionID>> {
     let address = get_address::<N>()?;
     let network = get_network()?;
@@ -182,6 +191,78 @@ pub fn get_transaction_ids<N: Network>() -> AvailResult<Vec<N::TransactionID>> {
     }
 
     Ok(transaction_ids)
+}
+
+pub fn get_transaction_ids_for_quest_verification<N: Network>(
+    start_time: DateTime<Utc>,
+    end_time: DateTime<Utc>,
+    program_id: &str,
+    function_id: &str,
+) -> AvailResult<Vec<EncryptedData>> {
+    // for quest verification we have to find encrypted_data where the flavour is Transaction,
+    // the state is Confirmed, and the program_id and function_id match, and created_at is within the specified time range
+    let address = get_address::<N>()?;
+    let network = get_network()?;
+
+    let start_time = start_time - chrono::Duration::hours(2);
+
+    let time_filter = format!(
+        "AND created_at BETWEEN '{}' AND '{}'",
+        start_time.to_rfc3339(), // Converts DateTime<Utc> to a string in RFC3339 format suitable for SQL queries
+        end_time.to_rfc3339()
+    );
+
+    // Query for transitions and deployments
+    let transitions_deployments_query = format!(
+        "SELECT *, '[]' as json_program_ids, '[]' as json_function_ids FROM encrypted_data WHERE flavour IN ('{}','{}') AND owner='{}' AND network='{}'",
+        EncryptedDataTypeCommon::Transition.to_str(),
+        EncryptedDataTypeCommon::Deployment.to_str(),
+        address,
+        network
+    );
+
+    // Query for transactions
+    let transactions_query = format!(
+        "SELECT *, program_ids as json_program_ids, function_ids as json_function_ids FROM encrypted_data WHERE flavour='{}' AND owner='{}' AND network='{}'",
+        EncryptedDataTypeCommon::Transaction.to_str(),
+        address,
+        network
+    );
+
+    let mut common_filter_conditions = String::new();
+
+    let program_id_filter = format!(
+        "AND (program_ids='{}' OR JSON_EXTRACT(json_program_ids, '$') LIKE '%{}%')",
+        program_id, program_id
+    );
+
+    let function_id_filter = format!(
+        "AND (function_ids='{}' OR JSON_EXTRACT(json_function_ids, '$') LIKE '%{}%')",
+        function_id, function_id
+    );
+
+    common_filter_conditions.push_str(&program_id_filter);
+    common_filter_conditions.push_str(&function_id_filter);
+
+    let transitions_deployments_query_with_filters = format!(
+        "{} {}",
+        transitions_deployments_query, common_filter_conditions
+    );
+
+    let transactions_query_with_filters =
+        format!("{} {}", transactions_query, common_filter_conditions);
+
+    let mut combined_query = format!(
+        "{} UNION ALL {} ORDER BY created_at DESC",
+        transitions_deployments_query_with_filters, transactions_query_with_filters
+    );
+
+    //let query = format!("{} {} {}", query, program_id_filter, function_id_filter);
+
+    // Assuming the execution of the query and processing the result happens here
+
+    let encrypted_transactions = handle_encrypted_data_query(&combined_query)?;
+    Ok(encrypted_transactions)
 }
 
 pub fn get_unconfirmed_and_failed_transaction_ids<N: Network>(
@@ -370,7 +451,13 @@ pub fn handle_deployment_failed<N: Network>(pointer_id: &str) -> AvailResult<()>
 
     Ok(())
 }
-
+/// Check if transaction pointer is already stored via transaction id
+pub fn is_transcation_stored(transaction_id: &str) -> AvailResult<bool> {
+    match get_encrypted_data_by_transaction_id(transaction_id) {
+        Ok(_) => Ok(true),
+        Err(_) => Ok(false),
+    }
+}
 #[cfg(test)]
 mod tx_out_storage_api_tests {
     use super::*;
@@ -379,7 +466,7 @@ mod tx_out_storage_api_tests {
         encrypted_data::{EventTypeCommon, TransactionState},
     };
     use chrono::Local;
-    use snarkvm::prelude::{Address, AleoID, Field, PrivateKey, Testnet3, ToBytes, ViewKey};
+    use snarkvm::prelude::{Address, AleoID, Field, PrivateKey, TestnetV0, ToBytes, ViewKey};
     use std::str::FromStr;
     use uuid::Uuid;
 
@@ -392,8 +479,8 @@ mod tx_out_storage_api_tests {
 
     #[test]
     fn test_store_view_session() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let view_key = ViewKey::<Testnet3>::try_from(&pk).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::try_from(&pk).unwrap();
 
         VIEWSESSION.set_view_session(&view_key.to_string()).unwrap();
     }
@@ -403,7 +490,7 @@ mod tx_out_storage_api_tests {
         delete_user_encrypted_data().unwrap();
         initialize_encrypted_data_table().unwrap();
 
-        let test_transaction_id = AleoID::<Field<Testnet3>, TX_PREFIX>::from_str(
+        let test_transaction_id = AleoID::<Field<TestnetV0>, TX_PREFIX>::from_str(
             "at1zux4zw83dayxtndd58skuy7qq7xg0d6ez86ak9zlqh2zru4kgggqjys70g",
         )
         .unwrap();
@@ -426,7 +513,7 @@ mod tx_out_storage_api_tests {
             None,
         );
 
-        let address = Address::<Testnet3>::from_str(TESTNET_ADDRESS).unwrap();
+        let address = Address::<TestnetV0>::from_str(TESTNET_ADDRESS).unwrap();
         let id = Uuid::new_v4();
 
         let encrypted_tx_in = test_transaction_out.to_encrypted_data(address).unwrap();
@@ -439,7 +526,7 @@ mod tx_out_storage_api_tests {
         test_store_tx_out();
         test_store_view_session();
 
-        let test_transaction_id = AleoID::<Field<Testnet3>, TX_PREFIX>::from_str(
+        let test_transaction_id = AleoID::<Field<TestnetV0>, TX_PREFIX>::from_str(
             "at1zux4zw83dayxtndd58skuy7qq7xg0d6ez86ak9zlqh2zru4kgggqjys70g",
         )
         .unwrap();
@@ -462,7 +549,7 @@ mod tx_out_storage_api_tests {
             None,
         );
 
-        let transactions_out = get_transactions_exec::<Testnet3>().unwrap();
+        let transactions_out = get_transactions_exec::<TestnetV0>().unwrap();
 
         assert_eq!(vec![test_transaction_out], transactions_out)
     }
@@ -471,7 +558,7 @@ mod tx_out_storage_api_tests {
     fn test_get_unconfirmed_and_failed_transaction_ids() {
         VIEWSESSION.set_view_session("AViewKey1jXL3nQ7ax6ft9qshgtTn8nXrkKNFjSBdbnjueFW5f2Gj");
 
-        let transactions_out = get_unconfirmed_and_failed_transaction_ids::<Testnet3>().unwrap();
+        let transactions_out = get_unconfirmed_and_failed_transaction_ids::<TestnetV0>().unwrap();
 
         println!("{:?}", transactions_out);
     }
@@ -483,7 +570,7 @@ mod tx_out_storage_api_tests {
         let date = Local::now();
         let a_day_ago = date - chrono::Duration::days(1);
 
-        let transactions_out = get_tx_ids_from_date::<Testnet3>(a_day_ago).unwrap();
+        let transactions_out = get_tx_ids_from_date::<TestnetV0>(a_day_ago).unwrap();
 
         println!("{:?}", transactions_out);
     }

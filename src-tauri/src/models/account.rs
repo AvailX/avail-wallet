@@ -1,12 +1,12 @@
 use serde::{ser::SerializeStruct, Deserialize, Serialize};
-use snarkvm::prelude::{Address, Network, Testnet3, ViewKey};
+use snarkvm::prelude::{Address, Network, TestnetV0, ViewKey};
 
 pub struct AvailKeys<N: Network> {
     pub view_key: ViewKey<N>,
     pub address: Address<N>,
 }
 
-impl Serialize for AvailKeys<Testnet3> {
+impl Serialize for AvailKeys<TestnetV0> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,

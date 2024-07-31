@@ -38,6 +38,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Initialize Rust cache
+        if: matrix.platform != 'windows-latest'
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
@@ -59,7 +60,7 @@ jobs:
         uses: baptiste0928/cargo-install@v3
         with:
           crate: tauri-cli
-          version: "2.0.0-beta.9"
+          version: "2.0.0-beta.15"
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -70,6 +71,7 @@ jobs:
           TESTNET_API_OBSCURA: ${{ secrets.TESTNET_API_OBSCURA}}
           MAINNET_API_OBSCURA: ""
           DEVNET_API_OBSCURA: ""
+          OBSCURA_SDK: ${{ secrets.OBSCURA_SDK}}
         with:
           distPath: dist
           tauriScript: cargo tauri

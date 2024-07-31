@@ -47,13 +47,32 @@ pub async fn update_data(data: Vec<EncryptedData>, idx: Vec<String>) -> AvailRes
             })
             .collect::<Result<Vec<EncryptedDataUpdateRequest>, AvailError>>()?;
 
-        let res = get_rm_client_with_session(reqwest::Method::PUT, "data")?
+        let res = match get_rm_client_with_session(reqwest::Method::PUT, "data")?
             .json(&request)
             .send()
-            .await?;
+            .await
+        {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error updating encrypted data record ".to_string(),
+                ));
+            }
+        };
 
         if res.status() == 200 {
-            let _result = res.text().await?;
+            let _result = match res.text().await {
+                Ok(res) => res,
+                Err(e) => {
+                    return Err(AvailError::new(
+                        AvailErrorType::External,
+                        e.to_string(),
+                        "Error updating encrypted data record ".to_string(),
+                    ));
+                }
+            };
         } else if res.status() == 401 {
             return Err(AvailError::new(
                 AvailErrorType::Unauthorized,
@@ -74,13 +93,33 @@ pub async fn update_data(data: Vec<EncryptedData>, idx: Vec<String>) -> AvailRes
 
 /// update transactions received to synced
 pub async fn synced(ids: Vec<Uuid>) -> AvailResult<String> {
-    let res = get_rm_client_with_session(reqwest::Method::PUT, "sync")?
+    let res = match get_rm_client_with_session(reqwest::Method::PUT, "sync")?
         .json(&ids)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error updating timestamp ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        let result = res.text().await?;
+        let result = match res.text().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error updating timestamp ".to_string(),
+                ));
+            }
+        };
+
         Ok(result)
     } else {
         Err(AvailError::new(
@@ -101,17 +140,36 @@ pub async fn get_new_transaction_messages<N: Network>(
         owner: address,
         last_sync: last_sync_time,
     };
-
-    let res = get_rm_client_with_session(reqwest::Method::POST, "txs_received")?
+    println!("==/> POST DATA TX-SENT - {:?}", request);
+    let res = match get_rm_client_with_session(reqwest::Method::POST, "txs_received")?
         .json(&request)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error checking transaction messages ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
         // update last sync time
         update_last_tx_sync(chrono::Utc::now())?;
 
-        let result: Vec<EncryptedDataRecord> = res.json().await?;
+        let result: Vec<EncryptedDataRecord> = match res.json().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error checking transaction messages ".to_string(),
+                ));
+            }
+        };
 
         println!("Enc Data {:?}", result);
         let encrypted_txs = result
@@ -168,14 +226,33 @@ pub async fn post_encrypted_data(request: Vec<EncryptedData>) -> AvailResult<Vec
             .into_iter()
             .map(|data| EncryptedDataRecord::from(data.to_owned()))
             .collect::<Vec<EncryptedDataRecord>>();
-
-        let res = get_rm_client_with_session(reqwest::Method::POST, "data")?
+        println!("==/> POST DATA - {:?}", request.len());
+        let res = match get_rm_client_with_session(reqwest::Method::POST, "data")?
             .json(&request)
             .send()
-            .await?;
+            .await
+        {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error posting encrypted data ".to_string(),
+                ));
+            }
+        };
 
         if res.status() == 200 {
-            let result = res.text().await?;
+            let result = match res.text().await {
+                Ok(res) => res,
+                Err(e) => {
+                    return Err(AvailError::new(
+                        AvailErrorType::External,
+                        e.to_string(),
+                        "Error posting encrypted data ".to_string(),
+                    ));
+                }
+            };
             let batch_ids: Vec<String> = serde_json::from_str(&result)?;
             ids.extend(batch_ids);
         } else if res.status() == 401 {
@@ -197,13 +274,33 @@ pub async fn post_encrypted_data(request: Vec<EncryptedData>) -> AvailResult<Vec
 }
 
 pub async fn send_transaction_in(request: EncryptedData) -> AvailResult<String> {
-    let res = get_rm_client_with_session(reqwest::Method::POST, "tx_sent")?
+    println!("==/> POST DATA TX-SENT - {:?}", request.clone());
+    let res = match get_rm_client_with_session(reqwest::Method::POST, "tx_sent")?
         .json(&EncryptedDataRecord::from(request))
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error posting encrypted data ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        let result = res.text().await?;
+        let result = match res.text().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error posting encrypted data ".to_string(),
+                ));
+            }
+        };
 
         Ok(result)
     } else {
@@ -216,13 +313,32 @@ pub async fn send_transaction_in(request: EncryptedData) -> AvailResult<String> 
 }
 
 pub async fn delete_invalid_transactions_in(ids: Vec<Uuid>) -> AvailResult<String> {
-    let res = get_rm_client_with_session(reqwest::Method::DELETE, "txs_in")?
+    let res = match get_rm_client_with_session(reqwest::Method::DELETE, "txs_in")?
         .json(&ids)
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error deleting invalid transaction messages ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        let result = res.text().await?;
+        let result = match res.text().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error deleting invalid transaction messages ".to_string(),
+                ));
+            }
+        };
 
         Ok(result)
     } else if res.status() == 401 {
@@ -241,12 +357,32 @@ pub async fn delete_invalid_transactions_in(ids: Vec<Uuid>) -> AvailResult<Strin
 }
 
 pub async fn get_data_count() -> AvailResult<i64> {
-    let res = get_rm_client_with_session(reqwest::Method::GET, "data_count")?
+    let res = match get_rm_client_with_session(reqwest::Method::GET, "data_count")?
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error getting encrypted data count ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        let result = res.text().await?;
+        let result = match res.text().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error getting encrypted data count ".to_string(),
+                ));
+            }
+        };
+
         let count = result.parse::<i64>()?;
         Ok(count)
     } else if res.status() == 401 {
@@ -265,21 +401,51 @@ pub async fn get_data_count() -> AvailResult<i64> {
 }
 
 pub async fn recover_data(_address: &str) -> AvailResult<Data> {
-    let data_count = get_data_count().await?;
-    let pages = (data_count as f64 / 300.0).ceil() as i64;
+    let data_count = match get_data_count().await {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error recovering encrypted data ".to_string(),
+            ));
+        }
+    };
 
+    let pages = (data_count as f64 / 300.0).ceil() as i64;
+    println!("Pages: {}", pages);
     let mut encrypted_data: Vec<Data> = vec![];
 
     for page in 0..pages {
         let page_request = PageRequest { page };
 
-        let res = get_rm_client_with_session(reqwest::Method::GET, "recover_data")?
+        let res = match get_rm_client_with_session(reqwest::Method::GET, "recover_data")?
             .json(&page_request)
             .send()
-            .await?;
+            .await
+        {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error recovering encrypted data ".to_string(),
+                ));
+            }
+        };
 
         if res.status() == 200 {
-            let result: Data = res.json().await?;
+            let result: Data = match res.json().await {
+                Ok(res) => res,
+                Err(e) => {
+                    return Err(AvailError::new(
+                        AvailErrorType::External,
+                        e.to_string(),
+                        "Error recovering encrypted data ".to_string(),
+                    ));
+                }
+            };
+
             encrypted_data.push(result);
         } else if res.status() == 401 {
             return Err(AvailError::new(
@@ -300,7 +466,7 @@ pub async fn recover_data(_address: &str) -> AvailResult<Data> {
     let mut transactions: Vec<EncryptedDataRecord> = vec![];
     let mut transitions: Vec<EncryptedDataRecord> = vec![];
     let mut deployments: Vec<EncryptedDataRecord> = vec![];
-
+    println!("DATA FROM SERVER {:?}", encrypted_data);
     for data in encrypted_data {
         record_pointers.extend(data.record_pointers);
         transactions.extend(data.transactions);
@@ -317,12 +483,31 @@ pub async fn recover_data(_address: &str) -> AvailResult<Data> {
 }
 
 pub async fn delete_all_server_storage() -> AvailResult<String> {
-    let res = get_rm_client_with_session(reqwest::Method::DELETE, "data")?
+    let res = match get_rm_client_with_session(reqwest::Method::DELETE, "data")?
         .send()
-        .await?;
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(AvailError::new(
+                AvailErrorType::External,
+                e.to_string(),
+                "Error deleting encrypted data records ".to_string(),
+            ));
+        }
+    };
 
     if res.status() == 200 {
-        let result = res.text().await?;
+        let result = match res.text().await {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error deleting encrypted data records ".to_string(),
+                ));
+            }
+        };
 
         Ok(result)
     } else if res.status() == 401 {
@@ -400,10 +585,20 @@ pub async fn import_encrypted_data(request: DataRequest) -> AvailResult<String> 
         data_requests.push(data_request);
 
         for data_request in data_requests {
-            let res = get_rm_client_with_session(reqwest::Method::POST, "import_data")?
+            let res = match get_rm_client_with_session(reqwest::Method::POST, "import_data")?
                 .json(&data_request)
                 .send()
-                .await?;
+                .await
+            {
+                Ok(res) => res,
+                Err(e) => {
+                    return Err(AvailError::new(
+                        AvailErrorType::External,
+                        e.to_string(),
+                        "Error importing encrypted data ".to_string(),
+                    ));
+                }
+            };
 
             if res.status() != 200 {
                 return Err(AvailError::new(
@@ -416,13 +611,33 @@ pub async fn import_encrypted_data(request: DataRequest) -> AvailResult<String> 
 
         Ok("Imported Succesfully".to_string())
     } else {
-        let res = get_rm_client_with_session(reqwest::Method::POST, "import_data")?
+        let res = match get_rm_client_with_session(reqwest::Method::POST, "import_data")?
             .json(&request)
             .send()
-            .await?;
+            .await
+        {
+            Ok(res) => res,
+            Err(e) => {
+                return Err(AvailError::new(
+                    AvailErrorType::External,
+                    e.to_string(),
+                    "Error importing encrypted data ".to_string(),
+                ));
+            }
+        };
 
         if res.status() == 200 {
-            let result = res.text().await?;
+            let result = match res.text().await {
+                Ok(res) => res,
+                Err(e) => {
+                    return Err(AvailError::new(
+                        AvailErrorType::External,
+                        e.to_string(),
+                        "Error importing encrypted data ".to_string(),
+                    ));
+                }
+            };
+
             Ok(result)
         } else if res.status() == 401 {
             Err(AvailError::new(
@@ -461,7 +676,7 @@ mod encrypted_data_api_tests {
     use crate::models::storage::languages::Languages;
 
     use avail_common::models::encrypted_data::EncryptedDataTypeCommon;
-    use snarkvm::prelude::{PrivateKey, Testnet3, ToBytes, ViewKey};
+    use snarkvm::prelude::{PrivateKey, TestnetV0, ToBytes, ViewKey};
 
     use avail_common::models::constants::*;
 
@@ -470,7 +685,7 @@ mod encrypted_data_api_tests {
     async fn test_get_new_transaction_messages() {
         let address = get_address_string().unwrap();
         println!("{}", address);
-        let result = get_new_transaction_messages::<Testnet3>().await.unwrap();
+        let result = get_new_transaction_messages::<TestnetV0>().await.unwrap();
         println!("{:?}", result);
     }
 
@@ -488,9 +703,11 @@ mod encrypted_data_api_tests {
             chrono::Utc::now(),
             None,
             None,
-            "testnet3".to_string(),
+            "testnet".to_string(),
             Some("record_name".to_string()),
             Some(false),
+            None,
+            None,
             None,
             None,
             None,
@@ -508,9 +725,11 @@ mod encrypted_data_api_tests {
             chrono::Utc::now(),
             None,
             None,
-            "testnet3".to_string(),
+            "testnet".to_string(),
             Some("record_name".to_string()),
             Some(false),
+            None,
+            None,
             None,
             None,
             None,
@@ -540,9 +759,11 @@ mod encrypted_data_api_tests {
             chrono::Utc::now(),
             None,
             None,
-            "testnet3".to_string(),
+            "testnet".to_string(),
             Some("record_name".to_string()),
             Some(false),
+            None,
+            None,
             None,
             None,
             None,
@@ -572,9 +793,11 @@ mod encrypted_data_api_tests {
             chrono::Utc::now(),
             None,
             None,
-            "testnet3".to_string(),
+            "testnet".to_string(),
             Some("record_name".to_string()),
             Some(false),
+            None,
+            None,
             None,
             None,
             None,
@@ -600,9 +823,11 @@ mod encrypted_data_api_tests {
             chrono::Utc::now(),
             None,
             None,
-            "testnet3".to_string(),
+            "testnet".to_string(),
             Some("record_name".to_string()),
             Some(false),
+            None,
+            None,
             None,
             None,
             None,
@@ -625,8 +850,8 @@ mod encrypted_data_api_tests {
     }
 
     fn test_setup_prerequisites() {
-        let pk = PrivateKey::<Testnet3>::from_str(TESTNET_PRIVATE_KEY).unwrap();
-        let view_key = ViewKey::<Testnet3>::try_from(&pk).unwrap();
+        let pk = PrivateKey::<TestnetV0>::from_str(TESTNET_PRIVATE_KEY).unwrap();
+        let view_key = ViewKey::<TestnetV0>::try_from(&pk).unwrap();
 
         delete_user_encrypted_data().unwrap();
 
@@ -651,7 +876,7 @@ mod encrypted_data_api_tests {
     async fn test_import_encrypted_data() {
         test_setup_prerequisites();
         let test_pointer = get_test_record_pointer();
-        let address = get_address::<Testnet3>().unwrap();
+        let address = get_address::<TestnetV0>().unwrap();
 
         encrypt_and_store_records(vec![test_pointer], address).unwrap();
 

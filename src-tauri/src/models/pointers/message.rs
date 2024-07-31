@@ -16,7 +16,7 @@ use avail_common::{
     },
 };
 
-use crate::api::aleo_client::setup_client;
+use crate::api::aleo_client::{setup_client, setup_local_client};
 
 /// Encrypted and sent to the address the wallet owner interacted with in the transaction to avoid scanning times
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -79,6 +79,8 @@ impl<N: Network> TransactionMessage<N> {
             None,
             None,
             network,
+            None,
+            None,
             None,
             None,
             None,
