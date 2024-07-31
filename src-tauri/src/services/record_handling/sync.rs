@@ -70,8 +70,11 @@ pub async fn txs_sync() -> AvailResult<TxScanResponse> {
     let transactions = match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => txs_sync_raw::<TestnetV0>().await?,
         SupportedNetworks::Mainnet => txs_sync_raw::<MainnetV0>().await?,
-        _ => txs_sync_raw::<TestnetV0>().await?, //SupportedNetworks::Devnet => txs_sync_raw::<Devnet>().await?,
-                                                 //SupportedNetworks::Mainnet => txs_sync_raw::<Mainnet>().await?,
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,
     };
 
     Ok(transactions)
@@ -254,7 +257,11 @@ pub async fn sync_backup() -> AvailResult<()> {
             SupportedNetworks::Mainnet => {
                 update_records_spent_backup::<MainnetV0>(ids_to_update).await?
             }
-            _ => update_records_spent_backup::<TestnetV0>(ids_to_update).await?,
+            _ => Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Unsupported network".to_string(),
+                "Unsupported network".to_string(),
+            ))?,
         };
 
         /* Handle posting new found encrypted data */

@@ -79,7 +79,11 @@ pub fn get_balance(request: BalanceRequest) -> AvailResult<BalanceResponse> {
     let balance = match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => get_token_balance::<TestnetV0>(&asset_id)?,
         SupportedNetworks::Mainnet => get_token_balance::<MainnetV0>(&asset_id)?,
-        _ => get_token_balance::<TestnetV0>(&asset_id)?, //SupportedNetworks::Mainnet => get_aleo_balance::<Mainnet>()?,
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,//SupportedNetworks::Mainnet => get_aleo_balance::<Mainnet>()?,
     };
 
     Ok(BalanceResponse::new(vec![balance], None))
@@ -458,16 +462,11 @@ pub async fn get_records(request: GetRecordsRequest) -> AvailResult<GetRecordsRe
                 Some(error.external_msg),
             )),
         }
-        _ => match get_records_raw::<TestnetV0>(request) {
-            Ok((records, page_count)) => {
-                Ok(GetRecordsResponse::new(records, Some(page_count), None))
-            }
-            Err(error) => Ok(GetRecordsResponse::new(
-                vec![],
-                None,
-                Some(error.external_msg),
-            )),
-        }, //SupportedNetworks::Mainnet => get_records_raw::<Mainnet>(request),
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?, //SupportedNetworks::Mainnet => get_records_raw::<Mainnet>(request),
     }
 }
 
@@ -551,32 +550,11 @@ pub fn sign(request: SignatureRequest, window: Window) -> AvailResult<SignatureR
                 }
             }
         }
-        _ => match sign_message::<TestnetV0>(&request.get_message(), None) {
-            Ok((signature, message_field)) => Ok(SignatureResponse::new(
-                Some(signature.to_string()),
-                Some(message_field.to_string()),
-                None,
-            )),
-            Err(e) => {
-                if e.error_type == AvailErrorType::Unauthorized {
-                    match window.emit("reauthenticate", "sign") {
-                        Ok(_) => {}
-                        Err(e) => {
-                            return Err(AvailError::new(
-                                AvailErrorType::Internal,
-                                "Error emitting reauthentication event".to_string(),
-                                "Error emitting reauthentication state".to_string(),
-                            ));
-                        }
-                    };
-                }
-                Ok(SignatureResponse::new(
-                    None,
-                    None,
-                    Some("Signing Failed".to_string()),
-                ))
-            }
-        },
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,
         //SupportedNetworks::Mainnet => decrypt_record_raw::<Mainnet>(ciphertext),
     }
 }
@@ -588,7 +566,11 @@ pub fn verify(message: &str, address: &str, signature: &str) -> AvailResult<bool
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => verify_signature::<TestnetV0>(message, address, signature),
         SupportedNetworks::Mainnet => verify_signature::<MainnetV0>(message, address, signature),
-        _ => verify_signature::<TestnetV0>(message, address, signature),
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,
     }
 }
 
@@ -621,10 +603,11 @@ pub fn decrypt_records(request: DecryptRequest) -> AvailResult<DecryptResponse> 
             Ok(plaintexts) => Ok(DecryptResponse::new(plaintexts, None)),
             Err(error) => Ok(DecryptResponse::new(vec![], Some(error.external_msg))),
         },
-        _ => match decrypt_records_raw::<TestnetV0>(request.ciphertexts) {
-            Ok(plaintexts) => Ok(DecryptResponse::new(plaintexts, None)),
-            Err(error) => Ok(DecryptResponse::new(vec![], Some(error.external_msg))),
-        }, //SupportedNetworks::Mainnet => decrypt_record_raw::<Mainnet>(ciphertext),
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?, //SupportedNetworks::Mainnet => decrypt_record_raw::<Mainnet>(ciphertext),
     }
 }
 
@@ -671,14 +654,11 @@ pub async fn get_events(request: GetEventsRequest) -> AvailResult<GetEventsRespo
                 Some(error.external_msg),
             )),
         },
-        _ => match get_events_raw::<TestnetV0>(request) {
-            Ok(events) => Ok(GetEventsResponse::new(events, None, None)),
-            Err(error) => Ok(GetEventsResponse::new(
-                vec![],
-                None,
-                Some(error.external_msg),
-            )),
-        },
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,
         //SupportedNetworks::Mainnet => get_events_raw::<Mainnet>(request),
     }
 }
@@ -695,10 +675,11 @@ pub fn get_event(request: GetEventRequest) -> AvailResult<GetEventResponse> {
             Ok(event) => Ok(GetEventResponse::new(Some(event), None)),
             Err(error) => Ok(GetEventResponse::new(None, Some(error.external_msg))),
         },
-        _ => match get_event_raw::<TestnetV0>(&request.id) {
-            Ok(event) => Ok(GetEventResponse::new(Some(event), None)),
-            Err(error) => Ok(GetEventResponse::new(None, Some(error.external_msg))),
-        },
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,
         //SupportedNetworks::Mainnet => get_event_raw::<Mainnet>(request),
     }
 }
@@ -710,7 +691,11 @@ pub fn get_avail_events(request: GetEventsRequest) -> AvailResult<Vec<AvailEvent
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => get_avail_events_raw::<TestnetV0>(request),
         SupportedNetworks::Mainnet => get_avail_events_raw::<MainnetV0>(request),
-        _ => get_avail_events_raw::<TestnetV0>(request), //SupportedNetworks::Mainnet => get_events_raw::<Mainnet>(request),
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?, //SupportedNetworks::Mainnet => get_events_raw::<Mainnet>(request),
     }
 }
 
@@ -722,7 +707,11 @@ pub fn get_succinct_avail_events(
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => get_succinct_avail_events_raw::<TestnetV0>(request),
         SupportedNetworks::Mainnet => get_succinct_avail_events_raw::<MainnetV0>(request),
-        _ => get_succinct_avail_events_raw::<TestnetV0>(request),
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,
     }
     //SupportedNetworks::Mainnet => get_events_raw::<Mainnet>(request),
 }
@@ -733,7 +722,11 @@ pub fn get_succinct_avail_event(id: &str) -> AvailResult<SuccinctAvailEvent> {
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => get_succinct_avail_event_raw::<TestnetV0>(id),
         SupportedNetworks::Mainnet => get_succinct_avail_event_raw::<MainnetV0>(id),
-        _ => get_succinct_avail_event_raw::<TestnetV0>(id),
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,
     }
     //SupportedNetworks::Mainnet => get_event_raw::<Mainnet>(request),
 }
@@ -744,7 +737,11 @@ pub fn get_avail_event(id: &str) -> AvailResult<AvailEvent> {
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => get_avail_event_raw::<TestnetV0>(id),
         SupportedNetworks::Mainnet => get_avail_event_raw::<MainnetV0>(id),
-        _ => get_avail_event_raw::<TestnetV0>(id), //SupportedNetworks::Mainnet => get_event_raw::<Mainnet>(request),
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?, //SupportedNetworks::Mainnet => get_event_raw::<Mainnet>(request),
     }
 }
 

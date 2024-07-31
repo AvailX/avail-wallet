@@ -34,10 +34,11 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
             let (sig, _) = sign_message::<MainnetV0>(&session_request.hash, password.clone())?;
             sig.to_string()
         }
-        _ => {
-            let (sig, _) = sign_message::<TestnetV0>(&session_request.hash, password.clone())?;
-            sig.to_string()
-        }
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,
     };
 
     let verify_request = server_auth::VerifySessionRequest {
@@ -237,10 +238,11 @@ pub fn sign_hash(
             let (sig, _) = sign_message::<MainnetV0>(&request.hash, password)?;
             sig.to_string()
         }
-        _ => {
-            let (sig, _) = sign_message::<TestnetV0>(&request.hash, password)?;
-            sig.to_string()
-        }
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,
     };
 
     let verify_request = server_auth::VerifySessionRequest {
