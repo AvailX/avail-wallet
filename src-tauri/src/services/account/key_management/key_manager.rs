@@ -230,9 +230,9 @@ async fn remove_chain_code(
 #[cfg(test)]
 mod test_helpers {
     use super::*;
-    use snarkvm::prelude::anyhow;
+    use snarkvm::prelude::{anyhow, Field};
     use snarkvm_ledger::block::Transaction;
-    use snarkvm_console::{network::TestnetV0, program::Value as AleoValue, prelude::FromBytes};
+    use snarkvm_console::{network::TestnetV0, program::Value as AleoValue, prelude::FromBytes, account::PrivateKey};
 
     #[tokio::test]
     async fn test_generate_bip39() {
@@ -293,17 +293,18 @@ mod test_helpers {
 
     // #[test]
     // fn test_aleo_pk_from_derived_bytes() {
+    //     use snarkvm_console::prelude::*;
+    //     type N = TestnetV0;
+    //
     //     let seed = [
     //         169, 226, 137, 240, 19, 47, 167, 103, 64, 212, 123, 234, 219, 186, 179, 112, 144, 24,
     //         65, 102, 18, 107, 54, 137, 214, 96, 59, 120, 192, 92, 102, 123, 86, 230, 131, 55, 46,
     //         161, 95, 36, 205, 207, 176, 253, 25, 231, 113, 237, 91, 249, 79, 188, 186, 46, 248,
     //         117, 133, 43, 41, 53, 206, 157, 181, 80,
     //     ];
-    //     let field = <snarkvm::prelude::Testnet3 as snarkvm::prelude::Environment>::Field::from_bytes_le_mod_order(&seed);
-    //     let private_key = PrivateKey::<Testnet3>::try_from(
-    //         FromBytes::read_le(&*field.to_bytes_le().unwrap()).unwrap(),
-    //     )
-    //     .unwrap();
+    //     let prime_field = <N as Environment>::Field::from_bytes_le_mod_order(&seed);
+    //     let field = Field::<N>::try_from(prime_field.to_bytes_le().unwrap()).unwrap();
+    //     let private_key = PrivateKey::<N>::try_from(field).unwrap();
     //     print!("Private Key {}", private_key.to_string());
     // }
 
@@ -322,6 +323,10 @@ mod test_helpers {
         // Preparing inputs for key derivation and transaction
         let account_index = 1;
         let key_path = format!("m/44'/0'/{}'/0'", account_index);
+        let base_url = format!(
+            "https://aleo-testnetbeta.obscura.network/v1/{}",
+            env!("TESTNET_API_OBSCURA")
+        );
         let program_id = "credits.aleo".try_into().map_err(|_| anyhow!("Invalid program id")).unwrap();
         let function_name = "transfer_public".try_into().map_err(|_| anyhow!("Invalid function name")).unwrap();
         let recipient = "aleo1h7k3ttm6avttrgujp75wxfd5jf3ztmf9xcr4k6h6j9wj8z65uy9scuqkv8";
@@ -345,13 +350,14 @@ mod test_helpers {
             inputs_values,
             0,
             None,
+            base_url,
         ).await.unwrap();
 
-        // Broadcast transaction to network
-        let txn = Transaction::<N>::from_bytes_le(&res).unwrap();
-        let client = ureq::Agent::new();
-        let url = format!("https://aleo-testnetbeta.obscura.network/v1/{}/testnet/transaction/broadcast", env!("TESTNET_API_OBSCURA"));
-        let res2 = client.post(&url).send_json(&txn).unwrap();
-        println!("result: {:?}", res2);
+        // // Broadcast transaction to network
+        // let txn = Transaction::<N>::from_bytes_le(&res).unwrap();
+        // let client = ureq::Agent::new();
+        // let url = format!("https://aleo-testnetbeta.obscura.network/v1/{}/testnet/transaction/broadcast", env!("TESTNET_API_OBSCURA"));
+        // let res2 = client.post(&url).send_json(&txn).unwrap();
+        // println!("result: {:?}", res2);
     }
 }

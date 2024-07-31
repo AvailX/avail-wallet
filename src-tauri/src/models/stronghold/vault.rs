@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 use iota_stronghold::procedures::Curve;
 use snarkvm_console::{network::Network, program::{ProgramID, Identifier, Value, Record, Plaintext}};
+use snarkvm_ledger::query::Query;
 use tauri_plugin_aleo_stronghold::{
     execute_procedure, remove_secret, save_secret, BytesDto, LocationDto, ProcedureDto,
     Slip10DeriveInputDto, StrongholdCollection,
@@ -256,6 +257,7 @@ impl Vault {
         inputs: Vec<Value<N>>,
         priority_fee_in_microcredits: u64,
         fee_record: Option<Record<N, Plaintext<N>>>,
+        base_url: String,
     ) -> AvailResult<Vec<u8>> {
         let path = PathBuf::from(self.path);
         let record_path = BytesDto::Text(pk_path.to_string());
@@ -270,6 +272,7 @@ impl Vault {
             inputs,
             fee_record,
             priority_fee_in_microcredits,
+            base_url,
         };
 
         match execute_procedure(hold, path, self.client, procedure).await {
