@@ -79,20 +79,20 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         // .plugin(devtools)
         .setup(|app| {
-            #[cfg(desktop)]
+            // #[cfg(desktop)]
             let handle = app.handle().clone();
 
             #[cfg(desktop)]
             app.handle()
                 .plugin(tauri_plugin_updater::Builder::new().build())?;
 
-            #[cfg(desktop)]
+            // #[cfg(desktop)]
             app.listen("deep-link://new-url", move |event| {
                 deep_link_print(event, handle.clone())
             });
 
             // Remove the on_scheme method call
-            #[cfg(desktop)]
+            // #[cfg(desktop)]
             println!("Deep link: {:?}", app.deep_link().get_current());
             // NOTE: Updater is only supported on desktop platforms
 

@@ -6,6 +6,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { session_and_local_auth } from "../../src-desktop/services/authentication/auth";
 import { AvailError, AvailErrorType } from "../../src-desktop/types/errors";
 import { ErrorAlert } from "../../src-desktop/components/snackbars/alerts";
+import { listen } from "@tauri-apps/api/event";
+import { useWalletConnectManager } from '../../src-desktop/context/WalletConnect';
+
 
 const boxStyles: mui.SxProps = {
   display: "flex",
@@ -24,7 +27,24 @@ function EntryPoint() {
   const navigate = useNavigate();
   const [alert, setAlert] = React.useState<boolean>(false);
   const [alertMessage, setAlertMessage] = React.useState<string>("");
+  const { walletConnectManager } = useWalletConnectManager();
 
+  const initDeepLink = async () => {
+    console.log("Dee[ link listener started");
+    await listen('deep-link-wc', async event => {
+      const { uri } = event.payload as { uri: string }; // Add type assertion
+
+      // Decode the uri
+      const wcUri = uri.split('\"')[1].split('avail://wc?uri=')[1];
+      console.log('Deep link uri:', wcUri);
+      const decodedUri = decodeURIComponent(wcUri);
+      console.log('Decoded uri:', decodedUri);
+
+      // If (decodedUri)
+      await walletConnectManager.pair(decodedUri);
+    });
+
+  };
   React.useEffect(() => {
     const authenticateUser = async () => {
       try {
@@ -35,6 +55,7 @@ function EntryPoint() {
           setAlertMessage,
           true
         );
+        await initDeepLink();
         console.log("Login response", res);
         // if (res) {
         navigate("/login");
@@ -42,6 +63,7 @@ function EntryPoint() {
       } catch (error_) {
         console.log("Error caught", error_);
         const error = error_ as AvailError;
+        await initDeepLink();
 
         switch (error?.error_type) {
           case AvailErrorType.Network:
@@ -51,6 +73,7 @@ function EntryPoint() {
           case AvailErrorType.Unauthorized:
           case AvailErrorType.InvalidData:
             navigate("/login");
+            await initDeepLink();
             break;
           default:
             navigate("/username");

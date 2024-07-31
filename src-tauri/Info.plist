@@ -18,9 +18,9 @@
 	<string>Avail</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-    <key>CFBundleURLTypes</key>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Face ID is used to unlock your wallet.</string>
+	<key>CFBundleURLTypes</key>
     <array>
         <dict>
             <key>CFBundleTypeRole</key>

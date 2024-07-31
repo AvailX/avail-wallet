@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import Nft from "./Nft";
+import Nft from "./nft";
 import availLogo from "../assets/avail-icon.svg";
 
 const NftDisplay = ({ onClick }: { onClick: () => void }) => {
