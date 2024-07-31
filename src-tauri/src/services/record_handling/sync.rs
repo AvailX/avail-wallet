@@ -69,6 +69,7 @@ pub async fn txs_sync() -> AvailResult<TxScanResponse> {
 
     let transactions = match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => txs_sync_raw::<TestnetV0>().await?,
+        SupportedNetworks::Mainnet => txs_sync_raw::<MainnetV0>().await?,
         _ => txs_sync_raw::<TestnetV0>().await?, //SupportedNetworks::Devnet => txs_sync_raw::<Devnet>().await?,
                                                  //SupportedNetworks::Mainnet => txs_sync_raw::<Mainnet>().await?,
     };
@@ -179,6 +180,9 @@ pub async fn blocks_sync(height: u32, window: Window) -> AvailResult<bool> {
             SupportedNetworks::Testnet => {
                 get_records::<TestnetV0>(last_sync, height, Some(window))?
             }
+            SupportedNetworks::Mainnet => {
+                get_records::<MainnetV0>(last_sync, height, Some(window))?
+            }
             _ => {
                 return Err(AvailError::new(
                     AvailErrorType::Internal,
@@ -207,6 +211,7 @@ pub async fn blocks_sync(height: u32, window: Window) -> AvailResult<bool> {
 
     let found_flag = match SupportedNetworks::from_str(network.as_str())? {
         SupportedNetworks::Testnet => get_records::<TestnetV0>(last_sync, height, Some(window))?,
+        SupportedNetworks::Mainnet => get_records::<MainnetV0>(last_sync, height, Some(window))?,
         _ => {
             return Err(AvailError::new(
                 AvailErrorType::Internal,
@@ -246,6 +251,9 @@ pub async fn sync_backup() -> AvailResult<()> {
             SupportedNetworks::Testnet => {
                 update_records_spent_backup::<TestnetV0>(ids_to_update).await?
             }
+            SupportedNetworks::Mainnet => {
+                update_records_spent_backup::<MainnetV0>(ids_to_update).await?
+            }
             _ => update_records_spent_backup::<TestnetV0>(ids_to_update).await?,
         };
 
@@ -264,11 +272,12 @@ pub async fn sync_backup() -> AvailResult<()> {
 
         // get timestamp from block
         let api_client = match SupportedNetworks::from_str(&network)? {
-            SupportedNetworks::Testnet => setup_local_client::<TestnetV0>(),
-            _ => setup_local_client::<TestnetV0>(),
+            SupportedNetworks::Testnet => setup_client::<TestnetV0>(),
+            // SupportedNetworks::Mainnet => setup_client::<MainnetV0>(),
+            _ => setup_client::<TestnetV0>(),
         };
 
-        let block = api_client.get_block(last_sync)?;
+        let block = api_client?.get_block(last_sync)?;
         let ts = block.timestamp();
         let timestamp = get_timestamp_from_i64_utc(ts)?;
         update_sync_height(address.clone(), last_sync.to_string()).await?;
@@ -295,6 +304,7 @@ pub async fn blocks_sync_test(height: u32) -> AvailResult<bool> {
     let task = tokio_rayon::spawn(move || {
         let found_flag = match SupportedNetworks::from_str(network.as_str())? {
             SupportedNetworks::Testnet => get_records::<TestnetV0>(last_sync, 1764731u32, None)?,
+            SupportedNetworks::Mainnet => get_records::<MainnetV0>(last_sync, 1764731u32, None)?,
             _ => {
                 return Err(AvailError::new(
                     AvailErrorType::Internal,

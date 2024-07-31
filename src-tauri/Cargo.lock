@@ -422,7 +422,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 [[package]]
 name = "avail-common"
 version = "0.6.0"
-source = "git+https://github.com/availx/avail-lib?rev=9093fad#9093fadbfbbc95cebdb7001e38110d9d0b325773"
+source = "git+https://github.com/availx/avail-lib?rev=7f22f4c#7f22f4cd9812770e502026c1d46982ee810a8ca6"
 dependencies = [
  "aes-gcm",
  "app_dirs2",

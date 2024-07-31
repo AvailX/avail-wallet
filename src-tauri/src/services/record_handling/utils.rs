@@ -4,9 +4,7 @@ use snarkvm::circuit::Aleo;
 use snarkvm::console::network::TestnetV0;
 use snarkvm::ledger::transactions::ConfirmedTransaction;
 use snarkvm::prelude::{
-    Address, Ciphertext, Entry, Execution, Field, GraphKey, Identifier, Itertools, Literal,
-    Network, Output, Plaintext, ProgramID, Record, RecordType, Transaction, Transition, Value,
-    ViewKey,
+    Address, Ciphertext, Entry, Execution, Field, GraphKey, Identifier, Itertools, Literal, MainnetV0, Network, Output, Plaintext, ProgramID, Record, RecordType, Transaction, Transition, Value, ViewKey
 };
 use snarkvm::synthesizer::program::{Command, Instruction, ProgramCore};
 use snarkvm::utilities::ToBits;
@@ -647,6 +645,11 @@ pub fn get_all_nft_data() -> AvailResult<Vec<String>> {
     match SupportedNetworks::from_str(network.as_str())? {
         SupportedNetworks::Testnet => {
             let nft_data = get_all_nft_raw::<TestnetV0>()?;
+            println!("===> NFT Data {:?}", nft_data);
+            Ok(nft_data)
+        }
+        SupportedNetworks::Mainnet => {
+            let nft_data = get_all_nft_raw::<MainnetV0>()?;
             println!("===> NFT Data {:?}", nft_data);
             Ok(nft_data)
         }

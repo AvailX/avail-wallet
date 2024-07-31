@@ -19,7 +19,7 @@ use avail_common::{
 };
 use tauri_plugin_http::reqwest;
 
-use snarkvm::prelude::{Network, TestnetV0, Transaction};
+use snarkvm::prelude::{MainnetV0, Network, TestnetV0, Transaction};
 
 use super::aleo_client::setup_client;
 
@@ -269,6 +269,10 @@ pub async fn verify_task(
     match SupportedNetworks::from_str(network.as_str())? {
         SupportedNetworks::Testnet => {
             verify_task_raw::<TestnetV0>(start_time, end_time, task_id, program_id, function_id)
+                .await
+        }
+        SupportedNetworks::Mainnet => {
+            verify_task_raw::<MainnetV0>(start_time, end_time, task_id, program_id, function_id)
                 .await
         }
     }

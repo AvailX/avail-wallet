@@ -1,4 +1,5 @@
 use chrono::{DateTime, Local};
+use snarkvm::prelude::MainnetV0;
 use snarkvm::prelude::{transactions::Transactions, Address, Network, TestnetV0};
 use std::str::FromStr;
 
@@ -95,21 +96,20 @@ pub fn get_deployment_pointer<N: Network>(id: &str) -> AvailResult<DeploymentPoi
 pub fn decrypt_deployments<N: Network>(
     encrypted_deployments: Vec<EncryptedData>,
 ) -> AvailResult<Vec<DeploymentPointer<N>>> {
-    let network = get_network()?;
+    // let network = get_network()?;
 
-    let v_key = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet => VIEWSESSION.get_instance::<TestnetV0>()?,
-        _ => VIEWSESSION.get_instance::<TestnetV0>()?,
-    };
+    // let v_key = match SupportedNetworks::from_str(&network)? {
+    //     SupportedNetworks::Testnet => VIEWSESSION.get_instance::<TestnetV0>()?,
+    //     SupportedNetworks::Mainnet => VIEWSESSION.get_instance::<MainnetV0>()?,
+    //     _ => VIEWSESSION.get_instance::<TestnetV0>()?,
+    // };
+
+    let v_key = VIEWSESSION.get_instance::<N>()?;
 
     let deployments = encrypted_deployments
         .iter()
         .map(|x| {
-            let encrypted_data = match SupportedNetworks::from_str(&network)? {
-                SupportedNetworks::Testnet => x.to_enrypted_struct::<TestnetV0>()?,
-                _ => x.to_enrypted_struct::<TestnetV0>()?,
-            };
-
+            let encrypted_data =  x.to_enrypted_struct::<N>()?;
             let deployment: DeploymentPointer<N> = encrypted_data.decrypt(v_key)?;
 
             Ok(deployment)

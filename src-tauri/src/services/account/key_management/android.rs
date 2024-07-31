@@ -406,10 +406,36 @@ pub fn keystore_init<N: Network>(
                         }
                     }
                 }
+                SupportedNetworks::Mainnet => {
+                    match encrypt_with_password::<N>(password, PKey(*p_key)) {
+                        Ok(c) => c,
+                        Err(e) => {
+                            println!("Error encrypting view key: {}", e);
+                            return Err(AvailError::new(
+                                AvailErrorType::Internal,
+                                "Error encrypting private key".to_string(),
+                                "Error encrypting private key".to_string(),
+                            ));
+                        }
+                    }
+                }
             };
 
             let ciphertext_v = match SupportedNetworks::from_str(&network)? {
                 SupportedNetworks::Testnet => {
+                    match encrypt_with_password::<N>(password, VKey(*v_key)) {
+                        Ok(c) => c,
+                        Err(e) => {
+                            println!("Error encrypting view key: {}", e);
+                            return Err(AvailError::new(
+                                AvailErrorType::Internal,
+                                "Error encrypting view key".to_string(),
+                                "Error encrypting view key".to_string(),
+                            ));
+                        }
+                    }
+                }
+                SupportedNetworks::Mainnet => {
                     match encrypt_with_password::<N>(password, VKey(*v_key)) {
                         Ok(c) => c,
                         Err(e) => {
@@ -600,6 +626,7 @@ pub fn keystore_delete(password: Option<&str>) -> AvailResult<String> {
 
     let _validation = match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => keystore_load::<TestnetV0>(password, "avl-v")?,
+        SupportedNetworks::Mainnet => keystore_load::<MainnetV0>(password, "avl-v")?,
     };
 
     let (jvm, activity) = prepare_jvm()?;
