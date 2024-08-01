@@ -2,8 +2,7 @@ use std::path::PathBuf;
 
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 use iota_stronghold::procedures::Curve;
-use snarkvm_console::{network::Network, program::{ProgramID, Identifier, Value, Record, Plaintext}};
-use snarkvm_ledger::query::Query;
+use snarkvm::console::{network::Network, program::{ProgramID, Identifier, Value, Record, Plaintext}};
 use tauri_plugin_aleo_stronghold::{
     execute_procedure, remove_secret, save_secret, BytesDto, LocationDto, ProcedureDto,
     Slip10DeriveInputDto, StrongholdCollection,

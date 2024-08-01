@@ -1,22 +1,14 @@
 use std::{ops::Sub, path::PathBuf};
 
 use app_dirs::*;
-use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
-use iota_stronghold::procedures::Curve;
-use tauri_plugin_aleo_stronghold::{
-    create_client, destroy, execute_procedure, get_store_record, initialize, load_client,
-    remove_secret, remove_store_record, save, save_secret, save_store_record, BytesDto,
-    LocationDto, PasswordHashFunction, ProcedureDto, Slip10DeriveInputDto, StrongholdCollection,
-};
-
 use serde::{Deserialize, Serialize};
-
-use crate::models::stronghold::{client::Client, store::Store, vault::Vault, Stronghold};
+use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
+use tauri_plugin_aleo_stronghold::{create_client, initialize, load_client, BytesDto, PasswordHashFunction, StrongholdCollection};
+use crate::models::stronghold::{client::Client, vault::Vault, Stronghold};
 use snarkvm::{
-    prelude::{Address, Testnet3},
+    prelude::{Address, Network},
     utilities::FromBytes,
 };
-use snarkvm_console::network::Network;
 
 pub async fn init_stronghold(
     password: &str,
@@ -159,7 +151,7 @@ pub async fn derive_aleo_key<N: Network>(password: &str, account_index: u32) -> 
     store_chain_code(account_index, cc, client, &hold).await?;
 
     let address = vault.get_address::<N>(&hold, &key_path).await?;
-    let aleo_address = Address::<Testnet3>::from_bytes_le(&address)?.to_string();
+    let aleo_address = Address::<N>::from_bytes_le(&address)?.to_string();
 
     stronghold.save(&hold).await?;
     stronghold.destroy(&hold).await?;
@@ -230,9 +222,7 @@ async fn remove_chain_code(
 #[cfg(test)]
 mod test_helpers {
     use super::*;
-    use snarkvm::prelude::{anyhow, Field};
-    use snarkvm_ledger::block::Transaction;
-    use snarkvm_console::{network::TestnetV0, program::Value as AleoValue, prelude::FromBytes, account::PrivateKey};
+    use snarkvm::prelude::{anyhow, Transaction, TestnetV0, Value};
 
     #[tokio::test]
     async fn test_generate_bip39() {
@@ -291,23 +281,6 @@ mod test_helpers {
         delete_aleo_key(password, account_index).await.unwrap();
     }
 
-    // #[test]
-    // fn test_aleo_pk_from_derived_bytes() {
-    //     use snarkvm_console::prelude::*;
-    //     type N = TestnetV0;
-    //
-    //     let seed = [
-    //         169, 226, 137, 240, 19, 47, 167, 103, 64, 212, 123, 234, 219, 186, 179, 112, 144, 24,
-    //         65, 102, 18, 107, 54, 137, 214, 96, 59, 120, 192, 92, 102, 123, 86, 230, 131, 55, 46,
-    //         161, 95, 36, 205, 207, 176, 253, 25, 231, 113, 237, 91, 249, 79, 188, 186, 46, 248,
-    //         117, 133, 43, 41, 53, 206, 157, 181, 80,
-    //     ];
-    //     let prime_field = <N as Environment>::Field::from_bytes_le_mod_order(&seed);
-    //     let field = Field::<N>::try_from(prime_field.to_bytes_le().unwrap()).unwrap();
-    //     let private_key = PrivateKey::<N>::try_from(field).unwrap();
-    //     print!("Private Key {}", private_key.to_string());
-    // }
-
     #[tokio::test]
     async fn test_aleo_execute() {
         type N = TestnetV0;
@@ -335,10 +308,10 @@ mod test_helpers {
             "1000000u64".to_string(),
         ].to_vec();
 
-        // Convert inputs to AleoValue
-        let mut inputs_values: Vec<AleoValue<N>> = vec![];
+        // Convert inputs to Value
+        let mut inputs_values: Vec<Value<N>> = vec![];
         for i in inputs {
-            inputs_values.push(AleoValue::<N>::try_from(i).unwrap());
+            inputs_values.push(Value::<N>::try_from(i).unwrap());
         }
 
         // Execute transaction with stronghold vault
