@@ -96,11 +96,11 @@ export class WalletConnectManager {
 
   async close() {
     /*
-		If (this.pairingTopic) {
-			console.log("Closing pairing...")
-			await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
-			await this.theWallet?.core.history.delete(this.pairingTopic);
-		} */
+    If (this.pairingTopic) {
+      console.log("Closing pairing...")
+      await this.theWallet?.core.pairing.disconnect({topic : this.pairingTopic});
+      await this.theWallet?.core.history.delete(this.pairingTopic);
+    } */
     if (this.sessionTopic) {
       console.log("Closing pairing...");
       await this.theWallet?.disconnectSession({
@@ -154,6 +154,7 @@ export class WalletConnectManager {
 
       /* Approve/Reject Connection window -- START */
       // Open the new window
+      // HERE IS WHERE THE MODAL SHOULD BE CALLED @kalio
       const webview = new WebviewWindow("wallet-connect", {
         url: "wallet-connect-screens/wallet-connect.html",
         title: "Avail Wallet Connect",
