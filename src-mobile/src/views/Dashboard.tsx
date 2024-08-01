@@ -3,9 +3,14 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
 import ScanReAuthDialog from "../../../src/components/dialogs/scan_reauth";
+import Receive from "../../../src/components/dialogs/receive";
+import BackupDialog from "../../../src/components/backup/backup_dialog";
+import NetworkDownDialog from "../../../src/components/dialogs/network_down";
 import {
-  SuccessAlert,
   ErrorAlert,
+  SuccessAlert,
+  WarningAlert,
+  InfoAlert,
 } from "../../../src/components/snackbars/alerts";
 import {
   set_first_visit,
@@ -83,7 +88,7 @@ import { getAuth } from "../../../src/services/states/utils";
 import { os } from "../../../src/services/util/open";
 import { preInstallInclusionProver } from "../../../src/services/transfer/inclusion";
 import { sync_backup } from "../../../src/services/scans/backup";
-import { scan_messages } from "../../../src/services/scans/encrypted_messages";
+import { scan_messages } from "../services/scans/encrypted_messages";
 import { getNetworkStatus } from "../../../src/services/util/network";
 import { updateData } from "../../../src/services/util/migrate_data";
 import {
@@ -255,6 +260,42 @@ const Dashboard = () => {
   };
 
   React.useEffect(() => {
+    const unlistenScan = listen("scan_progress", (event) => {
+      console.log(scanInProgress);
+      console.log(event);
+      console.log(event.payload);
+
+      const progress = event.payload as number;
+      if (progress !== 100) {
+        startScan();
+      }
+
+      setScanProgressPercent(progress);
+    });
+
+    const unlistenTx = listen("tx_state_change", (event) => {
+      console.log(event);
+
+      fetchEvents();
+      handleGetAssets();
+    });
+
+    return () => {
+      unlistenScan
+        .then((remove) => remove())
+        .catch((error) => {
+          console.log(error);
+        });
+
+      unlistenTx
+        .then((remove) => remove())
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+  }, []);
+
+  React.useEffect(() => {
     getName(setUsername).catch((error) => {
       console.log(error);
     });
@@ -308,41 +349,7 @@ const Dashboard = () => {
   }, []);
 
   /* --Event Listners */
-  React.useEffect(() => {
-    const unlistenScan = listen("scan_progress", (event) => {
-      console.log(scanInProgress);
-      console.log(event);
-      console.log(event.payload);
 
-      const progress = event.payload as number;
-      if (progress !== 100) {
-        startScan();
-      }
-
-      setScanProgressPercent(progress);
-    });
-
-    const unlistenTx = listen("tx_state_change", (event) => {
-      console.log(event);
-
-      fetchEvents();
-      handleGetAssets();
-    });
-
-    return () => {
-      unlistenScan
-        .then((remove) => remove())
-        .catch((error) => {
-          console.log(error);
-        });
-
-      unlistenTx
-        .then((remove) => remove())
-        .catch((error) => {
-          console.log(error);
-        });
-    };
-  }, []);
   const handleBlockScan = async (res: TxScanResponse) => {
     if (res.txs) {
       handleGetAssets();
@@ -386,10 +393,11 @@ const Dashboard = () => {
     }
   };
 
+  console.log("handle");
   const handleScan = () => {
-    // To get the initial balance and transactions
     scan_messages()
       .then(async (res) => {
+        console.log(res);
         getNetworkStatus()
           .then(async (status) => {
             setNetworkStatus(status);
@@ -407,6 +415,7 @@ const Dashboard = () => {
       })
       .catch(async (err) => {
         const error = err as AvailError;
+        console.log(err);
         console.log(error.error_type);
 
         if (error.error_type === AvailErrorType.Network) {
@@ -428,17 +437,6 @@ const Dashboard = () => {
   };
 
   //HandleTransferCheck
-
-  const handleTransferCheck = () => {
-    const wcFlag = sessionStorage.getItem("transfer_on");
-    const transferState = sessionStorage.getItem("transferState");
-
-    if (wcFlag === "true" || transferState === "true") {
-      setTransferState(true);
-    } else {
-      setTransferState(false);
-    }
-  };
 
   React.useEffect(() => {
     if (shouldRunEffect.current) {
@@ -524,9 +522,39 @@ const Dashboard = () => {
     }
   }, [scanInProgress, startScan, endScan]);
 
+  const handleTransferCheck = () => {
+    const wcFlag = sessionStorage.getItem("transfer_on");
+    const transferState = sessionStorage.getItem("transferState");
+
+    if (wcFlag === "true" || transferState === "true") {
+      setTransferState(true);
+    } else {
+      setTransferState(false);
+    }
+  };
+  const handleAssetDrawerOpen = (asset: AssetType) => {
+    setAsset(asset);
+    setAssetDrawerOpen(true);
+  };
+
+  const handleAssetDrawerClose = () => {
+    setAssetDrawerOpen(false);
+  };
+
+  // Event Drawer services
+
+  const handleEventDrawerOpen = (event: SuccinctAvailEvent) => {
+    setEvent(event);
+    setEventDrawerOpen(true);
+  };
+
+  const handleEventDrawerClose = () => {
+    setEventDrawerOpen(false);
+  };
+
   return (
     <>
-      <ScanReAuthDialog
+      {/* <ScanReAuthDialog
         isOpen={open}
         onRequestClose={() => {
           setOpen(false);
@@ -541,6 +569,62 @@ const Dashboard = () => {
         errorAlert={errorAlert}
         setErrorAlert={setErrorAlert}
         message={message}
+      />
+       */}
+      <ErrorAlert
+        errorAlert={errorAlert}
+        setErrorAlert={setErrorAlert}
+        message={message}
+      />
+      <SuccessAlert
+        successAlert={success}
+        setSuccessAlert={setSuccessAlert}
+        message={message}
+      />
+      <WarningAlert
+        warningAlert={warningAlert}
+        setWarningAlert={setWarningAlert}
+        message={message}
+      />
+      <InfoAlert
+        infoAlert={infoAlert}
+        setInfoAlert={setInfoAlert}
+        message={message}
+      />
+
+      {/* Backup Dialog */}
+      <BackupDialog
+        open={backupDialog}
+        onClose={() => {
+          setBackupDialog(false);
+        }}
+      />
+
+      {/* Receive Dialog */}
+      <Receive
+        open={receiveDialogOpen}
+        handleClose={() => {
+          setReceiveDialogOpen(false);
+        }}
+        address={address}
+        username={username}
+      />
+
+      {/* ReAuth Dialog */}
+      <ScanReAuthDialog
+        isOpen={reAuthDialogOpen}
+        onRequestClose={() => {
+          setReAuthDialogOpen(false);
+        }}
+      />
+
+      {/* Network Down Dialog */}
+      <NetworkDownDialog
+        isOpen={networkDownDialog}
+        onRequestClose={() => {
+          setNetworkDownDialog(false);
+        }}
+        status={networkStatus}
       />
 
       <DashboardLayout>
@@ -618,6 +702,8 @@ const Dashboard = () => {
             borderBottom={activeTab === "activity" ? "1px solid #FFFFFF" : ""}
             onClick={() => {
               setActiveTab("activity");
+              handleScan();
+              setReAuthDialogOpen(true);
             }}
           >
             Activity
