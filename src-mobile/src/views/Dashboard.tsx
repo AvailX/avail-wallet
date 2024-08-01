@@ -95,6 +95,11 @@ import {
   NetworkStatus,
   switchToObscura,
 } from "../../../src/services/util/network";
+import {
+  delete_util,
+  session_and_local_auth,
+} from "../../../src/services/authentication/auth";
+import ReAuthDialog from "components/dialogs/reauth";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -325,6 +330,7 @@ const Dashboard = () => {
           ) {
             // eslint-disable-next-line no-warning-comments
             // TODO - Re-authenticate and fix execution on re-auth (Bala)
+            setReAuthDialogOpen(true);
 
             console.log("Unauthorized, re auth");
             console.log(error);
@@ -395,11 +401,14 @@ const Dashboard = () => {
 
   console.log("handle");
   const handleScan = () => {
+    setReAuthDialogOpen(true);
+    console.log("authDialog");
     scan_messages()
       .then(async (res) => {
         console.log(res);
         getNetworkStatus()
           .then(async (status) => {
+            console.log(status)
             setNetworkStatus(status);
             if (status === NetworkStatus.Down) {
               setNetworkDownDialog(true);
@@ -421,13 +430,35 @@ const Dashboard = () => {
         if (error.error_type === AvailErrorType.Network) {
           setMessage(t("home.messages.errors.network"));
           setErrorAlert(true);
-        } else if (error.error_type.toString() === "Unauthorized") {
+          console.log("network ish");
+        } else if (
+          error.error_type.toString() === "Validation" ||
+          "Unauthorized"
+        ) {
           // eslint-disable-next-line no-warning-comments
           // TODO - Re-authenticate and fix execution on re-auth (Bala)
 
-          console.log("Unauthorized, re auth");
+          // session_and_local_auth(password, navigate, setErrorAlert, setMessage, false).then(async () => {
+          //   setMessage('Successfully authenticated.');
+          //   setSuccess(true);
+          //   // Wait for 0.8 seconds and fire onRequestClose
+          //   await new Promise(r => setTimeout(r, 800));
+          //   onRequestClose();
 
+          //   if (onAuthSuccess !== undefined) {
+          //     await onAuthSuccess();
+          //   }
+          // }).catch(async e => {
+          //   console.log(e);
+          //   const error = e as AvailError;
+          //   setMessage('Failed to authenticate, please try again.');
+          //   setErrorAlert(true);
+          //   onRequestClose();
+          // });
+          
           setReAuthDialogOpen(true);
+          console.log("now authorized");
+          // console.log("Unauthorized, re auth");
         } else {
           console.log(error.internal_msg);
           setMessage(error.internal_msg);
@@ -571,6 +602,7 @@ const Dashboard = () => {
         message={message}
       />
        */}
+      {/* <ReAuthDialog /> */}
       <ErrorAlert
         errorAlert={errorAlert}
         setErrorAlert={setErrorAlert}
@@ -703,7 +735,7 @@ const Dashboard = () => {
             onClick={() => {
               setActiveTab("activity");
               handleScan();
-              setReAuthDialogOpen(true);
+              // setReAuthDialogOpen(true);
             }}
           >
             Activity
