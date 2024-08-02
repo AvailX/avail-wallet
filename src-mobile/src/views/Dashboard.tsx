@@ -1,6 +1,5 @@
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
-import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
 import ScanReAuthDialog from "../../../src/components/dialogs/scan_reauth";
 import Receive from "../../../src/components/dialogs/receive";
@@ -38,7 +37,6 @@ import AsssetDisplay from "../components/AsssetDisplay";
 import DashboardCarousel from "../components/DashboardCarousel";
 import { getName } from "../services/states/util";
 import { getAddress } from "../services/states/util";
-import { AirdropNft } from "../components/Nft";
 
 // Services
 import { get_nfts } from "../services/nfts/fetch";
@@ -85,21 +83,14 @@ import { scan_blocks } from "../../../src/services/scans/blocks";
 import { getAuth } from "../../../src/services/states/utils";
 
 // Scan Imports
-import { os } from "../../../src/services/util/open";
 import { preInstallInclusionProver } from "../../../src/services/transfer/inclusion";
 import { sync_backup } from "../../../src/services/scans/backup";
 import { scan_messages } from "../services/scans/encrypted_messages";
 import { getNetworkStatus } from "../../../src/services/util/network";
-import { updateData } from "../../../src/services/util/migrate_data";
 import {
   NetworkStatus,
   switchToObscura,
 } from "../../../src/services/util/network";
-import {
-  delete_util,
-  session_and_local_auth,
-} from "../../../src/services/authentication/auth";
-import ReAuthDialog from "components/dialogs/reauth";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -408,7 +399,7 @@ const Dashboard = () => {
         console.log(res);
         getNetworkStatus()
           .then(async (status) => {
-            console.log(status)
+            console.log(status);
             setNetworkStatus(status);
             if (status === NetworkStatus.Down) {
               setNetworkDownDialog(true);
@@ -437,25 +428,6 @@ const Dashboard = () => {
         ) {
           // eslint-disable-next-line no-warning-comments
           // TODO - Re-authenticate and fix execution on re-auth (Bala)
-
-          // session_and_local_auth(password, navigate, setErrorAlert, setMessage, false).then(async () => {
-          //   setMessage('Successfully authenticated.');
-          //   setSuccess(true);
-          //   // Wait for 0.8 seconds and fire onRequestClose
-          //   await new Promise(r => setTimeout(r, 800));
-          //   onRequestClose();
-
-          //   if (onAuthSuccess !== undefined) {
-          //     await onAuthSuccess();
-          //   }
-          // }).catch(async e => {
-          //   console.log(e);
-          //   const error = e as AvailError;
-          //   setMessage('Failed to authenticate, please try again.');
-          //   setErrorAlert(true);
-          //   onRequestClose();
-          // });
-          
           setReAuthDialogOpen(true);
           console.log("now authorized");
           // console.log("Unauthorized, re auth");
@@ -585,24 +557,6 @@ const Dashboard = () => {
 
   return (
     <>
-      {/* <ScanReAuthDialog
-        isOpen={open}
-        onRequestClose={() => {
-          setOpen(false);
-        }}
-      />
-      <SuccessAlert
-        successAlert={success}
-        setSuccessAlert={setSuccessAlert}
-        message={message}
-      />
-      <ErrorAlert
-        errorAlert={errorAlert}
-        setErrorAlert={setErrorAlert}
-        message={message}
-      />
-       */}
-      {/* <ReAuthDialog /> */}
       <ErrorAlert
         errorAlert={errorAlert}
         setErrorAlert={setErrorAlert}
