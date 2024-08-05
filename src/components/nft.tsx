@@ -39,6 +39,7 @@ const Nft: React.FC<NftProperties> = ({ name, image, onClick }) => (
           height: 200,
           //marginTop: 20
         }}
+        alt=""
         draggable={false}
       />
     </Box>
@@ -70,7 +71,11 @@ export const AirdropNft: React.FC<AirdropNftProperties> = ({
     }}
   >
     <CardMedia image={collection.whitelist_img} />
-    <img src={collection.whitelist_img} style={{ width: "100%" }} />
+    <img
+      src={collection.whitelist_img}
+      style={{ width: "100%" }}
+      alt="collection"
+    />
     <CardContent
       sx={{
         display: "flex",

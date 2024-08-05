@@ -9,21 +9,21 @@ interface IProps {
 const AvatarDropDown: FC<IProps> = ({ onClick }) => {
   return (
     <Box
-      display='flex'
-      alignItems='center'
-      justifyContent='flex-start'
+      display="flex"
+      alignItems="center"
+      justifyContent="flex-start"
       sx={{ cursor: "pointer" }}
       onClick={() => onClick()}
       py={2}
       pt={5}
     >
-      <img src={avatarImg} />
-      <Typography ml={2} fontWeight={700} color='#B0B0B0'>
+      <img src={avatarImg} alt="avatar" />
+      <Typography ml={2} fontWeight={700} color="#B0B0B0">
         aleo1ab3j...82k
       </Typography>
       <Typography
-        color='#B0B0B0'
-        fontSize='23px'
+        color="#B0B0B0"
+        fontSize="23px"
         fontWeight={500}
         ml={1}
         style={{ rotate: "90deg" }}

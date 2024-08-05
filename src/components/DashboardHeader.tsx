@@ -33,21 +33,21 @@ const DashboardHeader: FC<IProps> = ({ onProfileClick }) => {
   return (
     <Box
       mb={3}
-      display='flex'
-      alignItems='center'
-      justifyContent='space-between'
+      display="flex"
+      alignItems="center"
+      justifyContent="space-between"
     >
-      <Box onClick={onProfileClick} display='flex' alignItems='center'>
-        <img src={avatarImg} />
+      <Box onClick={onProfileClick} display="flex" alignItems="center">
+        <img src={avatarImg} alt="avatar" />
         <Box ml={3}>
-          <Typography fontWeight={700} color='#fff'>
+          <Typography fontWeight={700} color="#fff">
             {shortenAleoAddress?.(address)}
           </Typography>
         </Box>
       </Box>
 
       <IconButton onClick={() => navigate("/qr-code")}>
-        <img src={scanIcon} />
+        <img src={scanIcon} alt="scanIcon" />
       </IconButton>
     </Box>
   );

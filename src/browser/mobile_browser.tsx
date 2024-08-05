@@ -19,11 +19,6 @@ import {
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { styled } from "@mui/material/styles";
-// import arcane from "../assets/arcane.svg";
-// import SegmentIcon from "@mui/icons-material/Segment";
-// import CloseIcon from "@mui/icons-material/Close";
-// import LoopIcon from "@mui/icons-material/Loop";
-// import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 // global state
 import { useTranslation } from "react-i18next";

@@ -111,6 +111,7 @@ function RequestModal() {
         my={2}
       >
         <img
+          alt=""
           src={modallogo}
           style={{
             paddingTop: "5px",

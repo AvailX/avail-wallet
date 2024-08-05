@@ -14,7 +14,7 @@ import {
   type IWeb3Wallet,
   type Web3WalletTypes,
 } from "@walletconnect/web3wallet";
-import { get_address } from "src-desktop/services/storage/persistent";
+import { get_address } from "../../../src-desktop/services/storage/persistent";
 import { AleoWallet } from "./AleoWallet";
 import { SessionInfo } from "./SessionInfo";
 import { dappSession, type WalletConnectRequest } from "./WCTypes";

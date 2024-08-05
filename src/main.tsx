@@ -24,7 +24,7 @@ const handleLanguage = async () => {
   } else {
     await i18n.changeLanguage("en");
   }
-}
+};
 
 handleLanguage();
 

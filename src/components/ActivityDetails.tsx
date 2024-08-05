@@ -117,6 +117,7 @@ const TransactionTransport = ({
           style={{ borderRadius: "50%" }}
           height='35px'
           src={imageUrl}
+          alt=" s"
         />
         <Box ml={2} display='flex' alignItems='center'>
           <Typography>From</Typography>
