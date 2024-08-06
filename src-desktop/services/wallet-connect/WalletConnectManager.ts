@@ -155,6 +155,7 @@ export class WalletConnectManager {
       /* Approve/Reject Connection window -- START */
       // Open the new window
       // HERE IS WHERE THE MODAL SHOULD BE CALLED @kalio
+
       const webview = new WebviewWindow("wallet-connect", {
         url: "wallet-connect-screens/wallet-connect.html",
         title: "Avail Wallet Connect",
@@ -188,6 +189,9 @@ export class WalletConnectManager {
       const { aleoWallet, theWallet } = this;
 
       await once("connect-approved", async (response) => {
+        //once accepted on modal, close model logic here
+
+        
         await webview.close();
         console.log("Wallet connect was approved", response);
 

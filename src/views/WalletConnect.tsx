@@ -29,7 +29,8 @@ const BrowserView: React.FC = () => {
   const [reauthDialogOpen, setReauthDialogOpen] = React.useState(false);
 
   //Drawer
-  const [open, setOpen] = React.useState<boolean>(true);
+  const [open, setOpen] = React.useState<boolean>(false);
+
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
   };
@@ -108,7 +109,7 @@ const BrowserView: React.FC = () => {
         />
         <Browser initialUrl={url} handleDappSelection={handleDappSelection} />
         <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}>
-          <RequestModal />
+          <RequestModal closeModal={toggleDrawer(false)} />
         </SwipeableEdgeDrawer>
       </Box>
     </BrowserLayout>

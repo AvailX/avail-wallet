@@ -12,7 +12,11 @@ import { useTranslation } from "react-i18next";
 import { useWalletConnectManager } from "../../src-desktop/context/WalletConnect";
 import { useNavigate } from "react-router-dom";
 
-function RequestModal() {
+type RequestModalProps = {
+  closeModal: () => void;
+};
+
+const RequestModal: React.FC<RequestModalProps> = ({ closeModal }) => {
   var DappName = "DappName";
 
   const [wcUrl, setWcUrl] = useState<string>("");
@@ -31,70 +35,22 @@ function RequestModal() {
 
   const { t } = useTranslation();
 
-  const handleConnected = () => {
-    walletConnectManager.pair(wcUrl).catch(() => {
-      setAlertMessage("Error connecting");
-      setErrorAlert(true);
-    });
-    sessionStorage.setItem("connected", "true");
-  };
+  // handling the state changes for the modal window
+  const [action, setAction] = useState<"none" | "approve" | "reject">("none");
 
-  const getConnectState = () => {
-    const connected = sessionStorage.getItem("connected");
-    if (connected === "true") {
-      return true;
+  const handleAction = (actionType: "approve" | "reject") => {
+    console.log(actionType);
+    if (actionType === "approve") {
+      // Add logic for approval which should be emititng the action
+      console.log("Approved");
+      closeModal();
+    } else {
+      // Add logic for rejection which should be emmiting the action
+      console.log("Rejected");
     }
-
-    return false;
+    setAction("none");
+    closeModal();
   };
-
-  const handleDisconnect = () => {
-    walletConnectManager
-      .close()
-      .then(() => {
-        sessionStorage.setItem("connected", "false");
-        setConnected(false);
-        setAlertMessage(t("browser.message.success.disconnect"));
-        setSuccessAlert(true);
-      })
-      .catch((error) => {
-        setConnected(false);
-        sessionStorage.setItem("connected", "false");
-        setAlertMessage("Error disconnecting ");
-        setErrorAlert(true);
-      });
-  };
-
-  React.useEffect(() => {
-    const connected = getConnectState();
-    setConnected(connected);
-
-    const unlistenConnected = listen("connected", (event) => {
-      setConnected(true);
-    });
-
-    const unlistenDisconnected = listen("disconnected", (event) => {
-      setConnected(false);
-    });
-
-    return () => {
-      unlistenConnected
-        .then((remove) => {
-          remove();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-
-      unlistenDisconnected
-        .then((remove) => {
-          remove();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    };
-  }, []);
 
   const handleWCR = async () => {
     await emit("wallet-connect-request", {});
@@ -161,9 +117,7 @@ function RequestModal() {
           }}
           type="submit"
           aria-label="approve"
-          onClick={() => {
-            connected ? handleDisconnect() : handleConnected();
-          }}
+          onClick={() => handleAction("approve")}
         >
           Approve
         </Button>
@@ -179,12 +133,13 @@ function RequestModal() {
           }}
           type="submit"
           aria-label="approve"
+          onClick={() => handleAction("reject")}
         >
           Reject
         </Button>
       </Box>
     </Box>
   );
-}
+};
 
 export default RequestModal;
