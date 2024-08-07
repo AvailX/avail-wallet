@@ -285,6 +285,7 @@ function Settings() {
       getLastSync()
         .then((res) => {
           setLastSync(res);
+          console.log("Last Synced Block Height: " + res);
         })
         .catch((error_) => {
           setMessage("Error getting last synced block height.");
