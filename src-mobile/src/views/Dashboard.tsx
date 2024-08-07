@@ -361,7 +361,7 @@ const Dashboard = () => {
       handleGetAssets();
       fetchEvents();
     }
-
+    console.log("in scannnnnnn");
     if (!scanInProgress && !transferState) {
       // Set Scanning state to true
       startScan();
@@ -370,6 +370,7 @@ const Dashboard = () => {
       // Syncs blocks in different thread
       scan_blocks(res.block_height, setErrorAlert, setMessage)
         .then(async (res) => {
+          console.log("Scan insideweeeewwew");
           setSuccessAlert(true);
           setMessage(t("home.messages.success.scan"));
           setScanProgressPercent(0);
@@ -401,70 +402,81 @@ const Dashboard = () => {
 
   console.log("handle");
   const handleScan = () => {
-    setReAuthDialogOpen(true);
+    // setReAuthDialogOpen(true);
     console.log("authDialog");
-    scan_messages()
-      .then(async (res) => {
-        console.log(res);
-        getNetworkStatus()
-          .then(async (status) => {
-            console.log(status)
-            setNetworkStatus(status);
-            if (status === NetworkStatus.Down) {
-              setNetworkDownDialog(true);
-            }
+    // scan_messages()
+    //   .then(async (res) => {
+    //     console.log(res);
+    //     getNetworkStatus()
+    //       .then(async (status) => {
+    //         console.log(status)
+    //         setNetworkStatus(status);
+    //         if (status === NetworkStatus.Down) {
+    //           setNetworkDownDialog(true);
+    //         }
 
-            console.log("Network status: " + status);
-          })
-          .catch(() => {
-            setMessage("Issue checking network status.");
-            setErrorAlert(true);
-          });
-        await handleBlockScan(res);
-      })
-      .catch(async (err) => {
-        const error = err as AvailError;
-        console.log(err);
-        console.log(error.error_type);
+    //         console.log("Network status: " + status);
+    //       })
+    //       .catch(() => {
+    //         setMessage("Issue checking network status.");
+    //         setErrorAlert(true);
+    //       });
+    //     await handleBlockScan(res);
+    //   })
+    //   .catch(async (err) => {
+    //     const error = err as AvailError;
+    //     console.log(err);
+    //     console.log(error.error_type);
 
-        if (error.error_type === AvailErrorType.Network) {
-          setMessage(t("home.messages.errors.network"));
-          setErrorAlert(true);
-          console.log("network ish");
-        } else if (
-          error.error_type.toString() === "Validation" ||
-          "Unauthorized"
-        ) {
-          // eslint-disable-next-line no-warning-comments
-          // TODO - Re-authenticate and fix execution on re-auth (Bala)
+    //     if (error.error_type === AvailErrorType.Network) {
+    //       setMessage(t("home.messages.errors.network"));
+    //       setErrorAlert(true);
+    //       console.log("network ish");
+    //     } else if (
+    //       error.error_type.toString() === "Validation" ||
+    //       "Unauthorized"
+    //     ) {
+    //       // eslint-disable-next-line no-warning-comments
+    //       // TODO - Re-authenticate and fix execution on re-auth (Bala)
 
-          // session_and_local_auth(password, navigate, setErrorAlert, setMessage, false).then(async () => {
-          //   setMessage('Successfully authenticated.');
-          //   setSuccess(true);
-          //   // Wait for 0.8 seconds and fire onRequestClose
-          //   await new Promise(r => setTimeout(r, 800));
-          //   onRequestClose();
+    //       // session_and_local_auth(password, navigate, setErrorAlert, setMessage, false).then(async () => {
+    //       //   setMessage('Successfully authenticated.');
+    //       //   setSuccess(true);
+    //       //   // Wait for 0.8 seconds and fire onRequestClose
+    //       //   await new Promise(r => setTimeout(r, 800));
+    //       //   onRequestClose();
 
-          //   if (onAuthSuccess !== undefined) {
-          //     await onAuthSuccess();
-          //   }
-          // }).catch(async e => {
-          //   console.log(e);
-          //   const error = e as AvailError;
-          //   setMessage('Failed to authenticate, please try again.');
-          //   setErrorAlert(true);
-          //   onRequestClose();
-          // });
-          
-          setReAuthDialogOpen(true);
-          console.log("now authorized");
-          // console.log("Unauthorized, re auth");
-        } else {
-          console.log(error.internal_msg);
-          setMessage(error.internal_msg);
-          setErrorAlert(true);
-        }
-      });
+    //       //   if (onAuthSuccess !== undefined) {
+    //       //     await onAuthSuccess();
+    //       //   }
+    //       // }).catch(async e => {
+    //       //   console.log(e);
+    //       //   const error = e as AvailError;
+    //       //   setMessage('Failed to authenticate, please try again.');
+    //       //   setErrorAlert(true);
+    //       //   onRequestClose();
+    //       // });
+
+    //       setReAuthDialogOpen(true);
+    //       console.log("now authorized");
+    //       // console.log("Unauthorized, re auth");
+    //     } else {
+    //       console.log(error.internal_msg);
+    //       setMessage(error.internal_msg);
+    //       setErrorAlert(true);
+    //     }
+    //   });
+    let test = async () => {
+      console.log("////////////test");
+      let res: TxScanResponse = {
+        txs: false,
+        block_height: 812000,
+      };
+      await handleBlockScan(res);
+    };
+    test().then(() => {
+      console.log("sssssdone");
+    });
   };
 
   //HandleTransferCheck

@@ -1,3 +1,4 @@
+use avail_common::service_clients::SESSION;
 use snarkvm::prelude::*;
 use tauri::Window;
 use uuid::Uuid;
@@ -13,13 +14,16 @@ use crate::{
     },
     helpers::utils::get_timestamp_from_i64_utc,
     models::{event::TxScanResponse, pointers::message::TransactionMessage},
-    services::local_storage::{
-        encrypted_data::{
-            get_encrypted_data_to_backup, get_encrypted_data_to_update,
-            update_encrypted_data_synced_on_by_id,
+    services::{
+        authentication::session::get_session,
+        local_storage::{
+            encrypted_data::{
+                get_encrypted_data_to_backup, get_encrypted_data_to_update,
+                update_encrypted_data_synced_on_by_id,
+            },
+            persistent_storage::get_address_string,
+            storage_api::records::{encrypt_and_store_records, update_records_spent_backup},
         },
-        persistent_storage::get_address_string,
-        storage_api::records::{encrypt_and_store_records, update_records_spent_backup},
     },
 };
 
@@ -66,7 +70,6 @@ fn process_transaction<N: Network>(
 #[tauri::command(rename_all = "snake_case")]
 pub async fn txs_sync() -> AvailResult<TxScanResponse> {
     let network = get_network()?;
-
     let transactions = match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => txs_sync_raw::<TestnetV0>().await?,
         _ => txs_sync_raw::<TestnetV0>().await?, //SupportedNetworks::Devnet => txs_sync_raw::<Devnet>().await?,
@@ -79,7 +82,11 @@ pub async fn txs_sync() -> AvailResult<TxScanResponse> {
 /// syncs transactions sent to user by another avail user
 pub async fn txs_sync_raw<N: Network>() -> AvailResult<TxScanResponse> {
     let api_client = setup_client::<N>()?;
-
+    // let session_get = get_session(Some("tylerDurden@0xf5".to_string()))
+    //     .await
+    //     .unwrap();
+    // println!("Session: {:?}", session_get);
+    // SESSION.set_session_token(session_get);
     let backup = get_backup_flag()?;
 
     let address = get_address::<N>()?;
