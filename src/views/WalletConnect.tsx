@@ -108,9 +108,9 @@ const BrowserView: React.FC = () => {
           }}
         />
         <Browser initialUrl={url} handleDappSelection={handleDappSelection} />
-        <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}>
-          <RequestModal closeModal={toggleDrawer(false)} />
-        </SwipeableEdgeDrawer>
+        {/* <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}>
+          <RequestModal closeModal={toggleDrawer(false)} request={} />
+        </SwipeableEdgeDrawer> */}
       </Box>
     </BrowserLayout>
   );

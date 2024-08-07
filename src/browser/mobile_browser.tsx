@@ -1,4 +1,4 @@
-import React, { type ReactEventHandler, useState } from "react";
+import React, { type ReactEventHandler, useState, useEffect } from "react";
 import { type WalletConnectRequest } from "../../src-desktop/services/wallet-connect/WCTypes";
 // Tauri tools
 import { emitTo, listen, emit } from "@tauri-apps/api/event";
@@ -83,6 +83,32 @@ const Browser: React.FC<BrowserProperties> = ({
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
   };
+
+  // useEffect(() => {
+  //   const unlisten = listen("wallet-connect-request", (event) => {
+  //     console.log("Event received:", event);
+  //     setOpen(true);
+  //   });
+
+  //   // Clean up the event listener
+  //   return () => {
+  //     unlisten.then((off) => off());
+  //   };
+  // }, []);
+
+  const [request, setRequest] = useState(null);
+
+  useEffect(() => {
+    const unlisten = listen("wallet-connect-request", (data) => {
+      console.log("wallet-connect-request", data);
+      setRequest(data.payload);
+      setOpen(true);
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
 
   const handleConnected = () => {
     //to open the dialogue on connect
@@ -380,7 +406,7 @@ const Browser: React.FC<BrowserProperties> = ({
         )}
       </Box>
       <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}>
-        <RequestModal closeModal={toggleDrawer(false)} />
+        <RequestModal closeModal={toggleDrawer(false)} request={request}/>
       </SwipeableEdgeDrawer>
     </Box>
   );

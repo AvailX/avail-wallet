@@ -154,13 +154,14 @@ export class WalletConnectManager {
 
       /* Approve/Reject Connection window -- START */
       // Open the new window
-      const webview = new WebviewWindow("wallet-connect", {
-        url: "wallet-connect-screens/wallet-connect.html",
-        title: "Avail Wallet Connect",
-        width: 350,
-        height: 600,
-        resizable: false,
-      });
+
+      // const webview = new WebviewWindow("wallet-connect", {
+      //   url: "wallet-connect-screens/wallet-connect.html",
+      //   title: "Avail Wallet Connect",
+      //   width: 350,
+      //   height: 600,
+      //   resizable: false,
+      // });
 
       const wcRequest: WalletConnectRequest = {
         method: "connect",
@@ -173,21 +174,21 @@ export class WalletConnectManager {
         dappImage: metadata.icons[0],
       };
 
-      await webview.once("tauri://created", () => {
-        console.log("Window created");
+      // await webview.once("tauri://created", () => {
+      //   console.log("Window created");
 
-        console.log("Webview ", webview);
+      //   console.log("Webview ", webview);
 
-        setTimeout(async () => {
-          await emit("wallet-connect-request", wcRequest);
-          console.log("Emitting wallet-connect-request");
-        }, 3000);
-      });
+      //   setTimeout(async () => {
+      //     await emit("wallet-connect-request", wcRequest);
+      //     console.log("Emitting wallet-connect-request");
+      //   }, 3000);
+      // });
 
       const { aleoWallet, theWallet } = this;
 
       await once("connect-approved", async (response) => {
-        await webview.close();
+        // await webview.close();
         console.log("Wallet connect was approved", response);
 
         SessionInfo.show(proposal, [aleoWallet.chainName()]);
@@ -247,7 +248,7 @@ export class WalletConnectManager {
       await once("connect-rejected", async (response) => {
         // Handle the rejection logic here
         console.log("Wallet connect was rejected", response);
-        await webview.close();
+        // await webview.close();
         throw new Error("User Rejected");
       });
 

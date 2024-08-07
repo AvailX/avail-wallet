@@ -1,4 +1,4 @@
-const {emit, listen} = window.__TAURI__.event;
+const { emit, listen } = window.__TAURI__.event;
 
 let request;
 let feeOption = false; // State for the fee option
@@ -21,9 +21,9 @@ document.querySelector('.btn.approve').addEventListener('click', async () => {
 	console.log(eventName);
 	if (request.method === 'create-request-event') {
 		console.log('emitting!');
-		await emit(eventName, {message: request.approveResponse, feeOption});
+		await emit(eventName, { message: request.approveResponse, feeOption });
 	} else {
-		await emit(eventName, {message: request.approveResponse});
+		await emit(eventName, { message: request.approveResponse });
 	}
 
 	console.log('approve clicked');
@@ -32,7 +32,7 @@ document.querySelector('.btn.approve').addEventListener('click', async () => {
 document.querySelector('.btn.reject').addEventListener('click', async () => {
 	const eventName = request.method + '-rejected';
 	console.log(eventName);
-	await emit(eventName, {message: request.rejectResponse});
+	await emit(eventName, { message: request.rejectResponse });
 	console.log('reject clicked');
 });
 

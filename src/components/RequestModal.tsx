@@ -1,4 +1,4 @@
-import React, { type ReactEventHandler, useState } from "react";
+import React, { type ReactEventHandler, useState, useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import modallogo from "../assets/modal-logo.png";
 import splashImg from "../assets/green-splash.svg";
@@ -14,9 +14,10 @@ import { useNavigate } from "react-router-dom";
 
 type RequestModalProps = {
   closeModal: () => void;
+  request: any;
 };
 
-const RequestModal: React.FC<RequestModalProps> = ({ closeModal }) => {
+const RequestModal: React.FC<RequestModalProps> = ({ closeModal, request }) => {
   var DappName = "DappName";
 
   const [wcUrl, setWcUrl] = useState<string>("");
@@ -38,23 +39,45 @@ const RequestModal: React.FC<RequestModalProps> = ({ closeModal }) => {
   // handling the state changes for the modal window
   const [action, setAction] = useState<"none" | "approve" | "reject">("none");
 
-  const handleAction = (actionType: "approve" | "reject") => {
-    console.log(actionType);
-    if (actionType === "approve") {
-      // Add logic for approval which should be emititng the action
-      console.log("Approved");
-      closeModal();
-    } else {
-      // Add logic for rejection which should be emmiting the action
-      console.log("Rejected");
+  // const handleAction = (actionType: "approve" | "reject") => {
+  //   console.log(actionType);
+  //   if (actionType === "approve") {
+  //     // Add logic for approval which should be emititng the action
+  //     console.log("Approved");
+  //     // closeModal();
+  //   } else {
+  //     // Add logic for rejection which should be emmiting the action
+  //     console.log("Rejected");
+  //   }
+  //   setAction("none");
+  //   // closeModal();
+  // };
+
+  // const handleWCR = async () => {
+  //   await emit("wallet-connect-request", {});
+  //   console.log("Emitting wallet-connect-request");
+  // };
+
+  const [feeOption, setFeeOption] = useState(false);
+
+  useEffect(() => {
+  }, [request]);
+
+  const handleApprove = async () => {
+    const eventName = request.method + "-approved";
+    const payload = { message: request.approveResponse };
+    if (request.method === "create-request-event") {
+      // payload["feeOption"] = feeOption;
+      console.log("Approve");
     }
-    setAction("none");
+    await emit(eventName, payload);
     closeModal();
   };
 
-  const handleWCR = async () => {
-    await emit("wallet-connect-request", {});
-    console.log("Emitting wallet-connect-request");
+  const handleReject = async () => {
+    const eventName = request.method + "-rejected";
+    await emit(eventName, { message: request.rejectResponse });
+    closeModal();
   };
 
   return (
@@ -117,7 +140,7 @@ const RequestModal: React.FC<RequestModalProps> = ({ closeModal }) => {
           }}
           type="submit"
           aria-label="approve"
-          onClick={() => handleAction("approve")}
+          onClick={handleApprove}
         >
           Approve
         </Button>
@@ -133,7 +156,7 @@ const RequestModal: React.FC<RequestModalProps> = ({ closeModal }) => {
           }}
           type="submit"
           aria-label="approve"
-          onClick={() => handleAction("reject")}
+          onClick={handleReject}
         >
           Reject
         </Button>
