@@ -17,6 +17,7 @@ pub fn ios_auth(password: Option<&str>, key_type: &str) -> AvailResult<()> {
 
     let key = match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => search::<TestnetV0>(password, key_type)?,
+        SupportedNetworks::Mainnet => search::<MainnetV0>(password, key_type)?,
         _ => search::<TestnetV0>(password, key_type)?,
     };
 

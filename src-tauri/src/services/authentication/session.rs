@@ -25,11 +25,20 @@ pub async fn get_session(password: Option<String>) -> AvailResult<String> {
 
     let network = get_network()?;
 
-    let (sig, _) = match SupportedNetworks::from_str(&network)? {
+    let sig = match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => {
-            sign_message::<TestnetV0>(&session_request.hash, password.clone())?
+            let (sig, _) = sign_message::<TestnetV0>(&session_request.hash, password.clone())?;
+            sig.to_string()
         }
-        _ => sign_message::<TestnetV0>(&session_request.hash, password.clone())?,
+        SupportedNetworks::Mainnet => {
+            let (sig, _) = sign_message::<MainnetV0>(&session_request.hash, password.clone())?;
+            sig.to_string()
+        }
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,
     };
 
     let verify_request = server_auth::VerifySessionRequest {
@@ -220,9 +229,20 @@ pub fn sign_hash(
 ) -> AvailResult<VerifySessionRequest> {
     let network = get_network()?;
 
-    let (sig, _) = match SupportedNetworks::from_str(&network)? {
-        SupportedNetworks::Testnet => sign_message::<TestnetV0>(&request.hash, password)?,
-        _ => sign_message::<TestnetV0>(&request.hash, password)?,
+    let sig = match SupportedNetworks::from_str(&network)? {
+        SupportedNetworks::Testnet => {
+            let (sig, _) = sign_message::<TestnetV0>(&request.hash, password)?;
+            sig.to_string()
+        }
+        SupportedNetworks::Mainnet => {
+            let (sig, _) = sign_message::<MainnetV0>(&request.hash, password)?;
+            sig.to_string()
+        }
+        _ => Err(AvailError::new(
+            AvailErrorType::Internal,
+            "Unsupported network".to_string(),
+            "Unsupported network".to_string(),
+        ))?,
     };
 
     let verify_request = server_auth::VerifySessionRequest {

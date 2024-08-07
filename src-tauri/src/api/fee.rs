@@ -119,6 +119,7 @@ mod tests {
         constants::{TESTNET3_ADDRESS, TESTNET3_PRIVATE_KEY},
         network::SupportedNetworks,
     };
+    // use snarkvm::prelude::MainnetV0;
     use snarkvm::{
         circuit::AleoTestnetV0,
         prelude::{Address, Execution, PrivateKey, TestnetV0},
@@ -146,6 +147,25 @@ mod tests {
 
         println!("{:?}", result);
     }
+
+    // #[tokio::test]
+    // async fn test_mainnet_create_record() {
+    //     let new_exec: Execution<MainnetV0> = get_execution_object().await.unwrap();
+    //     let exec_obj: Vec<u8> = FeeRequest::to_bytes_execution_object::<MainnetV0>(new_exec)
+    //         .await
+    //         .unwrap();
+    //     // println!("{:?}", exec_obj);
+    //     let req: FeeRequest = FeeRequest::new(
+    //         exec_obj,
+    //         "mainnet_testing.aleo".to_string(),
+    //         "mainnet_testing_7".to_string(),
+    //         SupportedNetworks::Mainnet,
+    //     );
+    //     println!("Sending req....");
+    //     let result: String = create_record(req).await.unwrap();
+
+    //     println!("{:?}", result);
+    // }
 
     #[tokio::test]
     async fn test_fetch_fee_record() {

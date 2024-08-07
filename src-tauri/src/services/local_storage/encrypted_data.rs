@@ -3,7 +3,7 @@ use std::str::FromStr;
 use avail_common::models::encrypted_data::Data;
 use chrono::{DateTime, Utc};
 use rusqlite::{params_from_iter, ToSql};
-use snarkvm::prelude::{Network, TestnetV0};
+use snarkvm::prelude::{MainnetV0, Network, TestnetV0};
 
 use crate::models;
 use crate::models::pointers::record;
@@ -629,9 +629,16 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
                     encrypted_record_pointer,
                 )?
             }
-            _ => AvailRecord::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
-                encrypted_record_pointer,
-            )?,
+            SupportedNetworks::Mainnet => {
+                AvailRecord::<MainnetV0>::to_encrypted_data_from_record_after_recovery(
+                    encrypted_record_pointer,
+                )?
+            }
+            _ => Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Unsupported network".to_string(),
+                "Unsupported network".to_string(),
+            ))?,
         };
         let e_data = e_r.clone();
         store_encrypted_data(e_r)?;
@@ -646,9 +653,16 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
                     encrypted_transaction,
                 )?
             }
-            _ => TransactionPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
-                encrypted_transaction,
-            )?,
+            SupportedNetworks::Mainnet => {
+                TransactionPointer::<MainnetV0>::to_encrypted_data_from_record_after_recovery(
+                    encrypted_transaction,
+                )?
+            }
+            _ => Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Unsupported network".to_string(),
+                "Unsupported network".to_string(),
+            ))?,
         };
         store_encrypted_data(e_t)?;
     }
@@ -660,9 +674,16 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
                     encrypted_deployment,
                 )?
             }
-            _ => DeploymentPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
-                encrypted_deployment,
-            )?,
+            SupportedNetworks::Mainnet => {
+                DeploymentPointer::<MainnetV0>::to_encrypted_data_from_record_after_recovery(
+                    encrypted_deployment,
+                )?
+            }
+            _ => Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Unsupported network".to_string(),
+                "Unsupported network".to_string(),
+            ))?,
         };
         store_encrypted_data(e_t)?;
     }
@@ -674,9 +695,16 @@ pub async fn get_and_store_all_data() -> AvailResult<Data> {
                     encrypted_transition,
                 )?
             }
-            _ => TransitionPointer::<TestnetV0>::to_encrypted_data_from_record_after_recovery(
-                encrypted_transition,
-            )?,
+            SupportedNetworks::Mainnet => {
+                TransitionPointer::<MainnetV0>::to_encrypted_data_from_record_after_recovery(
+                    encrypted_transition,
+                )?
+            }
+            _ => Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Unsupported network".to_string(),
+                "Unsupported network".to_string(),
+            ))?,
         };
         store_encrypted_data(e_t)?;
     }
@@ -711,7 +739,14 @@ pub fn process_private_tokens(data: Data) -> AvailResult<()> {
             SupportedNetworks::Testnet => {
                 AvailRecord::<TestnetV0>::to_encrypted_data_from_record(encrypted_record_pointer)?
             }
-            _ => AvailRecord::<TestnetV0>::to_encrypted_data_from_record(encrypted_record_pointer)?,
+            SupportedNetworks::Mainnet => {
+                AvailRecord::<MainnetV0>::to_encrypted_data_from_record(encrypted_record_pointer)?
+            }
+            _ => Err(AvailError::new(
+                AvailErrorType::Internal,
+                "Unsupported network".to_string(),
+                "Unsupported network".to_string(),
+            ))?,
         };
         aggregate_private_tokens(e_data)?;
         // check if the e_r.record_type is a token and store the token

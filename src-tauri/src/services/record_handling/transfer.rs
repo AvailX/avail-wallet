@@ -47,6 +47,10 @@ pub async fn transfer(request: TransferRequest, window: Window) -> AvailResult<S
             tokio::task::spawn_blocking(move || transfer_raw::<TestnetV0>(request, Some(window)))
                 .await?
         }
+        // SupportedNetworks::Mainnet => {
+        //     tokio::task::spawn_blocking(move || transfer_raw::<TestnetV0>(request, Some(window)))
+        //         .await?
+        // }
         _ => {
             tokio::task::spawn_blocking(move || transfer_raw::<TestnetV0>(request, Some(window)))
                 .await?

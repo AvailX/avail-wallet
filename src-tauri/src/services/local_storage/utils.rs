@@ -13,7 +13,7 @@ use crate::services::local_storage::{
 };
 use avail_common::models::constants::VIEW_KEY;
 use snarkvm::prelude::{
-    Ciphertext, Field, Identifier, Network, PrivateKey, Signature, TestnetV0, ViewKey,
+    Ciphertext, Field, Identifier, MainnetV0, Network, PrivateKey, Signature, TestnetV0, ViewKey
 };
 
 use crate::services::account::key_management::key_controller::{
@@ -34,6 +34,10 @@ pub fn get_private_key_tauri(password: Option<String>) -> AvailResult<String> {
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => {
             let key = get_private_key::<TestnetV0>(password)?;
+            Ok(key.to_string())
+        }
+        SupportedNetworks::Mainnet => {
+            let key: PrivateKey<MainnetV0> = get_private_key::<MainnetV0>(password)?;
             Ok(key.to_string())
         }
         _ => Err(AvailError::new(
@@ -115,6 +119,37 @@ pub fn get_seed_phrase(password: Option<String>) -> AvailResult<String> {
 
             Ok(seed_phrase)
         }
+        SupportedNetworks::Mainnet => {
+            let key_manager = {
+                #[cfg(target_os = "macos")]
+                {
+                    macKeyController
+                }
+                #[cfg(target_os = "windows")]
+                {
+                    windowsKeyController
+                }
+                #[cfg(target_os = "linux")]
+                {
+                    linuxKeyController
+                }
+            };
+
+            let val: Identifier<MainnetV0> = Identifier::<MainnetV0>::from_str("test")?;
+
+            let seed_phrase = match password {
+                Some(password) => key_manager.read_phrase(&password, val),
+                None => {
+                    return Err(AvailError::new(
+                        AvailErrorType::Internal,
+                        "Password is required.".to_string(),
+                        "Password is required.".to_string(),
+                    ))
+                }
+            }?;
+
+            Ok(seed_phrase)
+        }
     }
 }
 
@@ -126,6 +161,12 @@ pub fn get_view_key_tauri(password: Option<String>) -> AvailResult<String> {
     match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => {
             let key = get_view_key::<TestnetV0>(password)?;
+            VIEWSESSION.set_view_session(&key.to_string())?;
+
+            Ok(key.to_string())
+        }
+        SupportedNetworks::Mainnet => {
+            let key: ViewKey<MainnetV0> = get_view_key::<MainnetV0>(password)?;
             VIEWSESSION.set_view_session(&key.to_string())?;
 
             Ok(key.to_string())
