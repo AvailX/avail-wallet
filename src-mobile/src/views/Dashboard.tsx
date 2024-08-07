@@ -1,6 +1,5 @@
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
-import AssestCard from "../components/AssestCard";
 import DashboardHeader from "../components/DashboardHeader";
 import ScanReAuthDialog from "../../../src/components/dialogs/scan_reauth";
 import Receive from "../../../src/components/dialogs/receive";
@@ -38,7 +37,6 @@ import AsssetDisplay from "../components/AsssetDisplay";
 import DashboardCarousel from "../components/DashboardCarousel";
 import { getName } from "../services/states/util";
 import { getAddress } from "../services/states/util";
-import { AirdropNft } from "../components/Nft";
 
 // Services
 import { get_nfts } from "../services/nfts/fetch";
@@ -54,6 +52,7 @@ import {
   type WhitelistResponse,
   type Collection,
   testCollection,
+  PointsResponse,
 } from "../types/quests/quest_types";
 import { AvailErrorType, type AvailError } from "../types/errors";
 
@@ -85,21 +84,14 @@ import { scan_blocks } from "../../../src/services/scans/blocks";
 import { getAuth } from "../../../src/services/states/utils";
 
 // Scan Imports
-import { os } from "../../../src/services/util/open";
 import { preInstallInclusionProver } from "../../../src/services/transfer/inclusion";
 import { sync_backup } from "../../../src/services/scans/backup";
 import { scan_messages } from "../services/scans/encrypted_messages";
 import { getNetworkStatus } from "../../../src/services/util/network";
-import { updateData } from "../../../src/services/util/migrate_data";
 import {
   NetworkStatus,
   switchToObscura,
 } from "../../../src/services/util/network";
-import {
-  delete_util,
-  session_and_local_auth,
-} from "../../../src/services/authentication/auth";
-import ReAuthDialog from "components/dialogs/reauth";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -597,24 +589,6 @@ const Dashboard = () => {
 
   return (
     <>
-      {/* <ScanReAuthDialog
-        isOpen={open}
-        onRequestClose={() => {
-          setOpen(false);
-        }}
-      />
-      <SuccessAlert
-        successAlert={success}
-        setSuccessAlert={setSuccessAlert}
-        message={message}
-      />
-      <ErrorAlert
-        errorAlert={errorAlert}
-        setErrorAlert={setErrorAlert}
-        message={message}
-      />
-       */}
-      {/* <ReAuthDialog /> */}
       <ErrorAlert
         errorAlert={errorAlert}
         setErrorAlert={setErrorAlert}
