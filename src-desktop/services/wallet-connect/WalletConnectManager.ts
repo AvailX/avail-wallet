@@ -27,49 +27,13 @@ import { SessionInfo } from "./SessionInfo";
 import { dappSession, type WalletConnectRequest } from "./WCTypes";
 
 type PingEventData = Omit<SignClientTypes.BaseEventArgs, "params">;
-// interface WalletConnectDialogProps {
-//   onApprove: (response: any) => void;
-//   onReject: (response: any) => void;
-//   approveEventString: string;
-//   rejectEventString: string;
-//   wcRequest: WalletConnectRequest;
-// }
-
-// const useWalletConnectDialog = ({
-//   onApprove,
-//   onReject,
-//   approveEventString,
-//   rejectEventString,
-//   wcRequest,
-// }: WalletConnectDialogProps) => {
-//   const [open, setOpen] = useState(false);
-//   useEffect(() => {
-//     const registerEventListeners = async () => {
-//       try {
-//         // Register approve listener
-//         await once(approveEventString, async (response) => {
-//           console.log("Approve listener triggered");
-//           await onApprove(response);
-//           setOpen(false); // Close the modal on approval
-//         });
-//         console.log("Approve listener registered");
-//         // Register reject listener
-//         await once(rejectEventString, async (response) => {
-//           console.log("Reject listener triggered");
-//           await onReject(response);
-//           setOpen(false); // Close the modal on rejection
-//         });
-//         console.log("Reject listener registered");
-//       } catch (error) {
-//         console.error("Error registering event listeners", error);
-//       }
-//     };
-//     registerEventListeners();
-//   }, [onApprove, onReject, approveEventString, rejectEventString]);
-//   return [open, setOpen, wcRequest];
-// };
+/**
+ * Get the window object from the window list
+ * @param windowLabel - The window label
+ * @returns The WebviewWindow object
+ */
 function getWindow(windowLabel: string): WebviewWindow | undefined {
-	return getAll().find(win => win.label === windowLabel);
+  return getAll().find((win) => win.label === windowLabel);
 }
 function getWindowOrCreate(
   windowLabel: string,
@@ -81,6 +45,22 @@ function getWindowOrCreate(
   }
 
   return new WebviewWindow(windowLabel, options);
+}
+function emitAfterSeconds(
+	window: WebviewWindow,
+	event: string,
+	payload: any,
+	seconds: number,
+) {
+	setTimeout(async () => {
+		await window.emit(event, payload);
+	}, seconds * 1000);
+}
+function storeSession(unique_request_id: string) {
+  const expiry = new Date();
+  expiry.setHours(expiry.getHours() + 1);
+
+  sessionStorage.setItem(unique_request_id, expiry.toISOString());
 }
 export async function createWalletConnectDialog(
   dialogConfig: {
@@ -292,7 +272,6 @@ export class WalletConnectManager {
       // Open the new window
       // HERE IS WHERE THE MODAL SHOULD BE CALLED @kalio
 
- 
       const webview = new WebviewWindow("wallet-connect", {
         url: "wallet-connect-screens/wallet-connect.html",
         title: "Avail Wallet Connect",
@@ -316,16 +295,16 @@ export class WalletConnectManager {
         {
           onApprove: action,
           onReject: async () =>
-            formatJsonRpcError(requestEvent.id, 'User rejected signature'),
-          approveEventString: 'sign-approved',
-          rejectEventString: 'sign-rejected',
+            formatJsonRpcError(requestEvent.id, "User rejected signature"),
+          approveEventString: "sign-approved",
+          rejectEventString: "sign-rejected",
           requestType: AleoMethod.ALEO_SIGN,
-          requestIdentifier: 'sign' + (metadata?.name ?? ''),
+          requestIdentifier: "sign" + (metadata?.name ?? ""),
           requestEvent,
         },
-        wcRequest,
+        wcRequest
       );
-      
+
       await webview.once("tauri://created", () => {
         console.log("Window created");
 

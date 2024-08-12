@@ -22,7 +22,7 @@ function checkWindow(reference: string) {
  * @returns The WebviewWindow object
  */
 function getWindow(windowLabel: string): WebviewWindow | undefined {
-	return getAll().find(win => win.label === windowLabel);
+  return getAll().find((win) => win.label === windowLabel);
 }
 /**
  * Get the window object from the window list or create a new one if it doesn't exist
@@ -31,16 +31,15 @@ function getWindow(windowLabel: string): WebviewWindow | undefined {
  * @returns The WebviewWindow object
  */
 function getWindowOrCreate(
-	windowLabel: string,
-	options?: Omit<WebviewOptions, 'x' | 'y' | 'width' | 'height'> &
-	WindowOptions,
+  windowLabel: string,
+  options?: Omit<WebviewOptions, "x" | "y" | "width" | "height"> & WindowOptions
 ): WebviewWindow {
-	const window = getWindow(windowLabel);
-	if (window) {
-		return window;
-	}
+  const window = getWindow(windowLabel);
+  if (window) {
+    return window;
+  }
 
-	return new WebviewWindow(windowLabel, options);
+  return new WebviewWindow(windowLabel, options);
 }
 /**
  * Emit an event after a number of seconds
@@ -50,14 +49,14 @@ function getWindowOrCreate(
  * @param seconds The number of seconds to wait before emitting the event
  */
 function emitAfterSeconds(
-	window: WebviewWindow,
-	event: string,
-	payload: any,
-	seconds: number,
+  window: WebviewWindow,
+  event: string,
+  payload: any,
+  seconds: number
 ) {
-	setTimeout(async () => {
-		await window.emit(event, payload);
-	}, seconds * 1000);
+  setTimeout(async () => {
+    await window.emit(event, payload);
+  }, seconds * 1000);
 }
 /**
  * Get the DApp session metadata from the session storage
@@ -66,13 +65,13 @@ function emitAfterSeconds(
  */
 
 //cahnge the dapp section to response to Aleo
-function getDappMetadata(session_topic: string): DAppSession | undefined {
-	const dappSessionString = sessionStorage.getItem(session_topic);
+// function getDappMetadata(session_topic: string): DAppSession | undefined {
+// 	const dappSessionString = sessionStorage.getItem(session_topic);
 
-	if (dappSessionString) {
-		const dappSession: DAppSession = JSON.parse(
-			dappSessionString,
-		) as DAppSession;
-		return dappSession;
-	}
-}
+// 	if (dappSessionString) {
+// 		const dappSession: DAppSession = JSON.parse(
+// 			dappSessionString,
+// 		) as DAppSession;
+// 		return dappSession;
+// 	}
+// }
