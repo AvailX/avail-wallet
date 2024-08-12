@@ -20,7 +20,7 @@ pub fn android_auth(password: Option<&str>, _key_type: &str) -> AvailResult<()> 
 
     let result = match SupportedNetworks::from_str(&network)? {
         SupportedNetworks::Testnet => keystore_load::<TestnetV0>(password, "avl-v")?,
-        SupportedNetworks::Mainnet => keystore_load::<MainnetV0>(password, "avl-v")?
+        SupportedNetworks::Mainnet => keystore_load::<MainnetV0>(password, "avl-v")?,
     };
 
     let view_key_bytes = match result {

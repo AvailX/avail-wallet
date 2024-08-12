@@ -4,7 +4,9 @@ use snarkvm::circuit::Aleo;
 use snarkvm::console::network::TestnetV0;
 use snarkvm::ledger::transactions::ConfirmedTransaction;
 use snarkvm::prelude::{
-    Address, Ciphertext, Entry, Execution, Field, GraphKey, Identifier, Itertools, Literal, MainnetV0, Network, Output, Plaintext, ProgramID, Record, RecordType, Transaction, Transition, Value, ViewKey
+    Address, Ciphertext, Entry, Execution, Field, GraphKey, Identifier, Itertools, Literal,
+    MainnetV0, Network, Output, Plaintext, ProgramID, Record, RecordType, Transaction, Transition,
+    Value, ViewKey,
 };
 use snarkvm::synthesizer::program::{Command, Instruction, ProgramCore};
 use snarkvm::utilities::ToBits;

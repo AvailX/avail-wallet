@@ -109,7 +109,7 @@ pub fn decrypt_deployments<N: Network>(
     let deployments = encrypted_deployments
         .iter()
         .map(|x| {
-            let encrypted_data =  x.to_enrypted_struct::<N>()?;
+            let encrypted_data = x.to_enrypted_struct::<N>()?;
             let deployment: DeploymentPointer<N> = encrypted_data.decrypt(v_key)?;
 
             Ok(deployment)

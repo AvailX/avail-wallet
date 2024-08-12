@@ -83,7 +83,7 @@ pub fn get_balance(request: BalanceRequest) -> AvailResult<BalanceResponse> {
             AvailErrorType::Internal,
             "Unsupported network".to_string(),
             "Unsupported network".to_string(),
-        ))?,//SupportedNetworks::Mainnet => get_aleo_balance::<Mainnet>()?,
+        ))?, //SupportedNetworks::Mainnet => get_aleo_balance::<Mainnet>()?,
     };
 
     Ok(BalanceResponse::new(vec![balance], None))
@@ -461,7 +461,7 @@ pub async fn get_records(request: GetRecordsRequest) -> AvailResult<GetRecordsRe
                 None,
                 Some(error.external_msg),
             )),
-        }
+        },
         _ => Err(AvailError::new(
             AvailErrorType::Internal,
             "Unsupported network".to_string(),

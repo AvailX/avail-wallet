@@ -13,7 +13,7 @@ use crate::services::local_storage::{
 };
 use avail_common::models::constants::VIEW_KEY;
 use snarkvm::prelude::{
-    Ciphertext, Field, Identifier, MainnetV0, Network, PrivateKey, Signature, TestnetV0, ViewKey
+    Ciphertext, Field, Identifier, MainnetV0, Network, PrivateKey, Signature, TestnetV0, ViewKey,
 };
 
 use crate::services::account::key_management::key_controller::{
