@@ -97,18 +97,24 @@ const Browser: React.FC<BrowserProperties> = ({
   // }, []);
 
   const [request, setRequest] = useState(null);
+  // const unlisten = await listen('download-started', (event) => {});
+  // unlisten();
 
-  useEffect(() => {
-    const unlisten = listen("wallet-connect-request", (data) => {
-      console.log("wallet-connect-request", data);
-      setRequest(data.payload);
-      setOpen(true);
-    });
+  const listentoevent = () => {
+    useEffect(() => {
+      const unlisten = listen("wallet-connect-request", (data) => {
+        console.log("wallet-connect-request", data);
+        // setRequest(data.payload);
+        setOpen(true);
+      });
 
-    return () => {
-      unlisten.then((fn) => fn());
-    };
-  }, []);
+      return () => {
+        unlisten.then((fn) => fn());
+      };
+    }, []);
+    return <p>I am listening</p>;
+  };
+  listentoevent();
 
   const handleConnected = () => {
     //to open the dialogue on connect
@@ -406,7 +412,7 @@ const Browser: React.FC<BrowserProperties> = ({
         )}
       </Box>
       <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}>
-        <RequestModal closeModal={toggleDrawer(false)} request={request}/>
+        <RequestModal closeModal={toggleDrawer(false)} request={request} />
       </SwipeableEdgeDrawer>
     </Box>
   );
