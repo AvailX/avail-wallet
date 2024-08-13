@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-promise-reject-errors */
+import WalletConnectDialog from './modal';
+import React, { useState } from 'react';
 import {invoke} from '@tauri-apps/api/core';
 import {once, type Event, emit} from '@tauri-apps/api/event';
 import {type WebviewOptions} from '@tauri-apps/api/webview';
@@ -149,77 +151,123 @@ function checkNotExpired(unique_request_id: string) {
 	return false;
 }
 
+// export async function createWalletConnectDialog(
+// 	dialogConfig: {
+// 		onApprove: (response: Event<unknown>, webview: WebviewWindow) => Promise<JsonRpcResult | JsonRpcError | void>;
+// 		onReject: (response: Event<unknown>) => Promise<JsonRpcResult | JsonRpcError | void>;
+// 		approveEventString: string;
+// 		rejectEventString: string;
+// 		requestType: AleoMethod;
+// 		requestIdentifier: string;
+// 		requestEvent?: Web3WalletTypes.SessionRequest;
+// 	},
+// 	wcRequest: WalletConnectRequest,
+// ): Promise<JsonRpcResult | JsonRpcError> {
+// 	return new Promise((resolve, reject) => {
+// 		const webview = getWindowOrCreate('wallet-connect', {
+// 			url: 'wallet-connect-screens/wallet-connect.html',
+// 			title: 'Avail Wallet Connect',
+// 			width: 390,
+// 			height: 680,
+// 			resizable: false,
+// 		});
+
+// 		emitAfterSeconds(webview, 'wallet-connect-request', wcRequest, 3);
+
+// 		// Register approve listener
+// 		once(dialogConfig.approveEventString, async response => {
+// 			storeSession(dialogConfig.requestIdentifier);
+// 			console.log('Approve listener triggered');
+// 			dialogConfig
+// 				.onApprove(response, webview)
+// 				.then(async response => {
+// 					await webview.destroy();
+
+// 					if (response !== undefined) {
+// 						resolve(response);
+// 						console.log('Approve listener resolved');
+// 					}
+// 				})
+// 				.catch(response => {
+// 					reject(response);
+// 				});
+// 		})
+// 			.then(() => {
+// 				console.log('Approve listener registered');
+// 			})
+// 			.catch((error: any) => {
+// 				console.error(error);
+// 			});
+
+// 		// Register reject listener
+// 		once(dialogConfig.rejectEventString, async response => {
+// 			await webview.destroy();
+// 			dialogConfig
+// 				.onReject(response)
+// 				.then(response => {
+// 					if (response !== undefined) {
+// 						resolve(response);
+// 					}
+// 				})
+// 				.catch(response => {
+// 					reject(response);
+// 				});
+// 		})
+// 			.then(() => {
+// 				console.log('Reject listener registered');
+// 			})
+// 			.catch((error: any) => {
+// 				console.error(error);
+// 			});
+// 	});
+// }
 export async function createWalletConnectDialog(
-	dialogConfig: {
-		onApprove: (response: Event<unknown>, webview: WebviewWindow) => Promise<JsonRpcResult | JsonRpcError | void>;
-		onReject: (response: Event<unknown>) => Promise<JsonRpcResult | JsonRpcError | void>;
-		approveEventString: string;
-		rejectEventString: string;
-		requestType: AleoMethod;
-		requestIdentifier: string;
-		requestEvent?: Web3WalletTypes.SessionRequest;
-	},
-	wcRequest: WalletConnectRequest,
+    dialogConfig: {
+        onApprove: () => Promise<JsonRpcResult | JsonRpcError>;
+        onReject: () => Promise<JsonRpcResult | JsonRpcError>;
+        approveEventString: string;
+        rejectEventString: string;
+        requestType: AleoMethod;
+        requestIdentifier: string;
+        requestEvent?: Web3WalletTypes.SessionRequest;
+    },
+    wcRequest: WalletConnectRequest,
+	// renderDialog: (dialog: React.ReactNode) => void
 ): Promise<JsonRpcResult | JsonRpcError> {
-	return new Promise((resolve, reject) => {
-		const webview = getWindowOrCreate('wallet-connect', {
-			url: 'wallet-connect-screens/wallet-connect.html',
-			title: 'Avail Wallet Connect',
-			width: 390,
-			height: 680,
-			resizable: false,
-		});
+    return new Promise((resolve, reject) => {
+        const [open, setOpen] = useState(true);
 
-		emitAfterSeconds(webview, 'wallet-connect-request', wcRequest, 3);
+        const handleClose = () => setOpen(false);
+		// const handleClose = () => renderDialog(null);
+        const handleApprove = async () => {
+            try {
+                const response = await dialogConfig.onApprove();
+                resolve(response);
+            } catch (error) {
+                reject(error);
+            }
+        };
 
-		// Register approve listener
-		once(dialogConfig.approveEventString, async response => {
-			storeSession(dialogConfig.requestIdentifier);
-			console.log('Approve listener triggered');
-			dialogConfig
-				.onApprove(response, webview)
-				.then(async response => {
-					await webview.destroy();
+        const handleReject = async () => {
+            try {
+                const response = await dialogConfig.onReject();
+                resolve(response);
+            } catch (error) {
+                reject(error);
+            }
+        };
 
-					if (response !== undefined) {
-						resolve(response);
-						console.log('Approve listener resolved');
-					}
-				})
-				.catch(response => {
-					reject(response);
-				});
-		})
-			.then(() => {
-				console.log('Approve listener registered');
-			})
-			.catch((error: any) => {
-				console.error(error);
-			});
-
-		// Register reject listener
-		once(dialogConfig.rejectEventString, async response => {
-			await webview.destroy();
-			dialogConfig
-				.onReject(response)
-				.then(response => {
-					if (response !== undefined) {
-						resolve(response);
-					}
-				})
-				.catch(response => {
-					reject(response);
-				});
-		})
-			.then(() => {
-				console.log('Reject listener registered');
-			})
-			.catch((error: any) => {
-				console.error(error);
-			});
-	});
+        return (
+            <WalletConnectDialog
+                open={open}
+                onClose={handleClose}
+                onApprove={handleApprove}
+                onReject={handleReject}
+                wcRequest={wcRequest}
+            />
+        );
+    });
 }
-
 export class AleoWallet {
 	publicKey?: string;
 

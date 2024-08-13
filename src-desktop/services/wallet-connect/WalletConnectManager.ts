@@ -27,121 +27,117 @@ import { SessionInfo } from "./SessionInfo";
 import { dappSession, type WalletConnectRequest } from "./WCTypes";
 
 type PingEventData = Omit<SignClientTypes.BaseEventArgs, "params">;
-function checkWindow(reference: string) {
-  return getAll().some((win) => win.label === reference);
-}
-/**
- * Get the window object from the window list
- * @param windowLabel - The window label
- * @returns The WebviewWindow object
- */
-function getWindow(windowLabel: string): WebviewWindow | undefined {
-  return getAll().find((win) => win.label === windowLabel);
-}
-function getWindowOrCreate(
-  windowLabel: string,
-  options?: Omit<WebviewOptions, "x" | "y" | "width" | "height"> & WindowOptions
-): WebviewWindow {
-  const window = getWindow(windowLabel);
-  if (window) {
-    return window;
-  }
+// function checkWindow(reference: string) {
+//   return getAll().some((win) => win.label === reference);
+// }
 
-  return new WebviewWindow(windowLabel, options);
-}
+// function getWindow(windowLabel: string): WebviewWindow | undefined {
+//   return getAll().find((win) => win.label === windowLabel);
+// }
+// function getWindowOrCreate(
+//   windowLabel: string,
+//   options?: Omit<WebviewOptions, "x" | "y" | "width" | "height"> & WindowOptions
+// ): WebviewWindow {
+//   const window = getWindow(windowLabel);
+//   if (window) {
+//     return window;
+//   }
 
-function emitAfterSeconds(
-  window: WebviewWindow,
-  event: string,
-  payload: any,
-  seconds: number
-) {
-  setTimeout(async () => {
-    await window.emit(event, payload);
-  }, seconds * 1000);
-}
-function storeSession(unique_request_id: string) {
-  const expiry = new Date();
-  expiry.setHours(expiry.getHours() + 1);
+//   return new WebviewWindow(windowLabel, options);
+// }
 
-  sessionStorage.setItem(unique_request_id, expiry.toISOString());
-}
-export async function createWalletConnectDialog(
-  dialogConfig: {
-    onApprove: (
-      response: Event<unknown>,
-      webview: WebviewWindow
-    ) => Promise<JsonRpcResult | JsonRpcError | void>;
-    onReject: (
-      response: Event<unknown>
-    ) => Promise<JsonRpcResult | JsonRpcError | void>;
-    approveEventString: string;
-    rejectEventString: string;
-    // requestType: AleoMethod;
-    requestIdentifier: string;
-    requestEvent?: Web3WalletTypes.SessionRequest;
-  },
-  wcRequest: WalletConnectRequest
-): Promise<JsonRpcResult | JsonRpcError> {
-  return new Promise((resolve, reject) => {
-    const webview = getWindowOrCreate("wallet-connect", {
-      url: "wallet-connect-screens/wallet-connect.html",
-      title: "Avail Wallet Connect",
-      width: 390,
-      height: 680,
-      resizable: false,
-    });
+// function emitAfterSeconds(
+//   window: WebviewWindow,
+//   event: string,
+//   payload: any,
+//   seconds: number
+// ) {
+//   setTimeout(async () => {
+//     await window.emit(event, payload);
+//   }, seconds * 1000);
+// }
+// function storeSession(unique_request_id: string) {
+//   const expiry = new Date();
+//   expiry.setHours(expiry.getHours() + 1);
 
-    emitAfterSeconds(webview, "wallet-connect-request", wcRequest, 3);
+//   sessionStorage.setItem(unique_request_id, expiry.toISOString());
+// }
+// export async function createWalletConnectDialog(
+//   dialogConfig: {
+//     onApprove: (
+//       response: Event<unknown>,
+//       webview: WebviewWindow
+//     ) => Promise<JsonRpcResult | JsonRpcError | void>;
+//     onReject: (
+//       response: Event<unknown>
+//     ) => Promise<JsonRpcResult | JsonRpcError | void>;
+//     approveEventString: string;
+//     rejectEventString: string;
+//     // requestType: AleoMethod;
+//     requestIdentifier: string;
+//     requestEvent?: Web3WalletTypes.SessionRequest;
+//   },
+//   wcRequest: WalletConnectRequest
+// ): Promise<JsonRpcResult | JsonRpcError> {
+//   return new Promise((resolve, reject) => {
+//     const webview = getWindowOrCreate("wallet-connect", {
+//       url: "wallet-connect-screens/wallet-connect.html",
+//       title: "Avail Wallet Connect",
+//       width: 390,
+//       height: 680,
+//       resizable: false,
+//     });
 
-    // Register approve listener
-    // dialogConfig.approveEventString
-    once(dialogConfig.approveEventString, async (response) => {
-      storeSession(dialogConfig.requestIdentifier);
-      console.log("Approve listener triggered");
-      dialogConfig
-        .onApprove(response, webview)
-        .then(async (response) => {
-          await webview.destroy();
+//     emitAfterSeconds(webview, "wallet-connect-request", wcRequest, 3);
 
-          if (response !== undefined) {
-            resolve(response);
-            console.log("Approve listener resolved");
-          }
-        })
-        .catch((response) => {
-          reject(response);
-        });
-    })
-      .then(() => {
-        console.log("Approve listener registered");
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
+//     // Register approve listener
+//     // dialogConfig.approveEventString
+//     once(dialogConfig.approveEventString, async (response) => {
+//       storeSession(dialogConfig.requestIdentifier);
+//       console.log("Approve listener triggered");
+//       dialogConfig
+//         .onApprove(response, webview)
+//         .then(async (response) => {
+//           await webview.destroy();
 
-    // Register reject listener
-    once(dialogConfig.rejectEventString, async (response) => {
-      await webview.destroy();
-      dialogConfig
-        .onReject(response)
-        .then((response) => {
-          if (response !== undefined) {
-            resolve(response);
-          }
-        })
-        .catch((response) => {
-          reject(response);
-        });
-    })
-      .then(() => {
-        console.log("Reject listener registered");
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
-  });
-}
+//           if (response !== undefined) {
+//             resolve(response);
+//             console.log("Approve listener resolved");
+//           }
+//         })
+//         .catch((response) => {
+//           reject(response);
+//         });
+//     })
+//       .then(() => {
+//         console.log("Approve listener registered");
+//       })
+//       .catch((error: any) => {
+//         console.error(error);
+//       });
+
+//     // Register reject listener
+//     once(dialogConfig.rejectEventString, async (response) => {
+//       await webview.destroy();
+//       dialogConfig
+//         .onReject(response)
+//         .then((response) => {
+//           if (response !== undefined) {
+//             resolve(response);
+//           }
+//         })
+//         .catch((response) => {
+//           reject(response);
+//         });
+//     })
+//       .then(() => {
+//         console.log("Reject listener registered");
+//       })
+//       .catch((error: any) => {
+//         console.error(error);
+//       });
+//   });
+// }
 export class WalletConnectManager {
   theWallet?: IWeb3Wallet;
   projectId: string;
@@ -309,165 +305,108 @@ export class WalletConnectManager {
       //   },
       //   wcRequest
       // );
-      const response = await createWalletConnectDialog(
-        {
-          onApprove: async () => {
-            console.log("Wallet connect approved");
-            const supportedNamespaces = {
-              aleo: {
-                chains: [this.aleoWallet.chainName()],
-                methods: this.aleoWallet.chainMethods(),
-                events: this.aleoWallet.chainEvents(),
-                accounts: [
-                  `${this.aleoWallet.chainName()}:${this.aleoWallet.getAddress()}`,
-                ],
-              },
-            };
-            const session = await this.theWallet.approveSession({
-              id: proposal.id,
-              relayProtocol: proposal.params.relays[0].protocol,
-              namespaces: supportedNamespaces,
-            });
-            console.log("Approved session", session);
-            this.sessionTopic = session.topic;
-            sessionStorage.setItem(session.topic, JSON.stringify({
-              name: metadata.name,
-              description: metadata.description,
-              url: metadata.url,
-              icon: metadata.icons[0],
-            }));
-            return session;
-          },
-          onReject: async () => {
-            console.log("Wallet connect rejected");
-            await this.theWallet.rejectSession({
-              id: proposal.id,
-              reason: getSdkError("USER_REJECTED"),
-            });
-          },
-          approveEventString: "connect-approved",
-          rejectEventString: "connect-rejected",
-          requestIdentifier: `sign-${metadata.name}`,
-        },
-        wcRequest
-      );
 
-      console.log("Wallet connect dialog result:", response);
+      //////////////////////////////////////////////////////////////////////////
 
+      await webview.once("tauri://created", () => {
+        console.log("Window created");
+
+        console.log("Webview ", webview);
+
+        setTimeout(async () => {
+          await emit("wallet-connect-request", wcRequest);
+          console.log("Emitting wallet-connect-request");
+        }, 3000);
+      });
+
+      //open modal
+
+      const { aleoWallet, theWallet } = this;
+
+      await once("connect-approved", async (response) => {
+        //once accepted on modal, close model logic here
+
+        // await webview.close();
+        console.log("Wallet connect was approved", response);
+
+        SessionInfo.show(proposal, [aleoWallet.chainName()]);
+
+        const supportedNamespaces = {
+          // What the dApp requested...
+          proposal: proposal.params,
+
+          // What we support...
+          supportedNamespaces: {
+            aleo: {
+              chains: [aleoWallet.chainName()],
+              methods: aleoWallet.chainMethods(),
+              events: aleoWallet.chainEvents(),
+              accounts: [
+                `${aleoWallet.chainName()}:${aleoWallet.getAddress()}`,
+              ],
+            },
+          },
+        };
+        console.log("supportedNamespaces", supportedNamespaces);
+        const approvedNamespaces = buildApprovedNamespaces(supportedNamespaces);
+
+        console.log("Approving session...");
+        const session = await theWallet.approveSession({
+          id: proposal.id,
+          relayProtocol: proposal.params.relays[0].protocol,
+          namespaces: approvedNamespaces,
+        });
+        console.log("Approved session", session);
+
+        await emit("connected", session);
+
+        this.currentRequestVerifyContext = proposal.verifyContext;
+
+        // This value is present in the pairing URI
+        // wc:<pairingTopic>@....
+        this.pairingTopic = proposal.params.pairingTopic;
+
+        // This value will stick throughout the session and will
+        // be present in session_request, session_delete events
+        this.sessionTopic = session.topic;
+        console.log("Session topic", this.sessionTopic);
+
+        const dappSess = dappSession(
+          metadata.name,
+          metadata.description,
+          metadata.url,
+          metadata.icons[0]
+        );
+
+        console.log("Storing dapp session", dappSess);
+        sessionStorage.setItem(session.topic, JSON.stringify(dappSess));
+      });
+
+      // Listen for the rejection event from the secondary window
+      await once("connect-rejected", async (response) => {
+        // Handle the rejection logic here
+        console.log("Wallet connect was rejected", response);
+        // await webview.close();
+        throw new Error("User Rejected");
+      });
+
+      /* Approve/Reject Connection window -- END */
     } catch (error) {
-      console.error("Error during session proposal handling:", error);
+      console.log("Rejecting session...");
       await this.theWallet?.rejectSession({
         id: proposal.id,
         reason: getSdkError("USER_REJECTED"),
       });
+
+      console.log("Rejected. Error info...");
+      console.log(error);
     } finally {
-      console.log("Session proposal processing completed.");
+      console.log();
+      console.log("  <<< session_proposal event <<<");
+      console.log("  ============================== ");
+      console.log();
     }
   }
-
-
-
-      //////////////////////////////////////////////////////////////////////////
-
-  //     await webview.once("tauri://created", () => {
-  //       console.log("Window created");
-
-  //       console.log("Webview ", webview);
-
-  //       setTimeout(async () => {
-  //         await emit("wallet-connect-request", wcRequest);
-  //         console.log("Emitting wallet-connect-request");
-  //       }, 3000);
-  //     });
-
-  //     //open modal
-
-  //     const { aleoWallet, theWallet } = this;
-
-  //     await once("connect-approved", async (response) => {
-  //       //once accepted on modal, close model logic here
-
-  //       // await webview.close();
-  //       console.log("Wallet connect was approved", response);
-
-  //       SessionInfo.show(proposal, [aleoWallet.chainName()]);
-
-  //       const supportedNamespaces = {
-  //         // What the dApp requested...
-  //         proposal: proposal.params,
-
-  //         // What we support...
-  //         supportedNamespaces: {
-  //           aleo: {
-  //             chains: [aleoWallet.chainName()],
-  //             methods: aleoWallet.chainMethods(),
-  //             events: aleoWallet.chainEvents(),
-  //             accounts: [
-  //               `${aleoWallet.chainName()}:${aleoWallet.getAddress()}`,
-  //             ],
-  //           },
-  //         },
-  //       };
-  //       console.log("supportedNamespaces", supportedNamespaces);
-  //       const approvedNamespaces = buildApprovedNamespaces(supportedNamespaces);
-
-  //       console.log("Approving session...");
-  //       const session = await theWallet.approveSession({
-  //         id: proposal.id,
-  //         relayProtocol: proposal.params.relays[0].protocol,
-  //         namespaces: approvedNamespaces,
-  //       });
-  //       console.log("Approved session", session);
-
-  //       await emit("connected", session);
-
-  //       this.currentRequestVerifyContext = proposal.verifyContext;
-
-  //       // This value is present in the pairing URI
-  //       // wc:<pairingTopic>@....
-  //       this.pairingTopic = proposal.params.pairingTopic;
-
-  //       // This value will stick throughout the session and will
-  //       // be present in session_request, session_delete events
-  //       this.sessionTopic = session.topic;
-  //       console.log("Session topic", this.sessionTopic);
-
-  //       const dappSess = dappSession(
-  //         metadata.name,
-  //         metadata.description,
-  //         metadata.url,
-  //         metadata.icons[0]
-  //       );
-
-  //       console.log("Storing dapp session", dappSess);
-  //       sessionStorage.setItem(session.topic, JSON.stringify(dappSess));
-  //     });
-
-  //     // Listen for the rejection event from the secondary window
-  //     await once("connect-rejected", async (response) => {
-  //       // Handle the rejection logic here
-  //       console.log("Wallet connect was rejected", response);
-  //       // await webview.close();
-  //       throw new Error("User Rejected");
-  //     });
-
-  //     /* Approve/Reject Connection window -- END */
-  //   } catch (error) {
-  //     console.log("Rejecting session...");
-  //     await this.theWallet?.rejectSession({
-  //       id: proposal.id,
-  //       reason: getSdkError("USER_REJECTED"),
-  //     });
-
-  //     console.log("Rejected. Error info...");
-  //     console.log(error);
-  //   } finally {
-  //     console.log();
-  //     console.log("  <<< session_proposal event <<<");
-  //     console.log("  ============================== ");
-  //     console.log();
-  //   }
-  // }
 
   private async onSessionRequest(requestEvent: Web3WalletTypes.SessionRequest) {
     try {
