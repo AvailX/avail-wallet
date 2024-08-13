@@ -2,11 +2,16 @@ use std::path::PathBuf;
 
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 use iota_stronghold::procedures::Curve;
-use snarkvm::console::{network::Network, program::{ProgramID, Identifier, Value, Record, Plaintext}};
-use tauri_plugin_aleo_stronghold::{
-    execute_procedure, remove_secret, save_secret, BytesDto, LocationDto, ProcedureDto,
-    Slip10DeriveInputDto, StrongholdCollection,
+use snarkvm::console::{
+    network::Network,
+    program::{Identifier, Plaintext, ProgramID, Record, Value},
 };
+use snarkvm::prelude::Field;
+use tauri_plugin_aleo_stronghold::{
+    execute_procedure, remove_secret, save_secret, unsafe_get_secret,
+    BytesDto, LocationDto, ProcedureDto, Slip10DeriveInputDto, StrongholdCollection,
+};
+use zeroize::Zeroizing;
 
 /// A key-value storage that allows create, update and delete operations.
 /// It does not allow reading the data, so one of the procedures must be used to manipulate
@@ -55,6 +60,25 @@ impl Vault {
         }
     }
 
+    pub async fn unsafe_get_secret(
+        self,
+        hold: &StrongholdCollection,
+        record_path: &str,
+    ) -> AvailResult<Zeroizing<Vec<u8>>> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(record_path.to_string());
+
+        match unsafe_get_secret(hold, path, self.client, self.name, record_path).await
+        {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to get record".to_string(),
+            )),
+        }
+    }
+
     pub async fn remove_secret(
         self,
         hold: &StrongholdCollection,
@@ -95,6 +119,34 @@ impl Vault {
                 AvailErrorType::Internal,
                 e.to_string(),
                 "Failed to bip39 generate procedure".to_string(),
+            )),
+        }
+    }
+
+    pub async fn recover_bip39<N: Network>(
+        self,
+        hold: &StrongholdCollection,
+        record_path: &str,
+        mnemonic: String,
+    ) -> AvailResult<Vec<u8>> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(record_path.to_string());
+        let location = LocationDto::Generic {
+            vault: self.name,
+            record: record_path,
+        };
+        let procedure = ProcedureDto::<N>::BIP39Recover {
+            mnemonic,
+            passphrase: None,
+            output: location,
+        };
+
+        match execute_procedure(hold, path, self.client, procedure).await {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to recover bip39".to_string(),
             )),
         }
     }
@@ -180,7 +232,7 @@ impl Vault {
             chain: hardened_chain,
             input,
             output,
-            network
+            network,
         };
 
         match execute_procedure(hold, path, self.client, procedure).await {
@@ -243,6 +295,101 @@ impl Vault {
                 AvailErrorType::Internal,
                 e.to_string(),
                 "Failed to get address.".to_string(),
+            )),
+        }
+    }
+
+    pub async fn aleo_authorize<N: Network>(
+        self,
+        hold: &StrongholdCollection,
+        pk_path: &str,
+        program_id: ProgramID<N>,
+        function_name: Identifier<N>,
+        inputs: Vec<Value<N>>,
+    ) -> AvailResult<Vec<u8>> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(pk_path.to_string());
+        let location = LocationDto::Generic {
+            vault: self.name,
+            record: record_path,
+        };
+        let procedure = ProcedureDto::AleoAuthorize {
+            private_key: location,
+            program_id,
+            function_name,
+            inputs,
+        };
+
+        match execute_procedure(hold, path, self.client, procedure).await {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to execute Aleo authorize".to_string(),
+            )),
+        }
+    }
+
+    pub async fn aleo_authorize_fee_public<N: Network>(
+        self,
+        hold: &StrongholdCollection,
+        pk_path: &str,
+        base_fee_in_microcredits: u64,
+        priority_fee_in_microcredits: u64,
+        deployment_or_execution_id: Field<N>,
+    ) -> AvailResult<Vec<u8>> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(pk_path.to_string());
+        let location = LocationDto::Generic {
+            vault: self.name,
+            record: record_path,
+        };
+        let procedure = ProcedureDto::AleoAuthorizeFeePublic {
+            private_key: location,
+            base_fee_in_microcredits,
+            priority_fee_in_microcredits,
+            deployment_or_execution_id,
+        };
+
+        match execute_procedure(hold, path, self.client, procedure).await {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to execute Aleo authorize fee public".to_string(),
+            )),
+        }
+    }
+
+    pub async fn aleo_authorize_fee_private<N: Network>(
+        self,
+        hold: &StrongholdCollection,
+        pk_path: &str,
+        credits: Record<N, Plaintext<N>>,
+        base_fee_in_microcredits: u64,
+        priority_fee_in_microcredits: u64,
+        deployment_or_execution_id: Field<N>,
+    ) -> AvailResult<Vec<u8>> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(pk_path.to_string());
+        let location = LocationDto::Generic {
+            vault: self.name,
+            record: record_path,
+        };
+        let procedure = ProcedureDto::AleoAuthorizeFeePrivate {
+            private_key: location,
+            credits,
+            base_fee_in_microcredits,
+            priority_fee_in_microcredits,
+            deployment_or_execution_id,
+        };
+
+        match execute_procedure(hold, path, self.client, procedure).await {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to execute Aleo authorize fee private".to_string(),
             )),
         }
     }
