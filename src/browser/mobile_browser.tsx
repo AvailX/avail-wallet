@@ -16,6 +16,7 @@ import {
   Typography,
   Stack,
 } from "@mui/material";
+import Modal from "@mui/material/Modal";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { styled } from "@mui/material/styles";
@@ -23,6 +24,7 @@ import { styled } from "@mui/material/styles";
 // global state
 import { useTranslation } from "react-i18next";
 import { useWalletConnectManager } from "../../src-desktop/context/WalletConnect";
+import { useModal } from "../../src-desktop/context/ModalContext";
 import DappView from "../../src-desktop/components/dApps/dapp";
 import { Title2Text } from "../../src-desktop/components/typography/typography";
 import { dapps } from "../../src-desktop/assets/dapps/dapps";
@@ -39,6 +41,17 @@ import {
 } from "../../src-desktop/components/snackbars/alerts";
 import { open_url } from "../../src-desktop/services/util/open";
 import { useNavigate } from "react-router-dom";
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -59,6 +72,11 @@ const Browser: React.FC<BrowserProperties> = ({
   theme = "light",
   handleDappSelection,
 }) => {
+  // const handleOpen = () => setOpen(true);
+  // const handleClose = () => setOpen(false);
+  const { isOpen, closeModal } = useModal();
+  const { openModal } = useModal();
+
   const [url, setUrl] = useState<string | undefined>(initialUrl ?? "");
   const [inputUrl, setInputUrl] = useState(url);
   const [previousUrls, setPreviousUrls] = useState<string[]>([]);
@@ -78,7 +96,7 @@ const Browser: React.FC<BrowserProperties> = ({
 
   const { t } = useTranslation();
 
-  const [open, setOpen] = React.useState<boolean>(false);
+  const [open, setOpen] = React.useState<boolean>(true);
 
   const toggleDrawer = (newOpen: boolean) => (): void => {
     setOpen(newOpen);
@@ -328,6 +346,7 @@ const Browser: React.FC<BrowserProperties> = ({
               />
             </Paper>
           </Box>
+          <Button onClick={openModal}>Open modal</Button>
           <Button
             sx={{
               borderRadius: "10px",
@@ -412,8 +431,25 @@ const Browser: React.FC<BrowserProperties> = ({
         )}
       </Box>
       <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}>
-        <RequestModal closeModal={toggleDrawer(false)} request={request} />
+        {/* <RequestModal closeModal={toggleDrawer(false)} request={request} /> */}
       </SwipeableEdgeDrawer>
+      <div>
+        <Modal
+          open={isOpen}
+          onClose={closeModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Text in a modal
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            </Typography>
+          </Box>
+        </Modal>
+      </div>
     </Box>
   );
 };

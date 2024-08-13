@@ -5,6 +5,7 @@ import App from "./App";
 import { WalletConnectProvider } from "../src-desktop/context/WalletConnect";
 import { ScanProvider } from "../src-desktop/context/ScanContext";
 import { RecentEventsProvider } from "../src-desktop/context/EventsContext";
+import { ModalProvider } from "../src-desktop/context/ModalContext";
 
 import "./style.css";
 import { ToastContainer, toast } from "react-toastify";
@@ -31,14 +32,16 @@ handleLanguage();
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <WalletConnectProvider>
-      <ScanProvider>
-        <RecentEventsProvider>
-          <ThemeProvider theme={theme}>
-            <App />
-            <ToastContainer />
-          </ThemeProvider>
-        </RecentEventsProvider>
-      </ScanProvider>
+      <ModalProvider>
+        <ScanProvider>
+          <RecentEventsProvider>
+            <ThemeProvider theme={theme}>
+              <App />
+              <ToastContainer />
+            </ThemeProvider>
+          </RecentEventsProvider>
+        </ScanProvider>
+      </ModalProvider>
     </WalletConnectProvider>
   </React.StrictMode>
 );
