@@ -69,10 +69,10 @@ function EntryPoint() {
         setErrorAlert={setAlert}
         message={alertMessage}
       />
-      <mui.Box component={Link} to='/dashboard' sx={boxStyles}>
+      <mui.Box component={Link} to="/dashboard" sx={boxStyles}>
         <img
           src={logo}
-          alt='Logo'
+          alt="Logo"
           style={{ width: "30%", alignSelf: "center" }}
         />
       </mui.Box>
