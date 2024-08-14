@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-promise-reject-errors */
 import ConnectModal from "./Modal";
 import React, { useState } from "react";
-import SwipeableEdgeDrawer from "../../../src/components/SwipeableDrawer";
 import {
   Dialog,
   DialogTitle,
@@ -10,7 +9,7 @@ import {
   Button,
   Typography,
 } from "@mui/material";
-
+import { useModal } from "../../context/ModalContext";
 import { invoke } from "@tauri-apps/api/core";
 import { once, type Event, emit } from "@tauri-apps/api/event";
 import { type WebviewOptions } from "@tauri-apps/api/webview";
@@ -22,6 +21,8 @@ import {
   type JsonRpcError,
   type JsonRpcResult,
 } from "@walletconnect/jsonrpc-utils";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
 import { type Web3WalletTypes } from "@walletconnect/web3wallet";
 import { type AvailError } from "../../types/errors";
 import {
@@ -195,6 +196,8 @@ export async function createWalletConnectDialog(
   },
   wcRequest: WalletConnectRequest
 ): Promise<JsonRpcResult | JsonRpcError> {
+  const { openModal, closeModal, isOpen } = useModal();
+
   return new Promise((resolve, reject) => {
     // const webview = getWindowOrCreate("wallet-connect", {
     //   url: "wallet-connect-screens/wallet-connect.html",
@@ -203,6 +206,21 @@ export async function createWalletConnectDialog(
     //   height: 680,
     //   resizable: false,
     // });
+    <Modal
+      open={isOpen}
+      onClose={closeModal}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box>
+        <Typography id="modal-modal-title" variant="h6" component="h2">
+          Text in a modal
+        </Typography>
+        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+        </Typography>
+      </Box>
+    </Modal>;
 
     //   once(dialogConfig.approveEventString, async (response) => {
     //     storeSession(dialogConfig.requestIdentifier);
@@ -228,11 +246,13 @@ export async function createWalletConnectDialog(
     // emitAfterSeconds(webview, "wallet-connect-request", wcRequest, 3);
 
     //  Register approve listener
+    openModal();
     once(dialogConfig.approveEventString, async (response) => {
       storeSession(dialogConfig.requestIdentifier);
       console.log("Approve listener triggered");
       dialogConfig
         .onApprove(response, webview)
+        // .onApprove(response, webview)
         .then(async (response) => {
           await webview.destroy();
           if (response !== undefined) {

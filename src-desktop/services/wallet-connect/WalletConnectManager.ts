@@ -25,6 +25,7 @@ import { get_address } from "../storage/persistent";
 import { AleoWallet } from "./AleoWallet";
 import { SessionInfo } from "./SessionInfo";
 import { dappSession, type WalletConnectRequest } from "./WCTypes";
+import { useModal } from "../../context/ModalContext";
 
 type PingEventData = Omit<SignClientTypes.BaseEventArgs, "params">;
 // function checkWindow(reference: string) {
