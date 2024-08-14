@@ -52,6 +52,17 @@ import {
   convertGetRecordsResponse,
 } from "./WCTypes";
 
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 function checkWindow(reference: string) {
   return getAll().some((win) => win.label === reference);
 }
@@ -74,14 +85,42 @@ function getWindow(windowLabel: string): WebviewWindow | undefined {
 function getWindowOrCreate(
   windowLabel: string,
   options?: Omit<WebviewOptions, "x" | "y" | "width" | "height"> & WindowOptions
-): WebviewWindow {
+): WebviewWindow | null {
   const window = getWindow(windowLabel);
+  //   if (!isMobile) {
   if (window) {
     return window;
   }
-
   return new WebviewWindow(windowLabel, options);
+  //   }
+
+  // For mobile devices, return null and handle modal in the component
+  //   return null;
 }
+
+/**
+ * A modal component for displaying a message on mobile devices
+ */
+const MobileModal = () => {
+  const { isOpen, closeModal } = useModal();
+  return (
+    <Modal
+      open={isOpen}
+      onClose={closeModal}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+        <Typography id="modal-modal-title" variant="h6" component="h2">
+          Mobile Modal
+        </Typography>
+        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          This is a modal displayed on mobile devices.
+        </Typography>
+      </Box>
+    </Modal>
+  );
+};
 
 /**
  * Emit an event after a number of seconds
@@ -161,29 +200,11 @@ function checkNotExpired(unique_request_id: string) {
   return false;
 }
 
-// export default function WalletConnectDialog() {
-//   const [open, setOpen] = useState<boolean>(true);
-
-//   const toggleDrawer = (newOpen: boolean) => (): void => {
-//     setOpen(newOpen);
-//   };
-
-//   return (
-//     <SwipeableEdgeDrawer open={open} toggleDrawer={toggleDrawer}>
-//       <p>Hello</p>
-//       <p>Hello</p>
-//       <p>Hello</p>
-//       <p>Hello</p>
-//       <p>Hello</p>
-//     </SwipeableEdgeDrawer>
-//   );
-// }
-
 export async function createWalletConnectDialog(
   dialogConfig: {
     onApprove: (
-      response: Event<unknown>
-      //   webview: WebviewWindow
+      response: Event<unknown>,
+      webview: WebviewWindow
     ) => Promise<JsonRpcResult | JsonRpcError | void>;
     onReject: (
       response: Event<unknown>
@@ -199,28 +220,13 @@ export async function createWalletConnectDialog(
   const { openModal, closeModal, isOpen } = useModal();
 
   return new Promise((resolve, reject) => {
-    // const webview = getWindowOrCreate("wallet-connect", {
-    //   url: "wallet-connect-screens/wallet-connect.html",
-    //   title: "Avail Wallet Connect",
-    //   width: 390,
-    //   height: 680,
-    //   resizable: false,
-    // });
-    <Modal
-      open={isOpen}
-      onClose={closeModal}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Box>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
-          Text in a modal
-        </Typography>
-        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-        </Typography>
-      </Box>
-    </Modal>;
+    const webview = getWindowOrCreate("wallet-connect", {
+      url: "wallet-connect-screens/wallet-connect.html",
+      title: "Avail Wallet Connect",
+      width: 390,
+      height: 680,
+      resizable: false,
+    });
 
     //   once(dialogConfig.approveEventString, async (response) => {
     //     storeSession(dialogConfig.requestIdentifier);
@@ -254,7 +260,7 @@ export async function createWalletConnectDialog(
         .onApprove(response, webview)
         // .onApprove(response, webview)
         .then(async (response) => {
-          await webview.destroy();
+          //   await webview.destroy();
           if (response !== undefined) {
             resolve(response);
             console.log("Approve listener resolved");
@@ -273,7 +279,7 @@ export async function createWalletConnectDialog(
 
     // Register reject listener
     once(dialogConfig.rejectEventString, async (response) => {
-      await webview.destroy();
+      //   await webview.destroy();
       dialogConfig
         .onReject(response)
         .then((response) => {
