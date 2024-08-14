@@ -13,6 +13,7 @@ use snarkvm::utilities::ToBits;
 use std::collections::HashMap;
 use std::ops::Sub;
 use std::str::FromStr;
+use tauri::Emitter;
 use tauri::{Manager, Window};
 
 use crate::api::{

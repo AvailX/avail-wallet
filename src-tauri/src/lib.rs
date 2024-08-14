@@ -57,6 +57,8 @@ use services::record_handling::{
 use simplelog::CombinedLogger;
 use simplelog::WriteLogger; // Add the missing import statement for WriteLogger and LevelFilter
 use tauri::Config;
+use tauri::Emitter;
+use tauri::Listener;
 use tauri::Manager;
 use tauri_plugin_deep_link::DeepLinkExt; // Add the missing import statement for CombinedLogger // Add the missing import statement for the transfer function
                                          // wallet connect services

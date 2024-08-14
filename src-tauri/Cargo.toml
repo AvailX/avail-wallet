@@ -1,7 +1,7 @@
 [package]
 name = "wallet"
-version = "0.3.0"
 description = "Avail Wallet | Make it yours."
+version = "0.4.4"
 authors = ["Avail"]
 license = "Apache-2.0"
 repository = "https://github.com/availx/avail-wallet"
@@ -20,8 +20,11 @@ tauri-utils = { version = "=2.0.0-rc.0", features = [] }
 tauri-build = { version = "=2.0.0-rc.0", features = [] }
 
 [dependencies]
-
-
+snarkvm = { features = [
+    "wasm",
+], git = "https://github.com/AleoNet/snarkVM", rev = "be171ce" }
+tauri-plugin-http = { version = "2.0.0-rc.0", features = ["cookies"] }
+curl-sys = "0.4.72"
 avail-common = { git = "https://github.com/availx/avail-lib", rev = "eabdde3", features = [
     "snarkvm",
 ] }
@@ -44,16 +47,13 @@ rayon = "1.7.0"
 rusqlite = { version = "0.31.0", features = ["bundled", "chrono"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.120"
-snarkvm = { features = [
-    "wasm",
-], git = "https://github.com/AleoNet/snarkVM", rev = "d170a9f" }
 ssss = "0.2.0"
 tauri = { version = "2.0.0-rc.0", features = [] }
 tauri-plugin-deep-link = "2.0.0-rc.0"
-tauri-plugin-http = { version = "2.0.0-rc.0", features = ["cookies"] }
 tauri-plugin-updater = { version = "2.0.0-rc.0", features = [] }
 tauri-plugin-process = "2.0.0-rc.0"
 tiny-bip39 = "1.0.0"
+time = "0.3.36"
 tokio = { version = "1.29.1", features = ["full"] }
 tokio-rayon = "2.1.0"
 ureq = { version = "2.7.1", features = ["json"] }
@@ -64,16 +64,13 @@ zeroize = { version = "1.7.0", features = [
     "zeroize_derive",
     "alloc",
 ] }
-curl-sys = "0.4.72"
-# devtools = "0.3.1"
+[target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies] # tauri-plugin-deep-link = "0.1.2"colored = "2.1.0"# devtools = "0.3.1"
 # devtools = "0.3.1"
 # tauri-plugin-devtools = { git = "https://github.com/crabnebula-dev/devtools", version = "2.0.0-beta.0" }
-colored = "2.1.0"
 cargo-xcode = "1.10.0"
 http = "1.1.0"
 tauri-plugin-barcode-scanner = "2.0.0-rc.0"
-
-[target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
+# tauri-plugin-deep-link = "2.0.0-beta.3"
 security-framework = { git = "https://github.com/AvailX/rust-security-framework" }
 app_dirs = { package = "app_dirs2", version = "2.5" }
 security-framework-sys = { git = "https://github.com/AvailX/rust-security-framework" }

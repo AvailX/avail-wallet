@@ -16,10 +16,15 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": "all"
+    "targets": "all",
+    "createUpdaterArtifacts": "v1Compatible",
+    "macOS": {
+      "signingIdentity": "WTK34UZPZK"
+    }
   },
   "plugins": {
     "updater": {
+      "createUpdaterArtifacts": "v1Compatible",
       "endpoints": [
         "https://api.avail.global/release/latest"
       ],

@@ -2,7 +2,7 @@ use chrono::{DateTime, Local};
 
 use dirs;
 use snarkvm::{ledger::transactions::ConfirmedTransaction, prelude::*};
-use tauri::{Manager, Window};
+use tauri::{Emitter, Manager, Window};
 use tauri_plugin_http::reqwest;
 
 use std::{fs, path::PathBuf};

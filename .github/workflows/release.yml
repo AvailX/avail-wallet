@@ -97,7 +97,7 @@ jobs:
         uses: baptiste0928/cargo-install@v3
         with:
           crate: tauri-cli
-          version: "2.0.0-beta.15"
+          version: "2.0.0-rc.0"
       - name: Install the Apple certificate and provisioning profile
         env:
             BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
