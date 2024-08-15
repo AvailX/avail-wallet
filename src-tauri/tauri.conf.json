@@ -16,7 +16,8 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": "all"
+    "targets": "all",
+    "createUpdaterArtifacts": "v1Compatible"
   },
   "plugins": {
     "updater": {
@@ -45,10 +46,7 @@
       ],
       "desktop": {
         "schemes": [
-          "avail",
-          "wallet",
-          "avail://",
-          "com.avail.wallet"
+          "avail"
         ]
       }
     }
