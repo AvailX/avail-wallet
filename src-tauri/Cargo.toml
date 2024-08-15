@@ -25,7 +25,7 @@ snarkvm = { features = [
 ], git = "https://github.com/AleoNet/snarkVM", rev = "be171ce" }
 tauri-plugin-http = { version = "2.0.0-rc.0", features = ["cookies"] }
 curl-sys = "0.4.72"
-avail-common = { git = "https://github.com/availx/avail-lib", rev = "eabdde3", features = [
+avail-common = { git = "https://github.com/availx/avail-lib", rev = "4864f3ca5d34adb0ddaa69204fa2928364ddfd4c", features = [
     "snarkvm",
 ] }
 bs58 = "0.5.0"
@@ -83,12 +83,12 @@ ndk-context = "0.1.1"
 [target.'cfg(target_os = "ios")'.dependencies]
 snarkvm = { features = [
     "wasm",
-], git = "https://github.com/AleoNet/snarkVM", rev = "d170a9f" }
+], git = "https://github.com/AleoNet/snarkVM", rev = "be171ce" }
 
 [target.'cfg(not(target_os = "ios"))'.dependencies]
 snarkvm = { features = [
     "wasm",
-], git = "https://github.com/AleoNet/snarkVM", rev = "d170a9f" }
+], git = "https://github.com/AleoNet/snarkVM", rev = "be171ce" }
 
 [profile.release]
 opt-level = 3
