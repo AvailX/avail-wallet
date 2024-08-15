@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-promise-reject-errors */
 import ConnectModal from "./Modal";
+import { isMobile } from "react-device-detect";
 import React, { useState } from "react";
 import {
   Dialog,
@@ -52,6 +53,8 @@ import {
   convertGetRecordsResponse,
 } from "./WCTypes";
 
+console.log(isMobile);
+
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -87,15 +90,16 @@ function getWindowOrCreate(
   options?: Omit<WebviewOptions, "x" | "y" | "width" | "height"> & WindowOptions
 ): WebviewWindow | null {
   const window = getWindow(windowLabel);
-  //   if (!isMobile) {
-  if (window) {
-    return window;
+  if (!isMobile) {
+    console.log(isMobile);
+    if (window) {
+      return window;
+    }
+    return new WebviewWindow(windowLabel, options);
   }
-  return new WebviewWindow(windowLabel, options);
-  //   }
 
-  // For mobile devices, return null and handle modal in the component
-  //   return null;
+  //For mobile devices, return null and handle modal in the component
+  return null;
 }
 
 /**
@@ -103,22 +107,25 @@ function getWindowOrCreate(
  */
 const MobileModal = () => {
   const { isOpen, closeModal } = useModal();
+  console.log('helllo its modal');
   return (
-    <Modal
-      open={isOpen}
-      onClose={closeModal}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Box sx={style}>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
-          Mobile Modal
-        </Typography>
-        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          This is a modal displayed on mobile devices.
-        </Typography>
-      </Box>
-    </Modal>
+    <div>
+      <Modal
+        open={isOpen}
+        onClose={closeModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Mobile Modal
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            This is a modal displayed on mobile devices.
+          </Typography>
+        </Box>
+      </Modal>
+    </div>
   );
 };
 
@@ -220,14 +227,49 @@ export async function createWalletConnectDialog(
   const { openModal, closeModal, isOpen } = useModal();
 
   return new Promise((resolve, reject) => {
-    const webview = getWindowOrCreate("wallet-connect", {
-      url: "wallet-connect-screens/wallet-connect.html",
-      title: "Avail Wallet Connect",
-      width: 390,
-      height: 680,
-      resizable: false,
-    });
+    if (!isMobile) {
+      const webview = getWindowOrCreate("wallet-connect", {
+        url: "wallet-connect-screens/wallet-connect.html",
+        title: "Avail Wallet Connect",
+        width: 390,
+        height: 680,
+        resizable: false,
+      });
+    } else {
+      // openModal();
+      const mobileModal = new MobileModal();
+      mobileModal.mount();
 
+      const onClose = () => {
+        closeModal();
+        mobileModal.unmount();
+        reject(new Error("Modal closed"));
+      };
+
+      // mobileModal.onApprove = async (response) => {
+      //   storeSession(dialogConfig.requestIdentifier);
+      //   console.log("Approve listener triggered");
+      //   dialogConfig
+      //    .onApprove(response)
+      //    .then(async (response) => {
+      //       //   await webview.destroy();
+      //       onClose();
+
+      //       if (response!== undefined) {
+      //         resolve(response);
+      //         console.log("Approve listener resolved");
+      //       }
+      //     })
+      //    .catch((response) => {
+      //       reject(response);
+      //     });
+      // };
+
+      // mobileModal.onReject = async (response) => {
+      //   onClose();
+      //   reject(response);
+      // };
+    }
     //   once(dialogConfig.approveEventString, async (response) => {
     //     storeSession(dialogConfig.requestIdentifier);
     //     console.log("Approve listener triggered");
@@ -252,7 +294,6 @@ export async function createWalletConnectDialog(
     // emitAfterSeconds(webview, "wallet-connect-request", wcRequest, 3);
 
     //  Register approve listener
-    openModal();
     once(dialogConfig.approveEventString, async (response) => {
       storeSession(dialogConfig.requestIdentifier);
       console.log("Approve listener triggered");
@@ -299,53 +340,6 @@ export async function createWalletConnectDialog(
       });
   });
 }
-
-// export async function createWalletConnectDialog(
-//   dialogConfig: {
-//     onApprove: () => Promise<JsonRpcResult | JsonRpcError>;
-//     onReject: () => Promise<JsonRpcResult | JsonRpcError>;
-//     approveEventString: string;
-//     rejectEventString: string;
-//     requestType: AleoMethod;
-//     requestIdentifier: string;
-//     requestEvent?: Web3WalletTypes.SessionRequest;
-//   },
-//   wcRequest: WalletConnectRequest
-//   // renderDialog: (dialog: React.ReactNode) => void
-// ): Promise<JsonRpcResult | JsonRpcError> {
-//   return new Promise((resolve, reject) => {
-//     const [open, setOpen] = useState(true);
-
-//     const handleClose = () => setOpen(false);
-//     const handleApprove = async () => {
-//       try {
-//         const response = await dialogConfig.onApprove();
-//         resolve(response);
-//       } catch (error) {
-//         reject(error);
-//       }
-//     };
-
-//     const handleReject = async () => {
-//       try {
-//         const response = await dialogConfig.onReject();
-//         resolve(response);
-//       } catch (error) {
-//         reject(error);
-//       }
-//     };
-
-//     return (
-//       <ConnectModal
-//       // open={open}
-//       // onClose={handleClose}
-//       // onApprove={handleApprove}
-//       // onReject={handleReject}
-//       // wcRequest={wcRequest}
-//       />
-//     );
-//   });
-// }
 export class AleoWallet {
   publicKey?: string;
 

@@ -274,13 +274,14 @@ export class WalletConnectManager {
       // Open the new window
       // HERE IS WHERE THE MODAL SHOULD BE CALLED @kalio
 
-      const webview = new WebviewWindow("wallet-connect", {
-        url: "wallet-connect-screens/wallet-connect.html",
-        title: "Avail Wallet Connect",
-        width: 350,
-        height: 600,
-        resizable: false,
-      });
+      // const webview = new WebviewWindow("wallet-connect", {
+      //   url: "wallet-connect-screens/wallet-connect.html",
+      //   title: "Avail Wallet Connect",
+      //   width: 350,
+      //   height: 600,
+      //   resizable: false,
+      // });
+      console.log("before");
 
       const wcRequest: WalletConnectRequest = {
         method: "connect",
@@ -292,6 +293,8 @@ export class WalletConnectManager {
         dappUrl: metadata.url,
         dappImage: metadata.icons[0],
       };
+
+      console.log("pop modal open");
       ////////////////////////////////////////////////////////////////////////////////////////////////
       // createWalletConnectDialog(
       //   {
@@ -309,16 +312,16 @@ export class WalletConnectManager {
 
       //////////////////////////////////////////////////////////////////////////
 
-      await webview.once("tauri://created", () => {
-        console.log("Window created");
+      // await webview.once("tauri://created", () => {
+      //   console.log("Window created");
 
-        console.log("Webview ", webview);
+      //   console.log("Webview ", webview);
 
-        setTimeout(async () => {
-          await emit("wallet-connect-request", wcRequest);
-          console.log("Emitting wallet-connect-request");
-        }, 3000);
-      });
+      //   setTimeout(async () => {
+      //     await emit("wallet-connect-request", wcRequest);
+      //     console.log("Emitting wallet-connect-request");
+      //   }, 3000);
+      // });
 
       //open modal
 
