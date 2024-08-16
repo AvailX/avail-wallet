@@ -17,7 +17,9 @@
       "icons/icon.ico"
     ],
     "targets": "all",
-    "createUpdaterArtifacts": "v1Compatible"
+    "createUpdaterArtifacts": "v1Compatible",
+    "signingIdentity": "-",
+    "hardenedRuntime": false
   },
   "plugins": {
     "updater": {
