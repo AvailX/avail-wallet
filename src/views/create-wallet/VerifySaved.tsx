@@ -65,24 +65,24 @@ const VerifySaved = () => {
       <Box
         pt={16}
         px={3}
-        position='relative'
-        height='100vh'
-        bgcolor='#111111'
-        color='#fff'
-        textAlign='center'
+        position="relative"
+        height="100vh"
+        bgcolor="#111111"
+        color="#fff"
+        textAlign="center"
         sx={{ overflowY: "auto" }}
       >
         <GoBack />
-        <Typography fontWeight={700} fontSize='25px'>
+        <Typography fontWeight={700} fontSize="25px">
           Verify it’s saved correctly
         </Typography>
-        <Typography fontSize='18px' mt={1} color='#A7A7A7' lineHeight='20.88px'>
+        <Typography fontSize="18px" mt={1} color="#A7A7A7" lineHeight="20.88px">
           Tap the words below in order to confirm you have saved{" "}
         </Typography>
 
         {areArraysEqual(phrase, pastedItems) && (
           <Box mb={5}>
-            <Typography color='red'>Correct</Typography>
+            <Typography color="red">Correct</Typography>
           </Box>
         )}
 
@@ -90,46 +90,46 @@ const VerifySaved = () => {
           <Box
             mt={3}
             p={3}
-            height='30vh'
-            display='flex'
-            justifyContent='center'
-            border='2px solid #00FFAA'
-            borderRadius='9px'
-            boxShadow='0px 4px 4px 0px #00000040'
-            position='relative'
+            height="30vh"
+            display="flex"
+            justifyContent="center"
+            border="2px solid #00FFAA"
+            borderRadius="9px"
+            boxShadow="0px 4px 4px 0px #00000040"
+            position="relative"
           >
             <Box
-              display='grid'
-              justifyContent='space-between'
-              gridTemplateColumns='1fr 1fr 1fr'
+              display="grid"
+              justifyContent="space-between"
+              gridTemplateColumns="1fr 1fr 1fr"
               gap={1}
-              height='auto'
+              height="auto"
               sx={{ overflowY: "auto" }}
             >
               {pastedItems.map((item, i) => (
                 <Box
                   px={1}
                   py={1}
-                  height='40px'
-                  bgcolor='#3E3E3E'
-                  borderRadius='9px'
+                  height="40px"
+                  bgcolor="#3E3E3E"
+                  borderRadius="9px"
                   key={i}
                 >
-                  <Typography width='100%' fontSize='14px' fontWeight={600}>
+                  <Typography width="100%" fontSize="14px" fontWeight={600}>
                     {i + 1}. {item}
                   </Typography>
                 </Box>
               ))}
             </Box>
             <Box
-              display='flex'
-              position='absolute'
+              display="flex"
+              position="absolute"
               sx={{ bottom: "5px", pt: 10 }}
             >
               <Typography
                 onClick={() => pasteItems()}
                 sx={{ bottom: "5px" }}
-                color='#00FFAA'
+                color="#00FFAA"
               >
                 Paste
               </Typography>
@@ -137,7 +137,7 @@ const VerifySaved = () => {
                 onClick={() => {
                   setPastedItems([]);
                 }}
-                color='red'
+                color="red"
                 sx={{ ml: 1 }}
               >
                 Clear
@@ -146,14 +146,19 @@ const VerifySaved = () => {
           </Box>
         </Box>
 
-        <Box
-          display='grid'
+        {/* <Box
+          display="grid"
           gap={2}
-          gridTemplateColumns='1fr 1fr 1fr'
-          width='100%'
-          mx='auto'
+          gridTemplateColumns="1fr 1fr 1fr"
+          width="100%"
+          mx="auto"
           mt={3}
-          sx={{ height: "200px" }}
+          sx={{
+            height: "200px",
+            maxHeight: "200px",
+            overflowY: "auto",
+            paddingRight: "8px",
+          }}
         >
           {shuffleArray(recoveryPhase)
             .filter((x) => !pastedItems.includes(x))
@@ -164,29 +169,29 @@ const VerifySaved = () => {
                 }}
                 sx={{ overflowY: "hidden" }}
                 p={2}
-                display='flex'
-                alignItems='center'
-                justifyContent='center'
-                bgcolor='#3E3E3E'
-                borderRadius='9px'
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                bgcolor="#3E3E3E"
+                borderRadius="9px"
                 key={i}
               >
-                <Typography width='100%' fontSize='14px' fontWeight={600}>
+                <Typography width="100%" fontSize="14px" fontWeight={600}>
                   {phr}
                 </Typography>
               </Box>
             ))}
-        </Box>
+        </Box> */}
 
         <Box
-          width='100%'
-          position='absolute'
-          display='flex'
+          width="100%"
+          position="absolute"
+          display="flex"
           gap={2}
           p={2}
           left={0}
           bottom={30}
-          height='auto'
+          height="auto"
           zIndex={10}
         >
           <Button
@@ -204,8 +209,8 @@ const VerifySaved = () => {
                 toast.error("Didn't match order");
               }
             }}
-            variant='contained'
-            type='submit'
+            variant="contained"
+            type="submit"
           >
             Verify
           </Button>
@@ -213,10 +218,10 @@ const VerifySaved = () => {
       </Box>
       <SwipeableEdgeDrawer open={open} toggleDrawer={() => toggleDrawer(true)}>
         <Box>
-          <Typography color='#FFFFFF' fontSize='25px' fontWeight={700}>
+          <Typography color="#FFFFFF" fontSize="25px" fontWeight={700}>
             Confirm you’ve saved it well
           </Typography>
-          <Box display='flex' alignItems='flex-start' mb={3} mt={1}>
+          <Box display="flex" alignItems="flex-start" mb={3} mt={1}>
             <Checkbox
               sx={{
                 [`&, &.${checkboxClasses.checked}`]: {
@@ -226,9 +231,9 @@ const VerifySaved = () => {
             />
             <Typography
               ml={1}
-              color='#A7A7A7'
-              fontSize='18px'
-              lineHeight='20.88px'
+              color="#A7A7A7"
+              fontSize="18px"
+              lineHeight="20.88px"
             >
               I understand that if I lose my phone or wallet I will need my
               secret recovery phrase to retrieve my wallet.
@@ -246,15 +251,15 @@ const VerifySaved = () => {
                 "linear-gradient(89.89deg, #3E3E3E -27.59%, rgba(62, 62, 62, 0) 42.72%), #00FFAA",
               py: 2,
             }}
-            variant='contained'
-            type='submit'
+            variant="contained"
+            type="submit"
           >
             Confirm
           </Button>
           <Button
             sx={{ mt: 3, bgcolor: "#3E3E3E !important" }}
             fullWidth
-            variant='outlined'
+            variant="outlined"
             onClick={() => {
               navigate(-1);
             }}

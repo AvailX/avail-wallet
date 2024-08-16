@@ -10,7 +10,7 @@ import "./style.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { ThemeProvider } from "@mui/material";
+import { Box, ThemeProvider } from "@mui/material";
 import theme from "./theme";
 
 import i18n from "../src-desktop/i18next-config";
@@ -24,7 +24,7 @@ const handleLanguage = async () => {
   } else {
     await i18n.changeLanguage("en");
   }
-}
+};
 
 handleLanguage();
 

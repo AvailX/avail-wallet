@@ -7,8 +7,7 @@ import { session_and_local_auth } from "../../src-desktop/services/authenticatio
 import { AvailError, AvailErrorType } from "../../src-desktop/types/errors";
 import { ErrorAlert } from "../../src-desktop/components/snackbars/alerts";
 import { listen } from "@tauri-apps/api/event";
-import { useWalletConnectManager } from '../../src-desktop/context/WalletConnect';
-
+import { useWalletConnectManager } from "../../src-desktop/context/WalletConnect";
 
 const boxStyles: mui.SxProps = {
   display: "flex",
@@ -31,19 +30,18 @@ function EntryPoint() {
 
   const initDeepLink = async () => {
     console.log("Dee[ link listener started");
-    await listen('deep-link-wc', async event => {
+    await listen("deep-link-wc", async (event) => {
       const { uri } = event.payload as { uri: string }; // Add type assertion
 
       // Decode the uri
-      const wcUri = uri.split('\"')[1].split('avail://wc?uri=')[1];
-      console.log('Deep link uri:', wcUri);
+      const wcUri = uri.split('"')[1].split("avail://wc?uri=")[1];
+      console.log("Deep link uri:", wcUri);
       const decodedUri = decodeURIComponent(wcUri);
-      console.log('Decoded uri:', decodedUri);
+      console.log("Decoded uri:", decodedUri);
 
       // If (decodedUri)
       await walletConnectManager.pair(decodedUri);
     });
-
   };
   React.useEffect(() => {
     const authenticateUser = async () => {

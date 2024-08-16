@@ -72,25 +72,25 @@ const Username = () => {
       {errors &&
         Object.keys(errors).map((field: string) => (
           <Stack key={field} my={1}>
-            <Alert severity='error'>
+            <Alert severity="error">
               {errors[field as keyof FormData]?.message}
             </Alert>
           </Stack>
         ))}
-      <Box display='flex' height='100vh' flexDirection='column' pt={10}>
-        <Typography textAlign='left' mb={2} fontWeight={700} fontSize='25px'>
+      <Box display="flex" flexDirection="column" pt={10} pb={3}>
+        <Typography textAlign="left" mb={2} fontWeight={700} fontSize="25px">
           Create your{" "}
           <span style={{ color: "#05e69a" }}>Username & Password</span>
         </Typography>
         <form onSubmit={handleSubmit(clickStuff)}>
           <Controller
-            name='username'
+            name="username"
             control={control}
-            defaultValue=''
+            defaultValue=""
             render={({ field }) => (
               <Input
                 {...field}
-                placeholder='username.avl.alo'
+                placeholder="username.avl.alo"
                 fullWidth
                 disableUnderline
                 inputProps={{
@@ -114,15 +114,15 @@ const Username = () => {
           />
 
           <Controller
-            name='password'
+            name="password"
             control={control}
-            defaultValue=''
+            defaultValue=""
             render={({ field }) => (
               <Input
                 {...field}
                 fullWidth
                 type={passwordHidden ? "password" : "text"}
-                placeholder='Password'
+                placeholder="Password"
                 error={!!errors.password}
                 disableUnderline
                 inputProps={{
@@ -162,14 +162,14 @@ const Username = () => {
             )}
           />
           <Controller
-            name='confirmPassword'
+            name="confirmPassword"
             control={control}
-            defaultValue=''
+            defaultValue=""
             render={({ field }) => (
               <Input
                 {...field}
                 type={passwordHidden ? "password" : "text"}
-                placeholder='Confirm Password'
+                placeholder="Confirm Password"
                 fullWidth
                 error={!!errors.confirmPassword}
                 disableUnderline
@@ -211,7 +211,7 @@ const Username = () => {
             )}
           />
 
-          <Button sx={{ mt: 4, mb: 2, py: 2, width: "100%" }} type='submit'>
+          <Button sx={{ mt: 4, mb: 2, py: 2, width: "100%" }} type="submit">
             {isLoading ? "Loading...." : "Continue"}
           </Button>
         </form>
