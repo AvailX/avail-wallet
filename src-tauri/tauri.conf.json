@@ -16,14 +16,8 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": [
-      "nsis",
-      "deb",
-      "rpm",
-      "dmg",
-      "app"
-    ],
-    "createUpdaterArtifacts": true,
+    "targets": "all",
+    "createUpdaterArtifacts": "v1Compaitble",
     "macOS": {
       "signingIdentity": "-",
       "entitlements": "entitlements.plist",
