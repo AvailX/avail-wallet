@@ -20,7 +20,7 @@
     "createUpdaterArtifacts": "v1Compatible",
     "macOS": {
       "signingIdentity": "-",
-      "hardenedRuntime": false
+      "hardenedRuntime": true
     }
   },
   "plugins": {
