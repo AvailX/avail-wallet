@@ -26,7 +26,7 @@
     "createUpdaterArtifacts": true,
     "macOS": {
       "signingIdentity": "-",
-      "entitlements": "src-tauri/entitlements.plist",
+      "entitlements": "entitlements.plist",
       "hardenedRuntime": true
     }
   },
