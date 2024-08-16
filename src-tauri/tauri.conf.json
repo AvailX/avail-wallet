@@ -18,8 +18,10 @@
     ],
     "targets": "all",
     "createUpdaterArtifacts": "v1Compatible",
-    "signingIdentity": "-",
-    "hardenedRuntime": false
+    "macOS": {
+      "signingIdentity": "-",
+      "hardenedRuntime": false
+    }
   },
   "plugins": {
     "updater": {
