@@ -3,21 +3,21 @@ import {
   Button,
   Checkbox,
   Typography,
+  IconButton,
+  Badge,
   checkboxClasses,
 } from "@mui/material";
 import SwipeableEdgeDrawer from "../../components/SwipeableDrawer";
+import CloseIcon from "@mui/icons-material/Close";
 
 import React, { useState } from "react";
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import GoBack from "../../shared/GoBack";
 
 const VerifySaved = () => {
   const navigate = useNavigate();
-
   const location = useLocation();
-
   const { phrase }: { phrase: string[] } = location.state || {};
 
   function shuffleArray(array: string[]) {
@@ -60,6 +60,10 @@ const VerifySaved = () => {
     setPastedItems(itemsToPaste.split(","));
   }
 
+  const handleRemoveItem = (item: string) => {
+    setPastedItems(pastedItems.filter((i) => i !== item));
+  };
+
   return (
     <>
       <Box
@@ -101,24 +105,51 @@ const VerifySaved = () => {
             <Box
               display="grid"
               justifyContent="space-between"
-              gridTemplateColumns="1fr 1fr 1fr"
+              gridTemplateColumns="repeat(3, auto)"
               gap={1}
               height="auto"
               sx={{ overflowY: "auto" }}
             >
               {pastedItems.map((item, i) => (
-                <Box
-                  px={1}
-                  py={1}
-                  height="40px"
-                  bgcolor="#3E3E3E"
-                  borderRadius="9px"
+                <Badge
                   key={i}
+                  badgeContent={
+                    <IconButton
+                      size="small"
+                      color="inherit"
+                      onClick={() => handleRemoveItem(item)}
+                      sx={{
+                        color: "#fff",
+                        bgcolor: "#ff4444",
+                        "&:hover": {
+                          bgcolor: "#ff6666",
+                        },
+                        width: "20px",
+                        height: "20px",
+                      }}
+                    >
+                      {/* <CloseIcon fontSize="small" /> */}
+                    </IconButton>
+                  }
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  overlap="rectangular"
                 >
-                  <Typography width="100%" fontSize="14px" fontWeight={600}>
-                    {i + 1}. {item}
-                  </Typography>
-                </Box>
+                  <Box
+                    px={1}
+                    py={1}
+                    height="40px"
+                    bgcolor="#3E3E3E"
+                    borderRadius="9px"
+                    sx={{ position: "relative" }}
+                  >
+                    <Typography width="100%" fontSize="14px" fontWeight={600}>
+                      {i + 1}. {item}
+                    </Typography>
+                  </Box>
+                </Badge>
               ))}
             </Box>
             <Box
@@ -146,7 +177,7 @@ const VerifySaved = () => {
           </Box>
         </Box>
 
-        {/* <Box
+        <Box
           display="grid"
           gap={2}
           gridTemplateColumns="1fr 1fr 1fr"
@@ -154,7 +185,7 @@ const VerifySaved = () => {
           mx="auto"
           mt={3}
           sx={{
-            height: "200px",
+            height: "100%",
             maxHeight: "200px",
             overflowY: "auto",
             paddingRight: "8px",
@@ -175,13 +206,15 @@ const VerifySaved = () => {
                 bgcolor="#3E3E3E"
                 borderRadius="9px"
                 key={i}
+                width="25vw"
+                height="40px"
               >
                 <Typography width="100%" fontSize="14px" fontWeight={600}>
                   {phr}
                 </Typography>
               </Box>
             ))}
-        </Box> */}
+        </Box>
 
         <Box
           width="100%"
