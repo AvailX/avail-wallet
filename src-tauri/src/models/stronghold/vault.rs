@@ -34,9 +34,9 @@ impl Vault {
 
     pub async fn insert(
         self,
-        value: &[u8],
         hold: &StrongholdCollection,
         record_path: &str,
+        value: &[u8],
     ) -> AvailResult<()> {
         let path = PathBuf::from(self.path);
         let record_path = BytesDto::Text(record_path.to_string());
@@ -151,88 +151,51 @@ impl Vault {
         }
     }
 
-    pub async fn derive_slip10_master<N: Network>(
+    pub async fn derive_slip10<N: Network>(
         self,
         hold: &StrongholdCollection,
         record_path: &str,
+        network: &str,
     ) -> AvailResult<Vec<u8>> {
         let path = PathBuf::from(self.path);
-        let record_path = BytesDto::Text(record_path.to_string());
-        let seed_path = BytesDto::Text("bip39".to_string());
+        let record_path_dto = BytesDto::Text(record_path.to_string());
+        let seed_path = BytesDto::Text("bip39 seed".to_string());
 
         let output = LocationDto::Generic {
             vault: self.name,
-            record: record_path,
+            record: record_path_dto,
         };
 
         // This might not be found because it might have initialised another stronghold.
         let location = LocationDto::Generic {
-            vault: BytesDto::Text("bip39".to_string()),
+            vault: BytesDto::Text("bip39 seed".to_string()),
             record: seed_path,
         };
 
         let input = Slip10DeriveInputDto::Seed(location);
 
-        //let hardened_offset = 0x80000000;
-        //let chain_code = [0u8; 32];
-
-        let network = "mainnet".to_string();
-
-        let procedure = ProcedureDto::<N>::SLIP10Derive {
-            curve: Curve::Aleo,
-            chain: vec![0x80000000],
-            input,
-            output,
-            network,
-        };
-
-        match execute_procedure(hold, path, self.client, procedure).await {
-            Ok(x) => Ok(x),
-            Err(e) => Err(AvailError::new(
-                AvailErrorType::Internal,
-                e.to_string(),
-                "Failed to derive Aleo key".to_string(),
-            )),
-        }
-    }
-
-    pub async fn derive_slip10<N: Network>(
-        self,
-        hold: &StrongholdCollection,
-        record_path: &str,
-        chain_code: &[u8],
-    ) -> AvailResult<Vec<u8>> {
-        let path = PathBuf::from(self.path);
-        let record_path = BytesDto::Text(record_path.to_string());
-
-        let output = LocationDto::Generic {
-            vault: self.name,
-            record: record_path,
-        };
-
-        // This might not be found because it might have initialised another stronghold.
-        let location = LocationDto::Generic {
-            vault: BytesDto::Text("slip10".to_string()),
-            record: BytesDto::Text("m/44'/0'/0'/0'".to_string()),
-        };
-
-        let input = Slip10DeriveInputDto::Key(location);
-
+        // Parse path and convert it to hardened chain
         let hardened_offset = 0x80000000;
-        // TODO - store chain code related to account index
-        //let chain_code = [86, 230, 131, 55, 46, 161, 95, 36, 205, 207, 176, 253, 25, 231, 113, 237, 91, 249, 79, 188, 186, 46, 248, 117, 133, 43, 41, 53, 206, 157, 181, 80];
-        let chain_code: Vec<u32> = chain_code.iter().map(|x| *x as u32).collect();
-        let hardened_chain = chain_code
-            .iter()
-            .map(|x| x + hardened_offset)
-            .collect::<Vec<u32>>();
-        let network = "mainnet".to_string();
+        let hardened_chain = record_path
+            .split('/')
+            .skip(1) // Skip the leading 'm'
+            .map(|s| {
+                if s.ends_with('\'') {
+                    s.trim_end_matches('\'').parse::<u32>().unwrap() + hardened_offset
+                } else {
+                    s.parse::<u32>().unwrap() + hardened_offset
+                }
+            })
+            .collect();
+
+        println!("Hardened chain: {:?}", hardened_chain);
+
         let procedure = ProcedureDto::<N>::SLIP10Derive {
             curve: Curve::Aleo,
             chain: hardened_chain,
             input,
             output,
-            network,
+            network: network.to_string(),
         };
 
         match execute_procedure(hold, path, self.client, procedure).await {

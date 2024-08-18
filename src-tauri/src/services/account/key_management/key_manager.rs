@@ -1,19 +1,23 @@
 use std::{ops::Sub, path::PathBuf};
+use std::ops::Deref;
 
 use crate::models::stronghold::{client::Client, vault::Vault, Stronghold};
 use app_dirs::*;
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
+use iota_stronghold::engine::runtime::ZeroizeOnDrop;
 use serde::{Deserialize, Serialize};
 use snarkvm::{
-    prelude::{Address, Network},
+    prelude::{Address, Network, Field, anyhow, Authorization, Identifier, Plaintext, ProgramID, Record, Value, PrivateKey},
     utilities::FromBytes,
-    console::account::Signature
+    console::account::Signature,
+    ledger::Transaction
 };
-use snarkvm::ledger::Transaction;
-use snarkvm::prelude::{anyhow, Identifier, Plaintext, ProgramID, Record, Value};
+use snarkvm::prelude::{Environment, ToBytes};
 use tauri_plugin_aleo_stronghold::{
     create_client, initialize, load_client, BytesDto, PasswordHashFunction, StrongholdCollection,
 };
+use zeroize::Zeroizing;
+use snarkvm::fields::PrimeField;
 
 pub async fn init_stronghold(
     password: &str,
@@ -103,16 +107,15 @@ pub async fn generate_seed_phrase<N: Network>(password: &str) -> AvailResult<Str
     let vault = Vault::new(
         stronghold.path.as_str(),
         client.name,
-        BytesDto::Text("bip39".to_string()),
+        BytesDto::Text("bip39 seed".to_string()),
     );
 
-    let record_path = "bip39";
+    let record_path = "bip39 seed";
 
     let result = vault.generate_bip39::<N>(&hold, record_path).await?;
-
     let mnemonic = String::from_utf8(result)?;
-    stronghold.save(&hold).await?;
-    stronghold.destroy(&hold).await?;
+    store_mnemonic(mnemonic.clone(), password).await?;
+
     Ok(mnemonic)
 }
 
@@ -122,39 +125,56 @@ pub async fn recover_seed_phrase<N: Network>(mnemonic: String, password: &str) -
     let vault = Vault::new(
         stronghold.path.as_str(),
         client.name,
-        BytesDto::Text("bip39".to_string()),
+        BytesDto::Text("bip39 seed".to_string()),
     );
 
-    let record_path = "bip39";
+    let record_path = "bip39 seed";
 
-    let result = vault.recover_bip39::<N>(&hold, record_path, mnemonic).await?;
+    vault.recover_bip39::<N>(&hold, record_path, mnemonic.clone()).await?;
+    store_mnemonic(mnemonic, password).await?;
 
-    println!("Seed bytes: {:?}", result);
-    stronghold.save(&hold).await?;
-    stronghold.destroy(&hold).await?;
     Ok(())
 }
 
-/* ALEO KEY API */
-
-pub async fn derive_aleo_master_key<N: Network>(password: &str) -> AvailResult<()> {
+pub async fn store_mnemonic(mnemonic: String, password: &str) -> AvailResult<()> {
     let (hold, stronghold, client) = init_stronghold(password).await?;
 
     let vault = Vault::new(
         stronghold.path.as_str(),
         client.name.clone(),
-        BytesDto::Text("slip10".to_string()),
+        BytesDto::Text("bip39 mnemonic".to_string()),
     );
 
-    let key_path = "m/44'/0'/0'/0'";
+    let record_path = "bip39 mnemonic";
 
-    let cc = vault.derive_slip10_master::<N>(&hold, key_path).await?;
-    store_chain_code(0u32, cc, client, &hold).await?;
+    vault.insert(&hold, record_path, mnemonic.as_bytes()).await?;
 
     stronghold.save(&hold).await?;
     stronghold.destroy(&hold).await?;
     Ok(())
 }
+
+pub async fn unsafe_get_mnemonic(password: &str) -> AvailResult<Zeroizing<String>> {
+    let (hold, stronghold, client) = init_stronghold(password).await?;
+
+    let vault = Vault::new(
+        stronghold.path.as_str(),
+        client.name.clone(),
+        BytesDto::Text("bip39 mnemonic".to_string()),
+    );
+
+    let record_path = "bip39 mnemonic";
+
+    let res = vault.unsafe_get_secret(&hold, record_path).await?;
+    let deref = res.deref();
+    let mnemonic = String::from_utf8(deref.to_vec())?;
+
+    stronghold.save(&hold).await?;
+    stronghold.destroy(&hold).await?;
+    Ok(mnemonic.into())
+}
+
+/* ALEO KEY API */
 
 pub async fn derive_aleo_key<N: Network>(
     password: &str,
@@ -169,13 +189,8 @@ pub async fn derive_aleo_key<N: Network>(
     );
 
     let key_path = format!("m/44'/0'/{}'/0'", account_index);
-    let chain_code = get_chain_code(account_index.sub(1), client.clone(), &hold).await?;
 
-    let cc = vault
-        .clone()
-        .derive_slip10::<N>(&hold, &key_path, &chain_code)
-        .await?;
-    store_chain_code(account_index, cc, client, &hold).await?;
+    vault.clone().derive_slip10::<N>(&hold, &key_path, "testnet").await?;
 
     let address = vault.get_address::<N>(&hold, &key_path).await?;
     let aleo_address = Address::<N>::from_bytes_le(&address)?.to_string();
@@ -185,22 +200,30 @@ pub async fn derive_aleo_key<N: Network>(
     Ok(aleo_address)
 }
 
-pub async fn delete_aleo_key(password: &str, account_index: u32) -> AvailResult<()> {
+pub async fn unsafe_get_aleo_private_key<N: Network>(password: &str, account_index: u32) -> AvailResult<Zeroizing<PrivateKey<N>>> {
+    use hex;
+
     let (hold, stronghold, client) = init_stronghold(password).await?;
 
     let vault = Vault::new(
         stronghold.path.as_str(),
-        client.name,
+        client.name.clone(),
         BytesDto::Text("slip10".to_string()),
     );
-
     let key_path = format!("m/44'/0'/{}'/0'", account_index);
 
-    vault.remove_secret(&hold, &key_path).await?;
+    let res = vault.unsafe_get_secret(&hold, &key_path).await?;
+    let deref = &res.deref()[..32]; // first 32 bytes for private key from extended bytes
+
+    let hexs = hex::encode(deref);
+    println!("Seed: {}", hexs);
+
+    let field = <N as Environment>::Field::from_bytes_le_mod_order(deref);
+    let private_key = PrivateKey::<N>::try_from(FromBytes::read_le(&*field.to_bytes_le().unwrap()).unwrap())?;
 
     stronghold.save(&hold).await?;
     stronghold.destroy(&hold).await?;
-    Ok(())
+    Ok(private_key.into())
 }
 
 pub async fn aleo_sign<N: Network>(
@@ -222,6 +245,101 @@ pub async fn aleo_sign<N: Network>(
         .unwrap();
 
     Signature::<N>::from_bytes_le(&res).map_err(AvailError::from)
+}
+
+pub async fn aleo_authorize<N: Network>(
+    password: &str,
+    account_index: u32,
+    program_id: ProgramID<N>,
+    function_name: Identifier<N>,
+    inputs: Vec<Value<N>>,
+) -> AvailResult<Authorization<N>> {
+    let (hold, stronghold, client) = init_stronghold(password).await.unwrap();
+    let vault = Vault::new(
+        stronghold.path.as_str(),
+        client.name,
+        BytesDto::Text("slip10".to_string()),
+    );
+    // Preparing inputs for key derivation and transaction
+    let key_path = format!("m/44'/0'/{}'/0'", account_index);
+
+    // Authorize transaction with stronghold vault
+    let res = vault
+        .aleo_authorize::<N>(
+            &hold,
+            &key_path,
+            program_id,
+            function_name,
+            inputs,
+        )
+        .await
+        .unwrap();
+
+    Authorization::from_bytes_le(&res).map_err(AvailError::from)
+}
+
+pub async fn aleo_authorize_fee_public<N: Network>(
+    password: &str,
+    account_index: u32,
+    base_fee_in_microcredits: u64,
+    priority_fee_in_microcredits: u64,
+    deployment_or_execution_id: Field<N>,
+) -> AvailResult<Authorization<N>> {
+    let (hold, stronghold, client) = init_stronghold(password).await.unwrap();
+    let vault = Vault::new(
+        stronghold.path.as_str(),
+        client.name,
+        BytesDto::Text("slip10".to_string()),
+    );
+    // Preparing inputs for key derivation and transaction
+    let key_path = format!("m/44'/0'/{}'/0'", account_index);
+
+    // Authorize transaction with stronghold vault
+    let res = vault
+        .aleo_authorize_fee_public::<N>(
+            &hold,
+            &key_path,
+            base_fee_in_microcredits,
+            priority_fee_in_microcredits,
+            deployment_or_execution_id,
+        )
+        .await
+        .unwrap();
+
+    Authorization::from_bytes_le(&res).map_err(AvailError::from)
+}
+
+pub async fn aleo_authorize_fee_private<N: Network>(
+    password: &str,
+    account_index: u32,
+    credits: Record<N, Plaintext<N>>,
+    base_fee_in_microcredits: u64,
+    priority_fee_in_microcredits: u64,
+    deployment_or_execution_id: Field<N>,
+) -> AvailResult<Authorization<N>> {
+    let (hold, stronghold, client) = init_stronghold(password).await.unwrap();
+    let vault = Vault::new(
+        stronghold.path.as_str(),
+        client.name,
+        BytesDto::Text("slip10".to_string()),
+    );
+    // Preparing inputs for key derivation and transaction
+    let key_path = format!("m/44'/0'/{}'/0'", account_index);
+
+    // Authorize transaction with stronghold vault
+    let res = vault
+        .aleo_authorize_fee_private::<N>(
+            &hold,
+            &key_path,
+            credits,
+            base_fee_in_microcredits,
+            priority_fee_in_microcredits,
+            deployment_or_execution_id,
+        )
+        .await
+        .unwrap();
+
+    Authorization::from_bytes_le(&res).map_err(AvailError::from)
 }
 
 pub async fn aleo_execute<N: Network>(
@@ -261,49 +379,6 @@ pub async fn aleo_execute<N: Network>(
     Transaction::from_bytes_le(&res).map_err(AvailError::from)
 }
 
-/* Chain Code Api */
-
-async fn store_chain_code(
-    account_index: u32,
-    chain_code: Vec<u8>,
-    client: Client,
-    hold: &StrongholdCollection,
-) -> AvailResult<()> {
-    let store = client.get_store();
-    store
-        .insert(account_index.to_string(), chain_code, hold)
-        .await?;
-    Ok(())
-}
-
-async fn get_chain_code(
-    account_index: u32,
-    client: Client,
-    hold: &StrongholdCollection,
-) -> AvailResult<Vec<u8>> {
-    let store = client.get_store();
-    let chain_code = store.get(account_index.to_string(), hold).await?;
-
-    match chain_code {
-        Some(cc) => Ok(cc),
-        None => Err(AvailError::new(
-            AvailErrorType::Internal,
-            "Chain code not found".to_string(),
-            "Chain code not found".to_string(),
-        )),
-    }
-}
-
-async fn remove_chain_code(
-    account_index: u32,
-    client: Client,
-    hold: &StrongholdCollection,
-) -> AvailResult<()> {
-    let store = client.get_store();
-    store.remove(account_index.to_string(), hold).await?;
-    Ok(())
-}
-
 #[cfg(test)]
 mod test_helpers {
     use super::*;
@@ -317,7 +392,16 @@ mod test_helpers {
         let mnemonic = generate_seed_phrase::<N>(password).await.unwrap();
         println!("{}", mnemonic);
 
+        assert!(store_mnemonic(mnemonic, password).await.is_ok());
+    }
 
+    #[tokio::test]
+    async fn test_unsafe_get_mnemonic() {
+        let password = "password";
+        let mnemonic = unsafe_get_mnemonic(password).await.unwrap();
+        println!("{}", mnemonic.deref());
+
+        assert!(!mnemonic.deref().is_empty());
     }
 
     #[tokio::test]
@@ -325,25 +409,17 @@ mod test_helpers {
         type N = TestnetV0;
 
         let password = "password";
-        let mnemonic = "";
+        let mnemonic = "exercise suggest fence speed spring silly smoke gauge october wet pony rookie slow curious assume earth drama truth castle put blanket happy train identify";
         let res = recover_seed_phrase::<N>(mnemonic.to_string(), password).await;
         assert!(res.is_ok());
     }
 
     #[tokio::test]
-    async fn derive_aleo_master() {
+    async fn test_derive_aleo_key() {
         type N = TestnetV0;
 
         let password = "password";
-        derive_aleo_master_key::<N>(password).await.unwrap();
-    }
-
-    #[tokio::test]
-    async fn derive_aleo_slip10_key() {
-        type N = TestnetV0;
-
-        let password = "password";
-        let account_index = 1;
+        let account_index = 0;
         let address = derive_aleo_key::<N>(password, account_index).await.unwrap();
         let address2 = derive_aleo_key::<N>(password, account_index + 1u32)
             .await
@@ -353,18 +429,55 @@ mod test_helpers {
     }
 
     #[tokio::test]
+    async fn test_unsafe_get_private_key() {
+        type N = TestnetV0;
+
+        let password = "password";
+        let account_index = 0;
+        let res = unsafe_get_aleo_private_key::<N>(password, account_index).await.unwrap();
+        let private_key = res.deref();
+
+        println!("{}", private_key);
+    }
+
+    #[tokio::test]
     async fn test_aleo_sign() {
         type N = TestnetV0;
 
-        let res = aleo_sign::<N>("password", 1, "tester").await.unwrap();
+        let res = aleo_sign::<N>("password", 0, "test message").await.unwrap();
         println!("{:?}", res);
     }
 
     #[tokio::test]
-    async fn test_delete_key() {
-        let password = "password";
-        let account_index = 1;
-        delete_aleo_key(password, account_index).await.unwrap();
+    async fn test_aleo_authorize() {
+        type N = TestnetV0;
+
+        let account_index = 0;
+        let program_id = "credits.aleo"
+            .try_into()
+            .map_err(|_| anyhow!("Invalid program id"))
+            .unwrap();
+        let function_name = "transfer_public"
+            .try_into()
+            .map_err(|_| anyhow!("Invalid function name"))
+            .unwrap();
+        let inputs: Vec<String> = ["aleo1h7k3ttm6avttrgujp75wxfd5jf3ztmf9xcr4k6h6j9wj8z65uy9scuqkv8".to_string(), "1000000u64".to_string()].to_vec();
+
+        // Convert inputs to Value
+        let mut inputs_values: Vec<Value<N>> = vec![];
+        for i in inputs {
+            inputs_values.push(Value::<N>::try_from(i).unwrap());
+        }
+
+        let res = aleo_authorize::<N>(
+            "password",
+            account_index,
+            program_id,
+            function_name,
+            inputs_values
+        ).await.unwrap();
+
+        println!("{:?}", res);
     }
 
     #[tokio::test]
@@ -372,8 +485,7 @@ mod test_helpers {
         type N = TestnetV0;
 
         // Preparing inputs for key derivation and transaction
-        let account_index = 1;
-        let key_path = format!("m/44'/0'/{}'/0'", account_index);
+        let account_index = 0;
         let base_url = format!(
             "https://aleo-testnetbeta.obscura.network/v1/{}",
             env!("TESTNET_API_OBSCURA")
@@ -395,9 +507,9 @@ mod test_helpers {
             inputs_values.push(Value::<N>::try_from(i).unwrap());
         }
 
-        let txn = aleo_execute(
+        let txn = aleo_execute::<N>(
             "password",
-            1,
+            account_index,
             program_id,
             function_name,
             inputs_values,

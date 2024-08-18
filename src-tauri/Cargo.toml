@@ -43,7 +43,7 @@ rayon = "1.7.0"
 rusqlite = { version = "0.29.0", features = ["bundled", "chrono"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.120"
-snarkvm = { features = [
+snarkvm = { features = [ "fields"
 ], git = "https://github.com/AleoNet/snarkVM", rev = "d170a9f" }
 ssss = "0.2.0"
 tauri = { version = "2.0.0-beta.17", features = [] }
@@ -51,8 +51,8 @@ tauri-plugin-deep-link = "=2.0.0-beta.3"
 tauri-plugin-http = { version = "2.0.0-beta.7", features = ["cookies"] }
 tauri-plugin-updater = { version = "2.0.0-beta.5", features = [] }
 tauri-plugin-process = "=2.0.0-beta.3"
-tauri-plugin-aleo-stronghold = {git="https://github.com/AvailX/tauri-plugin-aleo-stronghold", rev="b0231ce"}
-iota_stronghold = {git="https://github.com/AvailX/stronghold.rs", rev="146c971"}
+tauri-plugin-aleo-stronghold = {git="https://github.com/AvailX/tauri-plugin-aleo-stronghold", rev="9957009" }
+iota_stronghold = {git="https://github.com/AvailX/stronghold.rs", rev="0289b79" }
 tiny-bip39 = "1.0.0"
 tokio = { version = "1.29.1", features = ["full"] }
 tokio-rayon = "2.1.0"
@@ -65,6 +65,7 @@ zeroize = { version = "1.7.0", features = [
     "alloc",
 ] }
 rust-argon2 = "2.1.0"
+hex = "0.4"
 
 [target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
 keyring = "2.0.5"
@@ -92,11 +93,11 @@ opt-level = 3
 lto = "thin"
 incremental = true
 
-
 [profile.test]
-opt-level = 3
-lto = "thin"
+opt-level = 0
+lto = "off"
 incremental = true
+debug = true
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
