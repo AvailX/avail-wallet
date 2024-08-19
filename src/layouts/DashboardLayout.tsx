@@ -14,11 +14,11 @@ interface IProps extends PropsWithChildren {}
 const DashboardLayout: FC<IProps> = ({ children }) => {
   const navigate = useNavigate();
   const MOBILE_TAB = [
-    { icon: homeIcon, path: "/dashboard" },
     {
       icon: anchorIcon,
       path: "/dashboard",
     },
+    { icon: homeIcon, path: "/dashboard" },
     {
       icon: diamondIcon,
       path: "/settings",
