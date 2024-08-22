@@ -7,12 +7,11 @@ use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
 use iota_stronghold::engine::runtime::ZeroizeOnDrop;
 use serde::{Deserialize, Serialize};
 use snarkvm::{
-    prelude::{Address, Network, Field, anyhow, Authorization, Identifier, Plaintext, ProgramID, Record, Value, PrivateKey},
+    prelude::{Environment, ToBytes, Address, Network, Field, anyhow, Authorization, Identifier, Plaintext, ProgramID, Record, Value, PrivateKey, ViewKey},
     utilities::FromBytes,
     console::account::Signature,
     ledger::Transaction
 };
-use snarkvm::prelude::{Environment, ToBytes};
 use tauri_plugin_aleo_stronghold::{
     create_client, initialize, load_client, BytesDto, PasswordHashFunction, StrongholdCollection,
 };
@@ -154,7 +153,7 @@ pub async fn store_mnemonic(mnemonic: String, password: &str) -> AvailResult<()>
     Ok(())
 }
 
-pub async fn unsafe_get_mnemonic(password: &str) -> AvailResult<Zeroizing<String>> {
+pub(crate) async fn unsafe_get_mnemonic(password: &str) -> AvailResult<Zeroizing<String>> {
     let (hold, stronghold, client) = init_stronghold(password).await?;
 
     let vault = Vault::new(
@@ -179,6 +178,7 @@ pub async fn unsafe_get_mnemonic(password: &str) -> AvailResult<Zeroizing<String
 pub async fn derive_aleo_key<N: Network>(
     password: &str,
     account_index: u32,
+    network: &str,
 ) -> AvailResult<String> {
     let (hold, stronghold, client) = init_stronghold(password).await?;
 
@@ -190,9 +190,9 @@ pub async fn derive_aleo_key<N: Network>(
 
     let key_path = format!("m/44'/0'/{}'/0'", account_index);
 
-    vault.clone().derive_slip10::<N>(&hold, &key_path, "testnet").await?;
+    vault.clone().derive_aleo_slip10::<N>(&hold, &key_path, network).await?;
 
-    let address = vault.get_address::<N>(&hold, &key_path).await?;
+    let address = vault.get_aleo_address::<N>(&hold, &key_path).await?;
     let aleo_address = Address::<N>::from_bytes_le(&address)?.to_string();
 
     stronghold.save(&hold).await?;
@@ -200,9 +200,53 @@ pub async fn derive_aleo_key<N: Network>(
     Ok(aleo_address)
 }
 
-pub async fn unsafe_get_aleo_private_key<N: Network>(password: &str, account_index: u32) -> AvailResult<Zeroizing<PrivateKey<N>>> {
-    use hex;
+pub async fn get_aleo_address<N: Network>(
+    password: &str,
+    account_index: u32,
+    network: &str,
+) -> AvailResult<String> {
+    let (hold, stronghold, client) = init_stronghold(password).await?;
 
+    let vault = Vault::new(
+        stronghold.path.as_str(),
+        client.name.clone(),
+        BytesDto::Text("slip10".to_string()),
+    );
+
+    let key_path = format!("m/44'/0'/{}'/0'", account_index);
+
+    let address = vault.get_aleo_address::<N>(&hold, &key_path).await?;
+    let aleo_address = Address::<N>::from_bytes_le(&address)?.to_string();
+
+    stronghold.save(&hold).await?;
+    stronghold.destroy(&hold).await?;
+    Ok(aleo_address)
+}
+
+pub async fn get_aleo_view_key<N: Network>(
+    password: &str,
+    account_index: u32,
+    network: &str,
+) -> AvailResult<String> {
+    let (hold, stronghold, client) = init_stronghold(password).await?;
+
+    let vault = Vault::new(
+        stronghold.path.as_str(),
+        client.name.clone(),
+        BytesDto::Text("slip10".to_string()),
+    );
+
+    let key_path = format!("m/44'/0'/{}'/0'", account_index);
+
+    let res = vault.get_aleo_view_key::<N>(&hold, &key_path).await?;
+    let view_key = ViewKey::<N>::from_bytes_le(&res)?.to_string();
+
+    stronghold.save(&hold).await?;
+    stronghold.destroy(&hold).await?;
+    Ok(view_key)
+}
+
+pub(crate) async fn unsafe_get_aleo_private_key<N: Network>(password: &str, account_index: u32) -> AvailResult<Zeroizing<PrivateKey<N>>> {
     let (hold, stronghold, client) = init_stronghold(password).await?;
 
     let vault = Vault::new(
@@ -214,9 +258,6 @@ pub async fn unsafe_get_aleo_private_key<N: Network>(password: &str, account_ind
 
     let res = vault.unsafe_get_secret(&hold, &key_path).await?;
     let deref = &res.deref()[..32]; // first 32 bytes for private key from extended bytes
-
-    let hexs = hex::encode(deref);
-    println!("Seed: {}", hexs);
 
     let field = <N as Environment>::Field::from_bytes_le_mod_order(deref);
     let private_key = PrivateKey::<N>::try_from(FromBytes::read_le(&*field.to_bytes_le().unwrap()).unwrap())?;
@@ -420,12 +461,28 @@ mod test_helpers {
 
         let password = "password";
         let account_index = 0;
-        let address = derive_aleo_key::<N>(password, account_index).await.unwrap();
-        let address2 = derive_aleo_key::<N>(password, account_index + 1u32)
+        let network = "testnet";
+        let address = derive_aleo_key::<N>(password, account_index, network).await.unwrap();
+        let address2 = derive_aleo_key::<N>(password, account_index + 1u32, network)
             .await
             .unwrap();
         println!("{}", address);
         println!("{}", address2);
+    }
+
+    #[tokio::test]
+    async fn test_get_aleo_address_and_view_key() {
+        type N = TestnetV0;
+
+        let password = "password";
+        let account_index = 0;
+        let network = "testnet";
+        let address = get_aleo_address::<N>(password, account_index, network).await.unwrap();
+        let view_key = get_aleo_view_key::<N>(password, account_index, network)
+            .await
+            .unwrap();
+        println!("{}", address);
+        println!("{}", view_key);
     }
 
     #[tokio::test]

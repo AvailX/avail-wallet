@@ -1,3 +1,4 @@
+use std::marker::PhantomData;
 use std::path::PathBuf;
 
 use avail_common::errors::{AvailError, AvailErrorType, AvailResult};
@@ -60,7 +61,7 @@ impl Vault {
         }
     }
 
-    pub async fn unsafe_get_secret(
+    pub(crate) async fn unsafe_get_secret(
         self,
         hold: &StrongholdCollection,
         record_path: &str,
@@ -151,7 +152,7 @@ impl Vault {
         }
     }
 
-    pub async fn derive_slip10<N: Network>(
+    pub async fn derive_aleo_slip10<N: Network>(
         self,
         hold: &StrongholdCollection,
         record_path: &str,
@@ -236,7 +237,7 @@ impl Vault {
         }
     }
 
-    pub async fn get_address<N: Network>(
+    pub async fn get_aleo_address<N: Network>(
         self,
         hold: &StrongholdCollection,
         record_path: &str,
@@ -258,6 +259,32 @@ impl Vault {
                 AvailErrorType::Internal,
                 e.to_string(),
                 "Failed to get address.".to_string(),
+            )),
+        }
+    }
+
+    pub async fn get_aleo_view_key<N: Network>(
+        self,
+        hold: &StrongholdCollection,
+        record_path: &str,
+    ) -> AvailResult<Vec<u8>> {
+        let path = PathBuf::from(self.path);
+        let record_path = BytesDto::Text(record_path.to_string());
+        let location = LocationDto::Generic {
+            vault: self.name,
+            record: record_path,
+        };
+        let procedure = ProcedureDto::GetAleoViewKey {
+            private_key: location,
+            _network: PhantomData::<N>,
+        };
+
+        match execute_procedure(hold, path, self.client, procedure).await {
+            Ok(x) => Ok(x),
+            Err(e) => Err(AvailError::new(
+                AvailErrorType::Internal,
+                e.to_string(),
+                "Failed to get view key.".to_string(),
             )),
         }
     }
