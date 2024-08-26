@@ -20,7 +20,6 @@ import { SessionInfo } from "./SessionInfo";
 import { dappSession, type WalletConnectRequest } from "./WCTypes";
 
 type PingEventData = Omit<SignClientTypes.BaseEventArgs, "params">;
-
 export class WalletConnectManager {
   theWallet?: IWeb3Wallet;
   projectId: string;
@@ -155,13 +154,14 @@ export class WalletConnectManager {
       /* Approve/Reject Connection window -- START */
       // Open the new window
       // HERE IS WHERE THE MODAL SHOULD BE CALLED @kalio
-      const webview = new WebviewWindow("wallet-connect", {
-        url: "wallet-connect-screens/wallet-connect.html",
-        title: "Avail Wallet Connect",
-        width: 350,
-        height: 600,
-        resizable: false,
-      });
+      // const webview = new WebviewWindow("wallet-connect", {
+      //   url: "wallet-connect-screens/wallet-connect.html",
+      //   title: "Avail Wallet Connect",
+      //   width: 350,
+      //   height: 600,
+      //   resizable: false,
+      // });
+      console.log("before wallet-connect");
 
       const wcRequest: WalletConnectRequest = {
         method: "connect",
@@ -174,83 +174,87 @@ export class WalletConnectManager {
         dappImage: metadata.icons[0],
       };
 
-      await webview.once("tauri://created", () => {
-        console.log("Window created");
+      // open modal window
 
-        console.log("Webview ", webview);
+      console.log("wcquest" + wcRequest);
 
-        setTimeout(async () => {
-          await emit("wallet-connect-request", wcRequest);
-          console.log("Emitting wallet-connect-request");
-        }, 3000);
-      });
+      // await webview.once("tauri://created", () => {
+      //   console.log("Window created");
+
+      //   console.log("Webview ", webview);
+
+      //   setTimeout(async () => {
+      //     await emit("wallet-connect-request", wcRequest);
+      //     console.log("Emitting wallet-connect-request");
+      //   }, 3000);
+      // });
 
       const { aleoWallet, theWallet } = this;
 
-      await once("connect-approved", async (response) => {
-        await webview.close();
-        console.log("Wallet connect was approved", response);
+      // await once("connect-approved", async (response) => {
+      //   await webview.close();
+      //   console.log("Wallet connect was approved", response);
 
-        SessionInfo.show(proposal, [aleoWallet.chainName()]);
+      //   SessionInfo.show(proposal, [aleoWallet.chainName()]);
 
-        const supportedNamespaces = {
-          // What the dApp requested...
-          proposal: proposal.params,
+      //   const supportedNamespaces = {
+      //     // What the dApp requested...
+      //     proposal: proposal.params,
 
-          // What we support...
-          supportedNamespaces: {
-            aleo: {
-              chains: [aleoWallet.chainName()],
-              methods: aleoWallet.chainMethods(),
-              events: aleoWallet.chainEvents(),
-              accounts: [
-                `${aleoWallet.chainName()}:${aleoWallet.getAddress()}`,
-              ],
-            },
-          },
-        };
-        console.log("supportedNamespaces", supportedNamespaces);
-        const approvedNamespaces = buildApprovedNamespaces(supportedNamespaces);
+      //     // What we support...
+      //     supportedNamespaces: {
+      //       aleo: {
+      //         chains: [aleoWallet.chainName()],
+      //         methods: aleoWallet.chainMethods(),
+      //         events: aleoWallet.chainEvents(),
+      //         accounts: [
+      //           `${aleoWallet.chainName()}:${aleoWallet.getAddress()}`,
+      //         ],
+      //       },
+      //     },
+      //   };
+      //   console.log("supportedNamespaces", supportedNamespaces);
+      //   const approvedNamespaces = buildApprovedNamespaces(supportedNamespaces);
 
-        console.log("Approving session...");
-        const session = await theWallet.approveSession({
-          id: proposal.id,
-          relayProtocol: proposal.params.relays[0].protocol,
-          namespaces: approvedNamespaces,
-        });
-        console.log("Approved session", session);
+      //   console.log("Approving session...");
+      //   const session = await theWallet.approveSession({
+      //     id: proposal.id,
+      //     relayProtocol: proposal.params.relays[0].protocol,
+      //     namespaces: approvedNamespaces,
+      //   });
+      //   console.log("Approved session", session);
 
-        await emit("connected", session);
+      //   await emit("connected", session);
 
-        this.currentRequestVerifyContext = proposal.verifyContext;
+      //   this.currentRequestVerifyContext = proposal.verifyContext;
 
-        // This value is present in the pairing URI
-        // wc:<pairingTopic>@....
-        this.pairingTopic = proposal.params.pairingTopic;
+      //   // This value is present in the pairing URI
+      //   // wc:<pairingTopic>@....
+      //   this.pairingTopic = proposal.params.pairingTopic;
 
-        // This value will stick throughout the session and will
-        // be present in session_request, session_delete events
-        this.sessionTopic = session.topic;
-        console.log("Session topic", this.sessionTopic);
+      //   // This value will stick throughout the session and will
+      //   // be present in session_request, session_delete events
+      //   this.sessionTopic = session.topic;
+      //   console.log("Session topic", this.sessionTopic);
 
-        const dappSess = dappSession(
-          metadata.name,
-          metadata.description,
-          metadata.url,
-          metadata.icons[0]
-        );
+      //   const dappSess = dappSession(
+      //     metadata.name,
+      //     metadata.description,
+      //     metadata.url,
+      //     metadata.icons[0]
+      //   );
 
-        console.log("Storing dapp session", dappSess);
-        sessionStorage.setItem(session.topic, JSON.stringify(dappSess));
-      });
+      //   console.log("Storing dapp session", dappSess);
+      //   sessionStorage.setItem(session.topic, JSON.stringify(dappSess));
+      // });
 
       // Listen for the rejection event from the secondary window
-      await once("connect-rejected", async (response) => {
-        // Handle the rejection logic here
-        console.log("Wallet connect was rejected", response);
-        await webview.close();
-        throw new Error("User Rejected");
-      });
+      // await once("connect-rejected", async (response) => {
+      //   // Handle the rejection logic here
+      //   console.log("Wallet connect was rejected", response);
+      //   await webview.close();
+      //   throw new Error("User Rejected");
+      // });
 
       /* Approve/Reject Connection window -- END */
     } catch (error) {
