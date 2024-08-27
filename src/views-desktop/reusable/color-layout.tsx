@@ -7,7 +7,7 @@ type LayoutWrapperProperties = {
   children: React.ReactNode;
 };
 
-const Layout: React.FC<LayoutWrapperProperties> = ({ children }) => (
+const ColorLayout: React.FC<LayoutWrapperProperties> = ({ children }) => (
   <div>
     {/* <MiniDrawer></MiniDrawer> */}
 
@@ -16,16 +16,15 @@ const Layout: React.FC<LayoutWrapperProperties> = ({ children }) => (
         display: "flex",
         flexDirection: "column",
         // BackgroundColor:"#081424",
-        backgroundColor: "#000000",
+        backgroundColor: "#111111",
         minWidth: "100%",
         minHeight: "100vh",
         margin: 0,
         padding: 0,
-        paddingTop: "20px",
-        // backgroundImage: `url(${revampBg})`,
-        // backgroundRepeat: "no-repeat",
-        // backgroundPosition: "bottom center",
-        // backgroundSize: "100% auto",
+        backgroundImage: `url(${revampBg})`,
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "bottom center",
+        backgroundSize: "100% auto",
       }}
     >
       {children}
@@ -33,4 +32,4 @@ const Layout: React.FC<LayoutWrapperProperties> = ({ children }) => (
   </div>
 );
 
-export default Layout;
+export default ColorLayout;

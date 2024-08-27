@@ -23,6 +23,7 @@ import { ErrorAlert } from "../components/snackbars/alerts";
 import update from "../services/util/updater";
 import { useWalletConnectManager } from "../context/WalletConnect";
 import { listen } from "@tauri-apps/api/event";
+import ColorLayout from "./reusable/color-layout";
 
 function Entrypoint() {
   const navigate = useNavigate();
@@ -104,7 +105,7 @@ function Entrypoint() {
   }, []);
 
   return (
-    <Layout>
+    <ColorLayout>
       <UpdateAlert open={updateDialog} />
       <ErrorAlert
         errorAlert={alert}
@@ -133,7 +134,7 @@ function Entrypoint() {
           Blockchain...
         </mui.Typography>
       </mui.Box>
-    </Layout>
+    </ColorLayout>
   );
 }
 

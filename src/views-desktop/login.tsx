@@ -44,6 +44,7 @@ import {
   InfoAlert,
 } from "../components/snackbars/alerts";
 import Layout from "./reusable/layout";
+import ColorLayout from "./reusable/color-layout";
 
 function Login() {
   const [password, setPassword] = React.useState("");
@@ -100,7 +101,7 @@ function Login() {
   };
 
   return (
-    <Layout>
+    <ColorLayout>
       {/* --Alerts-- */}
       <ErrorAlert
         errorAlert={error}
@@ -337,7 +338,7 @@ function Login() {
           </mui.Box>
         </mui.Grid>
       </mui.Box>
-    </Layout>
+    </ColorLayout>
   );
 }
 
