@@ -38,6 +38,7 @@ use crate::models::wallet_connect::{
 };
 use chrono::Local;
 use std::str::FromStr;
+use tauri::Emitter;
 
 use snarkvm::circuit::Aleo;
 use snarkvm::{

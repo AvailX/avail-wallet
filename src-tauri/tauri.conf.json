@@ -16,7 +16,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": "all"
+    "targets": "all",
+    "createUpdaterArtifacts": "v1Compatible",
+    "macOS": {
+      "signingIdentity": "-",
+      "entitlements": "entitlements.plist",
+      "hardenedRuntime": true
+    }
   },
   "plugins": {
     "updater": {
@@ -33,7 +39,20 @@
             "avail://"
           ]
         }
-      ]
+      ],
+      "mobile": [
+        {
+          "host": "com.avail.wallet",
+          "pathPrefix": [
+            "avail://"
+          ]
+        }
+      ],
+      "desktop": {
+        "schemes": [
+          "avail"
+        ]
+      }
     }
   },
   "app": {

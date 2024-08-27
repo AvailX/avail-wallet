@@ -126,7 +126,7 @@ impl<N: Network> TransitionPointer<N> {
         let address = get_address::<N>()?;
         let encrypted_struct = encrypted_data_record.to_enrypted_struct::<N>()?;
         let record = decrypt::<N>(encrypted_struct)?;
-        let api_client = setup_local_client::<N>();
+        let api_client = setup_client::<N>()?;
         let ts = api_client.get_block(record.block_height)?.timestamp();
         let created_at: DateTime<Utc> = get_timestamp_from_i64(ts)?.with_timezone(&Utc);
         println!(

@@ -37,6 +37,8 @@ use services::record_handling::{
     sync::{blocks_sync, sync_backup, txs_sync},
     transfer::{pre_install_inclusion_prover, transfer},
 };
+use tauri::Emitter;
+use tauri::Listener;
 use tauri::Manager;
 use tauri_plugin_deep_link::DeepLinkExt;
 // wallet connect services
