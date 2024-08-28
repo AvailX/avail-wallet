@@ -1,11 +1,6 @@
 import * as React from "react";
 import * as mui from "@mui/material";
-// import Box from "@mui/material/Box";
-// import Card from "@mui/material/Card";
-// import CardActions from "@mui/material/CardActions";
-// import CardContent from "@mui/material/CardContent";
-// import Button from "@mui/material/Button";
-// import Typography from "@mui/material/Typography";
+
 
 // components
 import ArrowForward from "@mui/icons-material/ArrowForward";
@@ -51,14 +46,6 @@ import {
 import Layout from "./reusable/layout";
 import ColorLayout from "./reusable/color-layout";
 
-// const bull = (
-//   <Box
-//     component="span"
-//     sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-//   >
-//     •
-//   </Box>
-// );
 function Register() {
   const [username, setUsername] = React.useState<string | undefined>();
   const [password, setPassword] = React.useState("");
