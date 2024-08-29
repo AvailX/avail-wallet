@@ -9,13 +9,6 @@ use snarkvm::{
 use std::ops::Sub;
 use tauri::{Manager, Window};
 
-use rayon::prelude::*;
-use std::sync::{
-    atomic::{AtomicBool, AtomicUsize, Ordering},
-    Arc, Mutex,
-};
-use std::time::Duration;
-
 use crate::{
     api::{
         aleo_client::{setup_aleo_client, setup_client, setup_local_client},
@@ -47,6 +40,13 @@ use crate::{
         },
     },
 };
+use rayon::prelude::*;
+use std::sync::{
+    atomic::{AtomicBool, AtomicUsize, Ordering},
+    Arc, Mutex,
+};
+use std::time::Duration;
+use tauri::Emitter;
 
 use avail_common::{
     aleo_tools::program_manager::Credits,

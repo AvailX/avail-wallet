@@ -264,8 +264,8 @@ pub async fn sync_backup() -> AvailResult<()> {
 
         // get timestamp from block
         let api_client = match SupportedNetworks::from_str(&network)? {
-            SupportedNetworks::Testnet => setup_local_client::<TestnetV0>(),
-            _ => setup_local_client::<TestnetV0>(),
+            SupportedNetworks::Testnet => setup_client::<TestnetV0>()?,
+            _ => setup_client::<TestnetV0>()?,
         };
 
         let block = api_client.get_block(last_sync)?;

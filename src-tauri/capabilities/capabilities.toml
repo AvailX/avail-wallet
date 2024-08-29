@@ -1,25 +1,26 @@
+permissions = [
+    "core:default",
+    # "core:path:default",
+    # "core:event:default",
+    "core:event:allow-listen",
+    # "core:window:default",
+    "core:window:allow-create",
+    "core:window:allow-close",
+    "updater:allow-check",
+    # "core:updater:default",
+    "process:allow-restart",
+    "core:window:allow-set-title",
+    "core:window:allow-destroy",
+    "core:webview:allow-create-webview-window",
+    "core:webview:allow-create-webview",
+    "core:webview:allow-webview-close",
+    # "core:webview:default",
+    # "core:app:default",
+    "core:resources:default",
+    # "core:menu:default",
+    # "core:tray:default",
+]
 "$schema" = "./schemas/desktop-schema.toml"
 identifier = "main-capability"
 description = "Capability for the main window"
 windows = ["main", "wallet-connect"]
-permissions = [
-    "path:default",
-    "event:default",
-    "event:allow-listen",
-    "window:default",
-    "window:allow-create",
-    "window:allow-close",
-    "updater:allow-check",
-    "updater:default",
-    "process:allow-restart",
-    "window:allow-set-title",
-    "window:allow-destroy",
-    "webview:allow-create-webview-window",
-    "webview:allow-create-webview",
-    "webview:allow-webview-close",
-    "webview:default",
-    "app:default",
-    "resources:default",
-    "menu:default",
-    "tray:default",
-]
