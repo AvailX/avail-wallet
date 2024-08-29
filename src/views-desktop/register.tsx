@@ -387,8 +387,8 @@ function Register() {
                 color: "#a3a3a3",
                 fontSize: 12,
                 marginTop: "1%",
-                fontWeight: "700",
-                alignContent: "end",
+                fontWeight: 700,
+                // textAlign: "center", // Center the text
                 width: "100%",
               }}
             >
@@ -403,8 +403,8 @@ function Register() {
                 // Register(username, password, biometric, navigate);
                 // navigate('/home-desktop')
               }}
-              sx={{ marginTop: "5%", width: "100%" }}
-              endIcon={<ArrowForward style={{ color: "#FFF" }} />}
+              sx={{ marginTop: "5%", width: "100%", bgcolor: "#7000FF" }}
+              // endIcon={<ArrowForward style={{ color: "#FFF" }} />}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   handleCreateWallet();
@@ -412,12 +412,18 @@ function Register() {
               }}
             >
               <mui.Typography sx={{ fontSize: "1.2rem", fontWeight: 700 }}>
-                {t("signup.CTAButton")}
+                {/* {t("signup.CTAButton")} */}
+                Create Account
               </mui.Typography>
             </SignUpButton>
 
             <mui.Box
-              sx={{ display: "flex", flexDirection: "row", marginTop: "2%" }}
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                marginTop: "2%",
+                marginBottom: "20px",
+              }}
             >
               <mui.Typography
                 sx={{ color: "#a3a3a3", fontSize: 12, fontWeight: "700" }}
@@ -425,6 +431,7 @@ function Register() {
                 {" "}
                 {t("signup.terms.part1")}
               </mui.Typography>
+
               <mui.Typography
                 sx={{
                   color: "#a3a3a3",
@@ -472,19 +479,23 @@ function Register() {
             sx={{
               display: "flex",
               flexDirection: "row",
-              marginTop: "5%",
-              width: md ? "75%" : "85%",
+              marginTop: "20px",
+              width: "80%",
               alignItems: "center",
-              justifyContent: "space-between",
+              justifyContent: "center",
+              gap: "50px",
+              margin: "0 auto",
+              marginBottom: "20px",
             }}
           >
             <mui.Typography
               sx={{
                 color: "#a3a3a3",
                 fontSize: 18,
-                fontWeight: "700",
+                fontWeight: "500",
                 wordWrap: "break-word",
-                alignContent: "end",
+                display: "flex",
+                alignItems: "center",
               }}
             >
               {t("signup.access")}
@@ -504,15 +515,16 @@ function Register() {
                 navigate("/recovery");
               }}
             >
-              <BodyText
+              <mui.Typography
                 sx={{
-                  fontWeight: "700",
+                  fontWeight: 300,
+                  fontSize: "18px",
                   wordWrap: "break-word",
                   textTransform: "none",
                 }}
               >
                 {t("signup.recover")}
-              </BodyText>
+              </mui.Typography>
             </mui.Button>
           </mui.Box>
 
@@ -521,18 +533,21 @@ function Register() {
               display: "flex",
               flexDirection: "row",
               marginTop: "5%",
-              width: md ? "75%" : "85%",
+              width: "80%",
               alignItems: "center",
-              justifyContent: "space-between",
+              justifyContent: "center",
+              margin: "0 auto",
+              gap: "50px",
+              // paddingX: "30px",
             }}
           >
             <mui.Typography
               sx={{
                 color: "#a3a3a3",
                 fontSize: 18,
-                fontWeight: "700",
-                wordWrap: "break-word",
-                alignContent: "end",
+                fontWeight: "500",
+                // wordWrap: "break-word",
+                alignContent: "center",
               }}
             >
               Want to import an account ?
@@ -551,15 +566,16 @@ function Register() {
                 navigate("/import");
               }}
             >
-              <BodyText
+              <mui.Typography
                 sx={{
-                  fontWeight: "700",
+                  fontWeight: 300,
+                  fontSize: "18px",
                   wordWrap: "break-word",
                   textTransform: "none",
                 }}
               >
                 Import
-              </BodyText>
+              </mui.Typography>
             </mui.Button>
           </mui.Box>
         </mui.Box>

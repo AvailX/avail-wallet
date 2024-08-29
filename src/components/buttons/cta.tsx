@@ -15,6 +15,7 @@ const CtaButton = styled(Button)({
   color: "#FFFFFF",
   fontWeight: "bold",
   padding: "10px 20px",
+  marginRight: "10px",
   borderRadius: "5px",
   transition: "transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out",
   textTransform: "none",

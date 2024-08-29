@@ -104,8 +104,8 @@ const SeedPhrase = () => {
           alignSelf: "center",
           bgcolor: "#1E1D1D",
           borderRadius: "10px",
-          width: "85%",
-          padding: "5%",
+          width: "80%",
+          padding: "50px",
           justifyContent: "center",
           mb: "1%",
           alignItems: "center",
@@ -176,6 +176,7 @@ const SeedPhrase = () => {
             padding: "8px", // #7000FF
             color: "#090909",
             "&:hover": { bgcolor: mui.alpha("#00FFAA", 0.8) },
+            marginRight: "10px",
           }}
         >
           <ContentCopyIcon fontSize="inherit" />

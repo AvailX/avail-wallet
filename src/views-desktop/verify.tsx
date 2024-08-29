@@ -189,7 +189,14 @@ function Verify() {
       >
         Click the Avail <br /> logo to go back
       </mui.Typography> */}
-      <mui.Box sx={{ width: "85%", alignSelf: "center" }}>
+      <mui.Box
+      // sx={{
+      //   display: "flex",
+      //   flexDirection: "column",
+      //   width: "100%",
+      //   height: "auto",
+      // }}
+      >
         <Title2Text sx={{ color: "#FFF", textAlign: "center" }}>
           {t("verify.title")}
         </Title2Text>
@@ -199,92 +206,105 @@ function Verify() {
           You can paste in the whole seed phrase to one box if you'd like :)
         </mui.Typography>
       </mui.Box>
-      <mui.Grid
-        container
-        spacing={1}
+      <mui.Box
         sx={{
-          marginTop: "25px",
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          height: "auto",
           alignSelf: "center",
-          bgcolor: "#1E1D1D",
-          borderRadius: "10px",
-          width: "85%",
-          padding: "5%",
-          justifyContent: "center",
-          mb: "2%",
-          alignItems: "center",
-          position: "relative",
+          margin: "0 auto",
         }}
       >
-        {/* Secret words grid items */}
-        {hiddenWords?.map((word, index) =>
-          word.isHidden ? (
-            <mui.Grid
-              key={index}
-              sx={{
-                color: "#fff",
-                m: "2%",
-                borderRadius: "10px",
-                padding: "1%",
-                textAlign: "center",
-                backdropFilter: "blur(4px)",
-              }}
-              item
-              xs={3} // Adjust the grid size as needed
-            >
-              <WhiteHueTextField
+        <mui.Grid
+          container
+          spacing={1}
+          sx={{
+            marginTop: "25px",
+            alignSelf: "center",
+            // bgcolor: "#1E1D1D",
+            borderRadius: "10px",
+            width: "80%",
+            padding: "50px",
+            justifyContent: "center",
+            mb: "2%",
+            alignItems: "center",
+            position: "relative",
+            boxShadow: "0px 4px 20px rgba(81, 80, 80, 0.3)",
+            bgcolor: "rgba(17, 17, 17, 1)",
+          }}
+        >
+          {/* Secret words grid items */}
+          {hiddenWords?.map((word, index) =>
+            word.isHidden ? (
+              <mui.Grid
                 key={index}
-                label={`Word ${index + 1}`}
-                value={word.input}
-                onChange={(e) => {
-                  handleInputChange(index, e.target.value);
-                }}
-                autoCapitalize="none"
-              />
-            </mui.Grid>
-          ) : (
-            <mui.Grid
-              key={index}
-              sx={{
-                color: "#fff",
-                m: "2%",
-                bgcolor: "#3E3E3E",
-                borderRadius: "10px",
-                padding: "1%",
-                textAlign: "center",
-                position: "relative",
-              }}
-              item
-              xs={3}
-            >
-              <mui.Box
                 sx={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  bgcolor: "rgba(0, 0, 0, 0.1)",
-                  backdropFilter: "blur(4px)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  color: "#fff",
+                  m: "2%",
                   borderRadius: "10px",
+                  padding: "1%",
+                  textAlign: "center",
+                  backdropFilter: "blur(4px)",
                 }}
-              ></mui.Box>
-              <mui.Typography variant="body1">
-                {index + ". " + word.word}
-              </mui.Typography>
-            </mui.Grid>
-          )
-        )}
-      </mui.Grid>
-      <CTAButton
-        text={t("verify.verify")}
-        onClick={() => {
-          handleVerify();
-        }}
-        width="25%"
-      />
+                item
+                xs={3} // Adjust the grid size as needed
+              >
+                <WhiteHueTextField
+                  key={index}
+                  label={`Word ${index + 1}`}
+                  value={word.input}
+                  onChange={(e) => {
+                    handleInputChange(index, e.target.value);
+                  }}
+                  autoCapitalize="none"
+                />
+              </mui.Grid>
+            ) : (
+              <mui.Grid
+                key={index}
+                sx={{
+                  color: "#fff",
+                  m: "2%",
+                  bgcolor: "#3E3E3E",
+                  borderRadius: "10px",
+                  padding: "1%",
+                  textAlign: "center",
+                  position: "relative",
+                }}
+                item
+                xs={3}
+              >
+                <mui.Box
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    bgcolor: "rgba(0, 0, 0, 0.1)",
+                    backdropFilter: "blur(4px)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "10px",
+                  }}
+                ></mui.Box>
+                <mui.Typography variant="body1">
+                  {index + ". " + word.word}
+                </mui.Typography>
+              </mui.Grid>
+            )
+          )}
+        </mui.Grid>
+        <CTAButton
+          text={t("verify.verify")}
+          onClick={() => {
+            handleVerify();
+          }}
+          width="25%"
+        />
+      </mui.Box>
       <mui.Box sx={{ mb: "3%" }} />
     </Layout>
   );
