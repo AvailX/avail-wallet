@@ -1,6 +1,11 @@
 import * as React from "react";
 import * as mui from "@mui/material";
-
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 
 // components
 import ArrowForward from "@mui/icons-material/ArrowForward";
@@ -187,7 +192,18 @@ function Register() {
         setSuccessAlert={setSuccess}
       />
 
-      <mui.Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+      <mui.Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+          width: "50%",
+          margin: "0 auto",
+          padding: "50px",
+        }}
+      >
         {/* <mui.Box
           sx={{
             height: "100vh",
@@ -198,14 +214,14 @@ function Register() {
             backgroundPosition: "center",
           }}
         /> */}
-        <mui.Grid
+        {/* <mui.Grid
           xs={6}
           sx={{
             marginTop: lg ? "4%" : md ? "2%" : "2%",
             ml: lg ? "7%" : md ? "5%" : "7%",
           }}
-        >
-          <mui.Box
+        > */}
+        {/* <mui.Box
             sx={{
               display: "flex",
               flexDirection: "row",
@@ -226,27 +242,44 @@ function Register() {
                 sx={{ alignSelf: "flex-end", mr: "5%" }}
               />
             </mui.Box>
-          </mui.Box>
+          </mui.Box> */}
+        <mui.Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <TitleText sx={{ color: "#FFF", textAlign: "center" }}>
+            {t("signup.tagline.part1")}
+          </TitleText>
+          <TitleText sx={{ ml: "2.5%", color: "#00FFAA", textAlign: "center" }}>
+            {" "}
+            {t("signup.tagline.part2")}{" "}
+          </TitleText>
+        </mui.Box>
 
-          <mui.Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              width: "90%",
-              mt: "-20px",
-            }}
-          >
-            <TitleText sx={{ color: "#FFF" }}>
-              {t("signup.tagline.part1")}
-            </TitleText>
-            <TitleText sx={{ ml: "2.5%", color: "#00FFAA" }}>
-              {" "}
-              {t("signup.tagline.part2")}{" "}
-            </TitleText>
-          </mui.Box>
-
-          <WhiteHueTextField
+        <mui.Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            height: "auto",
+            justifyContent: "space-between",
+            bgcolor: "rgba(17, 17, 17, 0.8)",
+            padding: "25px",
+            borderRadius: "15px",
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.3)",
+            // gap: "10px",
+            // justifyContent: "center",
+            // alignItems: "center",
+          }}
+        >
+          <mui.TextField
             id="username"
+            variant="filled"
             label={t("signup.username")}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setUsername(event.target.value);
@@ -254,7 +287,21 @@ function Register() {
             value={username}
             inputProps={{ style: { color: "#fff" } }}
             InputLabelProps={{ style: { color: "#fff" } }}
-            sx={{ width: md ? "75%" : "85%", marginTop: md ? "6%" : "3%" }}
+            sx={{
+              marginBottom: "10px",
+              "& .MuiFilledInput-root": {
+                backgroundColor: "#3a3a3a",
+              },
+              "& .MuiFilledInput-root:hover": {
+                backgroundColor: "#4a4a4a",
+              },
+              "& .MuiFilledInput-underline:before": {
+                borderBottomColor: "transparent",
+              },
+              "& .MuiFilledInput-underline:after": {
+                borderBottomColor: "#00FFAA",
+              },
+            }}
           />
 
           <WhiteHueTextField
@@ -267,7 +314,7 @@ function Register() {
             type={passwordHidden ? "password" : ""}
             inputProps={{ style: { color: "#fff" } }}
             InputLabelProps={{ style: { color: "#fff" } }}
-            sx={{ width: md ? "75%" : "85%", marginTop: md ? "6%" : "3%" }}
+            sx={{ marginBottom: "10px" }}
             InputProps={{
               endAdornment: (
                 <mui.InputAdornment position="end">
@@ -292,129 +339,133 @@ function Register() {
             error={Boolean(passwordError)}
             helperText={passwordError}
           />
+          <mui.Box sx={{ width: "100%" }}>
+            <WhiteHueTextField
+              id="confirmPassword"
+              label={t("signup.confirmPassword")}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                handleConfirmPasswordChange(event);
+              }}
+              value={confirmPassword}
+              color="primary"
+              type={confirmPasswordHidden ? "password" : ""}
+              inputProps={{ style: { color: "#fff" } }}
+              InputLabelProps={{ style: { color: "#fff" } }}
+              sx={{ width: "100%" }}
+              InputProps={{
+                endAdornment: (
+                  <mui.InputAdornment position="end">
+                    {confirmPasswordHidden ? (
+                      <VisibilityOffIcon
+                        style={{ color: "#FFF", cursor: "pointer" }}
+                        onClick={() => {
+                          setConfirmPasswordHidden(false);
+                        }}
+                      />
+                    ) : (
+                      <VisibilityIcon
+                        style={{ color: "#FFF" }}
+                        onClick={() => {
+                          setConfirmPasswordHidden(true);
+                        }}
+                      />
+                    )}
+                  </mui.InputAdornment>
+                ),
+              }}
+              error={Boolean(confirmPasswordError)}
+              helperText={confirmPasswordError}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleCreateWallet();
+                }
+              }}
+            />
 
-          <WhiteHueTextField
-            id="confirmPassword"
-            label={t("signup.confirmPassword")}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              handleConfirmPasswordChange(event);
-            }}
-            value={confirmPassword}
-            color="primary"
-            type={confirmPasswordHidden ? "password" : ""}
-            inputProps={{ style: { color: "#fff" } }}
-            InputLabelProps={{ style: { color: "#fff" } }}
-            sx={{ width: md ? "75%" : "85%", marginTop: md ? "6%" : "3%" }}
-            InputProps={{
-              endAdornment: (
-                <mui.InputAdornment position="end">
-                  {confirmPasswordHidden ? (
-                    <VisibilityOffIcon
-                      style={{ color: "#FFF", cursor: "pointer" }}
-                      onClick={() => {
-                        setConfirmPasswordHidden(false);
-                      }}
-                    />
-                  ) : (
-                    <VisibilityIcon
-                      style={{ color: "#FFF" }}
-                      onClick={() => {
-                        setConfirmPasswordHidden(true);
-                      }}
-                    />
-                  )}
-                </mui.InputAdornment>
-              ),
-            }}
-            error={Boolean(confirmPasswordError)}
-            helperText={confirmPasswordError}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleCreateWallet();
-              }
-            }}
-          />
-
-          <mui.Typography
-            sx={{
-              color: "#a3a3a3",
-              fontSize: 12,
-              marginTop: "1%",
-              fontWeight: "700",
-              alignContent: "end",
-            }}
-          >
-            Password must be at least 12 characters long, and contain at least{" "}
-            <br /> a digit and a symbol.
-          </mui.Typography>
-
-          <SignUpButton
-            onClick={() => {
-              handleCreateWallet();
-              // Register(username, password, biometric, navigate);
-              // navigate('/home-desktop')
-            }}
-            sx={{ marginTop: "5%" }}
-            endIcon={<ArrowForward style={{ color: "#FFF" }} />}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleCreateWallet();
-              }
-            }}
-          >
-            <mui.Typography sx={{ fontSize: "1.2rem", fontWeight: 700 }}>
-              {t("signup.CTAButton")}
-            </mui.Typography>
-          </SignUpButton>
-          <mui.Box
-            sx={{ display: "flex", flexDirection: "row", marginTop: "3%" }}
-          >
-            <mui.Typography
-              sx={{ color: "#a3a3a3", fontSize: 12, fontWeight: "700" }}
-            >
-              {" "}
-              {t("signup.terms.part1")}
-            </mui.Typography>
             <mui.Typography
               sx={{
                 color: "#a3a3a3",
                 fontSize: 12,
+                marginTop: "1%",
                 fontWeight: "700",
-                ml: "0.7%",
-                "&:hover": { color: "#00FFAA", cursor: "pointer" },
+                alignContent: "end",
+                width: "100%",
               }}
+            >
+              Password must be at least 12 characters long, and contain at least
+              a digit and a symbol.
+            </mui.Typography>
+          </mui.Box>
+          <mui.Box>
+            <SignUpButton
               onClick={() => {
-                navigate("/terms-of-service");
+                handleCreateWallet();
+                // Register(username, password, biometric, navigate);
+                // navigate('/home-desktop')
+              }}
+              sx={{ marginTop: "5%", width: "100%" }}
+              endIcon={<ArrowForward style={{ color: "#FFF" }} />}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleCreateWallet();
+                }
               }}
             >
-              {" "}
-              {t("signup.terms.part2")}
-            </mui.Typography>
-            <mui.Typography
-              sx={{
-                color: "#a3a3a3",
-                fontSize: 12,
-                fontWeight: "700",
-                ml: "0.7%",
-              }}
+              <mui.Typography sx={{ fontSize: "1.2rem", fontWeight: 700 }}>
+                {t("signup.CTAButton")}
+              </mui.Typography>
+            </SignUpButton>
+
+            <mui.Box
+              sx={{ display: "flex", flexDirection: "row", marginTop: "2%" }}
             >
-              {" "}
-              {t("signup.terms.part3")}
-            </mui.Typography>
-            <mui.Typography
-              sx={{
-                color: "#a3a3a3",
-                fontSize: 12,
-                fontWeight: "700",
-                ml: "0.7%",
-                "&:hover": { color: "#00FFAA", cursor: "pointer" },
-              }}
-              onClick={() => {
-                navigate("/privacy-policy");
-              }}
-            >
-              {t("signup.terms.part4")}
-            </mui.Typography>
+              <mui.Typography
+                sx={{ color: "#a3a3a3", fontSize: 12, fontWeight: "700" }}
+              >
+                {" "}
+                {t("signup.terms.part1")}
+              </mui.Typography>
+              <mui.Typography
+                sx={{
+                  color: "#a3a3a3",
+                  fontSize: 12,
+                  fontWeight: "700",
+                  ml: "0.7%",
+                  "&:hover": { color: "#00FFAA", cursor: "pointer" },
+                }}
+                onClick={() => {
+                  navigate("/terms-of-service");
+                }}
+              >
+                {" "}
+                {t("signup.terms.part2")}
+              </mui.Typography>
+              <mui.Typography
+                sx={{
+                  color: "#a3a3a3",
+                  fontSize: 12,
+                  fontWeight: "700",
+                  ml: "0.7%",
+                }}
+              >
+                {" "}
+                {t("signup.terms.part3")}
+              </mui.Typography>
+              <mui.Typography
+                sx={{
+                  color: "#a3a3a3",
+                  fontSize: 12,
+                  fontWeight: "700",
+                  ml: "0.7%",
+                  "&:hover": { color: "#00FFAA", cursor: "pointer" },
+                }}
+                onClick={() => {
+                  navigate("/privacy-policy");
+                }}
+              >
+                {t("signup.terms.part4")}
+              </mui.Typography>
+            </mui.Box>
           </mui.Box>
 
           <mui.Box
@@ -438,6 +489,7 @@ function Register() {
             >
               {t("signup.access")}
             </mui.Typography>
+
             <mui.Button
               sx={{
                 display: "flex",
@@ -463,6 +515,7 @@ function Register() {
               </BodyText>
             </mui.Button>
           </mui.Box>
+
           <mui.Box
             sx={{
               display: "flex",
@@ -509,7 +562,8 @@ function Register() {
               </BodyText>
             </mui.Button>
           </mui.Box>
-        </mui.Grid>
+        </mui.Box>
+        {/* </mui.Grid> */}
       </mui.Box>
     </ColorLayout>
   );

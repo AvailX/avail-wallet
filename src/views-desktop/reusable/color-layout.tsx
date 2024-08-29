@@ -16,7 +16,7 @@ const ColorLayout: React.FC<LayoutWrapperProperties> = ({ children }) => (
         display: "flex",
         flexDirection: "column",
         // BackgroundColor:"#081424",
-        backgroundColor: "#111111",
+        backgroundColor: "#000000",
         minWidth: "100%",
         minHeight: "100vh",
         margin: 0,
