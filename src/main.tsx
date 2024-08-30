@@ -1,35 +1,28 @@
 import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Route,
-  Link,
-} from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 // Screens
-const Register = lazy(async () => import('./views-desktop/register'));
-const HomeDesktop = lazy(async () => import('./views-desktop/home-desktop'));
-const Login = lazy(async () => import('./views-desktop/login'));
-const Verify = lazy(async () => import('./views-desktop/verify'));
-const Settings = lazy(async () => import('./views-desktop/settings'));
-const Activity = lazy(async () => import('./views-desktop/activity'));
-const BrowserView = lazy(async () => import('./views-desktop/browser'));
-const Send = lazy(async () => import('./views-desktop/send'));
-const Recovery = lazy(async () => import('./views-desktop/recovery'));
-const SeedPhrase = lazy(async () => import('./views-desktop/seedphrase'));
-const Nfts = lazy(async () => import('./views-desktop/nft'));
-const PrivacyPolicy = lazy(
-  async () => import('./views-desktop/privacy-policy')
-);
+const Register = lazy(() => import('./views-desktop/register'));
+const HomeDesktop = lazy(() => import('./views-desktop/home-desktop'));
+const Login = lazy(() => import('./views-desktop/login'));
+const Verify = lazy(() => import('./views-desktop/verify'));
+const Settings = lazy(() => import('./views-desktop/settings'));
+const Activity = lazy(() => import('./views-desktop/activity'));
+const BrowserView = lazy(() => import('./views-desktop/browser'));
+const Send = lazy(() => import('./views-desktop/send'));
+const Recovery = lazy(() => import('./views-desktop/recovery'));
+const SeedPhrase = lazy(() => import('./views-desktop/seedphrase'));
+const Nfts = lazy(() => import('./views-desktop/nft'));
+const PrivacyPolicy = lazy(() => import('./views-desktop/privacy-policy'));
 const TermsAndConditions = lazy(
-  async () => import('./views-desktop/terms-and-conditions')
+  () => import('./views-desktop/terms-and-conditions')
 );
-const Oops = lazy(async () => import('./views-desktop/oops'));
-const Import = lazy(async () => import('./views-desktop/import'));
-const Dapps = lazy(async () => import('./views-desktop/dapps'));
-const Campaigns = lazy(async () => import('./views-desktop/quests/campaigns'));
-const Quests = lazy(async () => import('./views-desktop/quests/quests'));
+const Oops = lazy(() => import('./views-desktop/oops'));
+const Import = lazy(() => import('./views-desktop/import'));
+const Dapps = lazy(() => import('./views-desktop/dapps'));
+const Campaigns = lazy(() => import('./views-desktop/quests/campaigns'));
+const Quests = lazy(() => import('./views-desktop/quests/quests'));
 
 // global font styles
 import './index.css';
@@ -41,7 +34,8 @@ import { RecentEventsProvider } from './context/EventsContext';
 
 // Languages
 import i18n from './i18next-config';
-const Faucet = lazy(async () => import('./views-desktop/faucet'));
+import Loader from './components/loader';
+const Faucet = lazy(() => import('./views-desktop/faucet'));
 
 // See if language is set in local storage
 const storedLanguage = localStorage.getItem('language');
@@ -74,6 +68,10 @@ const router = createBrowserRouter([
   { path: '/dapps', element: <Dapps /> },
   { path: '/campaigns', element: <Campaigns /> },
   { path: '/quests', element: <Quests /> },
+  {
+    path: '/test',
+    element: <Loader />,
+  },
 ]);
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(
