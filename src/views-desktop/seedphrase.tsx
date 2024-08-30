@@ -10,6 +10,8 @@ import { SuccessAlert } from "../components/snackbars/alerts";
 import { TitleText } from "../components/typography/typography";
 import CTAButton from "../components/buttons/cta";
 import Layout from "./reusable/layout";
+import ColorLayout from "./reusable/color-layout";
+import SeedLayout from "./reusable/seed-layout";
 
 const SeedPhrase = () => {
   const [revealedWord, setRevealedWord] = React.useState<string | undefined>(
@@ -64,7 +66,7 @@ const SeedPhrase = () => {
   );
 
   return (
-    <Layout>
+    <SeedLayout>
       <WarningAlert />
       <SuccessAlert
         message={t("seedphrase.copied")}
@@ -73,13 +75,14 @@ const SeedPhrase = () => {
       />
       <mui.Box sx={{ width: "85%", alignSelf: "center" }}>
         <TitleText sx={{ color: "#FFF", textAlign: "center" }}>
-          {t("seedphrase.title")}
+          {/* {t("seedphrase.title")} */}
+          Secret Recovery Phrase
         </TitleText>
-        <mui.Typography
+        {/* <mui.Typography
           sx={{ color: "#a3a3a3", textAlign: "center", fontSize: "1.2rem" }}
         >
           {t("seedphrase.subtitle")}
-        </mui.Typography>
+        </mui.Typography> */}
       </mui.Box>
       <mui.Grid
         container
@@ -183,7 +186,7 @@ const SeedPhrase = () => {
           )}
         </mui.IconButton>
       </mui.Box>
-    </Layout>
+    </SeedLayout>
   );
 };
 
