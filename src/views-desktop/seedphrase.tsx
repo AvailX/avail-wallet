@@ -7,12 +7,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { SuccessAlert } from "../components/snackbars/alerts";
-import a_logo from "../assets/logo/a-icon.svg";
-import {
-  TitleText,
-  SubtitleText,
-  BodyText,
-} from "../components/typography/typography";
+import { TitleText } from "../components/typography/typography";
 import CTAButton from "../components/buttons/cta";
 import Layout from "./reusable/layout";
 
@@ -76,16 +71,6 @@ const SeedPhrase = () => {
         successAlert={success}
         setSuccessAlert={setSuccess}
       />
-      {/* <img
-        src={a_logo}
-        alt="aleo logo"
-        style={{
-          width: "60px",
-          height: "60px",
-          marginTop: "20px",
-          marginLeft: "20px",
-        }}
-      /> */}
       <mui.Box sx={{ width: "85%", alignSelf: "center" }}>
         <TitleText sx={{ color: "#FFF", textAlign: "center" }}>
           {t("seedphrase.title")}
@@ -173,7 +158,7 @@ const SeedPhrase = () => {
           sx={{
             backgroundColor: "#00FFAA",
             borderRadius: "5px",
-            padding: "8px", // #7000FF
+            padding: "8px",
             color: "#090909",
             "&:hover": { bgcolor: mui.alpha("#00FFAA", 0.8) },
             marginRight: "10px",

@@ -1,11 +1,5 @@
 import * as React from "react";
 import * as mui from "@mui/material";
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 
 // components
 import ArrowForward from "@mui/icons-material/ArrowForward";
@@ -66,15 +60,13 @@ function Register() {
   const [confirmPasswordHidden, setConfirmPasswordHidden] =
     React.useState(true);
 
-  {
-    /* --Biometric States--*/
-  }
+  /* --Biometric States--*/
+
   const [biometric, setBiometric] = React.useState(false);
   const [biometricAvail, setBiometricAvail] = React.useState(false);
 
-  {
-    /* --Alert States--*/
-  }
+  /* --Alert States--*/
+
   const [error, setError] = React.useState(false);
   const [warning, setWarning] = React.useState(false);
   const [info, setInfo] = React.useState(false);
@@ -204,45 +196,6 @@ function Register() {
           padding: "50px",
         }}
       >
-        {/* <mui.Box
-          sx={{
-            height: "100vh",
-            width: "50%",
-            backgroundImage: `linear-gradient(to right, transparent, #111111),url(${loginimage})`,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-          }}
-        /> */}
-        {/* <mui.Grid
-          xs={6}
-          sx={{
-            marginTop: lg ? "4%" : md ? "2%" : "2%",
-            ml: lg ? "7%" : md ? "5%" : "7%",
-          }}
-        > */}
-        {/* <mui.Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <img
-              src={full_logo}
-              style={{ width: "40%", height: "auto", marginLeft: "-20px" }}
-              alt=""
-            />
-
-            <mui.Box sx={{ display: "flex", flexDirection: "column" }}>
-              <LanguageSelector
-                language={language}
-                setLanguage={setLanguage}
-                sx={{ alignSelf: "flex-end", mr: "5%" }}
-              />
-            </mui.Box>
-          </mui.Box> */}
         <mui.Box
           sx={{
             display: "flex",
@@ -412,7 +365,6 @@ function Register() {
               }}
             >
               <mui.Typography sx={{ fontSize: "1.2rem", fontWeight: 700 }}>
-                {/* {t("signup.CTAButton")} */}
                 Create Account
               </mui.Typography>
             </SignUpButton>
@@ -546,7 +498,6 @@ function Register() {
                 color: "#a3a3a3",
                 fontSize: 18,
                 fontWeight: "500",
-                // wordWrap: "break-word",
                 alignContent: "center",
               }}
             >
@@ -579,7 +530,6 @@ function Register() {
             </mui.Button>
           </mui.Box>
         </mui.Box>
-        {/* </mui.Grid> */}
       </mui.Box>
     </ColorLayout>
   );

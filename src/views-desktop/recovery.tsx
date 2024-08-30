@@ -206,29 +206,12 @@ const Recovery = () => {
 
       {!isSecureAccountVisible && (
         <>
-          {/* <img
-            src={a_logo}
-            alt="aleo logo"
-            style={{
-              width: "60px",
-              height: "60px",
-              marginTop: "20px",
-              marginLeft: "20px",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-              window.history.back();
-            }}
-          /> */}
           <mui.IconButton
             onClick={() => {
               window.history.back();
             }}
             size="large"
             sx={{
-              //   backgroundColor: "#00FFAA",
-              //   borderRadius: "5px",
-              //   padding: "8px", // #7000FF
               color: "#FFFFFF",
               cursor: "pointer",
               width: "60px",
