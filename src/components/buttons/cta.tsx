@@ -47,7 +47,11 @@ export default function CTAButton({
   };
 
   return (
-    <CtaButton onClick={onClick} disabled={isDisabled(text)} sx={{ width }}>
+    <CtaButton
+      onClick={onClick}
+      disabled={isDisabled(text)}
+      sx={{ width, fontFamily: '"DM Sans", sans-serif' }}
+    >
       <BodyText500>{text}</BodyText500>
     </CtaButton>
   );

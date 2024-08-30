@@ -176,7 +176,14 @@ const SeedPhrase = () => {
                 }}
               ></mui.Box>
             )}
-            <mui.Typography variant="body1">{word}</mui.Typography>
+            <mui.Typography
+              variant="body1"
+              sx={{
+                fontFamily: '"DM Sans", sans-serif',
+              }}
+            >
+              {word}
+            </mui.Typography>
           </mui.Grid>
         ))}
       </mui.Grid>
