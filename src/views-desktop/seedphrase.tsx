@@ -71,7 +71,7 @@ const SeedPhrase = () => {
         successAlert={success}
         setSuccessAlert={setSuccess}
       />
-      <mui.Box sx={{ width: "85%", alignSelf: "center" }}>
+      <mui.Box sx={{ width: "85%", alignSelf: "center", mt: "50px" }}>
         <TitleText sx={{ color: "#FFF", textAlign: "center" }}>
           {t("seedphrase.title")}
         </TitleText>
@@ -170,7 +170,8 @@ const SeedPhrase = () => {
           onClick={handleRevealToggle}
           size="large"
           sx={{
-            color: revealAll ? "#00FFAA" : "white",
+            color: revealAll ? "white" : "white",
+            "&:hover": { bgcolor: mui.alpha("#7000FF", 0.8) },
             backgroundColor: "#7000FF",
             borderRadius: "5px",
             padding: "8px",

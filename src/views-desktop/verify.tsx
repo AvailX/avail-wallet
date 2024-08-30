@@ -190,12 +190,11 @@ function Verify() {
         Click the Avail <br /> logo to go back
       </mui.Typography> */}
       <mui.Box
-      // sx={{
-      //   display: "flex",
-      //   flexDirection: "column",
-      //   width: "100%",
-      //   height: "auto",
-      // }}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          marginTop: "20px",
+        }}
       >
         <Title2Text sx={{ color: "#FFF", textAlign: "center" }}>
           {t("verify.title")}

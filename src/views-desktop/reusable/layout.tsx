@@ -22,10 +22,7 @@ const Layout: React.FC<LayoutWrapperProperties> = ({ children }) => (
         margin: 0,
         padding: 0,
         paddingTop: "20px",
-        // backgroundImage: `url(${revampBg})`,
-        // backgroundRepeat: "no-repeat",
-        // backgroundPosition: "bottom center",
-        // backgroundSize: "100% auto",
+        // overflow: "hidden",
       }}
     >
       {children}
