@@ -90,7 +90,7 @@ const SeedPhrase = () => {
         sx={{
           marginTop: "25px",
           alignSelf: "center",
-          bgcolor: "#1E1D1D",
+          // bgcolor: "#1E1D1D",
           borderRadius: "10px",
           width: "80%",
           padding: "50px",
@@ -101,7 +101,7 @@ const SeedPhrase = () => {
         }}
       >
         {/* Overlay with blur effect */}
-        {!revealAll && (
+        {/* {!revealAll && (
           <mui.Box
             sx={{
               position: "absolute",
@@ -115,9 +115,10 @@ const SeedPhrase = () => {
               alignItems: "center",
               justifyContent: "center",
               borderRadius: "10px", // Match the parent's border radius
+              zIndex: 10,
             }}
           ></mui.Box>
-        )}
+        )} */}
 
         {/* Secret words grid items */}
         {secretWords.map((word, index) => (
@@ -126,14 +127,55 @@ const SeedPhrase = () => {
             sx={{
               color: "#fff",
               m: "2%",
-              bgcolor: "#3E3E3E",
+              bgcolor: "#7000FF",
               borderRadius: "10px",
               padding: "1%",
               textAlign: "center",
+              position: "relative",
+              zIndex: 1,
             }}
             item
             xs={3} // Adjust the grid size as needed
           >
+            <mui.Box
+              sx={{
+                position: "absolute",
+                top: "10px",
+                left: "10px",
+                width: "24px",
+                height: "24px",
+                borderRadius: "50%",
+                backgroundColor: "#fff",
+                color: "#000",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "12px",
+                fontWeight: "bold",
+                zIndex: 2,
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {index + 1}
+            </mui.Box>
+            {!revealAll && (
+              <mui.Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  bgcolor: "rgba(0, 0, 0, 0.5)", // Dark overlay
+                  backdropFilter: "blur(4px)", // Blur effect for individual items
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "10px", // Match the grid item's border radius
+                  zIndex: 10, // Ensure it overlays the content within the grid item
+                }}
+              ></mui.Box>
+            )}
             <mui.Typography variant="body1">{word}</mui.Typography>
           </mui.Grid>
         ))}
@@ -169,11 +211,13 @@ const SeedPhrase = () => {
         >
           <ContentCopyIcon fontSize="inherit" />
         </mui.IconButton>
+
         <mui.IconButton
           onClick={handleRevealToggle}
           size="large"
           sx={{
-            color: revealAll ? "#00FFAA" : "white",
+            color: revealAll ? "white" : "white",
+            "&:hover": { bgcolor: mui.alpha("#7000FF", 0.8) },
             backgroundColor: "#7000FF",
             borderRadius: "5px",
             padding: "8px",
