@@ -6,7 +6,7 @@ import { styled } from "@mui/system";
 const GlowingArrowIcon = styled(ArrowDownwardRoundedIcon)({
   fontSize: "60px", // Adjust size as needed
   color: "#6E05FC", // Arrow color
-  filter: "drop-shadow(0px 0px 4px #7005FCCE)", // Glow effect
+  filter: "drop-shadow(0px 0px 10px #7005FCCE)", // Glow effect
   animation: "glow 1.5s infinite alternate", // Optional animation
   "@keyframes glow": {
     "0%": {

@@ -281,6 +281,11 @@ function Send() {
       });
   }, [token]);
 
+  // Handler to toggle the transfer type
+  const toggleTransferType = () => {
+    setIsPrivateTransferFrom(!isPrivateTransferFrom);
+  };
+
   // TODO : Get list of tokens owned by user and display them in a dropdown + amounts available of each
   return (
     <Layout>
@@ -327,9 +332,9 @@ function Send() {
           width: "100%",
           height: "100%",
           display: "flex",
-          justifyContent: "center",
-          alignContent: "center",
+          justifyContent: "space-evenly",
           flexDirection: "column",
+          alignItems: "center",
         }}
       >
         {/* Removing this feature because it is not in the figma design*/}
@@ -362,7 +367,7 @@ function Send() {
         >
           <mui.Typography
             sx={{
-              mt: "4%",
+              mt: "10%",
               fontSize: "40px",
               fontWeight: 600,
               fontFamily: " 'DM Sans', sans-serif",
@@ -378,7 +383,7 @@ function Send() {
         <mui.Box
           sx={{
             display: "flex",
-            width: "45%",
+            width: "35%",
             bgcolor: "#1F1F22",
             borderRadius: 9,
             mt: "6%",
@@ -421,7 +426,7 @@ function Send() {
                 alignItems: "center",
                 alignContent: "center",
                 alignSelf: "center",
-                width: "85%",
+                width: "80%",
               }}
             >
               <TransferBox
@@ -466,6 +471,7 @@ function Send() {
                     {privateBalance}
                   </SmallText400>
                   <mui.Box
+                    onClick={toggleTransferType}
                     sx={{
                       width: 15, // Adjust the width of the circle
                       height: 15, // Adjust the height of the circle (same as width)
@@ -507,6 +513,7 @@ function Send() {
                   {publicBalance}
                 </SmallText400>
                 <mui.Box
+                  onClick={toggleTransferType}
                   sx={{
                     width: 15, // Adjust the width of the circle
                     height: 15, // Adjust the height of the circle (same as width)
@@ -616,7 +623,7 @@ function Send() {
             <SettingsComponent
               fee={isPrivateTransferFrom ? "0.29" : "1.51"}
               onTransferFromToggle={(value) => {
-                setIsPrivateTransferFrom(value);
+                // setIsPrivateTransferFrom(value);
               }}
               onTransferToToggle={(value) => {
                 setIsPrivateTransferTo(value);
@@ -644,16 +651,17 @@ function Send() {
                 textTransform: "none",
                 alignSelf: "center",
                 marginTop: "5%",
+                filter: "drop-shadow(0px 0px 10px #7005FCCE)",
                 transition:
                   "transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out",
                 "&:hover": {
                   backgroundColor: "#7000FF",
-                  boxShadow: "0 0 8px 2px rgba(0, 255, 170, 0.6)",
+                  boxShadow: "0 0 8px 2px #7000FF",
                   transform: "scale(1.03)",
                 },
                 "&:focus": {
                   backgroundColor: "#7000FF",
-                  boxShadow: "0 0 8px 2px rgba(0, 255, 170, 0.8)",
+                  boxShadow: "0 0 8px 2px #7000FF",
                 },
               }}
             >
