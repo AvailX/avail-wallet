@@ -1,5 +1,3 @@
-import * as React from 'react';
-import * as mui from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import ArrowForward from '@mui/icons-material/ArrowForward';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { os } from '../services/util/open';
+
 import WhiteHueTextField from '../components/textfields/white-hue';
 import LoginButton from '../components/buttons/login-button';
 import NewAccountDialog from '../components/dialogs/new_account';
@@ -49,10 +47,14 @@ import {
   Button,
   Grid,
   InputAdornment,
+  TextField,
   Typography,
   useMediaQuery,
 } from '@mui/material';
 import { ChangeEvent, useState } from 'react';
+
+import bgImg from '../assets/images/backgrounds/avail-gradients.png';
+import SignUpButton from '../components/buttons/sign-up-button';
 
 function Login() {
   const [password, setPassword] = useState('');
@@ -136,27 +138,29 @@ function Login() {
         }}
       />
 
-      <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
-        <Box
-          sx={{
-            height: '100vh',
-            width: '50%',
-            backgroundImage: `linear-gradient(to right, transparent, #111111),url(${loginimage})`,
-            backgroundSize: 'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
-          }}
-        />
-
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          width: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: 'red',
+          minHeight: '100vh',
+          background: `url(${bgImg})`,
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+        }}
+      >
         {/* Right side contents in a Grid */}
         <Grid
-          width={'46%'}
           sx={{
-            marginTop: lg ? '7%' : md ? '5.5%' : '3%',
-            ml: lg ? '4%' : md ? '5%' : '7%',
+            marginTop: lg ? '4%' : md ? '2%' : '2%',
+            p: 3,
+            width: { md: '40%', xs: '80%' },
           }}
         >
-          <Box
+          {/* <Box
             sx={{
               display: 'flex',
               flexDirection: 'row',
@@ -164,14 +168,6 @@ function Login() {
               alignItems: 'center',
             }}
           >
-            <img
-              src={full_logo}
-              style={{
-                width: md ? '40%' : '50%',
-                height: 'auto',
-                marginLeft: md ? '-20px' : '-10px',
-              }}
-            />
             <Box sx={{ display: 'flex', flexDirection: 'column', mr: '4%' }}>
               <LanguageSelector
                 language={language}
@@ -179,37 +175,55 @@ function Login() {
                 sx={{ alignSelf: 'flex-end', mr: '5%' }}
               />
             </Box>
-          </Box>
+          </Box> */}
           <Box
             sx={{
               display: 'flex',
-              flexDirection: 'row',
-              width: '90%',
-              mt: '-20px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              position: 'absolute',
+              top: '40px',
+              left: '50%',
+              transform: 'translateX(-50%)',
             }}
           >
             <TitleText sx={{ color: '#FFF' }}>
               {' '}
-              {t('login.tagline.part1')}{' '}
-            </TitleText>
-            <TitleText sx={{ ml: '2.5%', color: '#00FFAA' }}>
-              {' '}
-              {t('login.tagline.part2')}{' '}
+              {'Sign In.' || t('login.tagline.part1')}
             </TitleText>
           </Box>
 
+          <TextField
+            id='username'
+            label={t('signup.username')}
+            variant='standard'
+            // onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            //   setUsername(event.target.value);
+            // }}
+            // value={username}
+            inputProps={{ style: { color: '#fff' } }}
+            InputLabelProps={{ style: { color: '#fff' } }}
+            sx={{
+              width: '100%',
+              marginTop: md ? '6%' : '3%',
+            }}
+          />
+
           {/* --Password Input-- */}
-          <WhiteHueTextField
+          <TextField
             id='password'
             label={t('login.password')}
+            fullWidth
+            sx={{ mt: '35px' }}
+            inputProps={{ style: { color: '#fff' } }}
+            InputLabelProps={{ style: { color: '#fff' } }}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
               setPassword(event.target.value);
             }}
             value={password}
             type={passwordHidden ? 'password' : ''}
-            inputProps={{ style: { color: '#fff' } }}
-            InputLabelProps={{ style: { color: '#fff' } }}
-            sx={{ width: lg ? '70%' : md ? '80%' : '90%', marginTop: '30%' }}
+            variant='standard'
             InputProps={{
               endAdornment: (
                 <InputAdornment position='end'>
@@ -238,16 +252,47 @@ function Login() {
             }}
           />
 
-          <LoginButton
+          <SignUpButton
             onClick={() => {
               handleLogin();
             }}
-            sx={{ marginTop: '5%' }}
-            endIcon={<ArrowForward style={{ color: '#FFF' }} />}
+            sx={{ marginTop: '25%' }}
           >
-            {t('login.CTAButton')}
-          </LoginButton>
-
+            {'Sign In' || t('login.CTAButton')}
+          </SignUpButton>
+          <Typography variant='body2' color='#A3A3A3' fontWeight={400} mt={1}>
+            By signing up you agree to Avail’s Terms of service and Privacy
+            Policy.
+          </Typography>
+          <Box
+            mt={3}
+            display='flex'
+            alignItems='center'
+            justifyContent='space-between'
+          >
+            <Typography color='#A3A3A3' fontWeight={400} fontSize='18px'>
+              Lost your account?
+            </Typography>
+            <Box display='flex' alignItems='center'>
+              <Button
+                onClick={() => {
+                  navigate('/import');
+                }}
+                sx={{ mr: 2, textDecoration: 'underline' }}
+              >
+                Import
+              </Button>
+              <Button
+                onClick={() => {
+                  navigate('/recovery');
+                }}
+                sx={{ textDecoration: 'underline' }}
+              >
+                Recover
+              </Button>
+            </Box>
+          </Box>
+          {/* 
           <Box
             sx={{
               display: 'flex',
@@ -294,13 +339,13 @@ function Login() {
                 {t('login.recover')}
               </BodyText>
             </Button>
-          </Box>
+          </Box> */}
           <Box
             sx={{
               display: 'flex',
               flexDirection: 'row',
               marginTop: '4%',
-              width: lg ? '70%' : md ? '80%' : '90%',
+              width: '100%',
               alignItems: 'center',
               justifyContent: 'space-between',
             }}

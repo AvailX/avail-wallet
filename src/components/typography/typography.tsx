@@ -102,7 +102,7 @@ export const LargeTitleText = styled(ResponsiveTypography('largetitle'))(
 );
 
 export const TitleText = styled(ResponsiveTypography('title'))(({ theme }) => ({
-  fontWeight: 500,
+  fontWeight: 700,
 }));
 export const Title2Text = styled(ResponsiveTypography('title2'))(
   ({ theme }) => ({

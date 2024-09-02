@@ -37,6 +37,9 @@ import i18n from './i18next-config';
 import Loader from './components/loader';
 const Faucet = lazy(() => import('./views-desktop/faucet'));
 
+import { theme } from './styles/theme';
+import { ThemeProvider } from '@mui/material';
+
 // See if language is set in local storage
 const storedLanguage = localStorage.getItem('language');
 
@@ -76,14 +79,16 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(
   <React.StrictMode>
-    <WalletConnectProvider>
-      <ScanProvider>
-        <RecentEventsProvider>
-          <Suspense fallback={<div>Loading...</div>}>
-            <RouterProvider router={router} />
-          </Suspense>
-        </RecentEventsProvider>
-      </ScanProvider>
-    </WalletConnectProvider>
+    <ThemeProvider theme={theme}>
+      <WalletConnectProvider>
+        <ScanProvider>
+          <RecentEventsProvider>
+            <Suspense fallback={<div>Loading...</div>}>
+              <RouterProvider router={router} />
+            </Suspense>
+          </RecentEventsProvider>
+        </ScanProvider>
+      </WalletConnectProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );

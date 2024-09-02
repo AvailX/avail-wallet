@@ -1,4 +1,5 @@
 // Services
+import { TextField } from '@mui/material';
 
 // components
 import ArrowForward from '@mui/icons-material/ArrowForward';
@@ -6,7 +7,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import WhiteHueTextField from '../components/textfields/white-hue';
+
 import SignUpButton from '../components/buttons/sign-up-button';
 import LanguageSelector from '../components/select/language';
 import SeedLengthSelector, {
@@ -54,6 +55,8 @@ import {
   Button,
 } from '@mui/material';
 
+import bgImg from '../assets/images/backgrounds/avail-gradients.png';
+
 function Register() {
   const [username, setUsername] = useState<string | undefined>();
   const [password, setPassword] = useState('');
@@ -85,6 +88,8 @@ function Register() {
 
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -142,6 +147,7 @@ function Register() {
       return;
     }
 
+    setIsLoading(true);
     register_seed_phrase(
       setError,
       setMessage,
@@ -152,13 +158,14 @@ function Register() {
       length.value
     )
       .then((response) => {
+        console.log('Response on seed', response);
         if (response) {
           // Split seed phrase into array by spaces
           const seed_array = response.split(' ');
 
+          setIsLoading(false);
           setMessage(t('signup.messages.success'));
           setSuccess(true);
-          console.log(response);
 
           setTimeout(() => {
             navigate('/seed', { state: { seed: seed_array } });
@@ -166,6 +173,8 @@ function Register() {
         }
       })
       .catch((error: AvailError) => {
+        setIsLoading(false);
+        console.log('Error on seed', error);
         setMessage(error.external_msg);
         setError(true);
       });
@@ -194,79 +203,82 @@ function Register() {
         setSuccessAlert={setSuccess}
       />
 
-      <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
-        <Box
-          sx={{
-            height: '100vh',
-            width: '50%',
-            backgroundImage: `linear-gradient(to right, transparent, #111111),url(${loginimage})`,
-            backgroundSize: 'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
-          }}
-        />
-
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          width: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: 'red',
+          minHeight: '100vh',
+          background: `url(${bgImg})`,
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          position: 'relative',
+        }}
+      >
         <Grid
-          xs={6}
           sx={{
             marginTop: lg ? '4%' : md ? '2%' : '2%',
-            ml: lg ? '7%' : md ? '5%' : '7%',
+            p: 3,
+            width: { md: '40%', xs: '80%' },
           }}
         >
           <Box
             sx={{
               display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
               alignItems: 'center',
+              width: '100%',
+              position: 'absolute',
+              top: '40px',
+              left: '50%',
+              transform: 'translateX(-50%)',
             }}
           >
-            <img
-              src={full_logo}
-              style={{ width: '40%', height: 'auto', marginLeft: '-20px' }}
-            />
-
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <LanguageSelector
-                language={language}
-                setLanguage={setLanguage}
-                sx={{ alignSelf: 'flex-end', mr: '5%' }}
-              />
-            </Box>
-          </Box>
-
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              width: '90%',
-              mt: '-20px',
-            }}
-          >
-            <TitleText sx={{ color: '#FFF' }}>
+            <TitleText sx={{ color: '#FFF', mt: 2 }}>
               {t('signup.tagline.part1')}
             </TitleText>
-            <TitleText sx={{ ml: '2.5%', color: '#00FFAA' }}>
-              {' '}
-              {t('signup.tagline.part2')}{' '}
-            </TitleText>
+
+            {/* <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <LanguageSelector
+                  language={language}
+                  setLanguage={setLanguage}
+                  sx={{ alignSelf: 'flex-end', mr: '5%' }}
+                />
+              </Box>
+            </Box> */}
           </Box>
 
-          <WhiteHueTextField
+          <TextField
             id='username'
             label={t('signup.username')}
+            variant='standard'
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
               setUsername(event.target.value);
             }}
             value={username}
             inputProps={{ style: { color: '#fff' } }}
             InputLabelProps={{ style: { color: '#fff' } }}
-            sx={{ width: md ? '75%' : '85%', marginTop: md ? '6%' : '3%' }}
+            sx={{
+              width: '100%',
+              marginTop: md ? '6%' : '3%',
+            }}
           />
 
-          <WhiteHueTextField
+          <TextField
             id='password'
             label={t('signup.password')}
+            variant='standard'
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
               handlePasswordChange(event);
             }}
@@ -274,7 +286,11 @@ function Register() {
             type={passwordHidden ? 'password' : ''}
             inputProps={{ style: { color: '#fff' } }}
             InputLabelProps={{ style: { color: '#fff' } }}
-            sx={{ width: md ? '75%' : '85%', marginTop: md ? '6%' : '3%' }}
+            sx={{
+              width: '100%',
+              marginTop: md ? '6%' : '3%',
+            }}
+            fullWidth
             InputProps={{
               endAdornment: (
                 <InputAdornment position='end'>
@@ -299,8 +315,19 @@ function Register() {
             error={Boolean(passwordError)}
             helperText={passwordError}
           />
+          <Typography
+            sx={{
+              color: '#a3a3a3',
+              fontSize: 12,
+              marginTop: '1%',
+              fontWeight: '400',
+              alignContent: 'end',
+            }}
+          >
+            Minimum of 12 Characters & Include a digit and symbol.
+          </Typography>
 
-          <WhiteHueTextField
+          <TextField
             id='confirmPassword'
             label={t('signup.confirmPassword')}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
@@ -310,8 +337,13 @@ function Register() {
             color='primary'
             type={confirmPasswordHidden ? 'password' : ''}
             inputProps={{ style: { color: '#fff' } }}
+            variant='standard'
             InputLabelProps={{ style: { color: '#fff' } }}
-            sx={{ width: md ? '75%' : '85%', marginTop: md ? '6%' : '3%' }}
+            fullWidth
+            sx={{
+              width: '100%',
+              marginTop: md ? '6%' : '3%',
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position='end'>
@@ -342,40 +374,26 @@ function Register() {
             }}
           />
 
-          <Typography
-            sx={{
-              color: '#a3a3a3',
-              fontSize: 12,
-              marginTop: '1%',
-              fontWeight: '700',
-              alignContent: 'end',
-            }}
-          >
-            Password must be at least 12 characters long, and contain at least{' '}
-            <br /> a digit and a symbol.
-          </Typography>
-
           <SignUpButton
+            disabled={!!isLoading}
             onClick={() => {
               handleCreateWallet();
-              // Register(username, password, biometric, navigate);
-              // navigate('/home-desktop')
             }}
             sx={{ marginTop: '5%' }}
-            endIcon={<ArrowForward style={{ color: '#FFF' }} />}
+            //endIcon={<ArrowForward style={{ color: '#FFF' }} />}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 handleCreateWallet();
               }
             }}
           >
-            <Typography sx={{ fontSize: '1.2rem', fontWeight: 700 }}>
-              {t('signup.CTAButton')}
+            <Typography sx={{ fontSize: '1.2rem', fontWeight: 400 }}>
+              {isLoading ? 'Loading...' : t('signup.CTAButton')}
             </Typography>
           </SignUpButton>
           <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '3%' }}>
             <Typography
-              sx={{ color: '#a3a3a3', fontSize: 12, fontWeight: '700' }}
+              sx={{ color: '#a3a3a3', fontSize: 12, fontWeight: '400' }}
             >
               {' '}
               {t('signup.terms.part1')}
@@ -384,7 +402,7 @@ function Register() {
               sx={{
                 color: '#a3a3a3',
                 fontSize: 12,
-                fontWeight: '700',
+                fontWeight: '400',
                 ml: '0.7%',
                 '&:hover': { color: '#00FFAA', cursor: 'pointer' },
               }}
@@ -399,7 +417,7 @@ function Register() {
               sx={{
                 color: '#a3a3a3',
                 fontSize: 12,
-                fontWeight: '700',
+                fontWeight: '400',
                 ml: '0.7%',
               }}
             >
@@ -423,6 +441,35 @@ function Register() {
           </Box>
 
           <Box
+            mt={3}
+            display='flex'
+            alignItems='center'
+            justifyContent='space-between'
+          >
+            <Typography color='#A3A3A3' fontWeight={400} fontSize='18px'>
+              Already have an Aleo account?
+            </Typography>
+            <Box display='flex' alignItems='center'>
+              <Button
+                onClick={() => {
+                  navigate('/import');
+                }}
+                sx={{ mr: 2, textDecoration: 'underline' }}
+              >
+                Import
+              </Button>
+              <Button
+                onClick={() => {
+                  navigate('/recovery');
+                }}
+                sx={{ textDecoration: 'underline' }}
+              >
+                Recover
+              </Button>
+            </Box>
+          </Box>
+
+          {/* <Box
             sx={{
               display: 'flex',
               flexDirection: 'row',
@@ -513,7 +560,7 @@ function Register() {
                 Import
               </BodyText>
             </Button>
-          </Box>
+          </Box> */}
         </Grid>
       </Box>
     </Layout>

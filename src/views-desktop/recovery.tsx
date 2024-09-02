@@ -30,6 +30,7 @@ import {
   SubtitleText,
   BodyText,
   SubMainTitleText,
+  TitleText,
 } from '../components/typography/typography';
 
 // Icons
@@ -56,8 +57,11 @@ import {
   InputAdornment,
   Typography,
   CircularProgress,
+  TextField,
 } from '@mui/material';
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useEffect } from 'react';
+
+import bgImg from '../assets/images/backgrounds/avail-gradients.png';
 
 const Recovery = () => {
   const md = useMediaQuery('(min-width:1000px)');
@@ -164,8 +168,27 @@ const Recovery = () => {
     }
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      setSeedNotice(false);
+    }, 5000);
+  }, []);
+
   return (
-    <Layout>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        background: `url(${bgImg})`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <InfoAlert infoAlert={info} setInfoAlert={setInfo} message={message} />
       <SuccessAlert
         successAlert={success}
@@ -208,242 +231,229 @@ const Recovery = () => {
           </Alert>
         </div>
       </Snackbar>
-
-      {!isSecureAccountVisible && (
-        <>
-          <img
-            src={a_logo}
-            alt='aleo logo'
-            style={{
-              width: '60px',
-              height: '60px',
-              marginTop: '20px',
-              marginLeft: '20px',
-              cursor: 'pointer',
-            }}
-            onClick={() => {
-              window.history.back();
-            }}
-          />
-          <Box sx={{ position: 'absolute', top: 0, right: 0, margin: 2 }}></Box>
-
-          <WhiteHueTextField
-            placeholder='Input your secret recovery phrase..'
-            value={seed}
-            onChange={(e) => {
-              setSeed(e.target.value);
-            }}
-            sx={{
-              width: '70%',
-              alignSelf: 'center',
-              padding: '5%',
-              mt: '10%',
-              mb: '10%',
-            }}
-            InputProps={{
-              sx: {
-                height: '100px',
-                fontSize: '1.3rem',
-                wordWrap: 'break-word',
-              },
-            }}
-          />
-
-          <CTAButton
-            text={t('recover.recover')}
-            onClick={() => {
-              handleOrdering();
-            }}
-            width='25%'
-          />
-        </>
-      )}
-
-      {/* --Date Time Picker--
-			{isSecureAccountVisible && !chooseDate &&
-			<Box
-			sx={{
-				position: 'fixed',
-				bottom: 0,
-				left: 0,
-				right: 0,
-				height: '90%',
-				backgroundColor: 'transparent',
-				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
-				transition: 'bottom 0.5s ease-in-out',
-				borderRadius: '40px 40px 0 0',
-			}}>
-			<LocalizationProvider dateAdapter={AdapterDayjs}>
-			<DatePicker value={dateVal} onChange={(newValue) => setDateVal(newValue)} sx={{ bgcolor: alpha('#fff', 0.8), borderRadius: '20px',mt:'20%',mb:'15%',width:'50%','& .MuiOutlinedInput-root': {'&.Mui-focused fieldset':{borderColor:'transparent'}}}} />
-			</LocalizationProvider>
-			<SecureButton onClick={() => {
-						setChooseDate(true);
-						setDateNotice(false);
-					}} sx={{width:'30%'}}>
-			 Continue
-			</SecureButton>
-			</Box>
-			}
-			*/}
-
-      {/* --Account Details-- */}
-      {isSecureAccountVisible && (
-        <Box
-          sx={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '90%',
-            backgroundColor: 'transparent',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            transition: 'bottom 0.5s ease-in-out',
-            borderRadius: '40px 40px 0 0',
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '80%',
-              alignSelf: 'center',
-            }}
-          >
-            <Button
-              variant='contained'
+      <Box width='50%'>
+        {!isSecureAccountVisible && (
+          <>
+            <img
+              src={a_logo}
+              alt='aleo logo'
+              style={{
+                width: '60px',
+                height: '60px',
+                marginTop: '20px',
+                marginLeft: '20px',
+                cursor: 'pointer',
+              }}
               onClick={() => {
-                setIsSecureAccountVisible(false);
+                window.history.back();
+              }}
+            />
+            <TitleText sx={{ color: '#FFF', mt: 2 }}>
+              Import secret phrase to recover
+            </TitleText>
+
+            <TextField
+              placeholder='Input your secret recovery phrase..'
+              value={seed}
+              variant='standard'
+              inputProps={{ style: { color: '#fff' } }}
+              InputLabelProps={{ style: { color: '#fff' } }}
+              onChange={(e) => {
+                setSeed(e.target.value);
               }}
               sx={{
-                width: '10%',
-                bgcolor: 'transparent',
-                boxShadow: 'none',
-                ml: '2%',
-                height: '50px',
-                '&:hover': {
-                  backgroundColor: '#00FFAA',
-                  boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.6)',
-                  transform: 'scale(1.03)',
-                },
-                '&:focus': {
-                  backgroundColor: '#00FFAA',
-                  boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.8)',
+                width: '100%',
+                alignSelf: 'center',
+                mt: '10%',
+                mb: '30px',
+              }}
+              InputProps={{
+                sx: {
+                  // fontSize: '1.3rem',
+                  wordWrap: 'break-word',
                 },
               }}
-            >
-              <ArrowBack
-                sx={{ width: '30px', height: '30px', color: '#fff' }}
-              />
-            </Button>
-            <Title2Text sx={{ color: '#00FFAA', mt: '10%' }}>
-              Secure your Account
-            </Title2Text>
-            <LanguageSelector language={language} setLanguage={setLanguage} />
-          </Box>
-          <WhiteHueTextField
-            id='password'
-            label='Password'
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              handlePasswordChange(event);
-            }}
-            value={password}
-            type={passwordHidden ? 'password' : ''}
-            inputProps={{ style: { color: '#fff' } }}
-            InputLabelProps={{ style: { color: '#fff' } }}
-            sx={{ width: md ? '55%' : '65%', marginTop: md ? '6%' : '3%' }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position='end'>
-                  {passwordHidden ? (
-                    <VisibilityOffIcon
-                      style={{ color: '#FFF', cursor: 'pointer' }}
-                      onClick={() => {
-                        setPasswordHidden(false);
-                      }}
-                    />
-                  ) : (
-                    <VisibilityIcon
-                      style={{ color: '#FFF' }}
-                      onClick={() => {
-                        setPasswordHidden(true);
-                      }}
-                    />
-                  )}
-                </InputAdornment>
-              ),
-            }}
-            error={Boolean(passwordError)}
-            helperText={passwordError}
-          />
+            />
 
-          <WhiteHueTextField
-            id='confirmPassword'
-            label='Confirm Password'
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              handleConfirmPasswordChange(event);
+            <CTAButton
+              text={t('recover.recover')}
+              onClick={() => {
+                handleOrdering();
+              }}
+              width='100%'
+            />
+            <Button
+              onClick={() => {
+                navigate('/register');
+              }}
+              fullWidth
+              sx={{ mt: 2, py: 2 }}
+              variant='outlined'
+            >
+              Back
+            </Button>
+          </>
+        )}
+
+        {/* --Account Details-- */}
+        {isSecureAccountVisible && (
+          <Box
+            sx={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '90%',
+              backgroundColor: 'transparent',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              transition: 'bottom 0.5s ease-in-out',
+              borderRadius: '40px 40px 0 0',
             }}
-            value={confirmPassword}
-            color='primary'
-            type={confirmPasswordHidden ? 'password' : ''}
-            inputProps={{ style: { color: '#fff' } }}
-            InputLabelProps={{ style: { color: '#fff' } }}
-            sx={{ width: md ? '55%' : '65%', marginTop: md ? '2%' : '3%' }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position='end'>
-                  {confirmPasswordHidden ? (
-                    <VisibilityOffIcon
-                      style={{ color: '#FFF', cursor: 'pointer' }}
-                      onClick={() => {
-                        setConfirmPasswordHidden(false);
-                      }}
-                    />
-                  ) : (
-                    <VisibilityIcon
-                      style={{ color: '#FFF' }}
-                      onClick={() => {
-                        setConfirmPasswordHidden(true);
-                      }}
-                    />
-                  )}
-                </InputAdornment>
-              ),
-            }}
-            error={Boolean(confirmPasswordError)}
-            helperText={confirmPasswordError}
-          />
-          {/* Additional components or buttons can be added here */}
-          <SecureButton
-            onClick={() => {
-              recover(
-                seed,
-                password,
-                biometric,
-                language,
-                navigate,
-                setSuccess,
-                setError,
-                setMessage
-              );
-            }}
-            sx={{ marginTop: '5%' }}
-            endIcon={<ArrowForward style={{ color: '#FFF' }} />}
           >
-            <Typography sx={{ fontSize: '1.2rem', fontWeight: 700 }}>
-              Secure
-            </Typography>
-          </SecureButton>
-        </Box>
-      )}
-      {isLoading && (
-        <CircularProgress sx={{ marginTop: '20%', color: '#00ffaa', top: 0 }} />
-      )}
-    </Layout>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                width: '80%',
+                alignSelf: 'center',
+              }}
+            >
+              <Button
+                variant='contained'
+                onClick={() => {
+                  setIsSecureAccountVisible(false);
+                }}
+                sx={{
+                  width: '10%',
+                  bgcolor: 'transparent',
+                  boxShadow: 'none',
+                  ml: '2%',
+                  height: '50px',
+                  '&:hover': {
+                    backgroundColor: '#00FFAA',
+                    boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.6)',
+                    transform: 'scale(1.03)',
+                  },
+                  '&:focus': {
+                    backgroundColor: '#00FFAA',
+                    boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.8)',
+                  },
+                }}
+              >
+                <ArrowBack
+                  sx={{ width: '30px', height: '30px', color: '#fff' }}
+                />
+              </Button>
+              <Title2Text sx={{ color: '#00FFAA', mt: '10%' }}>
+                Secure your Account
+              </Title2Text>
+              <LanguageSelector language={language} setLanguage={setLanguage} />
+            </Box>
+            <WhiteHueTextField
+              id='password'
+              label='Password'
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                handlePasswordChange(event);
+              }}
+              value={password}
+              type={passwordHidden ? 'password' : ''}
+              inputProps={{ style: { color: '#fff' } }}
+              InputLabelProps={{ style: { color: '#fff' } }}
+              sx={{ width: md ? '55%' : '65%', marginTop: md ? '6%' : '3%' }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    {passwordHidden ? (
+                      <VisibilityOffIcon
+                        style={{ color: '#FFF', cursor: 'pointer' }}
+                        onClick={() => {
+                          setPasswordHidden(false);
+                        }}
+                      />
+                    ) : (
+                      <VisibilityIcon
+                        style={{ color: '#FFF' }}
+                        onClick={() => {
+                          setPasswordHidden(true);
+                        }}
+                      />
+                    )}
+                  </InputAdornment>
+                ),
+              }}
+              error={Boolean(passwordError)}
+              helperText={passwordError}
+            />
+
+            <WhiteHueTextField
+              id='confirmPassword'
+              label='Confirm Password'
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                handleConfirmPasswordChange(event);
+              }}
+              value={confirmPassword}
+              color='primary'
+              type={confirmPasswordHidden ? 'password' : ''}
+              inputProps={{ style: { color: '#fff' } }}
+              InputLabelProps={{ style: { color: '#fff' } }}
+              sx={{ width: md ? '55%' : '65%', marginTop: md ? '2%' : '3%' }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    {confirmPasswordHidden ? (
+                      <VisibilityOffIcon
+                        style={{ color: '#FFF', cursor: 'pointer' }}
+                        onClick={() => {
+                          setConfirmPasswordHidden(false);
+                        }}
+                      />
+                    ) : (
+                      <VisibilityIcon
+                        style={{ color: '#FFF' }}
+                        onClick={() => {
+                          setConfirmPasswordHidden(true);
+                        }}
+                      />
+                    )}
+                  </InputAdornment>
+                ),
+              }}
+              error={Boolean(confirmPasswordError)}
+              helperText={confirmPasswordError}
+            />
+            {/* Additional components or buttons can be added here */}
+            <SecureButton
+              onClick={() => {
+                recover(
+                  seed,
+                  password,
+                  biometric,
+                  language,
+                  navigate,
+                  setSuccess,
+                  setError,
+                  setMessage
+                );
+              }}
+              sx={{ marginTop: '5%' }}
+              endIcon={<ArrowForward style={{ color: '#FFF' }} />}
+            >
+              <Typography sx={{ fontSize: '1.2rem', fontWeight: 700 }}>
+                Secure
+              </Typography>
+            </SecureButton>
+          </Box>
+        )}
+        {isLoading && (
+          <CircularProgress
+            sx={{ marginTop: '20%', color: '#00ffaa', top: 0 }}
+          />
+        )}
+      </Box>
+    </Box>
   );
 };
 

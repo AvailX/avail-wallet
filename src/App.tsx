@@ -1,39 +1,40 @@
 import React from 'react';
-import {useEffect, useState, useRef} from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 /** STYLES */
-import {ThemeProvider} from '@emotion/react';
-import {theme} from './styles/theme';
+import { ThemeProvider } from '@emotion/react';
+import { theme } from './styles/theme';
 
 /** COMPONENTS */
 import Entrypoint from './views-desktop/entrypoint';
-import {useWalletConnectManager} from './context/WalletConnect';
+import { useWalletConnectManager } from './context/WalletConnect';
+import NewBgLayout from '../src/components/NewBgLayout';
 
 function App() {
-	const {walletConnectManager} = useWalletConnectManager();
+  const { walletConnectManager } = useWalletConnectManager();
 
-	useEffect(() => {
-		const handleBeforeUnload = async (e: BeforeUnloadEvent) => {
-			e.preventDefault();
-			e.returnValue = '';
+  useEffect(() => {
+    const handleBeforeUnload = async (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
 
-			await walletConnectManager.close();
-		};
+      await walletConnectManager.close();
+    };
 
-		window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
-		return () => {
-			window.removeEventListener('beforeunload', handleBeforeUnload);
-		};
-	}, []);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
-	return (
-		<ThemeProvider theme={theme} >
-
-			<Entrypoint/>
-
-		</ThemeProvider>
-	);
+  return (
+    <ThemeProvider theme={theme}>
+      <NewBgLayout>
+        <Entrypoint />
+      </NewBgLayout>
+    </ThemeProvider>
+  );
 }
 
 export default App;

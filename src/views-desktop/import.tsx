@@ -31,6 +31,7 @@ import {
   SubtitleText,
   BodyText,
   SubMainTitleText,
+  TitleText,
 } from '../components/typography/typography';
 
 // Icons
@@ -58,8 +59,11 @@ import {
   InputAdornment,
   Typography,
   CircularProgress,
+  TextField,
 } from '@mui/material';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
+
+import bgImg from '../assets/images/backgrounds/avail-gradients.png';
 
 const Import = () => {
   const md = useMediaQuery('(min-width:1000px)');
@@ -96,6 +100,12 @@ const Import = () => {
   const [language, setLanguage] = useState<Languages>(Languages.English);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setTimeout(() => {
+      setKeyNotice(false);
+    }, 2000);
+  }, []);
 
   function validatePrivateKey(pk: string) {
     if (pk.length !== 59) {
@@ -186,7 +196,20 @@ const Import = () => {
   };
 
   return (
-    <Layout>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'red',
+        minHeight: '100vh',
+        background: `url(${bgImg})`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+      }}
+    >
       <InfoAlert infoAlert={info} setInfoAlert={setInfo} message={message} />
       <SuccessAlert
         successAlert={success}
@@ -230,57 +253,68 @@ const Import = () => {
         </div>
       </Snackbar>
 
-      {!isSecureAccountVisible && (
-        <>
-          <img
-            src={a_logo}
-            alt='aleo logo'
-            style={{
-              width: '60px',
-              height: '60px',
-              marginTop: '20px',
-              marginLeft: '20px',
-              cursor: 'pointer',
-            }}
-            onClick={() => {
-              window.history.back();
-            }}
-          />
-          <Box sx={{ position: 'absolute', top: 0, right: 0, margin: 2 }}></Box>
+      <Box width='50%'>
+        {!isSecureAccountVisible && (
+          <>
+            <img
+              src={a_logo}
+              alt='aleo logo'
+              style={{
+                width: '60px',
+                height: '60px',
+                marginTop: '20px',
+                marginLeft: '20px',
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                window.history.back();
+              }}
+            />
+            <TitleText sx={{ color: '#FFF', mt: 2 }}>
+              Import secret phrase to recover
+            </TitleText>
+            <TextField
+              placeholder='Input the private key your are importing..'
+              value={key}
+              variant='standard'
+              onChange={(e) => {
+                setKey(e.target.value);
+              }}
+              sx={{
+                width: '100%',
+                alignSelf: 'center',
+                mt: '10%',
+                mb: '10%',
+              }}
+              InputProps={{
+                sx: {
+                  fontSize: '1rem',
+                  wordWrap: 'break-word',
+                },
+              }}
+            />
 
-          <WhiteHueTextField
-            placeholder='Input the private key your are importing..'
-            value={key}
-            onChange={(e) => {
-              setKey(e.target.value);
-            }}
-            sx={{
-              width: '70%',
-              alignSelf: 'center',
-              padding: '5%',
-              mt: '10%',
-              mb: '10%',
-            }}
-            InputProps={{
-              sx: {
-                height: '100px',
-                fontSize: '1.3rem',
-                wordWrap: 'break-word',
-              },
-            }}
-          />
+            <CTAButton
+              text='Import'
+              width='100%'
+              onClick={() => {
+                handleOrdering();
+              }}
+            />
+            <Button
+              onClick={() => {
+                navigate('/register');
+              }}
+              fullWidth
+              sx={{ mt: 2, py: 2 }}
+              variant='outlined'
+            >
+              Back
+            </Button>
+          </>
+        )}
 
-          <CTAButton
-            text='Import'
-            onClick={() => {
-              handleOrdering();
-            }}
-            width='25%'
-          />
-        </>
-      )}
-
-      {/* --Date Time Picker--
+        {/* --Date Time Picker--
 			{isSecureAccountVisible && !chooseDate &&
 			<Box
 			sx={{
@@ -309,187 +343,190 @@ const Import = () => {
 			}
 			*/}
 
-      {/* --Account Details-- */}
-      {isSecureAccountVisible && (
-        <Box
-          sx={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '90%',
-            backgroundColor: 'transparent',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            transition: 'bottom 0.5s ease-in-out',
-            borderRadius: '40px 40px 0 0',
-          }}
-        >
+        {/* --Account Details-- */}
+        {isSecureAccountVisible && (
           <Box
             sx={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '90%',
+              backgroundColor: 'transparent',
               display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '80%',
-              alignSelf: 'center',
+              flexDirection: 'column',
+              alignItems: 'center',
+              transition: 'bottom 0.5s ease-in-out',
+              borderRadius: '40px 40px 0 0',
             }}
           >
-            <Button
-              variant='contained'
-              onClick={() => {
-                setIsSecureAccountVisible(false);
-              }}
+            <Box
               sx={{
-                width: '10%',
-                bgcolor: 'transparent',
-                boxShadow: 'none',
-                ml: '2%',
-                height: '50px',
-                '&:hover': {
-                  backgroundColor: '#00FFAA',
-                  boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.6)',
-                  transform: 'scale(1.03)',
-                },
-                '&:focus': {
-                  backgroundColor: '#00FFAA',
-                  boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.8)',
-                },
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                width: '80%',
+                alignSelf: 'center',
               }}
             >
-              <ArrowBack
-                sx={{ width: '30px', height: '30px', color: '#fff' }}
-              />
-            </Button>
-            <Title2Text sx={{ color: '#00FFAA', mt: '10%' }}>
-              Secure your Account
-            </Title2Text>
-            <LanguageSelector language={language} setLanguage={setLanguage} />
+              <Button
+                variant='contained'
+                onClick={() => {
+                  setIsSecureAccountVisible(false);
+                }}
+                sx={{
+                  width: '10%',
+                  bgcolor: 'transparent',
+                  boxShadow: 'none',
+                  ml: '2%',
+                  height: '50px',
+                  '&:hover': {
+                    backgroundColor: '#00FFAA',
+                    boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.6)',
+                    transform: 'scale(1.03)',
+                  },
+                  '&:focus': {
+                    backgroundColor: '#00FFAA',
+                    boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.8)',
+                  },
+                }}
+              >
+                <ArrowBack
+                  sx={{ width: '30px', height: '30px', color: '#fff' }}
+                />
+              </Button>
+              <Title2Text sx={{ color: '#00FFAA', mt: '10%' }}>
+                Secure your Account
+              </Title2Text>
+              <LanguageSelector language={language} setLanguage={setLanguage} />
+            </Box>
+
+            <WhiteHueTextField
+              id='username'
+              label={t('signup.username')}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                setUsername(event.target.value);
+              }}
+              value={username}
+              inputProps={{ style: { color: '#fff' } }}
+              InputLabelProps={{ style: { color: '#fff' } }}
+              sx={{ width: md ? '55%' : '65%', marginTop: md ? '2%' : '3%' }}
+            />
+
+            <WhiteHueTextField
+              id='password'
+              label='Password'
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                handlePasswordChange(event);
+              }}
+              value={password}
+              type={passwordHidden ? 'password' : ''}
+              inputProps={{ style: { color: '#fff' } }}
+              InputLabelProps={{ style: { color: '#fff' } }}
+              sx={{ width: md ? '55%' : '65%', marginTop: md ? '2%' : '3%' }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    {passwordHidden ? (
+                      <VisibilityOffIcon
+                        style={{ color: '#FFF', cursor: 'pointer' }}
+                        onClick={() => {
+                          setPasswordHidden(false);
+                        }}
+                      />
+                    ) : (
+                      <VisibilityIcon
+                        style={{ color: '#FFF' }}
+                        onClick={() => {
+                          setPasswordHidden(true);
+                        }}
+                      />
+                    )}
+                  </InputAdornment>
+                ),
+              }}
+              error={Boolean(passwordError)}
+              helperText={passwordError}
+            />
+
+            <WhiteHueTextField
+              id='confirmPassword'
+              label='Confirm Password'
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                handleConfirmPasswordChange(event);
+              }}
+              value={confirmPassword}
+              color='primary'
+              type={confirmPasswordHidden ? 'password' : ''}
+              inputProps={{ style: { color: '#fff' } }}
+              InputLabelProps={{ style: { color: '#fff' } }}
+              sx={{ width: md ? '55%' : '65%', marginTop: md ? '2%' : '3%' }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    {confirmPasswordHidden ? (
+                      <VisibilityOffIcon
+                        style={{ color: '#FFF', cursor: 'pointer' }}
+                        onClick={() => {
+                          setConfirmPasswordHidden(false);
+                        }}
+                      />
+                    ) : (
+                      <VisibilityIcon
+                        style={{ color: '#FFF' }}
+                        onClick={() => {
+                          setConfirmPasswordHidden(true);
+                        }}
+                      />
+                    )}
+                  </InputAdornment>
+                ),
+              }}
+              error={Boolean(confirmPasswordError)}
+              helperText={confirmPasswordError}
+            />
+            {/* Additional components or buttons can be added here */}
+            <SecureButton
+              onClick={() => {
+                delete_local_for_recovery(password)
+                  .then(() => {
+                    import_wallet(username, password, false, key, language)
+                      .then((res) => {
+                        setMessage('Successfully imported wallet');
+                        setSuccess(true);
+                        navigate('/home');
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                        setMessage('Error importing wallet');
+                        setError(true);
+                        //refresh the page
+                        window.location.reload();
+                      });
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    setMessage('Error importing wallet');
+                    setError(true);
+                    window.location.reload();
+                  });
+              }}
+              sx={{ marginTop: '5%' }}
+              endIcon={<ArrowForward style={{ color: '#FFF' }} />}
+            >
+              <Typography sx={{ fontSize: '1.2rem', fontWeight: 700 }}>
+                Secure
+              </Typography>
+            </SecureButton>
           </Box>
-
-          <WhiteHueTextField
-            id='username'
-            label={t('signup.username')}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setUsername(event.target.value);
-            }}
-            value={username}
-            inputProps={{ style: { color: '#fff' } }}
-            InputLabelProps={{ style: { color: '#fff' } }}
-            sx={{ width: md ? '55%' : '65%', marginTop: md ? '2%' : '3%' }}
+        )}
+        {isLoading && (
+          <CircularProgress
+            sx={{ marginTop: '20%', color: '#00ffaa', top: 0 }}
           />
-
-          <WhiteHueTextField
-            id='password'
-            label='Password'
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              handlePasswordChange(event);
-            }}
-            value={password}
-            type={passwordHidden ? 'password' : ''}
-            inputProps={{ style: { color: '#fff' } }}
-            InputLabelProps={{ style: { color: '#fff' } }}
-            sx={{ width: md ? '55%' : '65%', marginTop: md ? '2%' : '3%' }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position='end'>
-                  {passwordHidden ? (
-                    <VisibilityOffIcon
-                      style={{ color: '#FFF', cursor: 'pointer' }}
-                      onClick={() => {
-                        setPasswordHidden(false);
-                      }}
-                    />
-                  ) : (
-                    <VisibilityIcon
-                      style={{ color: '#FFF' }}
-                      onClick={() => {
-                        setPasswordHidden(true);
-                      }}
-                    />
-                  )}
-                </InputAdornment>
-              ),
-            }}
-            error={Boolean(passwordError)}
-            helperText={passwordError}
-          />
-
-          <WhiteHueTextField
-            id='confirmPassword'
-            label='Confirm Password'
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              handleConfirmPasswordChange(event);
-            }}
-            value={confirmPassword}
-            color='primary'
-            type={confirmPasswordHidden ? 'password' : ''}
-            inputProps={{ style: { color: '#fff' } }}
-            InputLabelProps={{ style: { color: '#fff' } }}
-            sx={{ width: md ? '55%' : '65%', marginTop: md ? '2%' : '3%' }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position='end'>
-                  {confirmPasswordHidden ? (
-                    <VisibilityOffIcon
-                      style={{ color: '#FFF', cursor: 'pointer' }}
-                      onClick={() => {
-                        setConfirmPasswordHidden(false);
-                      }}
-                    />
-                  ) : (
-                    <VisibilityIcon
-                      style={{ color: '#FFF' }}
-                      onClick={() => {
-                        setConfirmPasswordHidden(true);
-                      }}
-                    />
-                  )}
-                </InputAdornment>
-              ),
-            }}
-            error={Boolean(confirmPasswordError)}
-            helperText={confirmPasswordError}
-          />
-          {/* Additional components or buttons can be added here */}
-          <SecureButton
-            onClick={() => {
-              delete_local_for_recovery(password)
-                .then(() => {
-                  import_wallet(username, password, false, key, language)
-                    .then((res) => {
-                      setMessage('Successfully imported wallet');
-                      setSuccess(true);
-                      navigate('/home');
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                      setMessage('Error importing wallet');
-                      setError(true);
-                      //refresh the page
-                      window.location.reload();
-                    });
-                })
-                .catch((err) => {
-                  console.log(err);
-                  setMessage('Error importing wallet');
-                  setError(true);
-                  window.location.reload();
-                });
-            }}
-            sx={{ marginTop: '5%' }}
-            endIcon={<ArrowForward style={{ color: '#FFF' }} />}
-          >
-            <Typography sx={{ fontSize: '1.2rem', fontWeight: 700 }}>
-              Secure
-            </Typography>
-          </SecureButton>
-        </Box>
-      )}
-      {isLoading && (
-        <CircularProgress sx={{ marginTop: '20%', color: '#00ffaa', top: 0 }} />
-      )}
-    </Layout>
+        )}
+      </Box>
+    </Box>
   );
 };
 

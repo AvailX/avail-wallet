@@ -1,6 +1,6 @@
 [package]
 name = "avail_wallet"
-version = "0.4.3"
+version = "0.4.4"
 description = "Avail Wallet | Make it yours."
 authors = ["Avail"]
 license = "Apache-2.0"

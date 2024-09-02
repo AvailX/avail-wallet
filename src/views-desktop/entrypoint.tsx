@@ -10,7 +10,7 @@ import { session_and_local_auth } from '../services/authentication/auth';
 import { relaunch } from '@tauri-apps/plugin-process';
 
 // Images
-import a_logo from '../assets/logo/a-icon.svg';
+import a_logo from '../assets/logo/aleo-logo.svg';
 
 // Types
 import { type AvailError, AvailErrorType } from '../types/errors';
@@ -21,8 +21,10 @@ import { ErrorAlert } from '../components/snackbars/alerts';
 import update from '../services/util/updater';
 import { useWalletConnectManager } from '../context/WalletConnect';
 import { listen } from '@tauri-apps/api/event';
-import { Box } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import { useRef, useState, useEffect } from 'react';
+
+import bgImg from '../assets/images/backgrounds/avail-gradients.png';
 
 function Entrypoint() {
   const navigate = useNavigate();
@@ -48,6 +50,7 @@ function Entrypoint() {
   };
 
   useEffect(() => {
+    // navigate('/register');
     if (shouldRunEffect.current) {
       update()
         .then(async (update_res) => {
@@ -78,13 +81,10 @@ function Entrypoint() {
                 true
               ).catch(async (error_) => {
                 console.log(error_);
-
                 const error = error_ as AvailError;
-
                 if (error.error_type === AvailErrorType.Network) {
                   // TODO - Desktop login
                 }
-
                 if (error.error_type.toString() === 'Unauthorized') {
                   navigate('/login');
                 } else {
@@ -98,13 +98,26 @@ function Entrypoint() {
           setAlertMessage('Failed to fetch latest update.');
           setAlert(true);
         });
-
       shouldRunEffect.current = false;
     }
   }, []);
 
   return (
-    <Layout>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'red',
+        minHeight: '100vh',
+        background: `url(${bgImg})`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <UpdateAlert open={updateDialog} />
       <ErrorAlert
         errorAlert={alert}
@@ -120,9 +133,34 @@ function Entrypoint() {
           justifyContent: 'center',
         }}
       >
-        <img src={a_logo} style={{ width: '12%', alignSelf: 'center' }} />
+        <Box
+          display='flex'
+          alignItems='center'
+          justifyContent='center'
+          flexDirection='column'
+        >
+          <img src={a_logo} style={{ width: '300px', alignSelf: 'center' }} />
+          <Typography color='#fff' fontSize='40px' mt={4} fontWeight={700}>
+            Connecting to the{' '}
+            <span
+              style={{
+                background: 'linear-gradient(90deg, #FFFFFF 0%, #FFFFFF 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                //@ts-ignore
+                textFillColor: 'transparent',
+              }}
+            >
+              Aleo Blockchain...
+            </span>
+          </Typography>
+          <CircularProgress
+            sx={{ marginTop: '10px', color: '#00ffaa', top: 0 }}
+          />
+        </Box>
       </Box>
-    </Layout>
+    </Box>
   );
 }
 
