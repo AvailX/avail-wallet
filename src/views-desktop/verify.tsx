@@ -188,7 +188,7 @@ function Verify() {
           container
           spacing={1}
           sx={{
-            marginTop: "25px",
+            marginTop: "15px",
             alignSelf: "center",
             // bgcolor: "#1E1D1D",
             borderRadius: "10px",
