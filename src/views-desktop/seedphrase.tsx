@@ -78,11 +78,6 @@ const SeedPhrase = () => {
           {/* {t("seedphrase.title")} */}
           Secret Recovery Phrase
         </TitleText>
-        {/* <mui.Typography
-          sx={{ color: "#a3a3a3", textAlign: "center", fontSize: "1.2rem" }}
-        >
-          {t("seedphrase.subtitle")}
-        </mui.Typography> */}
       </mui.Box>
       <mui.Grid
         container
@@ -177,13 +172,16 @@ const SeedPhrase = () => {
           width: "40%",
         }}
       >
-        <CTAButton
-          text={t("seedphrase.continue")}
-          onClick={() => {
-            navigate("/verify", { state: { seed: secretWords } });
-          }}
-          width="80%"
-        />
+        {/* <mui.Box sx={{ marginRight: "10px" }}> */}
+          <CTAButton
+            text={t("seedphrase.continue")}
+            onClick={() => {
+              navigate("/verify", { state: { seed: secretWords } });
+            }}
+            width="80%"
+          />
+        {/* </mui.Box> */}
+
         <mui.IconButton
           onClick={handleCopyToClipboard}
           size="large"
