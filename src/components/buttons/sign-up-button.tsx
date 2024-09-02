@@ -25,18 +25,19 @@ const SignUpButton = styled(Button)(() => {
   const lg = useMediaQuery("(min-width:1200px)");
   return {
     position: "relative",
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    backgroundColor: "#7000FF",
     color: "white",
+    fontWeight: 400,
     // border: '1px solid white',
-    boxShadow: "0 0 8px rgba(255, 255, 255, 0.5)", // Heavier white hue
+    //  boxShadow: '0 0 8px rgba(255, 255, 255, 0.5)', // Heavier white hue
     textTransform: "none",
     fontSize: 16,
     height: md ? 48 : 40, // Match the TextField height
-    width: md ? "75%" : "85%", // Match the TextField width
+    width: "100%", // Match the TextField width
     transition: "0.3s ease-in-out",
     "&:hover": {
       backgroundColor: alpha("#7000FF", 0.8), // Slight background on hover
-      color: "#f9f7f7",
+      color: "#fff",
       transform: "scale(1.05)",
     },
     "& .MuiButton-endIcon": {

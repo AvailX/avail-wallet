@@ -1,35 +1,29 @@
-import * as React from "react";
-import * as mui from "@mui/material";
-import MiniDrawer from "../../components/sidebar";
-import revampBg from "../../assets/images/backgrounds/revamp_bg1.png";
+import { Box } from '@mui/material';
+import { ReactNode, FC } from 'react';
+import MiniDrawer from '../../components/sidebar';
 
 type LayoutWrapperProperties = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
-const Layout: React.FC<LayoutWrapperProperties> = ({ children }) => (
+const Layout: FC<LayoutWrapperProperties> = ({ children }) => (
   <div>
     {/* <MiniDrawer></MiniDrawer> */}
 
-    <mui.Box
+    <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
+        display: 'flex',
+        flexDirection: 'column',
         // BackgroundColor:"#081424",
-        backgroundColor: "#000000",
-        minWidth: "100%",
-        minHeight: "100vh",
+        backgroundColor: '#111111',
+        minWidth: '100%',
+        minHeight: '100vh',
         margin: 0,
         padding: 0,
-        paddingTop: "20px",
-        // backgroundImage: `url(${revampBg})`,
-        // backgroundRepeat: "no-repeat",
-        // backgroundPosition: "bottom center",
-        // backgroundSize: "100% auto",
       }}
     >
       {children}
-    </mui.Box>
+    </Box>
   </div>
 );
 

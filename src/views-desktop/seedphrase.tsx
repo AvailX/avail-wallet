@@ -100,26 +100,6 @@ const SeedPhrase = () => {
           position: "relative",
         }}
       >
-        {/* Overlay with blur effect */}
-        {/* {!revealAll && (
-          <mui.Box
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              bgcolor: "rgba(0, 0, 0, 0.5)", // Dark overlay
-              backdropFilter: "blur(4px)", // Blur effect
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "10px", // Match the parent's border radius
-              zIndex: 10,
-            }}
-          ></mui.Box>
-        )} */}
-
         {/* Secret words grid items */}
         {secretWords.map((word, index) => (
           <mui.Grid

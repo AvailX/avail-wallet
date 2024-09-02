@@ -1,37 +1,36 @@
-import * as mui from '@mui/material';
-import * as React from 'react';
 import BackButton from '../buttons/back';
 import '../../styles/shapes.css';
+import { Box, Typography } from '@mui/material';
 
 type ChatHeaderProperties = {
-	name: string;
+  name: string;
 };
 
-const ChatHeader: React.FC<ChatHeaderProperties> = ({name}) => (
-	<mui.Box
-		sx={{
-			display: 'flex',
-			flexDirection: 'row',
-			width: '100%',
-			alignSelf: 'center',
-			justifyContent: 'space-between',
-			alignItems: 'center',
-		}}
-	>
-		<BackButton />
+const ChatHeader: React.FC<ChatHeaderProperties> = ({ name }) => (
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'row',
+      width: '100%',
+      alignSelf: 'center',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    }}
+  >
+    <BackButton />
 
-		<mui.Typography sx={{color: '#00FFAA', fontSize: '1.1rem'}}>
-			{name}
-		</mui.Typography>
+    <Typography sx={{ color: '#00FFAA', fontSize: '1.1rem' }}>
+      {name}
+    </Typography>
 
-		<mui.Box sx={{width: '15%'}} >
-			<mui.Box className='hex2' >
-				<mui.Typography sx={{color: '#000', fontSize: '1.1rem'}}>
-					{name.charAt(0).toUpperCase()}
-				</mui.Typography>
-			</mui.Box>
-		</mui.Box>
-	</mui.Box>
+    <Box sx={{ width: '15%' }}>
+      <Box className='hex2'>
+        <Typography sx={{ color: '#000', fontSize: '1.1rem' }}>
+          {name.charAt(0).toUpperCase()}
+        </Typography>
+      </Box>
+    </Box>
+  </Box>
 );
 
 export default ChatHeader;

@@ -12,21 +12,20 @@ type CtaButtonProperties = {
 
 const CtaButton = styled(Button)({
   backgroundColor: "#7000FF",
-  color: "#FFFFFF",
+  color: "#fff",
   fontWeight: "bold",
   padding: "10px 20px",
-  marginRight: "10px",
-  borderRadius: "5px",
   transition: "transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out",
+  width: "100%",
   textTransform: "none",
   "&:hover": {
     backgroundColor: "#7000FF",
-    boxShadow: "0 0 8px 2px rgb(112, 0, 255)",
+    // boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.6)',
     transform: "scale(1.03)",
   },
   "&:focus": {
     backgroundColor: "#7000FF",
-    boxShadow: "0 0 8px 2px rgb(112, 0, 255)",
+    // boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.8)',
   },
   alignSelf: "center",
 });

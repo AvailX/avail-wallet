@@ -1,10 +1,9 @@
-import * as React from 'react';
-import * as mui from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 
 export default function CircularIndeterminate() {
-	return (
-		<mui.Box sx={{display: '100%'}}>
-			<mui.CircularProgress />
-		</mui.Box>
-	);
+  return (
+    <Box sx={{ display: '100%' }}>
+      <CircularProgress />
+    </Box>
+  );
 }
