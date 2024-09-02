@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import CTAButton from "../components/buttons/cta";
 import WhiteHueTextField from "../components/textfields/white-hue";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-
+import { Typography, TextField } from "@mui/material";
 // Typography
 import {
   Title2Text,
@@ -24,6 +24,7 @@ import { SuccessAlert, ErrorAlert } from "../components/snackbars/alerts";
 // Hooks
 
 import Layout from "./reusable/layout";
+import SeedLayout from "./reusable/seed-layout";
 
 function Verify() {
   const seed = useLocation().state.seed as string[];
@@ -132,7 +133,7 @@ function Verify() {
   }, [seed]);
 
   return (
-    <Layout>
+    <SeedLayout>
       <ErrorAlert
         message={message}
         errorAlert={error}
@@ -143,20 +144,6 @@ function Verify() {
         successAlert={success}
         setSuccessAlert={setSuccess}
       />
-      {/* <img
-        src={a_logo}
-        alt="aleo logo"
-        style={{
-          width: "60px",
-          height: "60px",
-          marginTop: "20px",
-          marginLeft: "20px",
-          cursor: "pointer",
-        }}
-        onClick={() => {
-          window.history.back();
-        }}
-      /> */}
       <mui.IconButton
         onClick={() => {
           window.history.back();
@@ -177,26 +164,7 @@ function Verify() {
       >
         <KeyboardBackspaceIcon fontSize="inherit" />
       </mui.IconButton>
-      {/* <mui.Typography
-        sx={{
-          color: "#a3a3a3",
-          fontSize: 10,
-          marginTop: "1%",
-          marginLeft: "20px",
-          fontWeight: "700",
-          alignContent: "end",
-        }}
-      >
-        Click the Avail <br /> logo to go back
-      </mui.Typography> */}
-      <mui.Box
-      // sx={{
-      //   display: "flex",
-      //   flexDirection: "column",
-      //   width: "100%",
-      //   height: "auto",
-      // }}
-      >
+      <mui.Box>
         <Title2Text sx={{ color: "#FFF", textAlign: "center" }}>
           {t("verify.title")}
         </Title2Text>
@@ -225,13 +193,11 @@ function Verify() {
             // bgcolor: "#1E1D1D",
             borderRadius: "10px",
             width: "80%",
-            padding: "50px",
+            padding: "20px",
             justifyContent: "center",
             mb: "2%",
             alignItems: "center",
             position: "relative",
-            boxShadow: "0px 4px 20px rgba(81, 80, 80, 0.3)",
-            bgcolor: "rgba(17, 17, 17, 1)",
           }}
         >
           {/* Secret words grid items */}
@@ -250,7 +216,7 @@ function Verify() {
                 item
                 xs={3} // Adjust the grid size as needed
               >
-                <WhiteHueTextField
+                <mui.TextField
                   key={index}
                   label={`Word ${index + 1}`}
                   value={word.input}
@@ -258,6 +224,26 @@ function Verify() {
                     handleInputChange(index, e.target.value);
                   }}
                   autoCapitalize="none"
+                  sx={{
+                    // width: "150px",
+                    // height: "40px",
+                    bgcolor: "#7000FF",
+                    color: "#fff",
+                    borderRadius: "5px",
+                    "& .MuiInputBase-input": {
+                      fontFamily: '"DM Sans", sans-serif',
+                      fontSize: "16px",
+                      color: "#fff",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#7000FF",
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "#fff",
+                      fontFamily: '"DM Sans", sans-serif',
+                    },
+                  }}
+                  variant="outlined"
                 />
               </mui.Grid>
             ) : (
@@ -283,6 +269,7 @@ function Verify() {
                     right: 0,
                     bottom: 0,
                     bgcolor: "rgba(0, 0, 0, 0.1)",
+                    // bgcolor: "#7000FF",
                     backdropFilter: "blur(4px)",
                     display: "flex",
                     alignItems: "center",
@@ -306,7 +293,7 @@ function Verify() {
         />
       </mui.Box>
       <mui.Box sx={{ mb: "3%" }} />
-    </Layout>
+    </SeedLayout>
   );
 }
 
