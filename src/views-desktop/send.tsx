@@ -1,31 +1,33 @@
-import { useNavigate } from 'react-router-dom';
+import * as React from "react";
+import * as mui from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 // Services
-import { useTranslation } from 'react-i18next';
-import { emit } from '@tauri-apps/api/event';
-import { transfer } from '../services/transfer/transfers';
-import { getTokenBalance } from '../services/states/utils';
-import { os } from '../services/util/open';
-import { listen } from '@tauri-apps/api/event';
+import { useTranslation } from "react-i18next";
+import { emit } from "@tauri-apps/api/event";
+import { transfer } from "../services/transfer/transfers";
+import { getTokenBalance } from "../services/states/utils";
+import { os } from "../services/util/open";
+import { listen } from "@tauri-apps/api/event";
 import {
   getNetwork,
   get_address,
   getUsername,
-} from '../services/storage/persistent';
+} from "../services/storage/persistent";
 
 // Components
-import TransferBox from '../components/transfer/transfer_box';
-import MiniDrawer from '../components/sidebar';
-import CTAButton from '../components/buttons/cta';
-import SettingsComponent from '../components/switch/privacy_toggle';
-import TransferDialog from '../components/dialogs/transfer';
-import TransferInProgressDialog from '../components/dialogs/transfer_in_progress';
-import ProfileBar from '../components/account/profile-header';
+import TransferBox from "../components/transfer/transfer_box";
+import MiniDrawer from "../components/sidebar";
+import CTAButton from "../components/buttons/cta";
+import SettingsComponent from "../components/switch/privacy_toggle";
+import TransferDialog from "../components/dialogs/transfer";
+import TransferInProgressDialog from "../components/dialogs/transfer_in_progress";
+import ProfileBar from "../components/account/profile-header";
 
 // Images
-import aleo from '../assets/icons/tokens/aleo.svg';
-import usdt from '../assets/icons/tokens/usdt.svg';
-import { SmallText400 } from '../components/typography/typography';
+import aleo from "../assets/icons/tokens/aleo.svg";
+import usdt from "../assets/icons/tokens/usdt.svg";
+import { SmallText400 } from "../components/typography/typography";
 
 // Alerts
 import {
@@ -33,76 +35,77 @@ import {
   SuccessAlert,
   WarningAlert,
   InfoAlert,
-} from '../components/snackbars/alerts';
+} from "../components/snackbars/alerts";
 
 // Types
 import {
   type TransferRequest,
   TransferType,
-} from '../types/transfer_props/tokens';
-import { type AvailError, AvailErrorType } from '../types/errors';
-import { getAuthType } from '../services/storage/persistent';
+} from "../types/transfer_props/tokens";
+import { type AvailError, AvailErrorType } from "../types/errors";
+import { getAuthType } from "../services/storage/persistent";
 
 // Context
-import { useScan } from '../context/ScanContext';
-import Layout from './reusable/layout';
-import { useState, useEffect, useRef } from 'react';
-import { Box, Chip, TextField, Button, Typography } from '@mui/material';
+import { useScan } from "../context/ScanContext";
+import Layout from "./reusable/layout";
+import SendButton from "../../src/components/transfer/glowing_arrow_icon";
 
 // TODO - Get tokens
 const tokens = [
   {
-    symbol: 'ALEO',
+    symbol: "ALEO",
     image_url: aleo,
   },
 ];
 
 const mockTransferRequest: TransferRequest = {
-  asset_id: 'ALEO',
+  asset_id: "ALEO",
   amount: 10,
-  recipient: 'test',
+  recipient: "test",
   transfer_type: TransferType.TransferPublic,
-  message: 'test',
+  message: "test",
   fee_private: false,
   password: undefined,
   fee: 290_000,
 };
 
 function Send() {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [response, setResponse] = useState<string>();
-  const [biometric, setBiometric] = useState<boolean>(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [response, setResponse] = React.useState<string>();
+  const [biometric, setBiometric] = React.useState<boolean>(false);
 
   // Balance states
-  const [privateBalance, setPrivateBalance] = useState<number>(0);
-  const [publicBalance, setPublicBalance] = useState<number>(0);
+  const [privateBalance, setPrivateBalance] = React.useState<number>(0);
+  const [publicBalance, setPublicBalance] = React.useState<number>(0);
 
   // Transfer states
-  const [token, setToken] = useState<string>('ALEO');
-  const [recipient, setRecipient] = useState<string>('');
-  const [amount, setAmount] = useState<number>(0);
-  const [transferMessage, setTransferMessage] = useState<string>('');
-  const [request, setRequest] = useState<TransferRequest>(mockTransferRequest);
-  const [TransferDialogOpen, setTransferDialogOpen] = useState(false);
+  const [token, setToken] = React.useState<string>("ALEO");
+  const [recipient, setRecipient] = React.useState<string>("");
+  const [amount, setAmount] = React.useState<number>(0);
+  const [transferMessage, setTransferMessage] = React.useState<string>("");
+  const [request, setRequest] =
+    React.useState<TransferRequest>(mockTransferRequest);
+  const [TransferDialogOpen, setTransferDialogOpen] = React.useState(false);
   const [TransferInProgressDialogOpen, setTransferInProgressDialogOpen] =
-    useState(false);
+    React.useState(false);
 
   // Privacy flags
-  const [isPrivateTransferFrom, setIsPrivateTransferFrom] = useState(false);
-  const [isPrivateTransferTo, setIsPrivateTransferTo] = useState(false);
-  const [isPrivateFee, setIsPrivateFee] = useState(false);
+  const [isPrivateTransferFrom, setIsPrivateTransferFrom] =
+    React.useState(false);
+  const [isPrivateTransferTo, setIsPrivateTransferTo] = React.useState(false);
+  const [isPrivateFee, setIsPrivateFee] = React.useState(false);
 
   // Alert states
-  const [errorAlert, setErrorAlert] = useState(false);
-  const [successAlert, setSuccessAlert] = useState(false);
-  const [warningAlert, setWarningAlert] = useState(false);
-  const [infoAlert, setInfoAlert] = useState(false);
-  const [message, setMessage] = useState('');
+  const [errorAlert, setErrorAlert] = React.useState(false);
+  const [successAlert, setSuccessAlert] = React.useState(false);
+  const [warningAlert, setWarningAlert] = React.useState(false);
+  const [infoAlert, setInfoAlert] = React.useState(false);
+  const [message, setMessage] = React.useState("");
 
   // Profile  bar states
-  const [address, setAddress] = useState('');
-  const [username, setUsername] = useState('');
-  const [network, setNetwork] = useState('');
+  const [address, setAddress] = React.useState("");
+  const [username, setUsername] = React.useState("");
+  const [network, setNetwork] = React.useState("");
 
   // Scan states
   const { scanInProgress, startScan, endScan } = useScan();
@@ -112,14 +115,14 @@ function Send() {
 
   const getAuth = async () => {
     const auth = await getAuthType();
-    if (auth === 'true') {
+    if (auth === "true") {
       setBiometric(true);
     } else {
       setBiometric(false);
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Set network
 
     getNetwork()
@@ -128,7 +131,7 @@ function Send() {
       })
       .catch((error) => {
         console.log(error);
-        setMessage('Failed to get network.');
+        setMessage("Failed to get network.");
         setErrorAlert(true);
       });
 
@@ -139,7 +142,7 @@ function Send() {
       })
       .catch((error) => {
         console.log(error);
-        setMessage('Failed to get address.');
+        setMessage("Failed to get address.");
         setErrorAlert(true);
       });
 
@@ -150,14 +153,14 @@ function Send() {
       })
       .catch((error) => {
         console.log(error);
-        setMessage('Failed to get username.');
+        setMessage("Failed to get username.");
         setErrorAlert(true);
       });
   }, []);
 
   /* --Event Listners */
-  useEffect(() => {
-    const unlistenTx = listen('tx_in_progress_notification', (event) => {
+  React.useEffect(() => {
+    const unlistenTx = listen("tx_in_progress_notification", (event) => {
       setTransferInProgressDialogOpen(true);
     });
 
@@ -168,7 +171,7 @@ function Send() {
         })
         .catch((error) => {
           console.log(error);
-          setMessage('Error listening to tx_in_progress_notification event.');
+          setMessage("Error listening to tx_in_progress_notification event.");
           setErrorAlert(true);
         });
     };
@@ -187,40 +190,40 @@ function Send() {
       transferType = TransferType.TransferPublic;
     }
 
-    if (amount === undefined || recipient === '' || token === '') {
-      setMessage(t('send.messages.error.fields'));
+    if (amount === undefined || recipient === "" || token === "") {
+      setMessage(t("send.messages.error.fields"));
       setErrorAlert(true);
       return;
     }
 
     if (amount === 0) {
-      setMessage(t('send.messages.error.zero-amount'));
+      setMessage(t("send.messages.error.zero-amount"));
       setErrorAlert(true);
       return;
     }
 
     if (amount < 0) {
-      setMessage(t('send.messages.error.positive-amount'));
+      setMessage(t("send.messages.error.positive-amount"));
       setErrorAlert(true);
       return;
     }
 
     if (amount > privateBalance && isPrivateTransferFrom) {
-      setMessage(t('send.messages.error.insufficient-private-amount'));
+      setMessage(t("send.messages.error.insufficient-private-amount"));
       setErrorAlert(true);
       return;
     }
 
     if (amount > publicBalance && !isPrivateTransferFrom) {
-      setMessage(t('send.messages.error.insufficient-public-amount'));
+      setMessage(t("send.messages.error.insufficient-public-amount"));
       setErrorAlert(true);
       return;
     }
 
     let asset_id = token;
 
-    if (token === 'ALEO') {
-      asset_id = 'credits';
+    if (token === "ALEO") {
+      asset_id = "credits";
     }
 
     const request: TransferRequest = {
@@ -234,19 +237,19 @@ function Send() {
       fee: 297_000,
     };
 
-    sessionStorage.setItem('transferState', 'true');
+    sessionStorage.setItem("transferState", "true");
     transfer(request, setErrorAlert, setMessage)
       .then((res) => {
-        sessionStorage.setItem('transferState', 'false');
+        sessionStorage.setItem("transferState", "false");
       })
       .catch(async (err) => {
         console.log(err);
         const error = err as AvailError;
 
-        sessionStorage.setItem('transferState', 'false');
-        if (error.error_type.toString() === 'Unauthorized') {
-          sessionStorage.setItem('transferState', 'false');
-          await emit('transfer_off');
+        sessionStorage.setItem("transferState", "false");
+        if (error.error_type.toString() === "Unauthorized") {
+          sessionStorage.setItem("transferState", "false");
+          await emit("transfer_off");
 
           setRequest(request);
           setTransferDialogOpen(true);
@@ -255,12 +258,12 @@ function Send() {
       });
   };
 
-  const shouldRunEffect = useRef(true);
-  useEffect(() => {
+  const shouldRunEffect = React.useRef(true);
+  React.useEffect(() => {
     let assetId = token;
 
-    if (token === 'ALEO') {
-      assetId = 'credits';
+    if (token === "ALEO") {
+      assetId = "credits";
     }
 
     getTokenBalance(assetId)
@@ -273,10 +276,15 @@ function Send() {
       })
       .catch((error) => {
         console.log(error);
-        setMessage('Failed to get token balances.');
+        setMessage("Failed to get token balances.");
         setErrorAlert(true);
       });
   }, [token]);
+
+  // Handler to toggle the transfer type
+  const toggleTransferType = () => {
+    setIsPrivateTransferFrom(!isPrivateTransferFrom);
+  };
 
   // TODO : Get list of tokens owned by user and display them in a dropdown + amounts available of each
   return (
@@ -319,62 +327,88 @@ function Send() {
         request={request}
       />
       <MiniDrawer />
-      <Box
+      <mui.Box
         sx={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignContent: 'center',
-          flexDirection: 'column',
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "space-evenly",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        <Box
+        <mui.Box
           sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            mt: '2%',
-            mr: '5%',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <Chip
-            label={network}
-            variant='outlined'
-            sx={{ mr: '2%', color: '#a3a3a3' }}
-          />
-          <ProfileBar address={address} name={username}></ProfileBar>
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            width: '45%',
-            bgcolor: '#00A07D',
-            borderRadius: 9,
-            mt: '8%',
-            alignSelf: 'center',
-          }}
-        >
-          <Box
+          <mui.Typography
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignSelf: 'center',
-              width: '100%',
+              mt: "10%",
+              fontSize: "40px",
+              fontWeight: 600,
+              fontFamily: " 'DM Sans', sans-serif",
+              background: "linear-gradient(90deg, #3B00FF, #00FFAA)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Send.
+          </mui.Typography>
+        </mui.Box>
+
+        <mui.Box
+          sx={{
+            display: "flex",
+            width: "35%",
+            bgcolor: "#1F1F22",
+            borderRadius: 9,
+            mt: "6%",
+            alignSelf: "center",
+          }}
+        >
+          <mui.Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignSelf: "center",
+              width: "100%",
               borderRadius: 9,
-              backdropFilter: 'blur(10px)',
-              background:
-                'radial-gradient(ellipse at center, #00A07D -20%, #2A3331 110%)',
-              boxShadow: `
-            0 0 60px 0 rgba(0, 255, 190, 0.6),  // Soft green glow
-            0 0 100px 0 rgba(0, 255, 190, 0.4),  // Medium green glow
-            0 0 150px 0 rgba(0, 255, 190, 0.2)   // Wide green glow
-          `,
+              backdropFilter: "blur(10px)",
+              background: "#28282D",
               p: 3,
             }}
           >
-            <Box sx={{ width: '85%', alignSelf: 'center' }}>
+            {/* Contains You send text */}
+            <mui.Box sx={{ width: "80%", alignSelf: "center" }}>
+              <mui.Typography
+                sx={{
+                  fontSize: "20px",
+                  fontWeight: 500,
+                  fontFamily: " 'DM Sans', sans-serif",
+                  background: "#EAEAEA",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                You Send
+              </mui.Typography>
+            </mui.Box>
+
+            {/* contains the input field and select coin dropdown */}
+            <mui.Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                alignContent: "center",
+                alignSelf: "center",
+                width: "80%",
+              }}
+            >
               <TransferBox
                 tokens={tokens}
                 token={token}
@@ -382,108 +416,194 @@ function Send() {
                 setToken={setToken}
                 setAmount={setAmount}
               />
-            </Box>
-            {/* private balance */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', mt: '2%' }}>
-              <Box
+            </mui.Box>
+
+            {/* private balance and Public Balance*/}
+            <mui.Box
+              sx={{ display: "flex", flexDirection: "column", mt: "2%" }}
+            >
+              <mui.Box
                 sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignSelf: 'center',
-                  width: '80%',
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignSelf: "center",
+                  width: "80%",
                 }}
               >
                 {/* private balance* and fee */}
-                <Box
-                  sx={{ display: 'flex', flexDirection: 'row', width: '60%' }}
+                <mui.Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "60%",
+                    alignItems: "center",
+                  }}
                 >
-                  <SmallText400 sx={{ color: '#fff', mr: '2%' }}>
-                    {t('send.private-balance')}
+                  <SmallText400 sx={{ color: "#A8A0A0", mr: "2%" }}>
+                    {t("send.private-balance")}
                   </SmallText400>
-                  <SmallText400 sx={{ color: '#fff' }}>
+                  <SmallText400
+                    sx={{
+                      color: isPrivateTransferFrom ? "#00FFAA" : "#A8A0A0",
+                    }}
+                  >
                     {privateBalance}
                   </SmallText400>
-                </Box>
+                  <mui.Box
+                    onClick={toggleTransferType}
+                    sx={{
+                      width: 15, // Adjust the width of the circle
+                      height: 15, // Adjust the height of the circle (same as width)
+                      borderRadius: "50%", // Makes the Box a circle
+                      backgroundColor: isPrivateTransferFrom
+                        ? "#00FFAA"
+                        : "#A8A0A0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      ml: 1,
+                    }}
+                  ></mui.Box>
+                </mui.Box>
                 {/* TODO - Fetch fee from microservice. */}
-                <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-                  <SmallText400 sx={{ color: '#fff' }}>
-                    {t('send.fee')}: 0.29
+                {/* <mui.Box sx={{ display: "flex", flexDirection: "row" }}>
+                  <SmallText400 sx={{ color: "#fff" }}>
+                    {t("send.fee")}: 0.29
                   </SmallText400>
-                </Box>
-              </Box>
+                </mui.Box> */}
+              </mui.Box>
 
               {/* public balance */}
-              <Box
+              <mui.Box
                 sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignSelf: 'center',
-                  width: '80%',
+                  display: "flex",
+                  flexDirection: "row",
+                  alignSelf: "center",
+                  width: "80%",
+                  alignItems: "center",
                 }}
               >
-                <SmallText400 sx={{ color: '#fff', mr: '2%' }}>
-                  {t('send.public-balance')}
+                <SmallText400 sx={{ color: "#A8A0A0", mr: "2%" }}>
+                  {t("send.public-balance")}
                 </SmallText400>
-                <SmallText400 sx={{ color: '#fff' }}>
+                <SmallText400
+                  sx={{ color: isPrivateTransferFrom ? "#A8A0A0" : "#00FFAA" }}
+                >
                   {publicBalance}
                 </SmallText400>
-              </Box>
-            </Box>
-            <TextField
-              id='outlined-basic'
-              variant='outlined'
+                <mui.Box
+                  onClick={toggleTransferType}
+                  sx={{
+                    width: 15, // Adjust the width of the circle
+                    height: 15, // Adjust the height of the circle (same as width)
+                    borderRadius: "50%", // Makes the Box a circle
+                    backgroundColor: isPrivateTransferFrom
+                      ? "#A8A0A0"
+                      : "#00FFAA",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    ml: 1,
+                  }}
+                ></mui.Box>
+              </mui.Box>
+            </mui.Box>
+
+            {/* This is the arrow icon for sending */}
+            <SendButton></SendButton>
+
+            {/* This is the text-field for inputting the address */}
+            <mui.TextField
+              id="outlined-basic"
+              variant="outlined"
               onChange={(e) => {
                 setRecipient(e.target.value);
               }}
               value={recipient}
-              placeholder='@Username or Aleo address...'
+              placeholder="Receiving Address"
               sx={{
-                width: '85%',
-                height: '40px',
-                alignSelf: 'center',
-                backgroundColor: '#3E3E3E',
-                borderRadius: '15px',
-                mt: '8%',
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    border: 'none',
+                "& input::placeholder": {
+                  color: "#EAEAEA",
+                  opacity: 0.8,
+                },
+                width: "85%",
+                height: "40px",
+                alignSelf: "center",
+                backgroundColor: "#00000000",
+                borderRadius: "15px",
+                mt: "8%",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    border: "none",
+                    borderBottom: "1px solid grey",
                   },
                 },
               }}
-              inputProps={{ style: { color: '#fff', height: '10px' } }}
-              InputLabelProps={{ style: { color: '#fff' } }}
+              inputProps={{ style: { color: "#fff", height: "10px" } }}
+              InputLabelProps={{ style: { color: "#fff" } }}
             />
 
-            <TextField
-              id='outlined-basic'
-              label=''
-              variant='outlined'
+            {/* Add a message textfield,
+			 was removed because of the desktop design revamp
+			 this feature was not found in the design document */}
+            {/* <mui.TextField
+              id="outlined-basic"
+              label=""
+              variant="outlined"
               onChange={(e) => {
                 setTransferMessage(e.target.value);
               }}
               value={transferMessage}
-              placeholder='Add a message...'
+              placeholder="Add a message..."
               sx={{
-                width: '85%',
-                height: '40px',
-                alignSelf: 'center',
-                backgroundColor: '#3E3E3E',
-                borderRadius: '15px',
-                mt: '2%',
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    border: 'none',
+                width: "85%",
+                height: "40px",
+                alignSelf: "center",
+                backgroundColor: "#3E3E3E",
+                borderRadius: "15px",
+                mt: "2%",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    border: "none",
                   },
                 },
-                boxShadow: 'none',
+                boxShadow: "none",
               }}
-              inputProps={{ style: { color: '#fff', height: '10px' } }}
-              InputLabelProps={{ style: { color: '#fff' } }}
-            />
+              inputProps={{ style: { color: "#fff", height: "10px" } }}
+              InputLabelProps={{ style: { color: "#fff" } }}
+            /> */}
+
+            <mui.Box sx={{ width: "85%", alignSelf: "center", mt: "30px" }}>
+              {/* Line above the text */}
+              <mui.Box
+                sx={{
+                  height: "5px",
+                  width: "70px", // Set this to the desired line width
+                  borderBottom: "1px solid #363636", // Thin line, customize the color as needed
+                  mb: "5px", // Margin bottom for spacing between line and text
+                }}
+              />
+              {/* Text below the line */}
+              <mui.Typography
+                sx={{
+                  fontSize: "15px",
+                  fontWeight: 400,
+                  fontFamily: "'DM Sans', sans-serif",
+                  background: "#EAEAEA",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  textAlign: "left", // Align text to the left
+                }}
+              >
+                Select Fee
+              </mui.Typography>
+            </mui.Box>
+
             <SettingsComponent
+              fee={isPrivateTransferFrom ? "0.29" : "1.51"}
               onTransferFromToggle={(value) => {
-                setIsPrivateTransferFrom(value);
+                // setIsPrivateTransferFrom(value);
               }}
               onTransferToToggle={(value) => {
                 setIsPrivateTransferTo(value);
@@ -492,45 +612,49 @@ function Send() {
                 setIsPrivateFee(value);
               }}
             />
-            <Button
+
+            {/* Send privately/publicly button */}
+            <mui.Button
               onClick={async () => {
                 await handleTransfer();
               }}
-              variant='contained'
-              autoCapitalize='false'
+              variant="contained"
+              autoCapitalize="false"
               sx={{
-                backgroundColor: '#00FFAA',
-                width: '50%',
-                borderRadius: '30px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignContent: 'center',
-                alignItems: 'center',
-                textTransform: 'none',
-                alignSelf: 'center',
-                marginTop: '5%',
+                backgroundColor: "#7000FF",
+                width: "85%",
+                borderRadius: "5px",
+                display: "flex",
+                justifyContent: "center",
+                alignContent: "center",
+                alignItems: "center",
+                textTransform: "none",
+                alignSelf: "center",
+                marginTop: "5%",
+                filter: "drop-shadow(0px 0px 10px #7005FCCE)",
                 transition:
-                  'transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out',
-                '&:hover': {
-                  backgroundColor: '#00FFAA',
-                  boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.6)',
-                  transform: 'scale(1.03)',
+                  "transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out",
+                "&:hover": {
+                  backgroundColor: "#7000FF",
+                  boxShadow: "0 0 8px 2px #7000FF",
+                  transform: "scale(1.03)",
                 },
-                '&:focus': {
-                  backgroundColor: '#00FFAA',
-                  boxShadow: '0 0 8px 2px rgba(0, 255, 170, 0.8)',
+                "&:focus": {
+                  backgroundColor: "#7000FF",
+                  boxShadow: "0 0 8px 2px #7000FF",
                 },
               }}
             >
-              <Typography
-                sx={{ fontSize: '1.2rem', color: '#000', fontWeight: 450 }}
+              <mui.Typography
+                sx={{ fontSize: "1.2rem", color: "#fff", fontWeight: 500 }}
               >
-                {t('send.send')}
-              </Typography>
-            </Button>
-          </Box>
-        </Box>
-      </Box>
+                {/* {t("send.send")} */}
+                {isPrivateTransferFrom ? "send privately" : "send publicly"}
+              </mui.Typography>
+            </mui.Button>
+          </mui.Box>
+        </mui.Box>
+      </mui.Box>
     </Layout>
   );
 }
