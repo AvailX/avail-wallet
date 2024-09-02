@@ -543,39 +543,7 @@ function Send() {
               inputProps={{ style: { color: "#fff", height: "10px" } }}
               InputLabelProps={{ style: { color: "#fff" } }}
             />
-
-            {/* Add a message textfield,
-			 was removed because of the desktop design revamp
-			 this feature was not found in the design document */}
-            {/* <mui.TextField
-              id="outlined-basic"
-              label=""
-              variant="outlined"
-              onChange={(e) => {
-                setTransferMessage(e.target.value);
-              }}
-              value={transferMessage}
-              placeholder="Add a message..."
-              sx={{
-                width: "85%",
-                height: "40px",
-                alignSelf: "center",
-                backgroundColor: "#3E3E3E",
-                borderRadius: "15px",
-                mt: "2%",
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    border: "none",
-                  },
-                },
-                boxShadow: "none",
-              }}
-              inputProps={{ style: { color: "#fff", height: "10px" } }}
-              InputLabelProps={{ style: { color: "#fff" } }}
-            /> */}
-
             <mui.Box sx={{ width: "85%", alignSelf: "center", mt: "30px" }}>
-              {/* Line above the text */}
               <mui.Box
                 sx={{
                   height: "5px",
