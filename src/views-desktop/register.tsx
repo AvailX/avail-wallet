@@ -261,7 +261,8 @@ function Register() {
 
           <TextField
             id="username"
-            label={t("signup.username")}
+            // label={t("signup.username")}
+            label="Username(Optional)."
             variant="standard"
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
               setUsername(event.target.value);

@@ -14,6 +14,7 @@ import {
   get_address,
   getUsername,
 } from "../services/storage/persistent";
+import bgImg from "../assets/images/backgrounds/send_bg.png";
 
 // Components
 import TransferBox from "../components/transfer/transfer_box";
@@ -329,126 +330,187 @@ function Send() {
       <MiniDrawer />
       <mui.Box
         sx={{
-          width: "100%",
-          height: "100%",
           display: "flex",
-          justifyContent: "space-evenly",
-          flexDirection: "column",
+          flexDirection: "row",
+          width: "100%",
           alignItems: "center",
+          justifyContent: "center",
+          bgcolor: "red",
+          minHeight: "100vh",
+          background: `url(${bgImg})`,
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          position: "relative",
         }}
       >
         <mui.Box
           sx={{
+            width: "100%",
+            height: "100%",
             display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
+            // background: `url(${bgImg})`,
+            // backgroundSize: "cover",
+            justifyContent: "space-evenly",
+            flexDirection: "column",
             alignItems: "center",
-          }}
-        >
-          <mui.Typography
-            sx={{
-              mt: "10%",
-              fontSize: "40px",
-              fontWeight: 600,
-              fontFamily: " 'DM Sans', sans-serif",
-              background: "linear-gradient(90deg, #3B00FF, #00FFAA)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Send.
-          </mui.Typography>
-        </mui.Box>
-
-        <mui.Box
-          sx={{
-            display: "flex",
-            width: "35%",
-            bgcolor: "#1F1F22",
-            borderRadius: 9,
-            mt: "6%",
-            alignSelf: "center",
           }}
         >
           <mui.Box
             sx={{
               display: "flex",
-              flexDirection: "column",
-              alignSelf: "center",
-              width: "100%",
-              borderRadius: 9,
-              backdropFilter: "blur(10px)",
-              background: "#28282D",
-              p: 3,
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            {/* Contains You send text */}
-            <mui.Box sx={{ width: "80%", alignSelf: "center" }}>
-              <mui.Typography
-                sx={{
-                  fontSize: "20px",
-                  fontWeight: 500,
-                  fontFamily: " 'DM Sans', sans-serif",
-                  background: "#EAEAEA",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                You Send
-              </mui.Typography>
-            </mui.Box>
+            <mui.Typography
+              sx={{
+                mt: "10%",
+                fontSize: "40px",
+                fontWeight: 600,
+                fontFamily: " 'DM Sans', sans-serif",
+                background: "linear-gradient(90deg, #3B00FF, #00FFAA)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Send.
+            </mui.Typography>
+          </mui.Box>
 
-            {/* contains the input field and select coin dropdown */}
+          <mui.Box
+            sx={{
+              display: "flex",
+              width: "35%",
+              bgcolor: "#1F1F22",
+              borderRadius: 9,
+              mt: "6%",
+              alignSelf: "center",
+            }}
+          >
             <mui.Box
               sx={{
                 display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                alignContent: "center",
+                flexDirection: "column",
                 alignSelf: "center",
-                width: "80%",
+                width: "100%",
+                borderRadius: 9,
+                backdropFilter: "blur(10px)",
+                background: "#28282D",
+                p: 3,
               }}
             >
-              <TransferBox
-                tokens={tokens}
-                token={token}
-                amount={amount}
-                setToken={setToken}
-                setAmount={setAmount}
-              />
-            </mui.Box>
+              {/* Contains You send text */}
+              <mui.Box sx={{ width: "80%", alignSelf: "center" }}>
+                <mui.Typography
+                  sx={{
+                    fontSize: "20px",
+                    fontWeight: 500,
+                    fontFamily: " 'DM Sans', sans-serif",
+                    background: "#EAEAEA",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  You Send
+                </mui.Typography>
+              </mui.Box>
 
-            {/* private balance and Public Balance*/}
-            <mui.Box
-              sx={{ display: "flex", flexDirection: "column", mt: "2%" }}
-            >
+              {/* contains the input field and select coin dropdown */}
               <mui.Box
                 sx={{
                   display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  alignContent: "center",
                   alignSelf: "center",
                   width: "80%",
                 }}
               >
-                {/* private balance* and fee */}
+                <TransferBox
+                  tokens={tokens}
+                  token={token}
+                  amount={amount}
+                  setToken={setToken}
+                  setAmount={setAmount}
+                />
+              </mui.Box>
+
+              {/* private balance and Public Balance*/}
+              <mui.Box
+                sx={{ display: "flex", flexDirection: "column", mt: "2%" }}
+              >
                 <mui.Box
                   sx={{
                     display: "flex",
                     flexDirection: "row",
-                    width: "60%",
+                    justifyContent: "space-between",
+                    alignSelf: "center",
+                    width: "80%",
+                  }}
+                >
+                  {/* private balance* and fee */}
+                  <mui.Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      width: "60%",
+                      alignItems: "center",
+                    }}
+                  >
+                    <SmallText400 sx={{ color: "#A8A0A0", mr: "2%" }}>
+                      {t("send.private-balance")}
+                    </SmallText400>
+                    <SmallText400
+                      sx={{
+                        color: isPrivateTransferFrom ? "#00FFAA" : "#A8A0A0",
+                      }}
+                    >
+                      {privateBalance}
+                    </SmallText400>
+                    <mui.Box
+                      onClick={toggleTransferType}
+                      sx={{
+                        width: 15, // Adjust the width of the circle
+                        height: 15, // Adjust the height of the circle (same as width)
+                        borderRadius: "50%", // Makes the Box a circle
+                        backgroundColor: isPrivateTransferFrom
+                          ? "#00FFAA"
+                          : "#A8A0A0",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        ml: 1,
+                      }}
+                    ></mui.Box>
+                  </mui.Box>
+                  {/* TODO - Fetch fee from microservice. */}
+                  {/* <mui.Box sx={{ display: "flex", flexDirection: "row" }}>
+                  <SmallText400 sx={{ color: "#fff" }}>
+                    {t("send.fee")}: 0.29
+                  </SmallText400>
+                </mui.Box> */}
+                </mui.Box>
+
+                {/* public balance */}
+                <mui.Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignSelf: "center",
+                    width: "80%",
                     alignItems: "center",
                   }}
                 >
                   <SmallText400 sx={{ color: "#A8A0A0", mr: "2%" }}>
-                    {t("send.private-balance")}
+                    {t("send.public-balance")}
                   </SmallText400>
                   <SmallText400
                     sx={{
-                      color: isPrivateTransferFrom ? "#00FFAA" : "#A8A0A0",
+                      color: isPrivateTransferFrom ? "#A8A0A0" : "#00FFAA",
                     }}
                   >
-                    {privateBalance}
+                    {publicBalance}
                   </SmallText400>
                   <mui.Box
                     onClick={toggleTransferType}
@@ -457,8 +519,8 @@ function Send() {
                       height: 15, // Adjust the height of the circle (same as width)
                       borderRadius: "50%", // Makes the Box a circle
                       backgroundColor: isPrivateTransferFrom
-                        ? "#00FFAA"
-                        : "#A8A0A0",
+                        ? "#A8A0A0"
+                        : "#00FFAA",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -466,160 +528,119 @@ function Send() {
                     }}
                   ></mui.Box>
                 </mui.Box>
-                {/* TODO - Fetch fee from microservice. */}
-                {/* <mui.Box sx={{ display: "flex", flexDirection: "row" }}>
-                  <SmallText400 sx={{ color: "#fff" }}>
-                    {t("send.fee")}: 0.29
-                  </SmallText400>
-                </mui.Box> */}
               </mui.Box>
 
-              {/* public balance */}
-              <mui.Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignSelf: "center",
-                  width: "80%",
-                  alignItems: "center",
+              {/* This is the arrow icon for sending */}
+              <SendButton></SendButton>
+
+              {/* This is the text-field for inputting the address */}
+              <mui.TextField
+                id="outlined-basic"
+                variant="outlined"
+                onChange={(e) => {
+                  setRecipient(e.target.value);
                 }}
-              >
-                <SmallText400 sx={{ color: "#A8A0A0", mr: "2%" }}>
-                  {t("send.public-balance")}
-                </SmallText400>
-                <SmallText400
-                  sx={{ color: isPrivateTransferFrom ? "#A8A0A0" : "#00FFAA" }}
-                >
-                  {publicBalance}
-                </SmallText400>
-                <mui.Box
-                  onClick={toggleTransferType}
-                  sx={{
-                    width: 15, // Adjust the width of the circle
-                    height: 15, // Adjust the height of the circle (same as width)
-                    borderRadius: "50%", // Makes the Box a circle
-                    backgroundColor: isPrivateTransferFrom
-                      ? "#A8A0A0"
-                      : "#00FFAA",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    ml: 1,
-                  }}
-                ></mui.Box>
-              </mui.Box>
-            </mui.Box>
-
-            {/* This is the arrow icon for sending */}
-            <SendButton></SendButton>
-
-            {/* This is the text-field for inputting the address */}
-            <mui.TextField
-              id="outlined-basic"
-              variant="outlined"
-              onChange={(e) => {
-                setRecipient(e.target.value);
-              }}
-              value={recipient}
-              placeholder="Receiving Address"
-              sx={{
-                "& input::placeholder": {
-                  color: "#EAEAEA",
-                  opacity: 0.8,
-                },
-                width: "85%",
-                height: "40px",
-                alignSelf: "center",
-                backgroundColor: "#00000000",
-                borderRadius: "15px",
-                mt: "8%",
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    border: "none",
-                    borderBottom: "1px solid grey",
-                  },
-                },
-              }}
-              inputProps={{ style: { color: "#fff", height: "10px" } }}
-              InputLabelProps={{ style: { color: "#fff" } }}
-            />
-            <mui.Box sx={{ width: "85%", alignSelf: "center", mt: "30px" }}>
-              <mui.Box
+                value={recipient}
+                placeholder="Receiving Address"
                 sx={{
-                  height: "5px",
-                  width: "70px", // Set this to the desired line width
-                  borderBottom: "1px solid #363636", // Thin line, customize the color as needed
-                  mb: "5px", // Margin bottom for spacing between line and text
+                  "& input::placeholder": {
+                    color: "#EAEAEA",
+                    opacity: 0.8,
+                  },
+                  width: "85%",
+                  height: "40px",
+                  alignSelf: "center",
+                  backgroundColor: "#00000000",
+                  borderRadius: "15px",
+                  mt: "8%",
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      border: "none",
+                      borderBottom: "1px solid grey",
+                    },
+                  },
+                }}
+                inputProps={{ style: { color: "#fff", height: "10px" } }}
+                InputLabelProps={{ style: { color: "#fff" } }}
+              />
+              <mui.Box sx={{ width: "85%", alignSelf: "center", mt: "30px" }}>
+                <mui.Box
+                  sx={{
+                    height: "5px",
+                    width: "70px", // Set this to the desired line width
+                    borderBottom: "1px solid #363636", // Thin line, customize the color as needed
+                    mb: "5px", // Margin bottom for spacing between line and text
+                  }}
+                />
+                {/* Text below the line */}
+                <mui.Typography
+                  sx={{
+                    fontSize: "15px",
+                    fontWeight: 400,
+                    fontFamily: "'DM Sans', sans-serif",
+                    background: "#EAEAEA",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    textAlign: "left", // Align text to the left
+                  }}
+                >
+                  Select Fee
+                </mui.Typography>
+              </mui.Box>
+
+              <SettingsComponent
+                fee={isPrivateTransferFrom ? "0.29" : "1.51"}
+                onTransferFromToggle={(value) => {
+                  // setIsPrivateTransferFrom(value);
+                }}
+                onTransferToToggle={(value) => {
+                  setIsPrivateTransferTo(value);
+                }}
+                onFeeToggle={(value) => {
+                  setIsPrivateFee(value);
                 }}
               />
-              {/* Text below the line */}
-              <mui.Typography
+
+              {/* Send privately/publicly button */}
+              <mui.Button
+                onClick={async () => {
+                  await handleTransfer();
+                }}
+                variant="contained"
+                autoCapitalize="false"
                 sx={{
-                  fontSize: "15px",
-                  fontWeight: 400,
-                  fontFamily: "'DM Sans', sans-serif",
-                  background: "#EAEAEA",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  textAlign: "left", // Align text to the left
+                  backgroundColor: "#7000FF",
+                  width: "85%",
+                  borderRadius: "5px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignContent: "center",
+                  alignItems: "center",
+                  textTransform: "none",
+                  alignSelf: "center",
+                  marginTop: "5%",
+                  filter: "drop-shadow(0px 0px 10px #7005FCCE)",
+                  transition:
+                    "transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out",
+                  "&:hover": {
+                    backgroundColor: "#7000FF",
+                    boxShadow: "0 0 8px 2px #7000FF",
+                    transform: "scale(1.03)",
+                  },
+                  "&:focus": {
+                    backgroundColor: "#7000FF",
+                    boxShadow: "0 0 8px 2px #7000FF",
+                  },
                 }}
               >
-                Select Fee
-              </mui.Typography>
+                <mui.Typography
+                  sx={{ fontSize: "1.2rem", color: "#fff", fontWeight: 500 }}
+                >
+                  {/* {t("send.send")} */}
+                  {isPrivateTransferFrom ? "send privately" : "send publicly"}
+                </mui.Typography>
+              </mui.Button>
             </mui.Box>
-
-            <SettingsComponent
-              fee={isPrivateTransferFrom ? "0.29" : "1.51"}
-              onTransferFromToggle={(value) => {
-                // setIsPrivateTransferFrom(value);
-              }}
-              onTransferToToggle={(value) => {
-                setIsPrivateTransferTo(value);
-              }}
-              onFeeToggle={(value) => {
-                setIsPrivateFee(value);
-              }}
-            />
-
-            {/* Send privately/publicly button */}
-            <mui.Button
-              onClick={async () => {
-                await handleTransfer();
-              }}
-              variant="contained"
-              autoCapitalize="false"
-              sx={{
-                backgroundColor: "#7000FF",
-                width: "85%",
-                borderRadius: "5px",
-                display: "flex",
-                justifyContent: "center",
-                alignContent: "center",
-                alignItems: "center",
-                textTransform: "none",
-                alignSelf: "center",
-                marginTop: "5%",
-                filter: "drop-shadow(0px 0px 10px #7005FCCE)",
-                transition:
-                  "transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out",
-                "&:hover": {
-                  backgroundColor: "#7000FF",
-                  boxShadow: "0 0 8px 2px #7000FF",
-                  transform: "scale(1.03)",
-                },
-                "&:focus": {
-                  backgroundColor: "#7000FF",
-                  boxShadow: "0 0 8px 2px #7000FF",
-                },
-              }}
-            >
-              <mui.Typography
-                sx={{ fontSize: "1.2rem", color: "#fff", fontWeight: 500 }}
-              >
-                {/* {t("send.send")} */}
-                {isPrivateTransferFrom ? "send privately" : "send publicly"}
-              </mui.Typography>
-            </mui.Button>
           </mui.Box>
         </mui.Box>
       </mui.Box>
