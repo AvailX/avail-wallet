@@ -65,7 +65,6 @@ const ToggleRow: React.FC<ToggleRowProperties> = ({
       display: "flex",
       alignItems: "center",
       justifyContent: "start",
-      mb: "1%",
     }}
   >
     <CustomSwitch checked={checked} onChange={onChange} />
@@ -73,8 +72,8 @@ const ToggleRow: React.FC<ToggleRowProperties> = ({
       sx={{
         display: "flex",
         flexDirection: "row",
-        alignContent: "end",
-        alignItems: "end",
+        alignContent: "center",
+        alignItems: "center",
       }}
     >
       <Typography
@@ -87,7 +86,9 @@ const ToggleRow: React.FC<ToggleRowProperties> = ({
       >
         {label}
       </Typography>
-      <Typography sx={{ color: "#A6A6A6", fontSize: "10px", ml: "2px" }}>
+      <Typography
+        sx={{ color: "#A6A6A6", fontSize: "10px", ml: "2px", mt: "2px" }}
+      >
         {(fee ?? 0.0) + " ALEO"}
       </Typography>
     </Box>
