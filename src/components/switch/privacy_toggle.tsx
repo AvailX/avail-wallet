@@ -47,7 +47,8 @@ type ToggleRowProperties = {
 };
 
 type SettingsProperties = {
-  fee: string;
+  publicFee: string;
+  privateFee: string;
   onTransferFromToggle: (checked: boolean) => void;
   onTransferToToggle: (checked: boolean) => void;
   onFeeToggle: (checked: boolean) => void;
@@ -94,7 +95,8 @@ const ToggleRow: React.FC<ToggleRowProperties> = ({
 );
 
 const SettingsComponent: React.FC<SettingsProperties> = ({
-  fee,
+  publicFee,
+  privateFee,
   onTransferFromToggle,
   onTransferToToggle,
   onFeeToggle,
@@ -117,14 +119,13 @@ const SettingsComponent: React.FC<SettingsProperties> = ({
         mt: "3%",
       }}
     >
-
       <ToggleRow
         label={
           isPrivateFee
             ? t("send.privacy-toggles.private-fee")
             : t("send.privacy-toggles.public-fee")
         }
-        fee={fee}
+        fee={isPrivateFee ? privateFee : publicFee}
         checked={isPrivateFee}
         onChange={(e) => {
           //This is what sets the private or public feature

@@ -285,6 +285,7 @@ function Send() {
   // Handler to toggle the transfer type
   const toggleTransferType = () => {
     setIsPrivateTransferFrom(!isPrivateTransferFrom);
+    setIsPrivateTransferTo(!isPrivateTransferTo);
   };
 
   // TODO : Get list of tokens owned by user and display them in a dropdown + amounts available of each
@@ -589,15 +590,18 @@ function Send() {
               </mui.Box>
 
               <SettingsComponent
-                fee={isPrivateTransferFrom ? "0.29" : "1.51"}
+                publicFee="2.0"
+                privateFee="0.5"
                 onTransferFromToggle={(value) => {
                   // setIsPrivateTransferFrom(value);
                 }}
                 onTransferToToggle={(value) => {
-                  setIsPrivateTransferTo(value);
+                  // setIsPrivateTransferTo(value);
                 }}
                 onFeeToggle={(value) => {
                   setIsPrivateFee(value);
+                  // setIsPrivateTransferTo(value);
+                  // setIsPrivateTransferFrom(value);
                 }}
               />
 
