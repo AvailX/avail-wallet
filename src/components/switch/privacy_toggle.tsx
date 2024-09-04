@@ -47,7 +47,8 @@ type ToggleRowProperties = {
 };
 
 type SettingsProperties = {
-  fee: string;
+  publicFee: string;
+  privateFee: string;
   onTransferFromToggle: (checked: boolean) => void;
   onTransferToToggle: (checked: boolean) => void;
   onFeeToggle: (checked: boolean) => void;
@@ -64,7 +65,6 @@ const ToggleRow: React.FC<ToggleRowProperties> = ({
       display: "flex",
       alignItems: "center",
       justifyContent: "start",
-      mb: "1%",
     }}
   >
     <CustomSwitch checked={checked} onChange={onChange} />
@@ -72,8 +72,8 @@ const ToggleRow: React.FC<ToggleRowProperties> = ({
       sx={{
         display: "flex",
         flexDirection: "row",
-        alignContent: "end",
-        alignItems: "end",
+        alignContent: "center",
+        alignItems: "center",
       }}
     >
       <Typography
@@ -86,7 +86,9 @@ const ToggleRow: React.FC<ToggleRowProperties> = ({
       >
         {label}
       </Typography>
-      <Typography sx={{ color: "#A6A6A6", fontSize: "10px", ml: "2px" }}>
+      <Typography
+        sx={{ color: "#A6A6A6", fontSize: "10px", ml: "2px", mt: "2px" }}
+      >
         {(fee ?? 0.0) + " ALEO"}
       </Typography>
     </Box>
@@ -94,7 +96,8 @@ const ToggleRow: React.FC<ToggleRowProperties> = ({
 );
 
 const SettingsComponent: React.FC<SettingsProperties> = ({
-  fee,
+  publicFee,
+  privateFee,
   onTransferFromToggle,
   onTransferToToggle,
   onFeeToggle,
@@ -117,14 +120,13 @@ const SettingsComponent: React.FC<SettingsProperties> = ({
         mt: "3%",
       }}
     >
-
       <ToggleRow
         label={
           isPrivateFee
             ? t("send.privacy-toggles.private-fee")
             : t("send.privacy-toggles.public-fee")
         }
-        fee={fee}
+        fee={isPrivateFee ? privateFee : publicFee}
         checked={isPrivateFee}
         onChange={(e) => {
           //This is what sets the private or public feature
