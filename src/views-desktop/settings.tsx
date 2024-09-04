@@ -1,4 +1,6 @@
-import { listen } from '@tauri-apps/api/event';
+import * as React from "react";
+import * as mui from "@mui/material";
+import { listen } from "@tauri-apps/api/event";
 
 // Components
 import {
@@ -11,23 +13,22 @@ import {
   Security,
   Polyline,
   RemoveCircleOutline,
-  List,
-} from '@mui/icons-material';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import MiniDrawer from '../components/sidebar';
-import CTAButton from '../components/buttons/cta';
-import STButton from '../components/buttons/settings-button';
-import GeneralSettings from '../components/settings/general';
-import WhiteHueTextField from '../components/textfields/white-hue';
+} from "@mui/icons-material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import MiniDrawer from "../components/sidebar";
+import CTAButton from "../components/buttons/cta";
+import STButton from "../components/buttons/settings-button";
+import GeneralSettings from "../components/settings/general";
+import WhiteHueTextField from "../components/textfields/white-hue";
 
 // Dialogs
-import DeleteDialog from '../components/dialogs/delete';
-import ViewKeyDialog from '../components/dialogs/keys/get_viewing_key';
-import PrivateKeyDialog from '../components/dialogs/keys/get_private_key';
-import SeedPhraseDialog from '../components/dialogs/keys/get_seed_phrase';
-import ReAuthDialog from '../components/dialogs/reauth';
+import DeleteDialog from "../components/dialogs/delete";
+import ViewKeyDialog from "../components/dialogs/keys/get_viewing_key";
+import PrivateKeyDialog from "../components/dialogs/keys/get_private_key";
+import SeedPhraseDialog from "../components/dialogs/keys/get_seed_phrase";
+import ReAuthDialog from "../components/dialogs/reauth";
 
 // Icons
 
@@ -39,10 +40,10 @@ import {
   BodyText,
   BodyText500,
   SmallText400,
-} from '../components/typography/typography';
+} from "../components/typography/typography";
 
 // global state
-import { useScan } from '../context/ScanContext';
+import { useScan } from "../context/ScanContext";
 
 // Services
 import {
@@ -54,8 +55,8 @@ import {
   getNetwork,
   updateBackupFlag,
   getBackupFlag,
-} from '../services/storage/persistent';
-import { sign, verify } from '../services/util/sign';
+} from "../services/storage/persistent";
+import { sign, verify } from "../services/util/sign";
 
 // Alerts
 import {
@@ -63,27 +64,16 @@ import {
   ErrorAlert,
   WarningAlert,
   InfoAlert,
-} from '../components/snackbars/alerts';
-import { scan_blocks } from '../services/scans/blocks';
-import Layout from './reusable/layout';
-import { FC, ReactNode, useState, useRef, useEffect, ChangeEvent } from 'react';
-import {
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
-  Box,
-  IconButton,
-  alpha,
-  CircularProgress,
-} from '@mui/material';
+} from "../components/snackbars/alerts";
+import { scan_blocks } from "../services/scans/blocks";
+import Layout from "./reusable/layout";
 
-const MenuSection: FC<{
+const MenuSection: React.FC<{
   title: string;
-  IconComponent: ReactNode;
-  children?: ReactNode;
+  IconComponent: React.ReactNode;
+  children?: React.ReactNode;
 }> = ({ title, IconComponent, children }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const handleClick = () => {
     setOpen(!open);
@@ -91,72 +81,73 @@ const MenuSection: FC<{
 
   return (
     <>
-      <ListItemButton
+      <mui.ListItemButton
         onClick={handleClick}
-        sx={{ p: 2, '&:hover': { bgcolor: '#3a3a3a' } }}
+        sx={{ p: 2, "&:hover": { bgcolor: "#3a3a3a" } }}
       >
-        <ListItemIcon>{IconComponent}</ListItemIcon>
-        <ListItemText primary={title} sx={{ color: '#FFF' }} />
+        <mui.ListItemIcon>{IconComponent}</mui.ListItemIcon>
+        <mui.ListItemText primary={title} sx={{ color: "#FFF" }} />
         {open ? (
-          <ExpandLess sx={{ color: '#fff' }} />
+          <ExpandLess sx={{ color: "#fff" }} />
         ) : (
-          <ExpandMore sx={{ color: '#fff' }} />
+          <ExpandMore sx={{ color: "#fff" }} />
         )}
-      </ListItemButton>
-      <Collapse in={open} timeout='auto' unmountOnExit>
-        <List component='div' disablePadding>
+      </mui.ListItemButton>
+      <mui.Collapse in={open} timeout="auto" unmountOnExit>
+        <mui.List component="div" disablePadding>
           {children}
-        </List>
-      </Collapse>
+        </mui.List>
+      </mui.Collapse>
     </>
   );
 };
 
 function Settings() {
   // Alert states
-  const [success, setSuccess] = useState<boolean>(false);
-  const [warning, setWarning] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
-  const [info, setInfo] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>('');
+  const [success, setSuccess] = React.useState<boolean>(false);
+  const [warning, setWarning] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<boolean>(false);
+  const [info, setInfo] = React.useState<boolean>(false);
+  const [message, setMessage] = React.useState<string>("");
 
   // General States
-  const [username, setUsername] = useState<string>('');
-  const [language, setLanguage] = useState<string>('');
-  const [network, setNetwork] = useState<string>('');
-  const [address, setAddress] = useState<string>('');
+  const [username, setUsername] = React.useState<string>("");
+  const [language, setLanguage] = React.useState<string>("");
+  const [network, setNetwork] = React.useState<string>("");
+  const [address, setAddress] = React.useState<string>("");
 
   // Key states
-  const [pk, setPk] = useState<string>('');
-  const [vk, setVk] = useState<string>('');
+  const [pk, setPk] = React.useState<string>("");
+  const [vk, setVk] = React.useState<string>("");
 
   // Seed Phrase states
-  const [seedPhrase, setSeedPhrase] = useState<string>('');
-  const [revealAll, setRevealAll] = useState(false);
+  const [seedPhrase, setSeedPhrase] = React.useState<string>("");
+  const [revealAll, setRevealAll] = React.useState(false);
 
   // Advanced settings states
-  const [lastSync, setLastSync] = useState<number>(0);
-  const [backup, setBackup] = useState<boolean>(false);
+  const [lastSync, setLastSync] = React.useState<number>(0);
+  const [backup, setBackup] = React.useState<boolean>(false);
 
   // Dialog states
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [vkOpen, setVkOpen] = useState(false);
-  const [pkOpen, setPkOpen] = useState(false);
-  const [spOpen, setSpOpen] = useState(false);
-  const [reAuthDialog, setReAuthDialog] = useState(false);
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const [vkOpen, setVkOpen] = React.useState(false);
+  const [pkOpen, setPkOpen] = React.useState(false);
+  const [spOpen, setSpOpen] = React.useState(false);
+  const [reAuthDialog, setReAuthDialog] = React.useState(false);
 
   // Sign states
-  const [signature, setSignature] = useState<string>('');
-  const [signMessage, setSignMessage] = useState<string>('');
+  const [signature, setSignature] = React.useState<string>("");
+  const [signMessage, setSignMessage] = React.useState<string>("");
 
   // Verification states
-  const [addressToVerify, setAddressToVerify] = useState<string>('');
-  const [signatureToVerify, setSignatureToVerify] = useState<string>('');
-  const [verificationMessage, setVerificationMessage] = useState<string>('');
-  const [verifyResult, setVerifyResult] = useState<boolean>();
+  const [addressToVerify, setAddressToVerify] = React.useState<string>("");
+  const [signatureToVerify, setSignatureToVerify] = React.useState<string>("");
+  const [verificationMessage, setVerificationMessage] =
+    React.useState<string>("");
+  const [verifyResult, setVerifyResult] = React.useState<boolean>();
 
   const { t } = useTranslation();
-  const shouldRunEffect = useRef(true);
+  const shouldRunEffect = React.useRef(true);
 
   // Scanning state
   {
@@ -165,7 +156,7 @@ function Settings() {
   const { scanInProgress, startScan, endScan } = useScan();
   const navigate = useNavigate();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (shouldRunEffect.current) {
       /* --Get Username-- */
       getUsername()
@@ -173,7 +164,7 @@ function Settings() {
           setUsername(res);
         })
         .catch((error_) => {
-          setMessage('Error getting username.');
+          setMessage("Error getting username.");
           setError(true);
         });
 
@@ -183,7 +174,7 @@ function Settings() {
           setLanguage(res.toString());
         })
         .catch((error_) => {
-          setMessage('Error getting language.');
+          setMessage("Error getting language.");
           setError(true);
         });
 
@@ -195,7 +186,7 @@ function Settings() {
           setNetwork(res);
         })
         .catch((error_) => {
-          setMessage('Error getting network.');
+          setMessage("Error getting network.");
           setError(true);
         });
 
@@ -205,7 +196,7 @@ function Settings() {
           setAddress(res);
         })
         .catch((error_) => {
-          setMessage('Error getting address.');
+          setMessage("Error getting address.");
           setError(true);
         });
 
@@ -215,7 +206,7 @@ function Settings() {
           setLastSync(res);
         })
         .catch((error_) => {
-          setMessage('Error getting last synced block height.');
+          setMessage("Error getting last synced block height.");
           setError(true);
         });
 
@@ -225,7 +216,7 @@ function Settings() {
           setBackup(res);
         })
         .catch((error_) => {
-          setMessage('Error getting backup flag.');
+          setMessage("Error getting backup flag.");
           setError(true);
         });
 
@@ -238,13 +229,13 @@ function Settings() {
       .then((res) => {
         if (res.signature) {
           setSignature(res.signature);
-          setMessage('Message signed successfully.');
+          setMessage("Message signed successfully.");
           setSuccess(true);
         }
       })
       .catch((error_) => {
         console.log(error_);
-        setMessage('Error signing message. Please try again.');
+        setMessage("Error signing message. Please try again.");
         setError(true);
       });
   };
@@ -252,20 +243,20 @@ function Settings() {
   const handleVerify = () => {
     verify(verificationMessage, signatureToVerify, addressToVerify)
       .then((res) => {
-        console.log('Verification Result ' + res);
+        console.log("Verification Result " + res);
         if (res) {
-          setMessage('Signature verified successfully.');
+          setMessage("Signature verified successfully.");
           setSuccess(true);
           setVerifyResult(true);
         } else {
-          setMessage('Signature verification failed.');
+          setMessage("Signature verification failed.");
           setError(true);
           setVerifyResult(false);
         }
       })
       .catch((error_) => {
         console.log(error_);
-        setMessage('Error verifying signature. Please try again.');
+        setMessage("Error verifying signature. Please try again.");
         setError(true);
       });
   };
@@ -278,20 +269,20 @@ function Settings() {
       })
       .catch((error_) => {
         endScan();
-        setMessage('Error scanning blocks.');
+        setMessage("Error scanning blocks.");
         setError(true);
       });
   };
 
   const handleCopyToClipboard = (parameter: string, label: string) => {
     navigator.clipboard.writeText(parameter);
-    setMessage(label + ' copied successfully!');
+    setMessage(label + " copied successfully!");
     setSuccess(true);
   };
 
   /* --Event Listners */
-  useEffect(() => {
-    const unlisten = listen('reauthenticate', async (event) => {
+  React.useEffect(() => {
+    const unlisten = listen("reauthenticate", async (event) => {
       const remove_listener = await unlisten;
       remove_listener();
 
@@ -299,20 +290,20 @@ function Settings() {
     });
   }, []);
 
-  const HiddenItem: FC<{ param: string; label: string }> = ({
+  const HiddenItem: React.FC<{ param: string; label: string }> = ({
     param,
     label,
   }) => (
-    <Box>
-      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+    <mui.Box>
+      <mui.Box sx={{ display: "flex", flexDirection: "row" }}>
         <STButton
-          text={param == '' ? 'Get and Decrypt' : revealAll ? 'Lock' : 'Unlock'}
+          text={param == "" ? "Get and Decrypt" : revealAll ? "Lock" : "Unlock"}
           onClick={
-            param == ''
+            param == ""
               ? () => {
-                  label === 'Private Key'
+                  label === "Private Key"
                     ? setPkOpen(true)
-                    : label === 'Viewing Key'
+                    : label === "Viewing Key"
                       ? setVkOpen(true)
                       : setSpOpen(true);
                 }
@@ -321,56 +312,56 @@ function Settings() {
                 }
           }
         />
-        {param !== '' && (
-          <IconButton
+        {param !== "" && (
+          <mui.IconButton
             onClick={() => {
               handleCopyToClipboard(param, label);
             }}
-            size='large'
+            size="large"
             sx={{
-              color: '#00FFAA',
-              '&:hover': { bgcolor: alpha('#3a3a3a', 0.8) },
+              color: "#00FFAA",
+              "&:hover": { bgcolor: mui.alpha("#3a3a3a", 0.8) },
             }}
           >
-            <ContentCopyIcon fontSize='inherit' />
-          </IconButton>
+            <ContentCopyIcon fontSize="inherit" />
+          </mui.IconButton>
         )}
-      </Box>
-      <Box
+      </mui.Box>
+      <mui.Box
         sx={{
-          mt: '2%',
-          borderRadius: '10px',
-          bgcolor: '#1E1D1D',
-          justifyContent: 'space-between',
-          mb: '1%',
-          alignItems: 'center',
-          position: 'relative',
+          mt: "2%",
+          borderRadius: "10px",
+          bgcolor: "#1E1D1D",
+          justifyContent: "space-between",
+          mb: "1%",
+          alignItems: "center",
+          position: "relative",
           padding: 2,
-          display: 'flex',
-          flexDirection: 'row',
+          display: "flex",
+          flexDirection: "row",
         }}
       >
         {/* Overlay with blur effect */}
         {!revealAll && (
-          <Box
+          <mui.Box
             sx={{
-              position: 'absolute',
+              position: "absolute",
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
-              bgcolor: 'rgba(0, 0, 0, 0.5)', // Dark overlay
-              backdropFilter: 'blur(4px)', // Blur effect
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '10px', // Match the parent's border radius
+              bgcolor: "rgba(0, 0, 0, 0.5)", // Dark overlay
+              backdropFilter: "blur(4px)", // Blur effect
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "10px", // Match the parent's border radius
             }}
-          ></Box>
+          ></mui.Box>
         )}
-        <SmallText400 sx={{ color: '#FFF' }}>{param}</SmallText400>
-      </Box>
-    </Box>
+        <SmallText400 sx={{ color: "#FFF" }}>{param}</SmallText400>
+      </mui.Box>
+    </mui.Box>
   );
 
   return (
@@ -419,30 +410,30 @@ function Settings() {
         }}
       />
       <MiniDrawer />
-      <Box
+      <mui.Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          ml: '9%',
-          mt: '2%',
+          display: "flex",
+          flexDirection: "column",
+          ml: "9%",
+          mt: "2%",
         }}
       >
-        <Title2Text sx={{ color: '#FFF' }}>{t('settings.title')}</Title2Text>
-        <SubtitleText sx={{ color: '#a3a3a3' }}>
-          {t('settings.subtitle')}
+        <Title2Text sx={{ color: "#FFF" }}>{t("settings.title")}</Title2Text>
+        <SubtitleText sx={{ color: "#a3a3a3" }}>
+          {t("settings.subtitle")}
         </SubtitleText>
-        <Box
+        <mui.Box
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            mt: '7%',
-            width: '90%',
+            display: "flex",
+            flexDirection: "column",
+            mt: "7%",
+            width: "90%",
           }}
         >
           {/* --General-- */}
           <MenuSection
-            title={t('settings.General')}
-            IconComponent={<SettingIcon sx={{ color: '#00FFAA' }} />}
+            title={t("settings.General")}
+            IconComponent={<SettingIcon sx={{ color: "#00FFAA" }} />}
           >
             <GeneralSettings
               username={username}
@@ -456,61 +447,61 @@ function Settings() {
 
           {/* --Keys-- */}
           <MenuSection
-            title={t('settings.keys.title')}
-            IconComponent={<VpnKey sx={{ color: '#00FFAA' }} />}
+            title={t("settings.keys.title")}
+            IconComponent={<VpnKey sx={{ color: "#00FFAA" }} />}
           >
-            <BodyText sx={{ color: '#fff' }}>
-              {t('settings.keys.viewing-key')}
+            <BodyText sx={{ color: "#fff" }}>
+              {t("settings.keys.viewing-key")}
             </BodyText>
-            <HiddenItem param={vk} label='Viewing Key' />
-            <BodyText sx={{ color: '#fff', mt: '5%' }}>
-              {t('settings.keys.private-key')}
+            <HiddenItem param={vk} label="Viewing Key" />
+            <BodyText sx={{ color: "#fff", mt: "5%" }}>
+              {t("settings.keys.private-key")}
             </BodyText>
-            <HiddenItem param={pk} label='Private Key' />
+            <HiddenItem param={pk} label="Private Key" />
           </MenuSection>
 
           {/* --Secret Phrase-- */}
           <MenuSection
-            title={t('settings.keys.secret-phrase')}
-            IconComponent={<Lock sx={{ color: '#00FFAA' }} />}
+            title={t("settings.keys.secret-phrase")}
+            IconComponent={<Lock sx={{ color: "#00FFAA" }} />}
           >
-            <HiddenItem param={seedPhrase} label='Secret Phrase' />
+            <HiddenItem param={seedPhrase} label="Secret Phrase" />
           </MenuSection>
 
           {/* --Security and Privacy-- */}
           <MenuSection
-            title={t('settings.security.title')}
-            IconComponent={<Security sx={{ color: '#00FFAA' }} />}
+            title={t("settings.security.title")}
+            IconComponent={<Security sx={{ color: "#00FFAA" }} />}
           >
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <mui.Box sx={{ display: "flex", justifyContent: "center" }}>
               <SmallText400
-                sx={{ color: '#fff', width: '80%', textAlign: 'center' }}
+                sx={{ color: "#fff", width: "80%", textAlign: "center" }}
               >
-                {' '}
-                {t('settings.security.description')}
+                {" "}
+                {t("settings.security.description")}
               </SmallText400>
-            </Box>
+            </mui.Box>
             <BodyText
               sx={{
-                color: '#fff',
-                mt: '5%',
-                '&:hover': { color: '#00FFAA', cursor: 'pointer' },
+                color: "#fff",
+                mt: "5%",
+                "&:hover": { color: "#00FFAA", cursor: "pointer" },
               }}
               onClick={() => {
-                navigate('/privacy-policy');
+                navigate("/privacy-policy");
               }}
             >
               Privacy Policy
             </BodyText>
             <BodyText
               sx={{
-                color: '#fff',
-                mt: '5%',
-                mb: '3%',
-                '&:hover': { color: '#00FFAA', cursor: 'pointer' },
+                color: "#fff",
+                mt: "5%",
+                mb: "3%",
+                "&:hover": { color: "#00FFAA", cursor: "pointer" },
               }}
               onClick={() => {
-                navigate('/terms-of-service');
+                navigate("/terms-of-service");
               }}
             >
               Terms of Service
@@ -519,137 +510,139 @@ function Settings() {
 
           {/* --About Avail-- */}
           <MenuSection
-            title={t('settings.about.title')}
-            IconComponent={<Info sx={{ color: '#00FFAA' }} />}
+            title={t("settings.about.title")}
+            IconComponent={<Info sx={{ color: "#00FFAA" }} />}
           >
             {/* Place about information here */}
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <SmallText400 sx={{ color: '#fff', width: '80%' }}>
-                {' '}
-                {t('settings.about.description')}
+            <mui.Box sx={{ display: "flex", justifyContent: "center" }}>
+              <SmallText400 sx={{ color: "#fff", width: "80%" }}>
+                {" "}
+                {t("settings.about.description")}
               </SmallText400>
-            </Box>
+            </mui.Box>
           </MenuSection>
 
           {/* --Advanced Settings-- */}
           <MenuSection
-            title={t('settings.advanced.title')}
-            IconComponent={<Polyline sx={{ color: '#00FFAA' }} />}
+            title={t("settings.advanced.title")}
+            IconComponent={<Polyline sx={{ color: "#00FFAA" }} />}
           >
             {/* Place advanced settings options here */}
-            <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-              <BodyText sx={{ color: '#fff' }}>
-                {t('settings.advanced.block-height')}
+            <mui.Box sx={{ display: "flex", flexDirection: "row" }}>
+              <BodyText sx={{ color: "#fff" }}>
+                {t("settings.advanced.block-height")}
               </BodyText>
-              <BodyText500 sx={{ ml: '1%', color: '#00FFAA' }}>
+              <BodyText500 sx={{ ml: "1%", color: "#00FFAA" }}>
                 {lastSync}
               </BodyText500>
-            </Box>
-            <Box
+            </mui.Box>
+            <mui.Box
               sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                mt: '2%',
-                mb: '2%',
+                display: "flex",
+                flexDirection: "row",
+                mt: "2%",
+                mb: "2%",
               }}
             >
               <STButton
-                text={t('settings.advanced.full-resync')}
+                text={t("settings.advanced.full-resync")}
                 onClick={() => {
                   handleFullResync();
                 }}
               />
               {scanInProgress ? (
-                <Box
+                <mui.Box
                   sx={{
-                    color: '#00FFAA',
-                    ml: '3%',
-                    display: 'flex',
-                    flexDirection: 'column',
+                    color: "#00FFAA",
+                    ml: "3%",
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
-                  <CircularProgress
-                    sx={{ color: '#00FFAA', ml: '3%', alignSelf: 'center' }}
+                  <mui.CircularProgress
+                    sx={{ color: "#00FFAA", ml: "3%", alignSelf: "center" }}
                   />
-                  <SmallText400 sx={{ mt: '4%' }}>
-                    {t('settings.advanced.scan-progress')}
+                  <SmallText400 sx={{ mt: "4%" }}>
+                    {t("settings.advanced.scan-progress")}
                   </SmallText400>
-                </Box>
+                </mui.Box>
               ) : (
-                <Box />
+                <mui.Box />
               )}
-            </Box>
-            <BodyText sx={{ color: '#fff', mt: '5%' }}>
+            </mui.Box>
+            <BodyText sx={{ color: "#fff", mt: "5%" }}>
               Backup Settings
             </BodyText>
-            <Box sx={{ mt: '3%' }}>
+            <mui.Box sx={{ mt: "3%" }}>
               <STButton
                 text={
                   backup
-                    ? t('settings.advanced.disable-backup')
-                    : t('settings.advanced.enable-backup')
+                    ? t("settings.advanced.disable-backup")
+                    : t("settings.advanced.enable-backup")
                 }
                 onClick={() => {
                   backup ? updateBackupFlag(false) : updateBackupFlag(true);
                 }}
               />
-            </Box>
-            <BodyText sx={{ color: '#fff', mt: '5%' }}>Sign a Message</BodyText>
-            <Box sx={{ display: 'flex', flexDirection: 'column', mt: '1%' }}>
+            </mui.Box>
+            <BodyText sx={{ color: "#fff", mt: "5%" }}>Sign a Message</BodyText>
+            <mui.Box
+              sx={{ display: "flex", flexDirection: "column", mt: "1%" }}
+            >
               <WhiteHueTextField
-                sx={{ width: '40%' }}
-                inputProps={{ style: { color: '#fff' } }}
-                InputLabelProps={{ style: { color: '#fff' } }}
+                sx={{ width: "40%" }}
+                inputProps={{ style: { color: "#fff" } }}
+                InputLabelProps={{ style: { color: "#fff" } }}
                 value={signMessage}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                   setSignMessage(event.target.value);
                 }}
-                label='message'
+                label="message"
               />
-            </Box>
+            </mui.Box>
             <STButton
-              text='Sign'
+              text="Sign"
               onClick={() => {
                 handleSign();
               }}
             />
             <SmallText400
               sx={{
-                color: '#fff',
-                mt: '2%',
-                mb: '2%',
-                wordWrap: 'break-word',
+                color: "#fff",
+                mt: "2%",
+                mb: "2%",
+                wordWrap: "break-word",
               }}
             >
               {signature}
             </SmallText400>
             {/*
             <BodyText sx={{ color: '#fff', mt: '5%' }}>Verify a Signature</BodyText>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <WhiteHueTextField sx={{ width: '40%', mt: '1%' }} inputProps={{ style: { color: "#fff" } }} InputLabelProps={{ style: { color: "#fff" } }} value={addressToVerify} onChange={(event: ChangeEvent<HTMLInputElement>) => { setAddressToVerify(event.target.value); }} label="address" />
-              <WhiteHueTextField sx={{ width: '40%', mt: '1%' }} inputProps={{ style: { color: "#fff" } }} InputLabelProps={{ style: { color: "#fff" } }} value={signatureToVerify} onChange={(event: ChangeEvent<HTMLInputElement>) => { setSignatureToVerify(event.target.value); }} label="signature" />
-              <WhiteHueTextField sx={{ width: '40%', mt: '1%' }} inputProps={{ style: { color: "#fff" } }} InputLabelProps={{ style: { color: "#fff" } }} value={verificationMessage} onChange={(event: ChangeEvent<HTMLInputElement>) => { setVerificationMessage(event.target.value); }} label="original message" />
-            </Box>
+            <mui.Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <WhiteHueTextField sx={{ width: '40%', mt: '1%' }} inputProps={{ style: { color: "#fff" } }} InputLabelProps={{ style: { color: "#fff" } }} value={addressToVerify} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setAddressToVerify(event.target.value); }} label="address" />
+              <WhiteHueTextField sx={{ width: '40%', mt: '1%' }} inputProps={{ style: { color: "#fff" } }} InputLabelProps={{ style: { color: "#fff" } }} value={signatureToVerify} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setSignatureToVerify(event.target.value); }} label="signature" />
+              <WhiteHueTextField sx={{ width: '40%', mt: '1%' }} inputProps={{ style: { color: "#fff" } }} InputLabelProps={{ style: { color: "#fff" } }} value={verificationMessage} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setVerificationMessage(event.target.value); }} label="original message" />
+            </mui.Box>
 
             <STButton text="Verify" onClick={() => { handleVerify() }} />
             <SmallText400 sx={{ color: '#fff', mt: '2%', mb: '2%', wordWrap: "break-word" }}>{verifyResult === undefined ? '' : verifyResult ? 'Signature verified successfully.' : 'Signature verification failed.'}</SmallText400>
                 */}
-            <Box sx={{ mb: '4%' }} />
+            <mui.Box sx={{ mb: "4%" }} />
           </MenuSection>
           {/* --Remove Account-- */}
           <MenuSection
-            title={t('settings.delete.title')}
-            IconComponent={<RemoveCircleOutline sx={{ color: '#D21C1C' }} />}
+            title={t("settings.delete.title")}
+            IconComponent={<RemoveCircleOutline sx={{ color: "#D21C1C" }} />}
           >
             <STButton
-              text={t('settings.delete.STButton')}
+              text={t("settings.delete.STButton")}
               onClick={() => {
                 setDeleteOpen(true);
               }}
             />
           </MenuSection>
-        </Box>
-      </Box>
+        </mui.Box>
+      </mui.Box>
     </Layout>
   );
 }
