@@ -43,7 +43,7 @@
     "react-dom": "^17.0.0 || ^18.0.0",
     "react-i18next": "^14.0.5",
     "react-multi-carousel": "^2.8.4",
-    "react-pdf": "^7.5.1",
+    "react-pdf": "^9.0.0",
     "react-qr-code": "^2.0.12",
     "react-router-dom": "^6.14.2",
     "react-spinners": "^0.13.8"
