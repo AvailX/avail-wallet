@@ -1,41 +1,26 @@
 module.exports = {
-	env: {
-		browser: true,
-		es2021: true,
-	},
-	extends: [
-		'xo',
-		'plugin:react/recommended',
-	],
-	overrides: [
-		{
-			env: {
-				node: true,
-			},
-			files: [
-				'.eslintrc.{js,cjs}',
-			],
-			parserOptions: {
-				sourceType: 'script',
-			},
-		},
-		{
-			extends: [
-				'xo-typescript',
-			],
-			files: [
-				'*.ts',
-				'*.tsx',
-			],
-		},
-	],
-	parserOptions: {
-		ecmaVersion: 'latest',
-		sourceType: 'module',
-	},
-	plugins: [
-		'react',
-	],
-	rules: {
-	},
+  env: {
+    browser: true,
+    es2021: true,
+    node: true,
+  },
+  extends: [
+    'react-app',
+    'react-app/jest',
+    'eslint:recommended',
+    'plugin:react/recommended',
+  ],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+  plugins: ['react'],
+  rules: {
+    // Customize your rules as needed. For now, this keeps the default settings.
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
 };
