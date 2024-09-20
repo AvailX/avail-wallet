@@ -30,9 +30,15 @@ impl PersistentStorage {
         Ok(PersistentStorage { conn, db_path })
     }
 
-    /// Create a table within the database with an SQL query
     pub fn execute_query(&self, query: &str) -> AvailResult<()> {
         self.conn.execute(query, ())?;
+
+        Ok(())
+    }
+
+    pub fn execute_query_params<T: ToSql>(&self, query: &str, params: Vec<T>) -> AvailResult<()> {
+        self.conn
+            .execute(query, params_from_iter(params.into_iter()))?;
 
         Ok(())
     }

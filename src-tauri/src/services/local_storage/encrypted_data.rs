@@ -281,23 +281,18 @@ pub fn get_encrypted_data_by_flavour(
     let address = get_address_string()?;
     let network = get_network()?;
 
-    let query = format!(
-        "SELECT * FROM encrypted_data WHERE flavour='{}' AND owner='{}' AND network='{}'",
-        flavour.to_str(),
-        address,
-        network
-    );
+    let query = "SELECT * FROM encrypted_data WHERE flavour=?1 AND owner=?2 AND network=?3";
 
-    handle_encrypted_data_query(&query)
+    handle_encrypted_data_query_params(query, vec![flavour.to_str(), &address, &network])
 }
 
 /// get encrypted data by id
 pub fn get_encrypted_data_by_id(id: &str) -> AvailResult<EncryptedData> {
-    let query = format!("SELECT * FROM encrypted_data WHERE id='{}'", id);
+    let query = "SELECT * FROM encrypted_data WHERE id=?1";
 
-    let encrypted_data = handle_encrypted_data_query(&query)?;
+    let encrypted_data = handle_encrypted_data_query_params(query, vec![id])?;
 
-    if encrypted_data.len() > 0 {
+    if !encrypted_data.is_empty() {
         Ok(encrypted_data[0].clone())
     } else {
         Err(AvailError::new(
@@ -351,12 +346,10 @@ pub fn get_encrypted_data_by_nonce(nonce: &str) -> AvailResult<Option<EncryptedD
     let address = get_address_string()?;
     let network = get_network()?;
 
-    let query = format!(
-        "SELECT * FROM encrypted_data WHERE record_nonce='{}' AND owner='{}' AND network='{}'",
-        nonce, address, network
-    );
+    let query = "SELECT * FROM encrypted_data WHERE record_nonce=?1 AND owner=?2 AND network=?3";
 
-    let encrypted_data = handle_encrypted_data_query(&query)?;
+    let encrypted_data =
+        handle_encrypted_data_query_params(query, vec![nonce, &address, &network])?;
 
     if !encrypted_data.is_empty() {
         Ok(Some(encrypted_data[0].clone()))
@@ -371,12 +364,9 @@ pub fn get_encrypted_data_by_nonce(nonce: &str) -> AvailResult<Option<EncryptedD
 pub fn update_encrypted_data_by_id(id: &str, ciphertext: &str, nonce: &str) -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
 
-    let query = format!(
-        "UPDATE encrypted_data SET ciphertext=?1, nonce=?2 WHERE id='{}'",
-        id
-    );
+    let query = "UPDATE encrypted_data SET ciphertext=?1, nonce=?2 WHERE id=?3";
 
-    storage.save_mixed(vec![&ciphertext, &nonce], query)?;
+    storage.save_mixed(vec![&ciphertext, &nonce, &id], query.to_string())?;
 
     Ok(())
 }
@@ -391,12 +381,13 @@ pub fn update_encrypted_data_spent_by_id(
     let storage = PersistentStorage::new()?;
     let updated_at = Utc::now();
 
-    let query = format!(
-        "UPDATE encrypted_data SET ciphertext=?1, nonce=?2, spent=?3, updated_at=?4 WHERE id='{}'",
-        id
-    );
+    let query =
+        "UPDATE encrypted_data SET ciphertext=?1, nonce=?2, spent=?3, updated_at=?4 WHERE id=?5";
 
-    storage.save_mixed(vec![&ciphertext, &nonce, &spent, &updated_at], query)?;
+    storage.save_mixed(
+        vec![&ciphertext, &nonce, &spent, &updated_at, &id],
+        query.to_string(),
+    )?;
 
     Ok(())
 }
@@ -410,14 +401,11 @@ pub fn update_encrypted_transaction_state_by_id(
 ) -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
 
-    let query = format!(
-        "UPDATE encrypted_data SET ciphertext=?1, nonce=?2, state=?3 WHERE id='{}'",
-        id
-    );
+    let query = "UPDATE encrypted_data SET ciphertext=?1, nonce=?2, state=?3 WHERE id=?4";
 
     storage.save_mixed(
-        vec![&ciphertext, &nonce, &transaction_state.to_str()],
-        query,
+        vec![&ciphertext, &nonce, &transaction_state.to_str(), &id],
+        query.to_string(),
     )?;
 
     Ok(())
@@ -433,10 +421,7 @@ pub fn update_encrypted_transaction_confirmed_by_id(
 ) -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
 
-    let query = format!(
-        "UPDATE encrypted_data SET ciphertext=?1, nonce=?2, program_ids=?3, function_ids=?4, state=?5 WHERE id='{}'",
-        id
-    );
+    let query = "UPDATE encrypted_data SET ciphertext=?1, nonce=?2, program_ids=?3, function_ids=?4, state=?5 WHERE id=?6";
 
     storage.save_mixed(
         vec![
@@ -445,8 +430,9 @@ pub fn update_encrypted_transaction_confirmed_by_id(
             &program_ids,
             &function_ids,
             &TransactionState::Confirmed.to_str(),
+            &id,
         ],
-        query,
+        query.to_string(),
     )?;
 
     Ok(())
@@ -456,11 +442,11 @@ pub fn update_encrypted_transaction_confirmed_by_id(
 pub fn update_encrypted_data_synced_on_by_id(id: &str) -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
 
-    let query = format!("UPDATE encrypted_data SET synced_on=?1 WHERE id='{}'", id);
+    let query = "UPDATE encrypted_data SET synced_on=?1 WHERE id=?2";
 
     let synced_on = Utc::now();
 
-    storage.save_mixed(vec![&synced_on], query)?;
+    storage.save_mixed(vec![&synced_on, &id], query.to_string())?;
 
     Ok(())
 }
@@ -469,9 +455,9 @@ pub fn update_encrypted_data_synced_on_by_id(id: &str) -> AvailResult<()> {
 pub fn delete_encrypted_data_by_id(id: &str) -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
 
-    let query = format!("DELETE FROM encrypted_data WHERE id='{}'", id);
+    let query = "DELETE FROM encrypted_data WHERE id=?1";
 
-    storage.execute_query(&query)?;
+    storage.execute_query_params(query, vec![&id])?;
 
     Ok(())
 }
@@ -481,9 +467,9 @@ pub fn delete_encrypted_data_by_address() -> AvailResult<()> {
     let storage = PersistentStorage::new()?;
     let address = get_address_string()?;
 
-    let query = format!("DELETE FROM encrypted_data WHERE owner='{}'", address);
+    let query = "DELETE FROM encrypted_data WHERE owner=?1";
 
-    storage.execute_query(&query)?;
+    storage.execute_query_params(query, vec![&address])?;
 
     Ok(())
 }
@@ -501,8 +487,8 @@ pub fn delete_user_encrypted_data() -> AvailResult<()> {
             _ => {
                 return Err(AvailError::new(
                     AvailErrorType::Internal,
-                    "Error deleting encrypted data ".to_string(),
-                    "".to_string(),
+                    "Error deleting Encrypted Data".to_string(),
+                    "Error deleting Encrypted Data".to_string(),
                 ))
             }
         },
